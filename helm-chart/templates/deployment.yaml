@@ -1,0 +1,134 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "cxpp-training-enablement.fullname" . }}
+  labels:
+    app: {{ template "cxpp-training-enablement.name" . }}
+    chart: {{ template "cxpp-training-enablement.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "cxpp-training-enablement.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "cxpp-training-enablement.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      initContainers:
+      {{- if .Values.appDynamics.enabled}}
+        - image: {{ .Values.appDynamics.init_repo }}:{{ .Values.appDynamics.init_tag }}
+          name: appdynamicsagent
+          command: ["/bin/sh"]
+          args: ["-c", "cp -r /app_agent/* /AppServerAgent/"]
+          volumeMounts:
+            - mountPath: /AppServerAgent
+              name: appdagent
+      {{- end}}
+      containers:
+        - name: {{ .Chart.Name }}
+          env:
+          {{- if .Values.appDynamics.enabled}}
+            - name: APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: appd_accesskey
+                  name: appd-secret-cx
+            - name: APPDYNAMICS_AGENT_ACCOUNT_NAME
+              valueFrom:
+                secretKeyRef:
+                  key: appd_accountname
+                  name: appd-secret-cx
+            - name: APPDYNAMICS_ENABLED
+              value: {{ .Values.appDynamics.enabled | quote }}
+            - name: APPDYNAMICS_JAVA_AGENT_REUSE_NODE_NAME
+              value: {{ .Values.appDynamics.appdynamics_java_agent_reuse_node_name | quote }}
+            - name: APPDYNAMICS_JAVA_AGENT_REUSE_NODE_NAME_PREFIX
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['release']
+            - name: APPDYNAMICS_AGENT_TIER_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['release']
+            - name: APPDYNAMICS_AGENT_APPLICATION_NAME
+              value: {{ .Values.appDynamics.appdynamics_agent_application_name }}
+            - name: APPDYNAMICS_CONTROLLER_HOST_NAME
+              value: {{ .Values.appDynamics.appdynamics_controller_host_name }}
+            - name: APPDYNAMICS_CONTROLLER_PORT
+              value: {{ .Values.appDynamics.appdynamics_controller_port | quote }}
+            - name: APPDYNAMICS_CONTROLLER_SSL_ENABLED
+              value: {{ .Values.appDynamics.appdynamics_controller_ssl_enabled | quote }}
+            - name: APPD_ES_HOST
+              value: {{ .Values.appDynamics.appd_es_host }}
+            - name: APPD_ES_PORT
+              value: {{ .Values.appDynamics.appd_es_port | quote }}
+            - name: APPD_ES_SSL
+              value: {{ .Values.appDynamics.appd_es_ssl | quote }}
+            - name: APPDYNAMICS_JVM_PARAMETER
+              value: {{ .Values.appDynamics.appdynamics_jvm_parameter }}
+          {{- end}}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          # command: ["/bin/bash"]
+          # args: ["-c", "/home/creando/platform/run.sh"]
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            {{- if .Values.service.ssl.enabled -}}
+            - name: https
+              containerPort: 8443
+              protocol: TCP
+            {{ end }}
+          livenessProbe:
+             httpGet:
+               path: /live
+               port: 8080
+             initialDelaySeconds: 300
+             periodSeconds: 30
+             timeoutSeconds: 2
+             failureThreshold: 3
+          readinessProbe:
+             httpGet:
+               path: /ready
+               port: 8080
+             initialDelaySeconds: 600
+             periodSeconds: 30
+             timeoutSeconds: 5
+             failureThreshold: 3
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+          volumeMounts:
+            {{- if .Values.appDynamics.enabled}}
+            - mountPath: {{ .Values.appDynamics.appd_mount_dir }}
+              name: appdagent
+            {{- end }}
+            - mountPath: /myapp/environment.properties
+              name: {{ template "cxpp-training-enablement.fullname" . }}-environment
+              subPath: environment.properties
+
+      volumes:
+      {{- if .Values.appDynamics.enabled}}
+      - name: appdagent
+        emptyDir: {}
+      {{- end}}
+      - name: {{ template "cxpp-training-enablement.fullname" . }}-environment
+        configMap:
+          name: {{ template "cxpp-training-enablement.fullname" . }}-environment-properties

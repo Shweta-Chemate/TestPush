@@ -1,0 +1,138 @@
+clone:
+  "[CLONE] git":
+    image: plugins/git
+    tags: true
+
+pipeline:
+  "[BUILD] maven verify":
+    image: containers.cisco.com/servicescf-devops/maven-cisco-docker
+    pull: true
+    scripts:
+      - mvn -B clean verify -Dmaven.test.failure.ignore=true
+      - mvn -B findbugs:findbugs
+    when:
+      event:
+        - push
+        - pull_request
+
+  "[ANALYSIS] Sonar":
+    detach: true
+    image: containers.cisco.com/servicescf-devops/drone-sonar
+    pull: true
+    host: https://engci-sonar-sjc.cisco.com/sonar # Sonar host
+    #profile: "SSO-Findbugs-Jtest" # [Optional] : Mention Sonar profile, default - SSO-Findbugs-Jtest
+    language: "java" # [Optional] : Mention Sonar languages, default - java
+    #java_binaries: "**/*/target/classes" # [Optional] : Mention classes location, default - **/build/classes
+    findbugs_reportPath: "**/findbugsXml.xml" # [Optional] : Mention findbugs report location, default - **/main.xml
+    #sources: "." # [Optional] : Mention source locations, default - current directory
+    cobertura_reportPath: target/site/cobertura/coverage.xml #[Mandatory when using cobertura] : To publish coverage data to Sonar
+    sonar_dynamicAnalysis: reuseReports
+    sonar_java_coveragePlugin: jacoco
+    jacoco_reportPath: target/coverage-reports/jacoco-unit.exec #[Mandatory when using jacoco] For multimodule project add comma seperated <modulename1>/target/jacoco.exec,<modulename2>/target/jacoco.exec
+    junit_reportPath: target/surefire-reports/**/*.xml #[Optional] : For multimodule project add comma seperated <modulename1>/target/surefire-reports,<modulename2>/target/surefire-reports
+    #sonar_branch: "Feature-A" #[Optional] : Custom branch name using which analysis data would be pushed to sonarqube
+    debug: false
+    sonar_multilang: false #[Optional]:true in case of multi language analysis i.e. projects  which are using several programming languages at once e.g [Java, JavaScript and HTML]
+    #exclusions: '**/target/**/*.*,*.html,**/test/**,**/m2_repo/**'  #[Optinoal] :[Mention patterns to be excluded, coma separated, java style regex]
+    secrets: [ sonar_login ] # Sonar login token
+    when:
+      event:  # The events sonar needs to be triggered
+        - pull_request
+        - push
+
+  "[PUBLISH] docker image":
+    image: plugins/docker
+    repo: containers.cisco.com/cx-platforms/cxpp-training-enablement
+    registry: containers.cisco.com
+    tags:
+      - latest
+      - ${CI_COMMIT_SHA}
+    secrets: [ docker_username, docker_password ]
+    when:
+      event:
+        - push
+        - pull_request
+
+  "[ANALYSIS] Corona":
+    detach: true
+    image: containers.cisco.com/servicescf-devops/drone-corona
+    pull: true
+    docker_image: containers.cisco.com/cx-platforms/cxpp-training-enablement:${CI_COMMIT_SHA}
+    docker_registry: containers.cisco.com/
+    corona_product_id: 3759
+    corona_release_version: 0.1.1
+    #ipc_id: <IPCentral ID> #[Mandatory]: Can be found in the IPCentral project
+    secrets: [ corona_login, corona_password, docker_username, docker_password] #[Mandatory]
+    #secrets: [ corona_login, corona_password, docker_username, docker_password, corona_nfs_scp_key ] #[Optional]: in case of NfsUpload: true
+    #secrets: [ corona_login, corona_password, corona_nfs_scp_key, ecr_access_key, ecr_secret_key] #[Optional]: for AWS ECR
+    corona_nfs_upload: false #[Optional]: true, if file size is huge > 500MB
+    corona_scan_timeout: 50
+    #corona_image_name: <Image name - $${DRONE_BUILD_NUMBER}> e.g.CXCOL-apiservice-$${DRONE_BUILD_NUMBER}  #[Optional]: needed if image name needs to be provided
+    when:
+      event:
+        - tag
+    branch:
+      include:
+        - v*__deploy__*istg*
+
+
+  ## ==========================================================================
+  ## Event is a tag with deploy tag format, then deploy to given environment.
+  ## ==========================================================================
+
+  ## ==========================================================================
+  ## CIDER - Continuous Integration & Delivery Environment Runner.
+  ## ==========================================================================
+  ## This block can deploy your service to any of the pre-defined k8s clusters.
+  ## 1. Destination is chosen based on the git tag commit ref that triggered drone.
+  ##  1a. Reacts to git 'tag' events and the specified tag format under 'branch: include:'
+  ##  1b. Internally determines whether the tag's commit ref matches the expected format.
+  ## 2. Does not react to Drone command line events: 'deployment', 'promote'.
+  ##  2a. These events are not GitOps and they are not portable to other build systems.
+  ## 3. Reacts to git 'push' (and merge) events to CD auto-deploy to a pre-defined environment.
+  ## ==========================================================================
+  "[DEPLOY] CIDER to ANY env":
+    image: rtluckie/cicd-toolbox:0.1.4
+    environment:
+      - CIDER_NAME=cider-toolkit
+    commands:
+      - git clone https://bitbucket-eng-sjc1.cisco.com/bitbucket/scm/creando/cider-toolkit.git $CIDER_NAME
+      - export CIDER_DIR=$CI_WORKSPACE/$CIDER_NAME
+      - make deploy
+    secrets:
+      [
+        p3_idev_api_server, p3_idev_kubernetes_token, p3_idev_kubernetes_context,
+        p3_istg_api_server, p3_istg_kubernetes_token, p3_istg_kubernetes_context,
+        p3_ilt_api_server, p3_ilt_kubernetes_token, p3_ilt_kubernetes_context,
+        p3_prd_api_server, p3_prd_kubernetes_token, p3_prd_kubernetes_context,
+        p3_prdemea_api_server, p3_prdemea_kubernetes_token, p3_prdemea_kubernetes_context
+      ]
+    when:
+      event:
+        - tag
+        - push
+      branch:
+        include:
+          - master
+          - v*__deploy__*
+
+  "[NOTIFY] webex teams":
+    image: containers.cisco.com/servicescf-devops/drone-spark
+    pull: true
+    room: "PBC-SDP-APP-Team" # Spark room name
+    when:
+      status: [ changed, failure, success ] # Notification criteria can be changed as needed
+
+
+## ==========================================================================
+## Only some branches/tags are going to be built by drone. This is the filter.
+## ==========================================================================
+branches:
+  include:
+    - "master"
+    - "refs/heads/master"
+    - "v*__deploy__*"
+    - "refs/tags/v*__deploy__*"
+
+## EOF
+

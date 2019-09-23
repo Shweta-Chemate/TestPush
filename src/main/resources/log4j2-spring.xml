@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--+ ================================================================================================================================================
+	+ Purpose: Configuration for log4j2. Adaptable to any module or service. Cloned from master template in GTI project.
+	+ Created: 2016-04-18
+	+ Author : Amit Mittal (amimitt2)
+	+ ================================================================================================================================================
+	+
+	+ =========
+	+ Features:
+	+ =========
+	+ 1. Multiple log patterns for general logging and performance logging.
+	+ 1a. For performance logging, no location information should ever be requested from the JVM Execution Stack (method name, line number, etc.).
+	+ 1b. Caller must provide all location information at compile time. In fact, caller knows exactly which class/method contains the log message.
+	+ 2. Reloads this config every 'n' seconds. See documentation of monitorInterval.
+	+ 3. Global properties references to avoid repetition and duplication.
+	+ 4. Configuration for M loggers to N appenders. With async support.
+	+ 5. Compression of older logs using gzip (gz) or zip algorithms.
+	+ 5a. Change the extension in 'filePattern' to either .gz or .zip
+	+ 5b. CSAP prefers zip.
+	+ 6. Strict config syntax with full inline documentation.
+	+
+	+ ==============
+	+ Log4j2 Manual:
+	+ ==============
+	+ https://logging.apache.org/log4j/2.x/manual/index.html
+	+ -->
+<Configuration status="WARN" monitorInterval="600" strict="true">
+
+    <!--+ ============================================================================================================================================
+        + Section 1: Properties.
+        + ============================================================================================================================================
+        + These properties can be referenced anywhere within this configuration. Avoids duplication. Provide documentation for entries.
+        + -->
+    <Properties>
+        <!--+ ====================
+            + Tips for performance
+            + ====================
+            + Log4j2 is advertised as being very fast. But, this performance can only be realized if the caller does not rely on location information.
+            + It means no calls into the JVM Execution Stack for location information. Example: file name, line number, class name, method name etc.
+            + Location information is slow... 1.5 to 5 times slower for synchronous appenders and 30 to 100 times slower for async appenders.
+            + Callers should statically set the class name and method name into the message itself.
+            + For added performance, callers should configure and use the async appender.
+            +
+            + See documentation: https://logging.apache.org/log4j/2.x/manual/layouts.html#LocationInformation
+            + -->
+
+        <!--+ ===============
+            + Verbose Pattern
+            + ===============
+            + Format: threadName datetime [level] (fileName:lineNum) [simpleClassName:methodName] message\n
+            + Output: main [2016-06-23 19:26:26.788 -0700] [INFO ] (NumberFormatterTest.java:44) [NumberFormatterTest:test1] message
+            +
+            + This pattern must be kept in sync with the logging patterns in GTI-Basics. DO NOT EDIT. Create a new property for your pattern.
+            + -->
+        <property name="p.verbose">%thread [%date{yyyy-MM-dd HH:mm:ss.SSS Z}] [%-5level] %X{userId} (%file{1}:%line) [%class{1}:%method] %msg%n</property>
+
+        <!--+ ===================
+            + Performance Pattern
+            + ===================
+            + Format: threadName datetime [level] message\n
+            + Output: main [2016-06-23 19:26:26.788 -0700] [INFO ] message
+            +
+            + This pattern must be kept in sync with the logging patterns in GTI-Basics. DO NOT EDIT. Create a new property for your pattern.
+            + -->
+        <property name="p.performance">%thread [%date{yyyy-MM-dd HH:mm:ss.SSS Z}] [%-5level] %X{userId} %msg%n</property>
+
+        <!--+ ===============
+            + Default Pattern
+            + ===============
+            + Use this indirection to switch the pattern for all appenders.
+            + -->
+        <property name="p.default">${p.performance}</property>
+
+        <!--+ ===========
+            + Compression
+            + ===========
+            + Compression format for older logs. Gzip (gz) achieves higher compression ratios. InfoZip (zip) is supported by CSAP log 'Search'.
+            + -->
+        <property name="z.gz">.log.gz</property>
+        <property name="z.zip">.log.zip</property>
+        <property name="z.ext">${z.gz}</property> <!-- amimitt2: Use this indirection to switch the compression for all log files. -->
+
+        <!--+ ==============
+            + Appender Names
+            + ==============
+            + -->
+        <property name="a.console">a-out-console</property>
+
+        <!--+ =================
+            + Output File Names
+            + =================
+            + -->
+        <property name="d.logs">logs</property>
+
+        <!--+ ==============
+            + Tunable Values
+            + ==============
+            + -->
+        <property name="t.rollover-size">999 MB</property>
+        <property name="t.rollover-count">20</property>
+        <property name="t.compress-level">9</property> <!-- amimitt2: Currently only implemented for zip files. -->
+        <property name="t.delete-after">10d</property> <!-- amimitt2: ISO-8601 duration format. 45 days helps fix long-term issues. Do not reduce. -->
+        <property name="t.dir-user">${sys:user.dir}</property> <!-- amimitt2: Log4j2 delete operation requires base dir path. -->
+        <property name="t.depth-from-logs-dir">1</property> <!-- amimitt2: Log4j2 delete operation requires the depth from logs dir. Usually 1. -->
+
+
+    </Properties>
+
+    <!--+ ============================================================================================================================================
+        + Section 2: Appenders.
+        + ============================================================================================================================================
+        + -->
+    <Appenders>
+        <!--+ ================
+            + Console Appender
+            + ================
+            + -->
+        <Console name="${a.console}" target="SYSTEM_OUT">
+            <PatternLayout pattern="${p.default}" />
+
+            <Policies> <!-- amimitt2: Specifying multiple policies internally binds to CompositeTriggeringPolicy -->
+                <!-- <OnStartupTriggeringPolicy /> --> <!-- amimitt2: Keep disabled, unless you really want a new log file on every restart. -->
+                <SizeBasedTriggeringPolicy size="${t.rollover-size}" />
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" /> <!-- amimitt2: Interval is the smallest unit in the date pattern. -->
+            </Policies>
+            <!--+ ====================
+                + How to use fileIndex
+                + ====================
+                + min is recommended for pure size based policy. Result: a.log, a_1.log, a_2.log, a_3.log (where 3 is the oldest).
+                + max is recommended for date+size based policy. Result: a_date_1.log, a_date_2.log, a_date_3.log, a_date.log (where 1 is the oldest).
+                + -->
+            <DefaultRolloverStrategy fileIndex="max" max="${t.rollover-count}" compressionLevel="${t.compress-level}">
+                <Delete basePath="${t.dir-user}/${d.logs}" maxDepth="${t.depth-from-logs-dir}" followLinks="false">
+                    <IfFileName glob="console_*${z.ext}" />
+                    <IfLastModified age="${t.delete-after}" />
+                </Delete>
+            </DefaultRolloverStrategy>
+        </Console>
+    </Appenders>
+
+    <!--+ ============================================================================================================================================
+        + Section 3: Loggers.
+        + ============================================================================================================================================
+        + -->
+    <Loggers>
+        <!--+ ===========
+            + Root Logger
+            + ===========
+            + -->
+        <Root additivity="false" level="debug"> <!-- amimitt2: Tunable logging level. -->
+            <AppenderRef ref="${a.console}" level="info" />
+        </Root>
+    </Loggers>
+
+</Configuration>

@@ -1,0 +1,4 @@
+appDynamics:
+  enabled: false
+  appdynamics_agent_application_name: CP-DEV
+

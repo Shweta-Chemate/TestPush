@@ -1,0 +1,78 @@
+# Default values for java-app.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+replicaCount: 2
+image:
+  repository: ${LOCATION_PREFIX_DOCKER_REGISTRY}/cx-platforms/cxpp-training-enablement
+  tag: ${CI_COMMIT_SHA}
+  pullPolicy: Always
+service:
+  type: ClusterIP
+  port: 8080
+  ssl:
+    enabled: false
+    port: 8443
+
+ingress:
+  enabled: false
+  domain: cxpp-training-enablement.${CLUSTER_NAME_FULL}
+  externalDNS:
+    enabled: true
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: cxpp-training-enablement.${CLUSTER_NAME_FULL}
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+    kubernetes.io/ingress.class: nginx
+  path: /
+  servicePort: 8080
+  tls:
+    enabled: true
+    secretName: wildcard-production-tls
+
+
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+   limits:
+    cpu: 0.5
+    memory: 512Mi
+   requests:
+    cpu: 100m
+    memory: 256Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+appDynamics:
+  enabled: false
+  appd_es_host: analytics.api.appdynamics.com
+  appd_es_port: 443
+  appd_es_ssl: True
+  appdynamics_controller_host_name: cisco-cx-test.saas.appdynamics.com
+  appdynamics_controller_port: 443
+  appdynamics_controller_ssl_enabled: True
+  appdynamics_jvm_parameter: -Dappdynamics.agent.maxMetrics=7000 -Dappdynamics.agent.log4j2.disabled=true -Dlog4j.ignoreTCL=true
+  appdynamics_agent_application_name: CP-DEV
+  appdynamics_java_agent_reuse_node_name: True
+  init_repo: 810598127841.dkr.ecr.us-east-2.amazonaws.com/appdynamics
+  init_tag: sdp-javaagent-4.5.9
+  appd_mount_dir: /AppServerAgent
+
+files:
+  environment.properties:
+    elasticsearch.host: ${elasticsearch_app_host}
+    elasticsearch.port: ${elasticsearch_app_port}
+    elasticsearch.scheme: ${elasticsearch_app_scheme}
+    #elasticsearch.username: "***REMOVED***"
+    #elasticsearch.password: "***REMOVED***"
+    cisco.ldap.external.url: ${cisco_ldap_external_url}
+    #cisco.ldap.userid: "***REMOVED***"
+    #cisco.ldap.password: "***REMOVED***"
+    cisco.oauth.token.url: ${cisco_oauth_token_url}
+    cxp.emailapi.context.url: https://cpp-api.${CLUSTER_NAME_FULL}/email/
+    cxp.emailapi.readiness.url: https://cpp-api.${CLUSTER_NAME_FULL}/email/v1/ready
+    entitlement.user.party.affiliation.url: https://cpp-api.${CLUSTER_NAME_FULL}/entitlement/v1/user/party/affiliation/{partyId}

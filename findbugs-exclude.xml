@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+	<match>
+		<Bug pattern="SKIPPED_CLASS_TOO_BIG" />
+	</match>
+	<match>
+		<Bug pattern="DMI_UNSUPPORTED_METHOD" />
+	</match>
+	<match>
+		<Bug pattern="CAA_COVARIANT_ARRAY_FIELD" />
+	</match>
+	<match>
+		<Bug pattern="CAA_COVARIANT_ARRAY_LOCAL" />
+	</match>
+	<match>
+		<Bug pattern="CAA_COVARIANT_ARRAY_RETURN" />
+	</match>
+	<match>
+		<Bug pattern="DP_DO_INSIDE_DO_PRIVILEGED" />
+	</match>
+	<match>
+		<Bug pattern="DP_DO_INSIDE_DO_PRIVILEDGED" />
+	</match>
+	<match>
+		<Bug pattern="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED" />
+	</match>
+	<match>
+		<Bug pattern="DMI_THREAD_PASSED_WHERE_RUNNABLE_EXPECTED" />
+	</match>
+	<match>
+		<Bug pattern="DM_CONVERT_CASE" />
+	</match>
+	<match>
+		<Bug pattern="FI_PUBLIC_SHOULD_BE_PROTECTED" />
+	</match>
+	<match>
+		<Bug pattern="EQ_DOESNT_OVERRIDE_EQUALS" />
+	</match>
+	<match>
+		<Bug pattern="EQ_UNUSUAL" />
+	</match>
+	<match>
+		<Bug pattern="MS_EXPOSE_REP" />
+	</match>
+	<match>
+		<Bug pattern="EI_EXPOSE_REP" />
+	</match>
+	<match>
+		<Bug pattern="EI_EXPOSE_REP2" />
+	</match>
+	<match>
+		<Bug pattern="EI_EXPOSE_STATIC_REP2" />
+	</match>
+	<match>
+		<Bug pattern="NS_DANGEROUS_NON_SHORT_CIRCUIT" />
+	</match>
+	<match>
+		<Bug pattern="NS_NON_SHORT_CIRCUIT" />
+	</match>
+	<match>
+		<Bug pattern="IC_INIT_CIRCULARITY" />
+	</match>
+	<match>
+		<Bug pattern="MS_OOI_PKGPROTECT" />
+	</match>
+	<match>
+		<Bug pattern="MS_FINAL_PKGPROTECT" />
+	</match>
+	<match>
+		<Bug pattern="MS_SHOULD_BE_REFACTORED_TO_BE_FINAL" />
+	</match>
+	<match>
+		<Bug pattern="MS_SHOULD_BE_FINAL" />
+	</match>
+	<match>
+		<Bug pattern="MS_PKGPROTECT" />
+	</match>
+	<match>
+		<Bug pattern="MS_MUTABLE_HASHTABLE" />
+	</match>
+	<match>
+		<Bug pattern="MS_MUTABLE_COLLECTION" />
+	</match>
+	<match>
+		<Bug pattern="MS_MUTABLE_COLLECTION_PKGPROTECT" />
+	</match>
+	<match>
+		<Bug pattern="MS_MUTABLE_ARRAY" />
+	</match>
+	<match>
+		<Bug pattern="MS_CANNOT_BE_FINAL" />
+	</match>
+	<match>
+		<Bug pattern="IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD" />
+	</match>
+	<match>
+		<Bug pattern="SE_PRIVATE_READ_RESOLVE_NOT_INHERITED" />
+	</match>
+	<match>
+		<Bug pattern="SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS" />
+	</match>
+	<match>
+		<Bug pattern="SF_SWITCH_FALLTHROUGH" />
+	</match>
+	<match>
+		<Bug pattern="SF_SWITCH_NO_DEFAULT" />
+	</match>
+	<match>
+		<Bug pattern="UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD" />
+	</match>
+	<match>
+		<Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD" />
+	</match>
+	<match>
+		<Bug pattern="QF_QUESTIONABLE_FOR_LOOP" />
+	</match>
+	<match>
+		<Bug pattern="UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD" />
+	</match>
+	<match>
+		<Bug pattern="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" />
+	</match>
+	<match>
+		<Bug pattern="NP_LOAD_OF_KNOWN_NULL_VALUE" />
+	</match>
+	<match>
+		<Bug pattern="NP_DEREFERENCE_OF_READLINE_VALUE" />
+	</match>
+	<match>
+		<Bug pattern="NP_IMMEDIATE_DEREFERENCE_OF_READLINE" />
+	</match>
+	<match>
+		<Bug pattern="NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD" />
+	</match>
+	<match>
+		<Bug pattern="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" />
+	</match>
+	<match>
+		<Bug pattern="UC_USELESS_VOID_METHOD" />
+	</match>
+	<match>
+		<Bug pattern="UC_USELESS_CONDITION" />
+	</match>
+	<match>
+		<Bug pattern="UC_USELESS_CONDITION_TYPE" />
+	</match>
+	<match>
+		<Bug pattern="UC_USELESS_OBJECT" />
+	</match>
+	<match>
+		<Bug pattern="UC_USELESS_OBJECT_STACK" />
+	</match>
+	<match>
+		<Bug pattern="RV_CHECK_FOR_POSITIVE_INDEXOF" />
+	</match>
+	<match>
+		<Bug pattern="RV_DONT_JUST_NULL_CHECK_READLINE" />
+	</match>
+	<match>
+		<Bug pattern="RV_RETURN_VALUE_IGNORED_INFERRED" />
+	</match>
+	<match>
+		<Bug pattern="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT" />
+	</match>
+	<match>
+		<Bug pattern="NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE" />
+	</match>
+	<match>
+		<Bug pattern="NP_NULL_ON_SOME_PATH_MIGHT_BE_INFEASIBLE" />
+	</match>
+	<match>
+		<Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE" />
+	</match>
+	<match>
+		<Bug pattern="PZLA_PREFER_ZERO_LENGTH_ARRAYS" />
+	</match>
+	<match>
+		<Bug pattern="UCF_USELESS_CONTROL_FLOW" />
+	</match>
+	<match>
+		<Bug pattern="UCF_USELESS_CONTROL_FLOW_NEXT_LINE" />
+	</match>
+	<match>
+		<Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE" />
+	</match>
+	<match>
+		<Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE" />
+	</match>
+	<match>
+		<Bug pattern="RCN_REDUNDANT_COMPARISON_TWO_NULL_VALUES" />
+	</match>
+	<match>
+		<Bug pattern="RCN_REDUNDANT_COMPARISON_OF_NULL_AND_NONNULL_VALUE" />
+	</match>
+	<match>
+		<Bug pattern="RCN_REDUNDANT_CHECKED_NULL_COMPARISON" />
+	</match>
+	<match>
+		<Bug pattern="SA_LOCAL_SELF_ASSIGNMENT" />
+	</match>
+	<match>
+		<Bug pattern="SA_FIELD_DOUBLE_ASSIGNMENT" />
+	</match>
+	<match>
+		<Bug pattern="SA_LOCAL_DOUBLE_ASSIGNMENT" />
+	</match>
+	<match>
+		<Bug pattern="RV_REM_OF_RANDOM_INT" />
+	</match>
+	<match>
+		<Bug pattern="RV_REM_OF_HASHCODE" />
+	</match>
+	<match>
+		<Bug pattern="INT_VACUOUS_BIT_OPERATION" />
+	</match>
+	<match>
+		<Bug pattern="INT_VACUOUS_COMPARISON" />
+	</match>
+	<match>
+		<Bug pattern="INT_BAD_REM_BY_1" />
+	</match>
+	<match>
+		<Bug pattern="DLS_DEAD_LOCAL_STORE_SHADOWS_FIELD" />
+	</match>
+	<match>
+		<Bug pattern="DLS_DEAD_LOCAL_STORE" />
+	</match>
+	<match>
+		<Bug pattern="DLS_DEAD_LOCAL_STORE_IN_RETURN" />
+	</match>
+	<match>
+		<Bug pattern="DLS_DEAD_LOCAL_STORE_OF_NULL" />
+	</match>
+	<match>
+		<Bug pattern="REC_CATCH_EXCEPTION" />
+	</match>
+	<match>
+		<Bug pattern="FE_FLOATING_POINT_EQUALITY" />
+	</match>
+	<match>
+		<Bug pattern="CD_CIRCULAR_DEPENDENCY" />
+	</match>
+	<match>
+		<Bug pattern="RI_REDUNDANT_INTERFACES" />
+	</match>
+	<match>
+		<Bug pattern="MTIA_SUSPECT_STRUTS_INSTANCE_FIELD" />
+	</match>
+	<match>
+		<Bug pattern="MTIA_SUSPECT_SERVLET_INSTANCE_FIELD" />
+	</match>
+	<match>
+		<Bug pattern="PS_PUBLIC_SEMAPHORES" />
+	</match>
+	<match>
+		<Bug pattern="ICAST_INTEGER_MULTIPLY_CAST_TO_LONG" />
+	</match>
+	<match>
+		<Bug pattern="ICAST_IDIV_CAST_TO_DOUBLE" />
+	</match>
+	<match>
+		<Bug pattern="DMI_NONSERIALIZABLE_OBJECT_WRITTEN" />
+	</match>
+	<match>
+		<Bug pattern="VA_FORMAT_STRING_BAD_CONVERSION_TO_BOOLEAN" />
+	</match>
+	<match>
+		<Bug pattern="BC_BAD_CAST_TO_ABSTRACT_COLLECTION" />
+	</match>
+	<match>
+		<Bug pattern="BC_VACUOUS_INSTANCEOF" />
+	</match>
+	<match>
+		<Bug pattern="BC_UNCONFIRMED_CAST" />
+	</match>
+	<match>
+		<Bug pattern="BC_UNCONFIRMED_CAST_OF_RETURN_VALUE" />
+	</match>
+	<match>
+		<Bug pattern="BC_BAD_CAST_TO_CONCRETE_COLLECTION" />
+	</match>
+	<match>
+		<Bug pattern="ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT" />
+	</match>
+	<match>
+		<Bug pattern="IM_AVERAGE_COMPUTATION_COULD_OVERFLOW" />
+	</match>
+	<match>
+		<Bug pattern="IM_BAD_CHECK_FOR_ODD" />
+	</match>
+	<match>
+		<Bug pattern="DMI_HARDCODED_ABSOLUTE_FILENAME" />
+	</match>
+	<match>
+		<Bug pattern="DMI_USELESS_SUBSTRING" />
+	</match>
+	<match>
+		<Bug pattern="DB_DUPLICATE_BRANCHES" />
+	</match>
+	<match>
+		<Bug pattern="DB_DUPLICATE_SWITCH_CLAUSES" />
+	</match>
+	<match>
+		<Bug pattern="XFB_XML_FACTORY_BYPASS" />
+	</match>
+	<match>
+		<Bug pattern="USM_USELESS_SUBCLASS_METHOD" />
+	</match>
+	<match>
+		<Bug pattern="USM_USELESS_ABSTRACT_METHOD" />
+	</match>
+	<match>
+		<Bug pattern="CI_CONFUSED_INHERITANCE" />
+	</match>
+	<match>
+		<Bug pattern="TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_NEVER_SINK" />
+	</match>
+	<match>
+		<Bug pattern="TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK" />
+	</match>
+	<match>
+		<Bug pattern="OBL_UNSATISFIED_OBLIGATION" />
+	</match>
+	<match>
+		<Bug pattern="OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE" />
+	</match>
+	<match>
+		<Bug pattern="LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE" />
+	</match>
+	<match>
+		<Bug pattern="DM_DEFAULT_ENCODING" />
+	</match>
+	<match>
+		<Bug pattern="NP_METHOD_PARAMETER_RELAXING_ANNOTATION" />
+	</match>
+	<match>
+		<Bug pattern="NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION" />
+	</match>
+	<match>
+		<Bug pattern="NP_METHOD_RETURN_RELAXING_ANNOTATION" />
+	</match>
+
+</FindBugsFilter>

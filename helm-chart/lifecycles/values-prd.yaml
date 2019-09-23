@@ -1,0 +1,9 @@
+files:
+  environment.properties:
+    cisco.ldap.userid: "***REMOVED***"
+    cisco.ldap.password: "***REMOVED***"
+
+appDynamics:
+  enabled: true
+  appdynamics_agent_application_name: CP-PRD
+
