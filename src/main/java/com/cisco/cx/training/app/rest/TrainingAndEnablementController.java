@@ -1,6 +1,7 @@
 package com.cisco.cx.training.app.rest;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -27,6 +28,7 @@ import com.cisco.cx.training.app.exception.ErrorResponse;
 import com.cisco.cx.training.app.exception.HealthCheckException;
 import com.cisco.cx.training.app.service.CiscoProfileService;
 import com.cisco.cx.training.app.service.EmailService;
+import com.cisco.cx.training.models.Community;
 import com.cisco.cx.training.models.SuccessTrackAndUseCases;
 import com.cisco.cx.training.service.TrainingAndEnablementService;
 import com.cisco.cx.training.util.ValidationUtil;
@@ -93,6 +95,12 @@ public class TrainingAndEnablementController {
 	@ApiOperation(value = "gets usecases for solutions", hidden = true)
 	public SuccessTrackAndUseCases getPitstop() {
 		return trainingAndEnablementService.getUsecases();
+	}
+	
+	@RequestMapping("/communities")
+	@ApiOperation(value = "gets communities", hidden = true)
+	public List<Community> getCommunities() {
+		return trainingAndEnablementService.getCommunities();
 	}
 
 	@RequestMapping("/live")
