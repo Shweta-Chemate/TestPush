@@ -1,19 +1,19 @@
 package com.cisco.cx.training.test;
 
-import com.cisco.cx.training.app.TrainingAndEnablementApplication;
-import com.cisco.cx.training.app.config.PropertyConfiguration;
-import com.cisco.cx.training.app.dao.ElasticSearchDAO;
-import com.cisco.cx.training.app.rest.TrainingAndEnablementController;
-import com.cisco.cx.training.app.service.CiscoProfileService;
-import com.cisco.cx.training.app.service.EmailService;
-import com.cisco.cx.training.app.service.HttpService;
-import com.cisco.cx.training.app.service.OAuthService;
-import com.cisco.cx.training.models.ElasticSearchResults;
-import com.cisco.cx.training.models.EmailContent;
-import com.cisco.cx.training.models.EmailRequest;
-import com.cisco.cx.training.models.OAuthBearerToken;
-import com.cisco.cx.training.util.HasId;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.codec.binary.Base64;
 import org.elasticsearch.action.DocWriteResponse;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -33,20 +33,24 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.MultiValueMap;
+
+import com.cisco.cx.training.app.TrainingAndEnablementApplication;
+import com.cisco.cx.training.app.config.PropertyConfiguration;
+import com.cisco.cx.training.app.dao.ElasticSearchDAO;
+import com.cisco.cx.training.app.rest.TrainingAndEnablementController;
+import com.cisco.cx.training.app.service.CiscoProfileService;
+import com.cisco.cx.training.app.service.EmailService;
+import com.cisco.cx.training.app.service.HttpService;
+import com.cisco.cx.training.app.service.OAuthService;
+import com.cisco.cx.training.models.ElasticSearchResults;
+import com.cisco.cx.training.models.EmailContent;
+import com.cisco.cx.training.models.EmailRequest;
+import com.cisco.cx.training.models.OAuthBearerToken;
+import com.cisco.cx.training.service.TrainingAndEnablementService;
+import com.cisco.cx.training.util.HasId;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import springfox.documentation.swagger2.web.Swagger2Controller;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.mockito.Mockito.*;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = { TrainingAndEnablementController.class, Swagger2Controller.class})
@@ -75,6 +79,9 @@ public class TrainingAndEnablementControllerTest {
 
     @Autowired
     ResourceLoader resourceLoader;
+    
+    @MockBean
+	private TrainingAndEnablementService trainingAndEnablementService;
 
     private String XMasheryHeader;
 

@@ -1,5 +1,25 @@
 package com.cisco.cx.training.app.rest;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.Callable;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.dao.ElasticSearchDAO;
 import com.cisco.cx.training.app.exception.BadRequestException;
@@ -7,23 +27,21 @@ import com.cisco.cx.training.app.exception.ErrorResponse;
 import com.cisco.cx.training.app.exception.HealthCheckException;
 import com.cisco.cx.training.app.service.CiscoProfileService;
 import com.cisco.cx.training.app.service.EmailService;
+import com.cisco.cx.training.models.SuccessTrackAndUseCases;
+import com.cisco.cx.training.service.TrainingAndEnablementService;
 import com.cisco.cx.training.util.ValidationUtil;
 
-import io.swagger.annotations.*;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.Callable;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 @RestController
 @RequestMapping("/v1/partner/training")
 @Api(value = "Trainining and Enablement APIs", description = "Sample CRUD operation example")
+@Configuration
+@ComponentScan("com.cisco.cx.training.service")
 public class TrainingAndEnablementController {
 	private final Logger LOG = LoggerFactory.getLogger(TrainingAndEnablementController.class);
 
@@ -41,6 +59,9 @@ public class TrainingAndEnablementController {
 
 	@Autowired
 	private PropertyConfiguration config;
+	
+	@Autowired
+	private TrainingAndEnablementService trainingAndEnablementService;
 
 	public TrainingAndEnablementController() {
 		mandatoryDependencies.put("elasticsearch", () -> elasticSearchDAO.isElasticSearchRunning());
@@ -68,11 +89,10 @@ public class TrainingAndEnablementController {
 		return healthStatus;
 	}
 	
-	@RequestMapping("/pitstop")
-	@ApiOperation(value = "gets pitstop for a solution", hidden = true)
-	public String getPitstop() {
-		
-		return "Yes I am alive.";
+	@RequestMapping("/usecases")
+	@ApiOperation(value = "gets usecases for solutions", hidden = true)
+	public SuccessTrackAndUseCases getPitstop() {
+		return trainingAndEnablementService.getUsecases();
 	}
 
 	@RequestMapping("/live")
