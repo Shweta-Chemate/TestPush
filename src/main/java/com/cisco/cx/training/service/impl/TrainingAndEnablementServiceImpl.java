@@ -8,8 +8,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
-import com.cisco.cx.training.models.Community;
-import com.cisco.cx.training.models.SuccessTrackAndUseCases;
+import com.cisco.cx.training.models.*;
 import com.cisco.cx.training.service.TrainingAndEnablementService;
 
 @Service
@@ -42,4 +41,16 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		return Arrays.asList(partnerCommunity, productAdoptionCommunity, lifecycleAdvantageCommunity);
 	}
 
+	@Override
+	public List<LearningModel> getLearning() {
+		Learning learning = new Learning();
+		learning.setUrl("https://salesconnect.cisco.com/#/");
+		learning.setDescription("");
+
+		LearningModel eLearning = new LearningModel();
+		eLearning.setName("E-Learning");
+		eLearning.setLearning(Arrays.asList(learning));
+
+		return Arrays.asList(eLearning);
+	}
 }
