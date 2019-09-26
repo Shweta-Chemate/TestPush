@@ -11,6 +11,13 @@ pipeline:
       - mvn -B clean verify -Dmaven.test.failure.ignore=true
       - mvn -B findbugs:findbugs
     when:
+      branch:
+        - master
+        - refs/heads/master
+        - v*__deploy__*
+        - refs/tags/v*__deploy__*
+        - feature/*
+        - refs/heads/feature/*
       event:
         - push
         - pull_request
@@ -36,6 +43,11 @@ pipeline:
     #exclusions: '**/target/**/*.*,*.html,**/test/**,**/m2_repo/**'  #[Optinoal] :[Mention patterns to be excluded, coma separated, java style regex]
     secrets: [ sonar_login ] # Sonar login token
     when:
+      branch:
+        - master
+        - refs/heads/master
+        - v*__deploy__*
+        - refs/tags/v*__deploy__*
       event:  # The events sonar needs to be triggered
         - pull_request
         - push
@@ -49,6 +61,11 @@ pipeline:
       - ${CI_COMMIT_SHA}
     secrets: [ docker_username, docker_password ]
     when:
+      branch:
+        - master
+        - refs/heads/master
+        - v*__deploy__*
+        - refs/tags/v*__deploy__*
       event:
         - push
         - pull_request
@@ -119,7 +136,7 @@ pipeline:
   "[NOTIFY] webex teams":
     image: containers.cisco.com/servicescf-devops/drone-spark
     pull: true
-    room: "PBC-SDP-APP-Team" # Spark room name
+    room: "CXPP-CI/CD" # Spark room name
     when:
       status: [ changed, failure, success ] # Notification criteria can be changed as needed
 
@@ -131,8 +148,9 @@ branches:
   include:
     - "master"
     - "refs/heads/master"
+    - "feature/*"
+    - "refs/heads/feature/*"
     - "v*__deploy__*"
     - "refs/tags/v*__deploy__*"
 
 ## EOF
-
