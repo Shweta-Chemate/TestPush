@@ -109,7 +109,7 @@ public class TrainingAndEnablementController {
 	}
 	
 	@RequestMapping("/learnings")
-	@ApiOperation(value = "gets communities", hidden = true)
+	@ApiOperation(value = "gets learnings", hidden = true)
 	@CrossOrigin(origins = "*", allowedHeaders = "*")
 	public List<LearningModel> getLearning() {
 		return trainingAndEnablementService.getLearning();
