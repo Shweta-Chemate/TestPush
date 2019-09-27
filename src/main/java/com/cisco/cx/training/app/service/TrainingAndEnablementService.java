@@ -1,4 +1,4 @@
-package com.cisco.cx.training.service;
+package com.cisco.cx.training.app.service;
 
 import java.util.List;
 

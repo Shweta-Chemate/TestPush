@@ -9,8 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,11 +27,10 @@ import com.cisco.cx.training.app.exception.ErrorResponse;
 import com.cisco.cx.training.app.exception.HealthCheckException;
 import com.cisco.cx.training.app.service.CiscoProfileService;
 import com.cisco.cx.training.app.service.EmailService;
+import com.cisco.cx.training.app.service.TrainingAndEnablementService;
 import com.cisco.cx.training.models.Community;
-import com.cisco.cx.training.models.Learning;
 import com.cisco.cx.training.models.LearningModel;
 import com.cisco.cx.training.models.SuccessTrackAndUseCases;
-import com.cisco.cx.training.service.TrainingAndEnablementService;
 import com.cisco.cx.training.util.ValidationUtil;
 
 import io.swagger.annotations.Api;
@@ -45,8 +42,6 @@ import io.swagger.annotations.ApiResponses;
 @RestController
 @RequestMapping("/v1/partner/training")
 @Api(value = "Trainining and Enablement APIs", description = "Sample CRUD operation example")
-@Configuration
-@ComponentScan("com.cisco.cx.training.service")
 public class TrainingAndEnablementController {
 	private final Logger LOG = LoggerFactory.getLogger(TrainingAndEnablementController.class);
 

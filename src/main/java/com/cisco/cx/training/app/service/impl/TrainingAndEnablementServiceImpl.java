@@ -1,4 +1,4 @@
-package com.cisco.cx.training.service.impl;
+package com.cisco.cx.training.app.service.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,8 +8,8 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import com.cisco.cx.training.app.service.TrainingAndEnablementService;
 import com.cisco.cx.training.models.*;
-import com.cisco.cx.training.service.TrainingAndEnablementService;
 
 @Service
 public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementService {

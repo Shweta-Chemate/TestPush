@@ -42,11 +42,11 @@ import com.cisco.cx.training.app.service.CiscoProfileService;
 import com.cisco.cx.training.app.service.EmailService;
 import com.cisco.cx.training.app.service.HttpService;
 import com.cisco.cx.training.app.service.OAuthService;
+import com.cisco.cx.training.app.service.TrainingAndEnablementService;
 import com.cisco.cx.training.models.ElasticSearchResults;
 import com.cisco.cx.training.models.EmailContent;
 import com.cisco.cx.training.models.EmailRequest;
 import com.cisco.cx.training.models.OAuthBearerToken;
-import com.cisco.cx.training.service.TrainingAndEnablementService;
 import com.cisco.cx.training.util.HasId;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
