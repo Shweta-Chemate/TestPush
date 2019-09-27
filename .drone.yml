@@ -152,5 +152,4 @@ branches:
     - "refs/heads/feature/*"
     - "v*__deploy__*"
     - "refs/tags/v*__deploy__*"
-
 ## EOF
