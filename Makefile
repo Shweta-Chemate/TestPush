@@ -44,7 +44,7 @@ export TEAM_DIR=""
 ## During Continuous Integration on the CI build server, if event is 'push' (not 'tag'), perform Continous Delivery to this target environment.
 ## Set your Continuous Delivery target carefully to deploy your service to the expected environment during 'push'. CD is skipped if value is empty.
 ## During local development, CD will not occur, regardless of the value set below.
-export CD_TARGET="p3__idev"  # <--- p3__idev = sdp11-idev.csco.cloud
+export CD_TARGET="sdp11-idev.csco.cloud"
 
 ## CIDER operations require a tag in a specific format. Drone gets the tag from BitBucket(git) and exposes it as CI_COMMIT_REF.
 ## For local development and local deployment (minikube), developers can switch the commit ref, but do not push your changes to git.
