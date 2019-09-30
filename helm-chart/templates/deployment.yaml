@@ -87,7 +87,7 @@ spec:
             {{ end }}
           livenessProbe:
              httpGet:
-               path: /live
+               path: /training/v1/partner/training/live
                port: 8080
              initialDelaySeconds: 300
              periodSeconds: 30
@@ -95,7 +95,7 @@ spec:
              failureThreshold: 3
           readinessProbe:
              httpGet:
-               path: /ready
+               path: /training/v1/partner/training/ready
                port: 8080
              initialDelaySeconds: 600
              periodSeconds: 30
