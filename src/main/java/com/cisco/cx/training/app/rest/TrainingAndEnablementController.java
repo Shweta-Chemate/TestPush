@@ -93,14 +93,12 @@ public class TrainingAndEnablementController {
 	
 	@RequestMapping("/usecases")
 	@ApiOperation(value = "gets usecases for solutions", hidden = true)
-	@CrossOrigin(origins = "*", allowedHeaders = "*")
 	public SuccessTrackAndUseCases getPitstop() {
 		return trainingAndEnablementService.getUsecases();
 	}
 	
 	@RequestMapping("/learnings")
 	@ApiOperation(value = "gets learnings", hidden = true)
-	@CrossOrigin(origins = "*", allowedHeaders = "*")
 	public List<LearningModel> getLearning() {
 		return trainingAndEnablementService.getLearning();
 	}
@@ -201,9 +199,9 @@ public class TrainingAndEnablementController {
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 403, message = "Operation forbidden due to business policies", response = ErrorResponse.class),
 			@ApiResponse(code = 500, message = "Error during create", response = ErrorResponse.class) })
-	@CrossOrigin(origins = "*", allowedHeaders = "*")
 	public Community createCommunity(
-			@ApiParam(value = "Body for the Request", required = true) @RequestBody Community community)
+			@ApiParam(value = "Body for the Request", required = true) @RequestBody Community community,
+			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake" , required=false) String xMasheryHandshake)
 			throws Exception {
 
 		return trainingAndEnablementService.insertCommunity(community);
@@ -215,8 +213,9 @@ public class TrainingAndEnablementController {
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
-	@CrossOrigin(origins = "*", allowedHeaders = "*")
-	public ResponseEntity<?> getAllCommunities() throws Exception {
+	public ResponseEntity<?> getAllCommunities(
+			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake" , required=false) String xMasheryHandshake)
+			throws Exception {
 		List<Community> communityList = trainingAndEnablementService.getAllCommunities();
 		return new ResponseEntity<>(communityList, HttpStatus.OK);
 	}
@@ -227,9 +226,10 @@ public class TrainingAndEnablementController {
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
-	@CrossOrigin(origins = "*", allowedHeaders = "*")
 	public ResponseEntity<?> getAllCommunities(@PathVariable(value = "solution", required = false) String solution,
-			@PathVariable(value = "usecase", required = false) String usecase) throws Exception {
+			@PathVariable(value = "usecase", required = false) String usecase, 
+			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake" , required=false) String xMasheryHandshake)
+			throws Exception {
 		List<Community> communityList = trainingAndEnablementService.getFilteredCommunities(solution, usecase);
 		return new ResponseEntity<>(communityList, HttpStatus.OK);
 	}
