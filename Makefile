@@ -41,13 +41,14 @@ export RELEASE_NAME="cxpp-training-enablement"
 ## Team dir is optional. Very few teams are expected to have team-specific configs. If your team doesn't have a config, leave this blank.
 export TEAM_DIR=""
 
-## During Continuous Integration on the CI build server, if event is 'push' (not 'tag'), perform Continous Delivery to this target environment.
+## During Continuous Integration on the CI build server, if event is 'push' (not 'tag), perform Continous Delivery to this target environment.
 ## Set your Continuous Delivery target carefully to deploy your service to the expected environment during 'push'. CD is skipped if value is empty.
 ## During local development, CD will not occur, regardless of the value set below.
 export CD_TARGET="sdp11-idev.csco.cloud"
 
 ## CIDER operations require a tag in a specific format. Drone gets the tag from BitBucket(git) and exposes it as CI_COMMIT_REF.
 ## For local development and local deployment (minikube), developers can switch the commit ref, but do not push your changes to git.
+
 ## During Continuous Integration on the CI build server, the commit ref is ${CI_COMMIT_REF}
 ## During local development, the developer can set their own version to imitate a drone build env. Do not push this to git uncommented.
 export t="${CI_COMMIT_REF}"
@@ -69,7 +70,6 @@ showVars:
 	@printf "\tCHART_DIR=$(CHART_DIR)\n"
 	@printf "\tTEAM_DIR=$(TEAM_DIR)\n"
 	@printf "\tRELEASE_NAME=$(RELEASE_NAME)\n"
-    @printf "\tCD_TARGET=$(CD_TARGET)\n"
 	@printf "\nNOTE: Team dir is optional.\n\n"
 
 .PHONY: showUsage
