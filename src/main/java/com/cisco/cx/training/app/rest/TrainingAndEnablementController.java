@@ -9,7 +9,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -94,13 +96,6 @@ public class TrainingAndEnablementController {
 	@CrossOrigin(origins = "*", allowedHeaders = "*")
 	public SuccessTrackAndUseCases getPitstop() {
 		return trainingAndEnablementService.getUsecases();
-	}
-	
-	@RequestMapping("/communities")
-	@ApiOperation(value = "gets communities", hidden = true)
-	@CrossOrigin(origins = "*", allowedHeaders = "*")
-	public List<Community> getCommunities() {
-		return trainingAndEnablementService.getCommunities();
 	}
 	
 	@RequestMapping("/learnings")
@@ -198,5 +193,44 @@ public class TrainingAndEnablementController {
 		}
 
 		return "delete_response";
+	}
+	
+	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, path = "/community")
+	@ApiOperation(value = "Create New Community", response = String.class, nickname = "createCommunity")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
+			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
+			@ApiResponse(code = 403, message = "Operation forbidden due to business policies", response = ErrorResponse.class),
+			@ApiResponse(code = 500, message = "Error during create", response = ErrorResponse.class) })
+	@CrossOrigin(origins = "*", allowedHeaders = "*")
+	public Community createCommunity(
+			@ApiParam(value = "Body for the Request", required = true) @RequestBody Community community)
+			throws Exception {
+
+		return trainingAndEnablementService.insertCommunity(community);
+	}
+
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/communities")
+	@ApiOperation(value = "Fetch Communities", response = String.class, nickname = "fetchCommunities")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
+			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
+			@ApiResponse(code = 404, message = "Entity Not Found"),
+			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
+	@CrossOrigin(origins = "*", allowedHeaders = "*")
+	public ResponseEntity<?> getAllCommunities() throws Exception {
+		List<Community> communityList = trainingAndEnablementService.getAllCommunities();
+		return new ResponseEntity<>(communityList, HttpStatus.OK);
+	}
+
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/communities/{solution}/{usecase}")
+	@ApiOperation(value = "Fetch Communities", response = String.class, nickname = "fetchCommunities")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
+			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
+			@ApiResponse(code = 404, message = "Entity Not Found"),
+			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
+	@CrossOrigin(origins = "*", allowedHeaders = "*")
+	public ResponseEntity<?> getAllCommunities(@PathVariable(value = "solution", required = false) String solution,
+			@PathVariable(value = "usecase", required = false) String usecase) throws Exception {
+		List<Community> communityList = trainingAndEnablementService.getFilteredCommunities(solution, usecase);
+		return new ResponseEntity<>(communityList, HttpStatus.OK);
 	}
 }
