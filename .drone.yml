@@ -23,23 +23,24 @@ pipeline:
         - pull_request
 
   "[ANALYSIS] Sonar":
+    detach: true
     image: containers.cisco.com/servicescf-devops/drone-sonar
     pull: true
     host: https://engci-sonar-sjc.cisco.com/sonar # Sonar host
     #profile: "SSO-Findbugs-Jtest" # [Optional] : Mention Sonar profile, default - SSO-Findbugs-Jtest
     language: "java" # [Optional] : Mention Sonar languages, default - java
     #java_binaries: "**/*/target/classes" # [Optional] : Mention classes location, default - **/build/classes
-    findbugs_reportPath: "**/main.xml" # [Optional] : Mention findbugs report location, default - **/main.xml
+    findbugs_reportPath: "**/findbugsXml.xml" # [Optional] : Mention findbugs report location, default - **/main.xml
     #sources: "." # [Optional] : Mention source locations, default - current directory
-    #cobertura_reportPath: target/site/cobertura/coverage.xml #[Mandatory when using cobertura] : To publish coverage data to Sonar
+    cobertura_reportPath: target/site/cobertura/coverage.xml #[Mandatory when using cobertura] : To publish coverage data to Sonar
     sonar_dynamicAnalysis: reuseReports
     sonar_java_coveragePlugin: jacoco
-    jacoco_reportPath: target/jacoco.exec #[Mandatory when using jacoco] For multimodule project add comma seperated <modulename1>/target/jacoco.exec,<modulename2>/target/jacoco.exec
-    junit_reportPath: target/surefire-reports #[Optional] : For multimodule project add comma seperated <modulename1>/target/surefire-reports,<modulename2>/target/surefire-reports
+    jacoco_reportPath: target/coverage-reports/jacoco-unit.exec #[Mandatory when using jacoco] For multimodule project add comma seperated <modulename1>/target/jacoco.exec,<modulename2>/target/jacoco.exec
+    junit_reportPath: target/surefire-reports/**/*.xml #[Optional] : For multimodule project add comma seperated <modulename1>/target/surefire-reports,<modulename2>/target/surefire-reports
     #sonar_branch: "Feature-A" #[Optional] : Custom branch name using which analysis data would be pushed to sonarqube
     debug: false
     sonar_multilang: false #[Optional]:true in case of multi language analysis i.e. projects  which are using several programming languages at once e.g [Java, JavaScript and HTML]
-    #exclusions: [src/test/**]
+    #exclusions: '**/target/**/*.*,*.html,**/test/**,**/m2_repo/**'  #[Optinoal] :[Mention patterns to be excluded, coma separated, java style regex]
     secrets: [ sonar_login ] # Sonar login token
     when:
       branch:
