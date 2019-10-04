@@ -12,8 +12,14 @@ public interface TrainingAndEnablementService {
 	List<LearningModel> getLearning();
 
 	Community insertCommunity(Community community);
-	
+
 	List<Community> getAllCommunities();
-	
+
 	List<Community> getFilteredCommunities(String solution, String usecase);
+
+	SuccessTalk insertSuccessTalk(SuccessTalk successTalk);
+
+	List<SuccessTalk> getAllSuccessTalks();
+
+	SuccessTalkResponseSchema getFilteredSuccessTalks(String solution, String usecase);
 }

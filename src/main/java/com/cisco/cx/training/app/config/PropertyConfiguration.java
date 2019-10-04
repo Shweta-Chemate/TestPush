@@ -49,6 +49,9 @@ public class PropertyConfiguration {
 
 	@Value("${cxp.emailapi.readiness.url}")
 	private String cxpEmailReadinessUrl;
+	
+    @Value("${successTalk.elasticsearch.index}")
+    private String successTalkIndex;
 
 	public String getApplicationName() { return applicationName; }
 
@@ -75,4 +78,8 @@ public class PropertyConfiguration {
 	public String getCxpEmailApiContextUrl() { return cxpEmailApiContextUrl; }
 
 	public String getCxpEmailReadinessUrl() { return cxpEmailReadinessUrl; }
+	
+    public String getSuccessTalkIndex() {
+        return successTalkIndex;
+    }
 }

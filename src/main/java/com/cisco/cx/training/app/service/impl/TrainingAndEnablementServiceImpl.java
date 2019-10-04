@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cisco.cx.training.app.dao.CommunityDAO;
+import com.cisco.cx.training.app.dao.SuccessTalkDAO;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
 import com.cisco.cx.training.models.*;
 
@@ -18,6 +19,9 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	
 	@Autowired
 	private CommunityDAO communityDAO;
+	
+	@Autowired
+	private SuccessTalkDAO successTalkDAO;
 
 	@Override
 	public SuccessTrackAndUseCases getUsecases() {
@@ -55,5 +59,24 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	@Override
 	public List<Community> getFilteredCommunities(String solution, String usecase) {
 		return communityDAO.getFilteredCommunities(solution, usecase);
+	}
+	
+	@Override
+	public SuccessTalk insertSuccessTalk(SuccessTalk successTalk) {
+		return successTalkDAO.insertSuccessTalk(successTalk);
+	}
+
+	@Override
+	public List<SuccessTalk> getAllSuccessTalks() {
+		return successTalkDAO.getAllSuccessTalks();
+	}
+
+	@Override
+	public SuccessTalkResponseSchema getFilteredSuccessTalks(String solution, String usecase) {
+		SuccessTalkResponseSchema successTalkResponseSchema = new SuccessTalkResponseSchema();
+		successTalkResponseSchema.setItems(successTalkDAO.getFilteredSuccessTalks(solution, usecase));
+		successTalkResponseSchema.setSolution(solution);
+		successTalkResponseSchema.setUsecase(usecase);
+		return successTalkResponseSchema;
 	}
 }
