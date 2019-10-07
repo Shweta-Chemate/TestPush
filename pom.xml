@@ -116,33 +116,41 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
             <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.5-SNAPSHOT</version>
-                <configuration>
-                    <destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
-                    <dataFile>${basedir}/target/coverage-reports/jacoco-unit.exec</dataFile>
-                    <outputDirectory>target/jacoco-ut</outputDirectory>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>jacoco-initialize</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>jacoco-site</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.2</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<!-- attached to Maven test phase -->
+					<execution>
+						<id>report</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+						<configuration>
+				    <excludes>
+<!-- 				        <exclude>**/models/**</exclude> -->
+				        <exclude>**/util/**</exclude>
+<!-- 				        <exclude>**/dao/**</exclude> -->
+				        <exclude>**/exception/**</exclude>
+				        <!-- <exclude>**/service/impl/**</exclude> -->
+				        <exclude>**/constants/**</exclude>
+				        <exclude>**/service/**</exclude>
+				    </excludes>
+				</configuration>
+					</execution>
+					
+				</executions>
+	</plugin>
 
 
         </plugins>
+       
     </build>
 
     <repositories>

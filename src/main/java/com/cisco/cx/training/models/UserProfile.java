@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 
+
 public class UserProfile {
 	private static final Logger LOG = LoggerFactory.getLogger(UserProfile.class.getName());
 
