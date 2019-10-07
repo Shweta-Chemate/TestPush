@@ -13,8 +13,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -41,113 +39,91 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import springfox.documentation.swagger2.web.Swagger2Controller;
 
-
 @RunWith(SpringRunner.class)
-@WebMvcTest(controllers = { TrainingAndEnablementController.class, Swagger2Controller.class})
-@ContextConfiguration(classes = { TrainingAndEnablementApplication.class, CiscoProfileService.class, PropertyConfiguration.class,ElasticSearchConfig.class,Swagger2Config.class,FilterConfig.class})
+@WebMvcTest(controllers = { TrainingAndEnablementController.class, Swagger2Controller.class })
+@ContextConfiguration(classes = { TrainingAndEnablementApplication.class, CiscoProfileService.class,
+		PropertyConfiguration.class, ElasticSearchConfig.class, Swagger2Config.class, FilterConfig.class })
 
 public class TrainingAndEnablementControllerTest {
-    private final static Logger LOG = LoggerFactory.getLogger(TrainingAndEnablementControllerTest.class);
+	@Autowired
+	private MockMvc mockMvc;
 
-    @Autowired
-    private MockMvc mockMvc;
-    
-    @MockBean
-    private CommunityDAO communityDAO;
+	@MockBean
+	private CommunityDAO communityDAO;
 
-    
-    @Autowired
-    ResourceLoader resourceLoader;
-    
-    @MockBean
-    private TrainingAndEnablementService trainingAndEnablementService;
-	
+	@Autowired
+	ResourceLoader resourceLoader;
+
+	@MockBean
+	private TrainingAndEnablementService trainingAndEnablementService;
+
 	@InjectMocks
 	private TrainingAndEnablementServiceImpl trainingAndEnablementServiceImpl;
-    
-    private String XMasheryHeader;
 
-    @Before
-    public void init() throws IOException {
-        this.XMasheryHeader = new String(Base64.encodeBase64(loadFromFile("mock/auth-mashery-user1.json").getBytes()));
-        
-    }
+	private String XMasheryHeader;
 
-    @Test
-    public void testCreateCommunity() throws Exception {
-    	
-    	Community community = new Community();
-    	community.setDocId("1234");
-    	community.setName("community");
-    	community.setDescription("hello");
-    	community.setSolution("solution");
-    	community.setUrl("http://df.fdsds.com");
-    	community.setUsecase("IBN");
-    	
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
-        String requestJson=ow.writeValueAsString(community);
-    	
-    	 this.mockMvc.perform(post("/v1/partner/training/community")
-                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                 .header("X-Mashery-Handshake", this.XMasheryHeader)
-                 .content(requestJson)
-                 .characterEncoding("utf-8"))
-                 .andDo(print())
-                 .andExpect(status().isOk());
-    	 
-    	// trainingAndEnablementServiceImpl.insertCommunity(community);
-    }
-    
-    @Test
-    public void testFetchCommunities() throws Exception {
-    	
-    	 this.mockMvc.perform(get("/v1/partner/training/communities")
-                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                 .header("X-Mashery-Handshake", this.XMasheryHeader)
-                 .characterEncoding("utf-8"))
-                 .andDo(print())
-                 .andExpect(status().isOk());
-    }
-    
-    @Test
-    public void testLearning() throws Exception {
-    	
-    	 this.mockMvc.perform(get("/v1/partner/training/learnings")
-                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                 .header("X-Mashery-Handshake", this.XMasheryHeader)
-                 .characterEncoding("utf-8"))
-                 .andDo(print())
-                 .andExpect(status().isOk());
-    	  //trainingAndEnablementServiceImpl.getAllCommunities();
-    }
-    
-    @Test
-    public void testLive() throws Exception {
-    	
-    	 this.mockMvc.perform(get("/v1/partner/training/live")
-                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                 .header("X-Mashery-Handshake", this.XMasheryHeader)
-                 .characterEncoding("utf-8"))
-                 .andDo(print())
-                 .andExpect(status().isOk());
-    }
-    
-    @Test
-    public void testFetchCommunitiesWithFilter() throws Exception {
-    	
-    	 this.mockMvc.perform(get("/v1/partner/training/communities/IBN/solution")
-                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                 .header("X-Mashery-Handshake", this.XMasheryHeader)
-                 .characterEncoding("utf-8"))
-                 .andDo(print())
-                 .andExpect(status().isOk());
-    }
+	@Before
+	public void init() throws IOException {
+		this.XMasheryHeader = new String(Base64.encodeBase64(loadFromFile("mock/auth-mashery-user1.json").getBytes()));
 
-    // ----------------------------------------------------------------------------Helper methods--------------------------------------------------------------
+	}
 
-    private String loadFromFile(String filePath) throws IOException {
-        return new String(Files.readAllBytes(resourceLoader.getResource("classpath:" + filePath).getFile().toPath()));
-    }
+	@Test
+	public void testCreateCommunity() throws Exception {
+
+		Community community = new Community();
+		community.setDocId("1234");
+		community.setName("community");
+		community.setDescription("hello");
+		community.setSolution("solution");
+		community.setUrl("http://df.fdsds.com");
+		community.setUsecase("IBN");
+
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+		ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+		String requestJson = ow.writeValueAsString(community);
+
+		this.mockMvc.perform(post("/v1/partner/training/community").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.header("X-Mashery-Handshake", this.XMasheryHeader).content(requestJson).characterEncoding("utf-8"))
+				.andDo(print()).andExpect(status().isOk());
+	}
+
+	@Test
+	public void testFetchCommunities() throws Exception {
+		this.mockMvc
+				.perform(get("/v1/partner/training/communities").contentType(MediaType.APPLICATION_JSON_VALUE)
+						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
+				.andDo(print()).andExpect(status().isOk());
+	}
+
+	@Test
+	public void testLearning() throws Exception {
+		this.mockMvc
+				.perform(get("/v1/partner/training/learnings").contentType(MediaType.APPLICATION_JSON_VALUE)
+						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
+				.andDo(print()).andExpect(status().isOk());
+	}
+
+	@Test
+	public void testLive() throws Exception {
+
+		this.mockMvc
+				.perform(get("/v1/partner/training/live").contentType(MediaType.APPLICATION_JSON_VALUE)
+						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
+				.andDo(print()).andExpect(status().isOk());
+	}
+
+	@Test
+	public void testFetchCommunitiesWithFilter() throws Exception {
+		this.mockMvc
+				.perform(get("/v1/partner/training/communities/IBN/solution")
+						.contentType(MediaType.APPLICATION_JSON_VALUE)
+						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
+				.andDo(print()).andExpect(status().isOk());
+	}
+
+	private String loadFromFile(String filePath) throws IOException {
+		return new String(Files.readAllBytes(resourceLoader.getResource("classpath:" + filePath).getFile().toPath()));
+	}
 }

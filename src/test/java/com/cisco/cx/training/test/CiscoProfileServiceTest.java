@@ -21,15 +21,15 @@ public class CiscoProfileServiceTest {
 	public void getUserProfileTest() {
         UserProfile myUser = new UserProfile();
         myUser.setUserId("1");
-        myUser.setFirstName("tanmaya");
-        myUser.setLastName("sahoo");
-        myUser.setCiscoUid("tasahoo");
-        myUser.setMailId("tasahoo@cisco.com");
+        myUser.setFirstName("john");
+        myUser.setLastName("doe");
+        myUser.setCiscoUid("jdoe");
+        myUser.setMailId("jdoe@cisco.com");
         myUser.setCountry("India");
         myUser.setAccessLevel("Partner");
         myUser.setUserType("Partner");
-        myUser.setMiddleName("kumar");
-        myUser.setPhoneNo("8892700110");
+        myUser.setMiddleName("bernard");
+        myUser.setPhoneNo("1111111111");
         myUser.setNewUser(false);
         
         myUser.getAccessLevel();
@@ -46,6 +46,6 @@ public class CiscoProfileServiceTest {
         
         myUser.toString();
         
-		ciscoProfileService.getUserProfile("tasahoo");
+		ciscoProfileService.getUserProfile("jdoe");
 	}
 }
