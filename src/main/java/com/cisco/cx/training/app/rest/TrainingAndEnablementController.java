@@ -34,7 +34,7 @@ import io.swagger.annotations.ApiResponses;
 
 @RestController
 @RequestMapping("/v1/partner/training")
-@Api(value = "Trainining and Enablement APIs", description = "Sample CRUD operation example")
+@Api(value = "Trainining and Enablement APIs", description = "REST APIs for Training And Enablement")
 public class TrainingAndEnablementController {
 	private final Logger LOG = LoggerFactory.getLogger(TrainingAndEnablementController.class);
 
@@ -67,14 +67,14 @@ public class TrainingAndEnablementController {
 		return healthStatus;
 	}
 	
-	@RequestMapping("/usecases")
-	@ApiOperation(value = "gets usecases for solutions", hidden = true)
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/usecases")
+	@ApiOperation(value = "Fetch usecases and solutions", response = SuccessTrackAndUseCases.class)
 	public SuccessTrackAndUseCases getPitstop() {
 		return trainingAndEnablementService.getUsecases();
 	}
-	
-	@RequestMapping("/learnings")
-	@ApiOperation(value = "gets learnings", hidden = true)
+
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/learnings")
+	@ApiOperation(value = "Fetch Learnings", response = LearningModel.class, responseContainer = "List")
 	public List<LearningModel> getLearning() {
 		return trainingAndEnablementService.getLearning();
 	}
@@ -114,7 +114,7 @@ public class TrainingAndEnablementController {
 	}
 
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/communities/{solution}/{usecase}")
-	@ApiOperation(value = "Fetch Communities", response = String.class, nickname = "fetchCommunities")
+	@ApiOperation(value = "Fetch Communities For Solution and Usecase Filter", response = String.class, nickname = "fetchCommunities")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),

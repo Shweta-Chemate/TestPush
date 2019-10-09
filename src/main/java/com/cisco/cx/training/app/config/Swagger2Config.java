@@ -20,17 +20,16 @@ public class Swagger2Config {
            .pathProvider(new RelativePathProvider(null) {
             @Override
             public String getApplicationBasePath() {
-                return "/template";
+                return "/training";
             }
         }).select()
                 .apis(RequestHandlerSelectors
-                        .basePackage("com.cisco.services.app.rest"))
-                .paths(PathSelectors.regex("/.*"))
+                .basePackage("com.cisco.cx.training.app"))
                 .build().apiInfo(apiEndPointsInfo());
     }
     private ApiInfo apiEndPointsInfo() {
-        return new ApiInfoBuilder().title("Template Project")
-                .description("Springboot Template Project")
+        return new ApiInfoBuilder().title("TrainingAndEnablementProject")
+                .description("Training And EnablementProject")
                 .license("Apache 2.0")
                 .licenseUrl("http://www.apache.org/licenses/LICENSE-2.0.html")
                 .version("1.0.0")
