@@ -130,8 +130,8 @@ public class TrainingAndEnablementController {
 	}
 	
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalk")
-	@ApiOperation(value = "Create New SuccessTalk", response = String.class, nickname = "creatSsuccessTalk")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
+	@ApiOperation(value = "Create New SuccessTalk", response = SuccessTalk.class, nickname = "creatSuccessTalk")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully inserted success talk"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 403, message = "Operation forbidden due to business policies", response = ErrorResponse.class),
 			@ApiResponse(code = 500, message = "Error during create", response = ErrorResponse.class) })
@@ -144,11 +144,11 @@ public class TrainingAndEnablementController {
 	}
 
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalks")
-	@ApiOperation(value = "Fetch SuccessTalks", response = String.class, nickname = "fetchSuccessTalks")
+	@ApiOperation(value = "Fetch SuccessTalks", response = SuccessTalkResponseSchema.class, nickname = "fetchSuccessTalks")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
-			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
+			@ApiResponse(code = 500, message = "Error during retrieve", response = ErrorResponse.class) })
 	public ResponseEntity<?> getAllSuccessTalks(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake" , required=false) String xMasheryHandshake)
 			throws Exception {
@@ -157,11 +157,11 @@ public class TrainingAndEnablementController {
 	}
 
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalks/{solution}/{usecase}")
-	@ApiOperation(value = "Fetch SuccessTalks", response = String.class, nickname = "fetchsuccessTalks")
+	@ApiOperation(value = "Fetch SuccessTalks For Solution and Usecase Filters", response = SuccessTalkResponseSchema.class, nickname = "fetchFilteredSuccessTalks")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
-			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
+			@ApiResponse(code = 500, message = "Error during retrieve", response = ErrorResponse.class) })
 	public ResponseEntity<?> getFilteredSuccessTalks(@PathVariable(value = "solution", required = false) String solution,
 			@PathVariable(value = "usecase", required = false) String usecase, 
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake" , required=false) String xMasheryHandshake)
