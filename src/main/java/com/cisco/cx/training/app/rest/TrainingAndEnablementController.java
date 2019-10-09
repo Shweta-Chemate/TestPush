@@ -87,8 +87,8 @@ public class TrainingAndEnablementController {
 
 	
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, path = "/community")
-	@ApiOperation(value = "Create New Community", response = String.class, nickname = "createCommunity")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
+	@ApiOperation(value = "Create New Community", response = Community.class, nickname = "createCommunity")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully inserted community"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 403, message = "Operation forbidden due to business policies", response = ErrorResponse.class),
 			@ApiResponse(code = 500, message = "Error during create", response = ErrorResponse.class) })
@@ -101,11 +101,11 @@ public class TrainingAndEnablementController {
 	}
 
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/communities")
-	@ApiOperation(value = "Fetch Communities", response = String.class, nickname = "fetchCommunities")
+	@ApiOperation(value = "Fetch Communities", response = Community.class, responseContainer = "List", nickname = "fetchCommunities")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
-			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
+			@ApiResponse(code = 500, message = "Error during retrieve", response = ErrorResponse.class) })
 	public ResponseEntity<?> getAllCommunities(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake" , required=false) String xMasheryHandshake)
 			throws Exception {
@@ -114,11 +114,11 @@ public class TrainingAndEnablementController {
 	}
 
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/communities/{solution}/{usecase}")
-	@ApiOperation(value = "Fetch Communities For Solution and Usecase Filter", response = String.class, nickname = "fetchCommunities")
+	@ApiOperation(value = "Fetch Communities For Solution and Usecase Filter", response = Community.class, responseContainer = "List", nickname = "fetchFilteredCommunities")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
-			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
+			@ApiResponse(code = 500, message = "Error during retrieve", response = ErrorResponse.class) })
 	public ResponseEntity<?> getAllCommunities(@PathVariable(value = "solution", required = false) String solution,
 			@PathVariable(value = "usecase", required = false) String usecase, 
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake" , required=false) String xMasheryHandshake)
