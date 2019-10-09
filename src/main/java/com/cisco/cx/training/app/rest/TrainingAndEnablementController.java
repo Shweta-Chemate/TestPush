@@ -152,8 +152,8 @@ public class TrainingAndEnablementController {
 	public ResponseEntity<?> getAllSuccessTalks(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake" , required=false) String xMasheryHandshake)
 			throws Exception {
-		List<SuccessTalk> successTalkList = trainingAndEnablementService.getAllSuccessTalks();
-		return new ResponseEntity<>(successTalkList, HttpStatus.OK);
+		SuccessTalkResponseSchema successTalkResponseSchema = trainingAndEnablementService.getAllSuccessTalks();
+		return new ResponseEntity<>(successTalkResponseSchema, HttpStatus.OK);
 	}
 
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalks/{solution}/{usecase}")

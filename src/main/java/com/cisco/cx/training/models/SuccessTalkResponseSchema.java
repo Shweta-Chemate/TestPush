@@ -12,7 +12,7 @@ public class SuccessTalkResponseSchema {
 	@JsonProperty("usecase")
 	private String usecase = "";
 
-	@JsonProperty("sucessTalks")
+	@JsonProperty("sessionDetails")
 	private List<SuccessTalk> items;
 
 	public List<SuccessTalk> getItems() {

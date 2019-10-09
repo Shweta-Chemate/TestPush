@@ -67,16 +67,16 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	}
 
 	@Override
-	public List<SuccessTalk> getAllSuccessTalks() {
-		return successTalkDAO.getAllSuccessTalks();
+	public SuccessTalkResponseSchema getAllSuccessTalks() {
+		SuccessTalkResponseSchema successTalkResponseSchema = new SuccessTalkResponseSchema();
+		successTalkResponseSchema.setItems(successTalkDAO.getAllSuccessTalks());
+		return successTalkResponseSchema;
 	}
 
 	@Override
 	public SuccessTalkResponseSchema getFilteredSuccessTalks(String solution, String usecase) {
 		SuccessTalkResponseSchema successTalkResponseSchema = new SuccessTalkResponseSchema();
 		successTalkResponseSchema.setItems(successTalkDAO.getFilteredSuccessTalks(solution, usecase));
-		successTalkResponseSchema.setSolution(solution);
-		successTalkResponseSchema.setUsecase(usecase);
 		return successTalkResponseSchema;
 	}
 }

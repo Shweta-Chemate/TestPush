@@ -29,8 +29,6 @@ public class SuccessTalk implements HasId {
 	private boolean bookmark;
 	@ApiModelProperty(notes = "List of available sessions for selected SuccessTalk")
 	private List<SuccessTalkSession> sessions;
-	private String solution;
-	private String usecase;	
 
 	public enum SuccessTalkStatusEnum {
         COMPLETED("completed"),
@@ -66,6 +64,16 @@ public class SuccessTalk implements HasId {
             }
             return null;
         }
+	}
+	
+	
+
+	public String getSuccessTalkId() {
+		return successTalkId;
+	}
+
+	public void setSuccessTalkId(String successTalkId) {
+		this.successTalkId = successTalkId;
 	}
 
 	@Override
@@ -141,22 +149,6 @@ public class SuccessTalk implements HasId {
 
 	public void setSessions(List<SuccessTalkSession> sessions) {
 		this.sessions = sessions;
-	}
-
-	public String getSolution() {
-		return solution;
-	}
-
-	public void setSolution(String solution) {
-		this.solution = solution;
-	}
-
-	public String getUsecase() {
-		return usecase;
-	}
-
-	public void setUsecase(String usecase) {
-		this.usecase = usecase;
 	}
 
 }

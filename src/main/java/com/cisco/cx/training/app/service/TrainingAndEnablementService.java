@@ -19,7 +19,7 @@ public interface TrainingAndEnablementService {
 
 	SuccessTalk insertSuccessTalk(SuccessTalk successTalk);
 
-	List<SuccessTalk> getAllSuccessTalks();
+	SuccessTalkResponseSchema getAllSuccessTalks();
 
 	SuccessTalkResponseSchema getFilteredSuccessTalks(String solution, String usecase);
 }

@@ -13,6 +13,14 @@ public class SuccessTalkSession implements HasId {
 	private String region;
 	private Boolean scheduled;
 
+	public String getSessionId() {
+		return sessionId;
+	}
+
+	public void setSessionId(String sessionId) {
+		this.sessionId = sessionId;
+	}
+
 	@Override
 	public String getDocId() {
 		return sessionId;
