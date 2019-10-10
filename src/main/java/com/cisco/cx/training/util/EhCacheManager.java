@@ -16,6 +16,7 @@ import java.time.Duration;
  * ehcache implementation
  */
 public class EhCacheManager {
+	
 	private static final Logger LOG = LoggerFactory.getLogger(EhCacheManager.class.getName());
 	private static final long TIME_TO_LIVE_MS = (15 * 60 * 1000); // 15 minutes
 
