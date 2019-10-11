@@ -26,7 +26,7 @@ pipeline:
     detach: true
     image: containers.cisco.com/servicescf-devops/drone-sonar
     pull: true
-    host: https://engci-sonar-sjc.cisco.com/sonar # Sonar host
+    host: https://engci-sonar-blr.cisco.com/sonar # Sonar host
     #profile: "SSO-Findbugs-Jtest" # [Optional] : Mention Sonar profile, default - SSO-Findbugs-Jtest
     language: "java" # [Optional] : Mention Sonar languages, default - java
     #java_binaries: "**/*/target/classes" # [Optional] : Mention classes location, default - **/build/classes
