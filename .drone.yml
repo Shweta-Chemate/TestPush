@@ -35,7 +35,7 @@ pipeline:
     cobertura_reportPath: target/site/cobertura/coverage.xml #[Mandatory when using cobertura] : To publish coverage data to Sonar
     sonar_dynamicAnalysis: reuseReports
     sonar_java_coveragePlugin: jacoco
-    jacoco_reportPath: target/coverage-reports/jacoco-unit.exec #[Mandatory when using jacoco] For multimodule project add comma seperated <modulename1>/target/jacoco.exec,<modulename2>/target/jacoco.exec
+    jacoco_reportPath: build/jacoco/test.exec #[Mandatory when using jacoco] For multimodule project add comma seperated <modulename1>/target/jacoco.exec,<modulename2>/target/jacoco.exec
     junit_reportPath: target/surefire-reports/**/*.xml #[Optional] : For multimodule project add comma seperated <modulename1>/target/surefire-reports,<modulename2>/target/surefire-reports
     #sonar_branch: "Feature-A" #[Optional] : Custom branch name using which analysis data would be pushed to sonarqube
     debug: false
