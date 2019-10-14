@@ -6,9 +6,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class SuccessTalkSession implements HasId {
 
 	private String sessionId;
-	private Long sessionStartDate;
+	private String sessionStartDate;
 	private String presenterName;
-	private String registrationURL;
+	private String registrationUrl;
 	@JsonIgnore
 	private String region;
 	private Boolean scheduled;
@@ -32,11 +32,11 @@ public class SuccessTalkSession implements HasId {
 
 	}
 
-	public Long getSessionStartDate() {
+	public String getSessionStartDate() {
 		return sessionStartDate;
 	}
 
-	public void setSessionStartDate(Long sessionStartDate) {
+	public void setSessionStartDate(String sessionStartDate) {
 		this.sessionStartDate = sessionStartDate;
 	}
 
@@ -48,12 +48,12 @@ public class SuccessTalkSession implements HasId {
 		this.presenterName = presenterName;
 	}
 
-	public String getRegistrationURL() {
-		return registrationURL;
+	public String getRegistrationUrl() {
+		return registrationUrl;
 	}
 
-	public void setRegistrationURL(String registrationURL) {
-		this.registrationURL = registrationURL;
+	public void setRegistrationUrl(String registrationUrl) {
+		this.registrationUrl = registrationUrl;
 	}
 
 	public String getRegion() {

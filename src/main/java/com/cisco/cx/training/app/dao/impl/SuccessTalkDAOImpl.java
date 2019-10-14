@@ -54,6 +54,9 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
 			ElasticSearchResults<SuccessTalk> results = elasticSearchDAO.query(config.getSuccessTalkIndex(), sourceBuilder, SuccessTalk.class);
 
 			results.getDocuments().forEach(successTalk -> {
+				successTalk.setImageUrl("https://www.cisco.com/web/fw/tools/ssue/cp/lifecycle/atx/images/ATX-DNA-Center-Wireless-Assurance.png");
+				successTalk.setRecordingUrl("https://tklcs.cloudapps.cisco.com/tklcs/TKLDownloadServlet?nodeRef=workspace://SpacesStore/cf85fc26-78e0-488e-af04-390fb2c55ad4&activityId=2&fileId=122233");
+				successTalk.setDuration(4500L);
 				successTalkES.add(successTalk);
 			});
 

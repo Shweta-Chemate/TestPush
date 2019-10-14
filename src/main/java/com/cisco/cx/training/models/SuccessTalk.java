@@ -12,17 +12,19 @@ public class SuccessTalk implements HasId {
 
 	@ApiModelProperty(notes = "Unique Id of the SuccessTalk", example = "STK-01")
 	private String successTalkId;
+	@ApiModelProperty(notes = "Quarter", example = "Q120")
+	private String quarter;
 	@ApiModelProperty(notes = "Title of the SuccessTalk", example = "Cisco DNA Center Getting Started")
 	private String title;
 	@ApiModelProperty(notes = "Description of the SuccessTalk", example = "We cover subjects including interface and network design overview, policy \n"
 			+ "management and deployment, device provisioning, and automation/assurance.")
 	private String description;
 	@ApiModelProperty(notes = "URL of the image to be displayed")
-	private String imageURL;
+	private String imageUrl;
 	@ApiModelProperty(notes = "Status of the SuccessTalk", example = "Recommended")
 	private SuccessTalkStatusEnum status = SuccessTalkStatusEnum.RECOMMENDED;
 	@ApiModelProperty(notes = "Pitstop", example = "Onboard")
-	private String recordingURL;
+	private String recordingUrl;
 	@ApiModelProperty(notes = "Duration of the session in seconds", example = "3600")
 	private Long duration;
 	@ApiModelProperty(notes = "Is bookmark", example = "true")
@@ -41,7 +43,13 @@ public class SuccessTalk implements HasId {
 
         INPROGRESS("in-progress"),
 
-        REGISTERED("registered");
+        REGISTERED("registered"),
+        
+        CONFIRMED("confirmed"),
+        
+        PROPOSED("proposed"),
+        
+        CANCELLED("cancelled");
 
         private String value;
 
@@ -103,28 +111,12 @@ public class SuccessTalk implements HasId {
 		this.description = description;
 	}
 
-	public String getImageURL() {
-		return imageURL;
-	}
-
-	public void setImageURL(String imageURL) {
-		this.imageURL = imageURL;
-	}
-
 	public SuccessTalkStatusEnum getStatus() {
 		return status;
 	}
 
 	public void setStatus(SuccessTalkStatusEnum status) {
 		this.status = status;
-	}
-
-	public String getRecordingURL() {
-		return recordingURL;
-	}
-
-	public void setRecordingURL(String recordingURL) {
-		this.recordingURL = recordingURL;
 	}
 
 	public Long getDuration() {
@@ -150,5 +142,30 @@ public class SuccessTalk implements HasId {
 	public void setSessions(List<SuccessTalkSession> sessions) {
 		this.sessions = sessions;
 	}
+
+	public String getQuarter() {
+		return quarter;
+	}
+
+	public void setQuarter(String quarter) {
+		this.quarter = quarter;
+	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
+	public String getRecordingUrl() {
+		return recordingUrl;
+	}
+
+	public void setRecordingUrl(String recordingUrl) {
+		this.recordingUrl = recordingUrl;
+	}
+	
 
 }
