@@ -23,10 +23,9 @@ pipeline:
         - pull_request
 
   "[ANALYSIS] Sonar":
-    detach: true
     image: containers.cisco.com/servicescf-devops/drone-sonar
     pull: true
-    host: https://engci-sonar-blr.cisco.com/sonar # Sonar host
+    host: https://engci-sonar-blr.cisco.com/sonar
     language: "java" # [Optional] : Mention Sonar languages, default - java
     findbugs_reportPath: "**/findbugsXml.xml" # [Optional] : Mention findbugs report location, default - **/main.xml
     cobertura_reportPath: target/site/cobertura/coverage.xml #[Mandatory when using cobertura] : To publish coverage data to Sonar
