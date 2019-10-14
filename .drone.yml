@@ -23,6 +23,7 @@ pipeline:
         - pull_request
 
   "[ANALYSIS] Sonar":
+    detach: true
     image: containers.cisco.com/servicescf-devops/drone-sonar
     pull: true
     host: https://engci-sonar-blr.cisco.com/sonar # Sonar host
