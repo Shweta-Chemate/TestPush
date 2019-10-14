@@ -7,6 +7,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Before;
@@ -33,6 +35,9 @@ import com.cisco.cx.training.app.service.CiscoProfileService;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
 import com.cisco.cx.training.app.service.impl.TrainingAndEnablementServiceImpl;
 import com.cisco.cx.training.models.Community;
+import com.cisco.cx.training.models.SuccessTalk;
+import com.cisco.cx.training.models.SuccessTalk.SuccessTalkStatusEnum;
+import com.cisco.cx.training.models.SuccessTalkSession;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -104,6 +109,22 @@ public class TrainingAndEnablementControllerTest {
 						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
 				.andDo(print()).andExpect(status().isOk());
 	}
+	
+	@Test
+	public void testGetPitstops() throws Exception {
+		this.mockMvc
+				.perform(get("/v1/partner/training/usecases").contentType(MediaType.APPLICATION_JSON_VALUE)
+						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
+				.andDo(print()).andExpect(status().isOk());
+	}
+	
+	@Test
+	public void testCheckReady() throws Exception {
+		this.mockMvc
+				.perform(get("/v1/partner/training/ready").contentType(MediaType.APPLICATION_JSON_VALUE)
+						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
+				.andDo(print()).andExpect(status().isOk());
+	}
 
 	@Test
 	public void testLive() throws Exception {
@@ -113,12 +134,53 @@ public class TrainingAndEnablementControllerTest {
 						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
 				.andDo(print()).andExpect(status().isOk());
 	}
+	
+	@Test
+	public void testCreateSuccessTalks() throws Exception {
+		SuccessTalk successTalk = new SuccessTalk();
+		successTalk.setBookmark(true);
+		successTalk.setDescription("description");
+		successTalk.setDocId("someId");
+		successTalk.setDuration(100L);
+		successTalk.setImageUrl("");
+		successTalk.setRecordingUrl("");
+		List<SuccessTalkSession> sessions = new ArrayList<SuccessTalkSession>();
+		successTalk.setSessions(sessions);
+		successTalk.setStatus(SuccessTalkStatusEnum.COMPLETED);
+		successTalk.setSuccessTalkId("");
+		successTalk.setTitle("title");
+
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+		ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+		String requestJson = ow.writeValueAsString(successTalk);
+
+		this.mockMvc.perform(post("/v1/partner/training/successTalk").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.header("X-Mashery-Handshake", this.XMasheryHeader).content(requestJson).characterEncoding("utf-8"))
+				.andDo(print()).andExpect(status().isOk());
+	}
 
 	@Test
 	public void testFetchCommunitiesWithFilter() throws Exception {
 		this.mockMvc
 				.perform(get("/v1/partner/training/communities/IBN/solution")
 						.contentType(MediaType.APPLICATION_JSON_VALUE)
+						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
+				.andDo(print()).andExpect(status().isOk());
+	}
+	
+	@Test
+	public void testFetchSuccessTalks() throws Exception {
+		this.mockMvc
+				.perform(get("/v1/partner/training/successTalks").contentType(MediaType.APPLICATION_JSON_VALUE)
+						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
+				.andDo(print()).andExpect(status().isOk());
+	}
+	
+	@Test
+	public void testFetchFilteredSuccessTalks() throws Exception {
+		this.mockMvc
+				.perform(get("/v1/partner/training/successTalks/IBN/solution").contentType(MediaType.APPLICATION_JSON_VALUE)
 						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
 				.andDo(print()).andExpect(status().isOk());
 	}

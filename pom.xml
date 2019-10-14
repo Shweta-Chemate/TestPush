@@ -137,7 +137,9 @@
 								<exclude>**/util/**</exclude>
 								<exclude>**/exception/**</exclude>
 								<exclude>**/constants/**</exclude>
-								<exclude>**/service/**</exclude>
+								<exclude>**/model/**</exclude>
+								<exclude>com/cisco/cx/training/app/dao/ElasticSearchDAO.class</exclude>
+								<exclude>com/cisco/cx/training/app/service/CiscoProfileService.class</exclude>
 							</excludes>
 						</configuration>
 					</execution>
