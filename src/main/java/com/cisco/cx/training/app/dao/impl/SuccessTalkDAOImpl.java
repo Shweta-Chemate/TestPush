@@ -24,6 +24,8 @@ import com.cisco.cx.training.models.SuccessTalk;
 public class SuccessTalkDAOImpl implements SuccessTalkDAO{
 	
 	private static final Logger LOG = LoggerFactory.getLogger(SuccessTalkDAOImpl.class);
+	
+	private static final String ERROR_MESSAGE = "Error while invoking ES API";
 
 	@Autowired
 	private ElasticSearchDAO elasticSearchDAO;
@@ -36,14 +38,14 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
         try {
         	successTalk = elasticSearchDAO.saveEntry(config.getSuccessTalkIndex(), successTalk, SuccessTalk.class);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOG.error(e.getMessage());
 		}
         return successTalk;
     }
     
     public List<SuccessTalk> getAllSuccessTalks(){
     	
-		List<SuccessTalk> successTalkES = new ArrayList<SuccessTalk>();
+		List<SuccessTalk> successTalkES = new ArrayList<>();
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 		BoolQueryBuilder boolQuery = new BoolQueryBuilder();
 		
@@ -61,8 +63,8 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
 			});
 
 		} catch (IOException ioe) {
-			LOG.error("Error while invoking ES API", ioe);
-			throw new GenericException("Error while invoking ES API");
+			LOG.error(ERROR_MESSAGE, ioe);
+			throw new GenericException(ERROR_MESSAGE);
 		}
 
 		return successTalkES;
@@ -71,7 +73,7 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
     
     public List<SuccessTalk> getFilteredSuccessTalks(String solution, String usecase){
     	
-		List<SuccessTalk> successTalkES = new ArrayList<SuccessTalk>();
+		List<SuccessTalk> successTalkES = new ArrayList<>();
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 		BoolQueryBuilder boolQuery = new BoolQueryBuilder();
 		
@@ -91,8 +93,8 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
 			});
 
 		} catch (IOException ioe) {
-			LOG.error("Error while invoking ES API", ioe);
-			throw new GenericException("Error while invoking ES API");
+			LOG.error(ERROR_MESSAGE, ioe);
+			throw new GenericException(ERROR_MESSAGE);
 		}
 
 		return successTalkES;

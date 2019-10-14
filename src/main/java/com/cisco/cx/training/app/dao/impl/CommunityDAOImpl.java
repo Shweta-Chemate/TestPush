@@ -21,29 +21,27 @@ import com.cisco.cx.training.models.ElasticSearchResults;
 
 @Repository
 public class CommunityDAOImpl implements CommunityDAO {
-
 	private static final Logger LOG = LoggerFactory.getLogger(CommunityDAOImpl.class);
 	
+	private static final String ERROR_MESSAGE = "Error while invoking ES API";
+
 	@Autowired
 	private ElasticSearchDAO elasticSearchDAO;
 
-	private final String INDEX = "cxpp_training_enablement_communities";
+	private static final String INDEX = "cxpp_training_enablement_communities";
 
 	public Community insertCommunity(Community community) {
 
 		try {
 			community = elasticSearchDAO.saveEntry(INDEX, community, Community.class);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error(e.getMessage());
 		}
-
 		return community;
 	}
 
 	public List<Community> getCommunities() {
-
-		List<Community> communityES = new ArrayList<Community>();
+		List<Community> communityES = new ArrayList<>();
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 		BoolQueryBuilder boolQuery = new BoolQueryBuilder();
 
@@ -58,8 +56,8 @@ public class CommunityDAOImpl implements CommunityDAO {
 			});
 
 		} catch (IOException ioe) {
-			LOG.error("Error while invoking ES API", ioe);
-			throw new GenericException("Error while invoking ES API");
+			LOG.error(ERROR_MESSAGE, ioe);
+			throw new GenericException(ERROR_MESSAGE);
 		}
 
 		return communityES;
@@ -68,7 +66,7 @@ public class CommunityDAOImpl implements CommunityDAO {
 
 	public List<Community> getFilteredCommunities(String solution, String usecase) {
 
-		List<Community> communityES = new ArrayList<Community>();
+		List<Community> communityES = new ArrayList<>();
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 		BoolQueryBuilder boolQuery = new BoolQueryBuilder();
 
@@ -87,8 +85,8 @@ public class CommunityDAOImpl implements CommunityDAO {
 			});
 
 		} catch (IOException ioe) {
-			LOG.error("Error while invoking ES API", ioe);
-			throw new GenericException("Error while invoking ES API");
+			LOG.error(ERROR_MESSAGE, ioe);
+			throw new GenericException(ERROR_MESSAGE);
 		}
 
 		return communityES;
