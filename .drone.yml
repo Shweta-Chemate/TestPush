@@ -26,23 +26,23 @@ pipeline:
     image: containers.cisco.com/servicescf-devops/drone-sonar
     pull: true
     host: https://engci-sonar-blr.cisco.com/sonar
-    language: "java" # [Optional] : Mention Sonar languages, default - java
-    findbugs_reportPath: "**/findbugsXml.xml" # [Optional] : Mention findbugs report location, default - **/main.xml
-    cobertura_reportPath: target/site/cobertura/coverage.xml #[Mandatory when using cobertura] : To publish coverage data to Sonar
+    language: "java"
+    findbugs_reportPath: "**/findbugsXml.xml"
+    cobertura_reportPath: target/site/cobertura/coverage.xml
     sonar_dynamicAnalysis: reuseReports
     sonar_java_coveragePlugin: jacoco
-    jacoco_reportPath: target/jacoco.exec #[Mandatory when using jacoco] For multimodule project add comma seperated <modulename1>/target/jacoco.exec,<modulename2>/target/jacoco.exec
-    junit_reportPath: target/surefire-reports/**/*.xml #[Optional] : For multimodule project add comma seperated <modulename1>/target/surefire-reports,<modulename2>/target/surefire-reports
+    jacoco_reportPath: target/jacoco.exec
+    junit_reportPath: target/surefire-reports/**/*.xml
     debug: false
-    sonar_multilang: false #[Optional]:true in case of multi language analysis i.e. projects  which are using several programming languages at once e.g [Java, JavaScript and HTML]
-    secrets: [ sonar_login ] # Sonar login token
+    sonar_multilang: false
+    secrets: [ sonar_login ]
     when:
       branch:
         - master
         - refs/heads/master
         - v*__deploy__*
         - refs/tags/v*__deploy__*
-      event:  # The events sonar needs to be triggered
+      event:
         - pull_request
         - push
 
