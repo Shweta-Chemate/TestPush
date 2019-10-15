@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class SuccessTalk implements HasId {
+public class SuccessTalk implements HasId, Comparable<SuccessTalk> {
 
 	@ApiModelProperty(notes = "Unique Id of the SuccessTalk", example = "STK-01")
 	private String successTalkId;
@@ -165,6 +165,11 @@ public class SuccessTalk implements HasId {
 
 	public void setRecordingUrl(String recordingUrl) {
 		this.recordingUrl = recordingUrl;
+	}
+
+	@Override
+	public int compareTo(SuccessTalk successTalk) {
+		return this.getSuccessTalkId().compareTo(((SuccessTalk) successTalk).getSuccessTalkId());
 	}
 	
 

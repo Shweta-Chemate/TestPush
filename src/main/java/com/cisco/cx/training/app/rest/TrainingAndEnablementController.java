@@ -170,4 +170,33 @@ public class TrainingAndEnablementController {
 		SuccessTalkResponseSchema successTalkResponseSchema = trainingAndEnablementService.getFilteredSuccessTalks(solution, usecase);
 		return new ResponseEntity<>(successTalkResponseSchema, HttpStatus.OK);
 	}
+	
+    @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "successTalk/register")
+    @ApiOperation(value = "Create New SuccessTalk Registration", nickname = "registerUserToSuccessTalk", response = String.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully registered"),
+            @ApiResponse(code = 400, message = "Bad Request", response = ErrorResponse.class),
+            @ApiResponse(code = 403, message = "Operation forbidden due to business policies", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Error during registration", response = ErrorResponse.class)})
+    public ResponseEntity<?> registerToSuccessTalk(@ApiParam(value = "successTalkId", required = true) String successTalkId,
+    		@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required=false) String xMasheryHandshake,
+            @ApiParam(value = "The SessionId of this SuccessTalk", required = true) String sessionId) throws Exception {
+         String successTalkResultId = trainingAndEnablementService.registerUserToSuccessTalkSession(sessionId, successTalkId);
+         return new ResponseEntity<>(successTalkResultId, HttpStatus.OK);
+    }
+    
+    @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "successTalk/cancel")
+    @ApiOperation(value = "Cancel SuccessTalk Registration", nickname = "cancelUserToSuccessTalk", response = String.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully cancelled"),
+            @ApiResponse(code = 400, message = "Bad Request", response = ErrorResponse.class),
+            @ApiResponse(code = 403, message = "Operation forbidden due to business policies", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Error during cancellation", response = ErrorResponse.class)})
+    public ResponseEntity<?> cancelToSuccessTalk(@ApiParam(value = "successTalkId", required = true) String successTalkId,
+    		@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required=false) String xMasheryHandshake,
+            @ApiParam(value = "The SessionId of this SuccessTalk", required = true) String sessionId) throws Exception {
+    	 String successTalkResultId =  trainingAndEnablementService.cancelUserToSuccessTalkSession(sessionId, successTalkId);
+         System.out.println("in controller");
+         return new ResponseEntity<>(successTalkResultId, HttpStatus.OK);
+    }
 }

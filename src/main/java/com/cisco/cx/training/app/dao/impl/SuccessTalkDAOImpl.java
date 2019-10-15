@@ -2,12 +2,15 @@ package com.cisco.cx.training.app.dao.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,7 @@ import com.cisco.cx.training.app.dao.SuccessTalkDAO;
 import com.cisco.cx.training.app.exception.GenericException;
 import com.cisco.cx.training.models.ElasticSearchResults;
 import com.cisco.cx.training.models.SuccessTalk;
+import com.cisco.cx.training.models.SuccessTalkSession;
 
 @Repository
 public class SuccessTalkDAOImpl implements SuccessTalkDAO{
@@ -51,6 +55,7 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
 		
 		sourceBuilder.query(boolQuery);
 		sourceBuilder.size(10000);
+		//sourceBuilder.sort(new FieldSortBuilder("successTalkId").order(SortOrder.ASC));
 
 		try {
 			ElasticSearchResults<SuccessTalk> results = elasticSearchDAO.query(config.getSuccessTalkIndex(), sourceBuilder, SuccessTalk.class);
@@ -67,6 +72,7 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
 			throw new GenericException(ERROR_MESSAGE);
 		}
 
+		Collections.sort(successTalkES);
 		return successTalkES;
 
     }
@@ -100,5 +106,41 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
 		return successTalkES;
 
     }
+    
+	@Override
+	public String registerUser(String successTalkSessionId, String successTalkId) {
+		try {
+			SuccessTalk successTalk= elasticSearchDAO.getDocument(config.getSuccessTalkIndex(), successTalkId, SuccessTalk.class);
+			List<SuccessTalkSession> successTalkSessions = successTalk.getSessions();
+			successTalkSessions.forEach(session-> {
+				if(session.getSessionId().equals(successTalkSessionId))
+				{
+					session.setRegistrationStatus(session.registrationStatus.REGISTERED);
+					this.insertSuccessTalk(successTalk);
+				}
+			});
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return successTalkId;
+	}
+	
+	@Override
+	public String cancelRegistration(String successTalkSessionId, String successTalkId) {
+		try {
+			SuccessTalk successTalk= elasticSearchDAO.getDocument(config.getSuccessTalkIndex(), successTalkId, SuccessTalk.class);
+			List<SuccessTalkSession> successTalkSessions = successTalk.getSessions();
+			successTalkSessions.forEach(session-> {
+				if(session.getSessionId().equals(successTalkSessionId))
+				{
+					session.setRegistrationStatus(session.registrationStatus.CANCELLED);
+					this.insertSuccessTalk(successTalk);
+				}
+			});
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return successTalkId;
+	}
 
 }

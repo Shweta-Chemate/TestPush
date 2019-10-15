@@ -1,5 +1,6 @@
 package com.cisco.cx.training.app.service.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -11,6 +12,9 @@ import org.springframework.stereotype.Service;
 
 import com.cisco.cx.training.app.dao.CommunityDAO;
 import com.cisco.cx.training.app.dao.SuccessTalkDAO;
+import com.cisco.cx.training.app.exception.GenericException;
+import com.cisco.cx.training.app.exception.NotAllowedException;
+import com.cisco.cx.training.app.exception.NotFoundException;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
 import com.cisco.cx.training.models.*;
 
@@ -78,5 +82,14 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		SuccessTalkResponseSchema successTalkResponseSchema = new SuccessTalkResponseSchema();
 		successTalkResponseSchema.setItems(successTalkDAO.getFilteredSuccessTalks(solution, usecase));
 		return successTalkResponseSchema;
+	}
+	@Override
+	public String registerUserToSuccessTalkSession(String sessionId, String successTalkId) {
+		return successTalkDAO.registerUser(sessionId, successTalkId);
+	}
+	
+	@Override
+	public String cancelUserToSuccessTalkSession(String sessionId, String successTalkId) {
+		return successTalkDAO.cancelRegistration(sessionId, successTalkId);
 	}
 }
