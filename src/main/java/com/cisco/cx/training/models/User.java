@@ -12,7 +12,8 @@ import org.slf4j.LoggerFactory;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
-    private static final Logger LOG = LoggerFactory.getLogger(User.class);
+    @SuppressWarnings("unused")
+	private static final Logger LOG = LoggerFactory.getLogger(User.class);
     private final static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     //{"client_cco_id":"krsubbu","party_id":"52428","access_token_uid":"karbala2","access_token_accesslevel":"4"}

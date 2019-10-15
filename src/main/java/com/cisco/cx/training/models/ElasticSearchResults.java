@@ -21,7 +21,7 @@ public class ElasticSearchResults<T extends HasId> {
 		return documents;
 	}
 
-	public ElasticSearchResults addDocument(T document) {
+	public ElasticSearchResults<T> addDocument(T document) {
 		this.documents.add(document);
 		return this;
 	}

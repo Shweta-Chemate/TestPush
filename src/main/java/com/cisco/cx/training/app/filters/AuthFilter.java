@@ -16,7 +16,8 @@ import java.io.IOException;
 public class AuthFilter implements Filter {
     private final Logger LOG = LoggerFactory.getLogger(this.getClass().getName());
 
-    @Autowired
+    @SuppressWarnings("unused")
+	@Autowired
     private PropertyConfiguration config;
 
     @Override

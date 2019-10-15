@@ -51,7 +51,8 @@ public class RestResponseStatusExceptionResolver extends AbstractHandlerExceptio
 
         LOG.error("Unexpected Error", ex);
 
-        ModelAndView mav = new ModelAndView("springboot-template-error", objectMapper.convertValue(errorBody, Map.class));
+        @SuppressWarnings("unchecked")
+		ModelAndView mav = new ModelAndView("springboot-template-error", objectMapper.convertValue(errorBody, Map.class));
         mav.setView(new MappingJackson2JsonView());
 
         return mav;

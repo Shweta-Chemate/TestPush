@@ -38,6 +38,7 @@ import io.swagger.annotations.ApiResponses;
 @RequestMapping("/v1/partner/training")
 @Api(value = "Trainining and Enablement APIs", description = "REST APIs for Training And Enablement")
 public class TrainingAndEnablementController {
+	@SuppressWarnings("unused")
 	private final Logger LOG = LoggerFactory.getLogger(TrainingAndEnablementController.class);
 
 	private final Map<String, Callable<Boolean>> mandatoryDependencies = new HashMap<>();
