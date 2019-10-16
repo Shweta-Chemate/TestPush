@@ -37,7 +37,7 @@ public class LearningDAO {
 	}
 
 	public List<LearningModel> getLearnings() {
-		
+
 		List<LearningModel> learningModelES = new ArrayList<LearningModel>();
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 		BoolQueryBuilder boolQuery = new BoolQueryBuilder();
@@ -51,7 +51,7 @@ public class LearningDAO {
 			ElasticSearchResults<Learning> results = elasticSearchDAO.query(INDEX, sourceBuilder, Learning.class);
 
 			results.getDocuments().forEach(learn -> {
-				
+
 				if (modelMap.containsKey(learn.getUsecase())) {
 					modelMap.get(learn.getUsecase()).add(learn);
 					categoryTypes.get(learn.getUsecase()).add(learn.getSolution());
@@ -63,7 +63,7 @@ public class LearningDAO {
 					modelMap.put(learn.getUsecase(), learningES);
 					categoryTypes.put(learn.getUsecase(), category);
 				}
-			
+
 			});
 
 			for (String name : modelMap.keySet()) {
@@ -75,7 +75,7 @@ public class LearningDAO {
 			}
 
 		} catch (IOException ioe) {
-			LOG.error("Error while invoking ES API", ioe);			
+			LOG.error("Error while invoking ES API", ioe);
 			throw new GenericException("Error while invoking ES API");
 		}
 
@@ -84,7 +84,7 @@ public class LearningDAO {
 	}
 
 	public List<LearningModel> getFilteredLearnings(String solution, String usecase) {
-		
+
 		HashMap<String, List<Learning>> modelMap = new HashMap<>();
 		List<LearningModel> learningModelES = new ArrayList<LearningModel>();
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
@@ -96,8 +96,6 @@ public class LearningDAO {
 		boolQuery = boolQuery.must(matchQueryBuilderSolution).must(matchQueryBuilderTechnology);
 		sourceBuilder.query(boolQuery);
 		sourceBuilder.size(10000);
-		System.out.println("Filter solution = " + solution);
-		System.out.println("Filter usecase = " + usecase);
 
 		try {
 			ElasticSearchResults<Learning> results = elasticSearchDAO.query(INDEX, sourceBuilder, Learning.class);
@@ -110,12 +108,12 @@ public class LearningDAO {
 					learningES.add(learn);
 					modelMap.put(learn.getUsecase(), learningES);
 				}
-			
+
 			});
 
 			for (String name : modelMap.keySet()) {
 				LearningModel eLearnings = new LearningModel();
-				eLearnings.setName(name);				
+				eLearnings.setName(name);
 				eLearnings.setLearning(modelMap.get(name));
 				learningModelES.add(eLearnings);
 			}
