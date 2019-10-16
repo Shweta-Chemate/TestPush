@@ -166,46 +166,76 @@ public class TrainingAndEnablementController {
 		return new ResponseEntity<>(successTalkResponseSchema, HttpStatus.OK);
 	}
 	
-	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, path = "/learning")
-		@ApiOperation(value = "Create New Learning", response = String.class, nickname = "createLearning")
-		@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
-				@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
-				@ApiResponse(code = 403, message = "Operation forbidden due to business policies", response = ErrorResponse.class),
-				@ApiResponse(code = 500, message = "Error during create", response = ErrorResponse.class) })
-		public Learning createLearning(
-				@ApiParam(value = "Body for the Request", required = true) @RequestBody Learning learning,
-				@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake)
-				throws Exception {
+
+    @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "successTalk/register")
+    @ApiOperation(value = "Create New SuccessTalk Registration", nickname = "registerUserToSuccessTalk", response = String.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully registered"),
+            @ApiResponse(code = 400, message = "Bad Request", response = ErrorResponse.class),
+            @ApiResponse(code = 403, message = "Operation forbidden due to business policies", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Error during registration", response = ErrorResponse.class)})
+    public ResponseEntity<?> registerToSuccessTalk(@ApiParam(value = "successTalkId", required = true) String successTalkId,
+    		@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required=false) String xMasheryHandshake,
+            @ApiParam(value = "The SessionId of this SuccessTalk", required = true) String sessionId) throws Exception {
+         String successTalkResultId = trainingAndEnablementService.registerUserToSuccessTalkSession(sessionId, successTalkId);
+         return new ResponseEntity<>(successTalkResultId, HttpStatus.OK);
+    }
+    
+    @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "successTalk/cancel")
+    @ApiOperation(value = "Cancel SuccessTalk Registration", nickname = "cancelUserToSuccessTalk", response = String.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully cancelled"),
+            @ApiResponse(code = 400, message = "Bad Request", response = ErrorResponse.class),
+            @ApiResponse(code = 403, message = "Operation forbidden due to business policies", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Error during cancellation", response = ErrorResponse.class)})
+    public ResponseEntity<?> cancelToSuccessTalk(@ApiParam(value = "successTalkId", required = true) String successTalkId,
+    		@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required=false) String xMasheryHandshake,
+            @ApiParam(value = "The SessionId of this SuccessTalk", required = true) String sessionId) throws Exception {
+    	 String successTalkResultId =  trainingAndEnablementService.cancelUserToSuccessTalkSession(sessionId, successTalkId);
+         System.out.println("in controller");
+         return new ResponseEntity<>(successTalkResultId, HttpStatus.OK);
+    }
+    
+    @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, path = "/learning")
+	@ApiOperation(value = "Create New Learning", response = String.class, nickname = "createLearning")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
+			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
+			@ApiResponse(code = 403, message = "Operation forbidden due to business policies", response = ErrorResponse.class),
+			@ApiResponse(code = 500, message = "Error during create", response = ErrorResponse.class) })
+	public Learning createLearning(
+			@ApiParam(value = "Body for the Request", required = true) @RequestBody Learning learning,
+			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake)
+			throws Exception {
+
+		return trainingAndEnablementService.insertLearning(learning);
+	}
 	
-			return trainingAndEnablementService.insertLearning(learning);
-		}
-		
-		@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/learnings")
-		@ApiOperation(value = "Fetch learnings", response = String.class, nickname = "fetchlearnings")
-		@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
-				@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
-				@ApiResponse(code = 404, message = "Entity Not Found"),
-				@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
-		public ResponseEntity<?> getAllLeanings(
-				@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake)
-				throws Exception {
-			List<LearningModel> learningList = trainingAndEnablementService.getAllLearning();
-			return new ResponseEntity<>(learningList, HttpStatus.OK);
-		}
-	
-		@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/learnings/{solution}/{usecase}")
-		@ApiOperation(value = "Fetch Learnings with filter", response = String.class, nickname = "fetchFilteredLearnings")
-		@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
-				@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
-				@ApiResponse(code = 404, message = "Entity Not Found"),
-				@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
-		public ResponseEntity<?> getAllLearnings(@PathVariable(value = "solution", required = false) String solution,
-				@PathVariable(value = "usecase", required = false) String usecase,
-				@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake)
-				throws Exception {
-			System.out.println("Getting filter learnings");
-			List<LearningModel> learningList = trainingAndEnablementService.getFilteredLearning(solution, usecase);
-			return new ResponseEntity<>(learningList, HttpStatus.OK);
-		}
-		
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/learnings")
+	@ApiOperation(value = "Fetch learnings", response = String.class, nickname = "fetchlearnings")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
+			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
+			@ApiResponse(code = 404, message = "Entity Not Found"),
+			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
+	public ResponseEntity<?> getAllLeanings(
+			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake)
+			throws Exception {
+		List<LearningModel> learningList = trainingAndEnablementService.getAllLearning();
+		return new ResponseEntity<>(learningList, HttpStatus.OK);
+	}
+
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/learnings/{solution}/{usecase}")
+	@ApiOperation(value = "Fetch Learnings with filter", response = String.class, nickname = "fetchFilteredLearnings")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
+			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
+			@ApiResponse(code = 404, message = "Entity Not Found"),
+			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
+	public ResponseEntity<?> getAllLearnings(@PathVariable(value = "solution", required = false) String solution,
+			@PathVariable(value = "usecase", required = false) String usecase,
+			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake)
+			throws Exception {
+		System.out.println("Getting filter learnings");
+		List<LearningModel> learningList = trainingAndEnablementService.getFilteredLearning(solution, usecase);
+		return new ResponseEntity<>(learningList, HttpStatus.OK);
+	}
+
 }

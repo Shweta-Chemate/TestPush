@@ -11,4 +11,8 @@ public interface SuccessTalkDAO {
 	public List<SuccessTalk> getAllSuccessTalks();
 
 	public List<SuccessTalk> getFilteredSuccessTalks(String solution, String usecase);
+
+	public String registerUser(String successTalkSessionId, String successTalkId);
+
+	public String cancelRegistration(String successTalkSessionId, String successTalkId);
 }

@@ -41,7 +41,8 @@ public class SuccessTalkDAOTest {
 	public void insertSuccessTalk() throws IOException {
 		SuccessTalk successTalk = getSuccessTask();
 		when(config.getSuccessTalkIndex()).thenReturn("");
-		when(elasticSearchDAO.saveEntry(config.getSuccessTalkIndex(), successTalk, SuccessTalk.class)).thenReturn(successTalk);
+		when(elasticSearchDAO.saveEntry(config.getSuccessTalkIndex(), successTalk, SuccessTalk.class))
+				.thenReturn(successTalk);
 		successTalkDAO.insertSuccessTalk(successTalk);
 	}
 
@@ -58,7 +59,8 @@ public class SuccessTalkDAOTest {
 		results.addDocument(successTalk);
 
 		when(config.getSuccessTalkIndex()).thenReturn("");
-		when(elasticSearchDAO.query(config.getSuccessTalkIndex(), sourceBuilder, SuccessTalk.class)).thenReturn(results);
+		when(elasticSearchDAO.query(config.getSuccessTalkIndex(), sourceBuilder, SuccessTalk.class))
+				.thenReturn(results);
 
 		successTalkDAO.getAllSuccessTalks();
 	}
@@ -82,9 +84,32 @@ public class SuccessTalkDAOTest {
 		results.addDocument(successTalk);
 
 		when(config.getSuccessTalkIndex()).thenReturn("");
-		when(elasticSearchDAO.query(config.getSuccessTalkIndex(), sourceBuilder, SuccessTalk.class)).thenReturn(results);
+		when(elasticSearchDAO.query(config.getSuccessTalkIndex(), sourceBuilder, SuccessTalk.class))
+				.thenReturn(results);
 
 		successTalkDAO.getFilteredSuccessTalks("IBN", "usecase");
+	}
+
+	@Test
+	public void registerUser() throws IOException {
+		SuccessTalk successTalk = getSuccessTask();
+		when(config.getSuccessTalkIndex()).thenReturn("");
+		String successTalkId = "successTalkId";
+		String successTalkSessionId = "successTalkSessionId";
+		when(elasticSearchDAO.getDocument(config.getSuccessTalkIndex(), successTalkId, SuccessTalk.class))
+				.thenReturn(successTalk);
+		successTalkDAO.registerUser(successTalkSessionId, successTalkId);
+	}
+
+	@Test
+	public void cancelRegistration() throws IOException {
+		SuccessTalk successTalk = getSuccessTask();
+		when(config.getSuccessTalkIndex()).thenReturn("");
+		String successTalkId = "successTalkId";
+		String successTalkSessionId = "successTalkSessionId";
+		when(elasticSearchDAO.getDocument(config.getSuccessTalkIndex(), successTalkId, SuccessTalk.class))
+				.thenReturn(successTalk);
+		successTalkDAO.cancelRegistration(successTalkSessionId, successTalkId);
 	}
 
 	private SuccessTalk getSuccessTask() {
