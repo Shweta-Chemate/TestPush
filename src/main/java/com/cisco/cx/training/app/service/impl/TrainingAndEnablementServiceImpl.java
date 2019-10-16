@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cisco.cx.training.app.dao.CommunityDAO;
+import com.cisco.cx.training.app.dao.LearningDAO;
 import com.cisco.cx.training.app.dao.SuccessTalkDAO;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
 import com.cisco.cx.training.models.*;
@@ -22,6 +23,9 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	
 	@Autowired
 	private SuccessTalkDAO successTalkDAO;
+	
+	@Autowired
+	private LearningDAO learningDAO;
 
 	@Override
 	public SuccessTrackAndUseCases getUsecases() {
@@ -34,16 +38,8 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	}
 
 	@Override
-	public List<LearningModel> getLearning() {
-		Learning learning = new Learning();
-		learning.setUrl("https://salesconnect.cisco.com/#/");
-		learning.setDescription("");
-
-		LearningModel eLearning = new LearningModel();
-		eLearning.setName("E-Learning");
-		eLearning.setLearning(Arrays.asList(learning));
-
-		return Arrays.asList(eLearning);
+	public List<LearningModel> getAllLearning() {
+		return learningDAO.getLearnings();
 	}
 
 	@Override
@@ -78,5 +74,15 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		SuccessTalkResponseSchema successTalkResponseSchema = new SuccessTalkResponseSchema();
 		successTalkResponseSchema.setItems(successTalkDAO.getFilteredSuccessTalks(solution, usecase));
 		return successTalkResponseSchema;
+	}
+
+	@Override
+	public Learning insertLearning(Learning learning) {		
+		return learningDAO.insertLearning(learning);
+	}
+
+	@Override
+	public List<LearningModel> getFilteredLearning(String solution, String usecase) {		
+		return learningDAO.getFilteredLearnings(solution, usecase);
 	}
 }

@@ -22,6 +22,7 @@ import com.cisco.cx.training.app.exception.ErrorResponse;
 import com.cisco.cx.training.app.exception.HealthCheckException;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
 import com.cisco.cx.training.models.Community;
+import com.cisco.cx.training.models.Learning;
 import com.cisco.cx.training.models.LearningModel;
 import com.cisco.cx.training.models.SuccessTalk;
 import com.cisco.cx.training.models.SuccessTalkResponseSchema;
@@ -74,12 +75,6 @@ public class TrainingAndEnablementController {
 	@ApiOperation(value = "Fetch usecases and solutions", response = SuccessTrackAndUseCases.class)
 	public SuccessTrackAndUseCases getPitstop() {
 		return trainingAndEnablementService.getUsecases();
-	}
-
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/learnings")
-	@ApiOperation(value = "Fetch Learnings", response = LearningModel.class, responseContainer = "List")
-	public List<LearningModel> getLearning() {
-		return trainingAndEnablementService.getLearning();
 	}
 
 	@RequestMapping("/live")
@@ -170,4 +165,47 @@ public class TrainingAndEnablementController {
 		SuccessTalkResponseSchema successTalkResponseSchema = trainingAndEnablementService.getFilteredSuccessTalks(solution, usecase);
 		return new ResponseEntity<>(successTalkResponseSchema, HttpStatus.OK);
 	}
+	
+	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, path = "/learning")
+		@ApiOperation(value = "Create New Learning", response = String.class, nickname = "createLearning")
+		@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
+				@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
+				@ApiResponse(code = 403, message = "Operation forbidden due to business policies", response = ErrorResponse.class),
+				@ApiResponse(code = 500, message = "Error during create", response = ErrorResponse.class) })
+		public Learning createLearning(
+				@ApiParam(value = "Body for the Request", required = true) @RequestBody Learning learning,
+				@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake)
+				throws Exception {
+	
+			return trainingAndEnablementService.insertLearning(learning);
+		}
+		
+		@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/learnings")
+		@ApiOperation(value = "Fetch learnings", response = String.class, nickname = "fetchlearnings")
+		@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
+				@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
+				@ApiResponse(code = 404, message = "Entity Not Found"),
+				@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
+		public ResponseEntity<?> getAllLeanings(
+				@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake)
+				throws Exception {
+			List<LearningModel> learningList = trainingAndEnablementService.getAllLearning();
+			return new ResponseEntity<>(learningList, HttpStatus.OK);
+		}
+	
+		@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/learnings/{solution}/{usecase}")
+		@ApiOperation(value = "Fetch Learnings with filter", response = String.class, nickname = "fetchFilteredLearnings")
+		@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
+				@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
+				@ApiResponse(code = 404, message = "Entity Not Found"),
+				@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
+		public ResponseEntity<?> getAllLearnings(@PathVariable(value = "solution", required = false) String solution,
+				@PathVariable(value = "usecase", required = false) String usecase,
+				@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake)
+				throws Exception {
+			System.out.println("Getting filter learnings");
+			List<LearningModel> learningList = trainingAndEnablementService.getFilteredLearning(solution, usecase);
+			return new ResponseEntity<>(learningList, HttpStatus.OK);
+		}
+		
 }

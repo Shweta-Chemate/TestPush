@@ -9,7 +9,11 @@ public interface TrainingAndEnablementService {
 
 	SuccessTrackAndUseCases getUsecases();
 
-	List<LearningModel> getLearning();
+	List<LearningModel> getAllLearning();
+	
+	Learning insertLearning(Learning learning);
+		
+	List<LearningModel> getFilteredLearning(String solution, String usecase);
 
 	Community insertCommunity(Community community);
 

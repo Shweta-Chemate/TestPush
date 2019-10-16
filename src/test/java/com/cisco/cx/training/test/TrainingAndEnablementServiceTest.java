@@ -52,10 +52,10 @@ public class TrainingAndEnablementServiceTest {
 		trainingAndEnablementService.getUsecases();
 	}
 
-	@Test
-	public void testGetLearnings() {
-		trainingAndEnablementService.getLearning();
-	}
+//	@Test
+//	public void testGetLearnings() {
+//		trainingAndEnablementService.getAllLearning();
+//	}
 
 	@Test
 	public void getAllCommunitiesTest() {
