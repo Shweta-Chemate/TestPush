@@ -2,19 +2,47 @@ package com.cisco.cx.training.models;
 
 import com.cisco.cx.training.util.HasId;
 
-public class Learning implements HasId{
+public class Learning implements HasId {
 
 	String name;
- 	String url;
- 	long timeDuration;
- 	int star;
- 	long timeCompleted;
-	String category;
-	String usecase;
-	String solution;
-	String status;
-	String description;
+	String url;
+	long timeDuration;
+	int star;
+	long timeCompleted;
+	private String category;
+	private String usecase;
+	private String solution;
+	private String status;
+	private String description;
+	private String alFrescoId;
+	private String notes;
+	private String isCentralTracked;
 	private String docId;
+	private String img;
+
+	public String getAlFrescoId() {
+		return alFrescoId;
+	}
+
+	public void setAlFrescoId(String alFrescoId) {
+		this.alFrescoId = alFrescoId;
+	}
+
+	public String getNotes() {
+		return notes;
+	}
+
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+
+	public String getIsCentralTracked() {
+		return isCentralTracked;
+	}
+
+	public void setIsCentralTracked(String isCentralTracked) {
+		this.isCentralTracked = isCentralTracked;
+	}
 
 	public String getName() {
 		return name;
@@ -104,5 +132,12 @@ public class Learning implements HasId{
 		this.docId = docId;
 	}
 
-	
+	public String getImg() {
+		return img;
+	}
+
+	public void setImg(String img) {
+		this.img = img;
+	}
+
 }

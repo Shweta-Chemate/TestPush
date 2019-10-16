@@ -6,16 +6,16 @@ import java.util.Set;
 public class LearningModel {
 	String name;
 	
-	Set<String> categoryTypes;
+	Set<String> solutionTypes;
 
 	List<Learning> learning;	
 
-	public Set<String> getCategoryTypes() {
-		return categoryTypes;
+	public Set<String> getSolutionTypes() {
+		return solutionTypes;
 	}
 
-	public void setCategoryTypes(Set<String> categoryTypes) {
-		this.categoryTypes = categoryTypes;
+	public void setSolutionTypes(Set<String> solutionTypes) {
+		this.solutionTypes = solutionTypes;
 	}
 
 	public String getName() {

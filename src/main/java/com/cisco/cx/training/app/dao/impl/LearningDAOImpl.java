@@ -25,7 +25,7 @@ public class LearningDAOImpl implements LearningDAO {
 	@Autowired
 	private ElasticSearchDAO elasticSearchDAO;
 
-	private final String INDEX = "cxpp_training_enablement_success_academy_dev";
+	private final String INDEX = "cxpp_success_academy_alias";
 
 	@Override
 	public Learning insertLearning(Learning learning) {
@@ -46,7 +46,7 @@ public class LearningDAOImpl implements LearningDAO {
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 		BoolQueryBuilder boolQuery = new BoolQueryBuilder();
 		HashMap<String, List<Learning>> modelMap = new HashMap<>();
-		HashMap<String, Set<String>> categoryTypes = new HashMap<String, Set<String>>();
+		HashMap<String, Set<String>> solutionTypes = new HashMap<String, Set<String>>();
 
 		sourceBuilder.query(boolQuery);
 		sourceBuilder.size(10000);
@@ -58,22 +58,27 @@ public class LearningDAOImpl implements LearningDAO {
 
 				if (modelMap.containsKey(learn.getUsecase())) {
 					modelMap.get(learn.getUsecase()).add(learn);
-					categoryTypes.get(learn.getUsecase()).add(learn.getSolution());
+					solutionTypes.get(learn.getUsecase()).add(learn.getSolution());
 				} else {
 					List<Learning> learningES = new ArrayList<Learning>();
-					Set<String> category = new TreeSet<>();
+					Set<String> solution = new TreeSet<>();
 					learningES.add(learn);
-					category.add(learn.getSolution());
+					solution.add(learn.getSolution());
 					modelMap.put(learn.getUsecase(), learningES);
-					categoryTypes.put(learn.getUsecase(), category);
+					solutionTypes.put(learn.getUsecase(), solution);
 				}
+				String category = learn.getCategory() != null ? learn.getCategory() : "LEARNING MAP";
+				learn.setCategory(category);
+				String img = learn.getImg() != null ? learn.getImg() : "https://www.cisco.com/web/fw/tools/ssue/cp/lifecycle/acc/images/acc_access-overview-demo.png";
+				learn.setImg(img);
+
 
 			});
 
 			for (String name : modelMap.keySet()) {
 				LearningModel eLearnings = new LearningModel();
 				eLearnings.setName(name);
-				eLearnings.setCategoryTypes(categoryTypes.get(name));
+				eLearnings.setSolutionTypes(solutionTypes.get(name));
 				eLearnings.setLearning(modelMap.get(name));
 				learningModelES.add(eLearnings);
 			}

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -210,6 +211,7 @@ public class TrainingAndEnablementController {
 		return trainingAndEnablementService.insertLearning(learning);
 	}
 	
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/learnings")
 	@ApiOperation(value = "Fetch learnings", response = String.class, nickname = "fetchlearnings")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
@@ -232,8 +234,7 @@ public class TrainingAndEnablementController {
 	public ResponseEntity<?> getAllLearnings(@PathVariable(value = "solution", required = false) String solution,
 			@PathVariable(value = "usecase", required = false) String usecase,
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake)
-			throws Exception {
-		System.out.println("Getting filter learnings");
+			throws Exception {		
 		List<LearningModel> learningList = trainingAndEnablementService.getFilteredLearning(solution, usecase);
 		return new ResponseEntity<>(learningList, HttpStatus.OK);
 	}
