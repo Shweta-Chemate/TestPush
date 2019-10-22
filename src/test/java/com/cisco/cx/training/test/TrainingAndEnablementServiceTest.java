@@ -93,6 +93,22 @@ public class TrainingAndEnablementServiceTest {
 		when(successTalkDAO.insertSuccessTalk(successTalk)).thenReturn(successTalk);
 		trainingAndEnablementService.insertSuccessTalk(successTalk);
 	}
+	
+	@Test
+	public void registerUserToSuccessTalkSession() {
+		String sessionId = "sessionId";
+		String successTalkId = "successTalkId";
+		when(successTalkDAO.registerUser("sessionId", "successTalkId")).thenReturn("successTalkId");
+		trainingAndEnablementService.registerUserToSuccessTalkSession(sessionId, successTalkId);
+	}
+	
+	@Test
+	public void cancelUserToSuccessTalkSession() {
+		String sessionId = "sessionId";
+		String successTalkId = "successTalkId";
+		when(successTalkDAO.cancelRegistration("sessionId", "successTalkId")).thenReturn("successTalkId");
+		trainingAndEnablementService.cancelUserToSuccessTalkSession(sessionId, successTalkId);
+	}
 
 	private Community getCommunity() {
 		Community community = new Community();
