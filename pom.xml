@@ -140,6 +140,7 @@
 								<exclude>**/model/**</exclude>
 								<exclude>com/cisco/cx/training/app/dao/ElasticSearchDAO.class</exclude>
 								<exclude>com/cisco/cx/training/app/service/CiscoProfileService.class</exclude>
+								<exclude>com/cisco/cx/training/models/User.class</exclude>
 							</excludes>
 						</configuration>
 					</execution>
