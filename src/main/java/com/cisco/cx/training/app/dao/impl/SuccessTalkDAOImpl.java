@@ -21,6 +21,7 @@ import com.cisco.cx.training.app.exception.GenericException;
 import com.cisco.cx.training.models.ElasticSearchResults;
 import com.cisco.cx.training.models.SuccessTalk;
 import com.cisco.cx.training.models.SuccessTalkSession;
+import com.cisco.cx.training.models.SuccessTalkSession.RegistrationStatusEnum;
 
 @Repository
 public class SuccessTalkDAOImpl implements SuccessTalkDAO{
@@ -39,8 +40,9 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
         // save the entry to ES
         try {
         	successTalk = elasticSearchDAO.saveEntry(config.getSuccessTalkIndex(), successTalk, SuccessTalk.class);
-		} catch (IOException e) {
-			LOG.error(e.getMessage());
+		} catch (IOException ioe) {
+			LOG.error(ERROR_MESSAGE, ioe);
+			throw new GenericException(ERROR_MESSAGE);
 		}
         return successTalk;
     }
@@ -112,12 +114,13 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
 			successTalkSessions.forEach(session-> {
 				if(session.getSessionId().equals(successTalkSessionId))
 				{
-					session.setRegistrationStatus(session.registrationStatus.REGISTERED);
+					session.setRegistrationStatus(RegistrationStatusEnum.REGISTERED);
 					this.insertSuccessTalk(successTalk);
 				}
 			});
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (IOException ioe) {
+			LOG.error(ERROR_MESSAGE, ioe);
+			throw new GenericException(ERROR_MESSAGE);
 		}
 		return successTalkId;
 	}
@@ -130,12 +133,13 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
 			successTalkSessions.forEach(session-> {
 				if(session.getSessionId().equals(successTalkSessionId))
 				{
-					session.setRegistrationStatus(session.registrationStatus.CANCELLED);
+					session.setRegistrationStatus(RegistrationStatusEnum.CANCELLED);
 					this.insertSuccessTalk(successTalk);
 				}
 			});
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (IOException ioe) {
+			LOG.error(ERROR_MESSAGE, ioe);
+			throw new GenericException(ERROR_MESSAGE);
 		}
 		return successTalkId;
 	}
