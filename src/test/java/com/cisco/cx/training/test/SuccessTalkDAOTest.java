@@ -92,6 +92,7 @@ public class SuccessTalkDAOTest {
 		sourceBuilder.query(boolQuery);
 		sourceBuilder.size(10000);
 		ElasticSearchResults<SuccessTalk> results = new ElasticSearchResults<>();
+		results.addDocument(getSuccessTask());
 		when(config.getSuccessTalkIndex()).thenReturn("");
 		when(elasticSearchDAO.query(config.getSuccessTalkIndex(), sourceBuilder, SuccessTalk.class)).thenReturn(results);
 		successTalkDAO.getFilteredSuccessTalks("IBN", "usecase");
@@ -156,17 +157,15 @@ public class SuccessTalkDAOTest {
 		successTalk.setDuration(10L);
 		successTalk.setImageUrl("");
 		successTalk.setRecordingUrl("");
-		List<SuccessTalkSession> sessions = new ArrayList<>();
 		SuccessTalkSession session = new SuccessTalkSession();
 		session.setDocId("");
 		session.setPresenterName("John Doe");
 		session.setRegion("region");
 		session.setRegistrationUrl("");
 		session.setScheduled(true);
-		session.setSessionId("");
+		session.setSessionId("successTalkSessionId");
 		session.setSessionStartDate("");
-		Arrays.asList(session);
-		successTalk.setSessions(sessions);
+		successTalk.setSessions(Arrays.asList(session));
 		return successTalk;
 	}
 }
