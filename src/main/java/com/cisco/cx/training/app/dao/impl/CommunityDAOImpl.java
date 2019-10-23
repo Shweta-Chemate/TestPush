@@ -34,8 +34,9 @@ public class CommunityDAOImpl implements CommunityDAO {
 
 		try {
 			community = elasticSearchDAO.saveEntry(INDEX, community, Community.class);
-		} catch (IOException e) {
-			LOG.error(e.getMessage());
+		} catch (IOException ioe) {
+			LOG.error(ERROR_MESSAGE, ioe);
+			throw new GenericException(ERROR_MESSAGE);
 		}
 		return community;
 	}
