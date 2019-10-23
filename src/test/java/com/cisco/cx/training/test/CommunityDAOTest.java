@@ -43,7 +43,7 @@ public class CommunityDAOTest {
 	@Test(expected = GenericException.class)
 	public void insertCommunityESFailure() throws IOException {
 		Community community = getCommunity();
-		when(elasticSearchDAO.saveEntry(INDEX, community, Community.class)).thenThrow(GenericException.class);
+		when(elasticSearchDAO.saveEntry(INDEX, community, Community.class)).thenThrow(IOException.class);
 		communityDAO.insertCommunity(community);
 	}
 
@@ -69,7 +69,7 @@ public class CommunityDAOTest {
 		Community community = getCommunity();
 		ElasticSearchResults<Community> results = new ElasticSearchResults<>();
 		results.addDocument(community);
-		when(elasticSearchDAO.query(INDEX, sourceBuilder, Community.class)).thenThrow(GenericException.class);
+		when(elasticSearchDAO.query(INDEX, sourceBuilder, Community.class)).thenThrow(IOException.class);
 		communityDAO.getCommunities();
 	}
 
@@ -101,7 +101,7 @@ public class CommunityDAOTest {
 		Community community = getCommunity();
 		ElasticSearchResults<Community> results = new ElasticSearchResults<>();
 		results.addDocument(community);
-		when(elasticSearchDAO.query(INDEX, sourceBuilder, Community.class)).thenThrow(GenericException.class);
+		when(elasticSearchDAO.query(INDEX, sourceBuilder, Community.class)).thenThrow(IOException.class);
 		communityDAO.getFilteredCommunities("IBN", "usecase");
 	}
 

@@ -126,7 +126,7 @@ public class SuccessTalkDAOTest {
 		when(config.getSuccessTalkIndex()).thenReturn("");
 		String successTalkId = "successTalkId";
 		String successTalkSessionId = "successTalkSessionId";
-		when(elasticSearchDAO.getDocument(config.getSuccessTalkIndex(), successTalkId, SuccessTalk.class)).thenThrow(GenericException.class);
+		when(elasticSearchDAO.getDocument(config.getSuccessTalkIndex(), successTalkId, SuccessTalk.class)).thenThrow(IOException.class);
 		successTalkDAO.registerUser(successTalkSessionId, successTalkId);
 	}
 
@@ -144,7 +144,7 @@ public class SuccessTalkDAOTest {
 		when(config.getSuccessTalkIndex()).thenReturn("");
 		String successTalkId = "successTalkId";
 		String successTalkSessionId = "successTalkSessionId";
-		when(elasticSearchDAO.getDocument(config.getSuccessTalkIndex(), successTalkId, SuccessTalk.class)).thenThrow(GenericException.class);
+		when(elasticSearchDAO.getDocument(config.getSuccessTalkIndex(), successTalkId, SuccessTalk.class)).thenThrow(IOException.class);
 		successTalkDAO.cancelRegistration(successTalkSessionId, successTalkId);
 	}
 

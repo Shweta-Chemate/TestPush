@@ -14,7 +14,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -33,7 +32,6 @@ import com.cisco.cx.training.app.dao.CommunityDAO;
 import com.cisco.cx.training.app.rest.TrainingAndEnablementController;
 import com.cisco.cx.training.app.service.CiscoProfileService;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
-import com.cisco.cx.training.app.service.impl.TrainingAndEnablementServiceImpl;
 import com.cisco.cx.training.models.Community;
 import com.cisco.cx.training.models.SuccessTalk;
 import com.cisco.cx.training.models.SuccessTalk.SuccessTalkStatusEnum;
@@ -61,9 +59,6 @@ public class TrainingAndEnablementControllerTest {
 
 	@MockBean
 	private TrainingAndEnablementService trainingAndEnablementService;
-
-	@InjectMocks
-	private TrainingAndEnablementServiceImpl trainingAndEnablementServiceImpl;
 
 	private String XMasheryHeader;
 
@@ -109,7 +104,7 @@ public class TrainingAndEnablementControllerTest {
 						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
 				.andDo(print()).andExpect(status().isOk());
 	}
-	
+
 	@Test
 	public void testGetPitstops() throws Exception {
 		this.mockMvc
@@ -117,7 +112,7 @@ public class TrainingAndEnablementControllerTest {
 						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
 				.andDo(print()).andExpect(status().isOk());
 	}
-	
+
 	@Test
 	public void testCheckReady() throws Exception {
 		this.mockMvc
@@ -134,7 +129,7 @@ public class TrainingAndEnablementControllerTest {
 						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
 				.andDo(print()).andExpect(status().isOk());
 	}
-	
+
 	@Test
 	public void testCreateSuccessTalks() throws Exception {
 		SuccessTalk successTalk = new SuccessTalk();
@@ -168,7 +163,7 @@ public class TrainingAndEnablementControllerTest {
 						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
 				.andDo(print()).andExpect(status().isOk());
 	}
-	
+
 	@Test
 	public void testFetchSuccessTalks() throws Exception {
 		this.mockMvc
@@ -176,12 +171,35 @@ public class TrainingAndEnablementControllerTest {
 						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
 				.andDo(print()).andExpect(status().isOk());
 	}
-	
+
 	@Test
 	public void testFetchFilteredSuccessTalks() throws Exception {
 		this.mockMvc
-				.perform(get("/v1/partner/training/successTalks/IBN/solution").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.perform(get("/v1/partner/training/successTalks/IBN/solution")
+						.contentType(MediaType.APPLICATION_JSON_VALUE)
 						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
+				.andDo(print()).andExpect(status().isOk());
+	}
+	
+	@Test
+	public void registerToSuccessTalk() throws Exception {
+		this.mockMvc
+				.perform(post("/v1/partner/training/successTalk/register")
+						.contentType(MediaType.ALL_VALUE)
+						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8")
+						.content("")
+						.content(""))
+				.andDo(print()).andExpect(status().isOk());
+	}
+	
+	@Test
+	public void cancelToSuccessTalk() throws Exception {
+		this.mockMvc
+				.perform(post("/v1/partner/training/successTalk/cancel")
+						.contentType(MediaType.ALL_VALUE)
+						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8")
+						.content("")
+						.content(""))
 				.andDo(print()).andExpect(status().isOk());
 	}
 
