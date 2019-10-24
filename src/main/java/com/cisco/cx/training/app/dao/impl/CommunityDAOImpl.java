@@ -1,8 +1,8 @@
 package com.cisco.cx.training.app.dao.impl;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -22,7 +22,7 @@ import com.cisco.cx.training.models.ElasticSearchResults;
 @Repository
 public class CommunityDAOImpl implements CommunityDAO {
 	private static final Logger LOG = LoggerFactory.getLogger(CommunityDAOImpl.class);
-	
+
 	private static final String ERROR_MESSAGE = "Error while invoking ES API";
 
 	@Autowired
@@ -42,7 +42,6 @@ public class CommunityDAOImpl implements CommunityDAO {
 	}
 
 	public List<Community> getCommunities() {
-		List<Community> communityES = new ArrayList<>();
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 		BoolQueryBuilder boolQuery = new BoolQueryBuilder();
 
@@ -51,23 +50,14 @@ public class CommunityDAOImpl implements CommunityDAO {
 
 		try {
 			ElasticSearchResults<Community> results = elasticSearchDAO.query(INDEX, sourceBuilder, Community.class);
-
-			results.getDocuments().forEach(community -> {
-				communityES.add(community);
-			});
-
+			return results.getDocuments().stream().map(community -> community).collect(Collectors.toList());
 		} catch (IOException ioe) {
 			LOG.error(ERROR_MESSAGE, ioe);
 			throw new GenericException(ERROR_MESSAGE);
 		}
-
-		return communityES;
-
 	}
 
 	public List<Community> getFilteredCommunities(String solution, String usecase) {
-
-		List<Community> communityES = new ArrayList<>();
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 		BoolQueryBuilder boolQuery = new BoolQueryBuilder();
 
@@ -80,17 +70,12 @@ public class CommunityDAOImpl implements CommunityDAO {
 
 		try {
 			ElasticSearchResults<Community> results = elasticSearchDAO.query(INDEX, sourceBuilder, Community.class);
-
-			results.getDocuments().forEach(community -> {
-				communityES.add(community);
-			});
+			return results.getDocuments().stream().map(community -> community).collect(Collectors.toList());
 
 		} catch (IOException ioe) {
 			LOG.error(ERROR_MESSAGE, ioe);
 			throw new GenericException(ERROR_MESSAGE);
 		}
-
-		return communityES;
 
 	}
 }

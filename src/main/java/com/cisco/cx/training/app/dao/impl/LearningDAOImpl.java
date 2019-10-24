@@ -26,6 +26,8 @@ import com.cisco.cx.training.models.LearningModel;
 @Repository
 public class LearningDAOImpl implements LearningDAO {
 	private static final Logger LOG = LoggerFactory.getLogger(LearningDAOImpl.class);
+	
+	private static final String ERROR_MESSAGE = "Error while invoking ES API";
 
 	@Autowired
 	private ElasticSearchDAO elasticSearchDAO;
@@ -38,8 +40,8 @@ public class LearningDAOImpl implements LearningDAO {
 		try {
 			learning = elasticSearchDAO.saveEntry(INDEX, learning, Learning.class);
 		} catch (IOException e) {
-			LOG.error("Error while insertLearning ES API", e);
-			throw new GenericException("Error while invoking ES API");
+			LOG.error(ERROR_MESSAGE, e);
+			throw new GenericException(ERROR_MESSAGE);
 		}
 
 		return learning;
@@ -90,8 +92,8 @@ public class LearningDAOImpl implements LearningDAO {
 			}
 
 		} catch (IOException ioe) {
-			LOG.error("Error while invoking ES API", ioe);
-			throw new GenericException("Error while invoking ES API");
+			LOG.error(ERROR_MESSAGE, ioe);
+			throw new GenericException(ERROR_MESSAGE);
 		}
 
 		return learningModelES;
@@ -135,8 +137,8 @@ public class LearningDAOImpl implements LearningDAO {
 			}
 
 		} catch (IOException ioe) {
-			LOG.error("Error while invoking ES API", ioe);
-			throw new GenericException("Error while invoking ES API");
+			LOG.error(ERROR_MESSAGE, ioe);
+			throw new GenericException(ERROR_MESSAGE);
 		}
 
 		return learningModelES;
