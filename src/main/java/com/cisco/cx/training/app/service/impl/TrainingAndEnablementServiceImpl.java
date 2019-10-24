@@ -1,6 +1,5 @@
 package com.cisco.cx.training.app.service.impl;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -13,11 +12,13 @@ import org.springframework.stereotype.Service;
 import com.cisco.cx.training.app.dao.CommunityDAO;
 import com.cisco.cx.training.app.dao.LearningDAO;
 import com.cisco.cx.training.app.dao.SuccessTalkDAO;
-import com.cisco.cx.training.app.exception.GenericException;
-import com.cisco.cx.training.app.exception.NotAllowedException;
-import com.cisco.cx.training.app.exception.NotFoundException;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
-import com.cisco.cx.training.models.*;
+import com.cisco.cx.training.models.Community;
+import com.cisco.cx.training.models.Learning;
+import com.cisco.cx.training.models.LearningModel;
+import com.cisco.cx.training.models.SuccessTalk;
+import com.cisco.cx.training.models.SuccessTalkResponseSchema;
+import com.cisco.cx.training.models.SuccessTrackAndUseCases;
 
 @Service
 public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementService {

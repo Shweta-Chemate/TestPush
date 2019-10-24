@@ -14,7 +14,8 @@ public final class ValidationUtil {
 
     private ValidationUtil() { }
 
-    public static boolean isValidPageNo(String pageNo, Long minVal) throws IllegalArgumentException {
+    @SuppressWarnings("finally")
+	public static boolean isValidPageNo(String pageNo, Long minVal) throws IllegalArgumentException {
         Long page = null;
 
         try {
