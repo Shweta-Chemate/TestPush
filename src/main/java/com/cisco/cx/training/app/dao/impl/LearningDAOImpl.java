@@ -1,14 +1,12 @@
 package com.cisco.cx.training.app.dao.impl;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
-import com.cisco.cx.training.app.dao.ElasticSearchDAO;
-import com.cisco.cx.training.app.dao.LearningDAO;
-import com.cisco.cx.training.app.exception.GenericException;
-import com.cisco.cx.training.models.Learning;
-import com.cisco.cx.training.models.LearningModel;
-import com.cisco.cx.training.models.ElasticSearchResults;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -17,6 +15,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import com.cisco.cx.training.app.dao.ElasticSearchDAO;
+import com.cisco.cx.training.app.dao.LearningDAO;
+import com.cisco.cx.training.app.exception.GenericException;
+import com.cisco.cx.training.models.ElasticSearchResults;
+import com.cisco.cx.training.models.Learning;
+import com.cisco.cx.training.models.LearningModel;
 
 @Repository
 public class LearningDAOImpl implements LearningDAO {
@@ -34,6 +39,7 @@ public class LearningDAOImpl implements LearningDAO {
 			learning = elasticSearchDAO.saveEntry(INDEX, learning, Learning.class);
 		} catch (IOException e) {
 			LOG.error("Error while insertLearning ES API", e);
+			throw new GenericException("Error while invoking ES API");
 		}
 
 		return learning;
@@ -69,9 +75,9 @@ public class LearningDAOImpl implements LearningDAO {
 				}
 				String category = learn.getCategory() != null ? learn.getCategory() : "LEARNING MAP";
 				learn.setCategory(category);
-				String img = learn.getImg() != null ? learn.getImg() : "https://www.cisco.com/web/fw/tools/ssue/cp/lifecycle/acc/images/acc_access-overview-demo.png";
+				String img = learn.getImg() != null ? learn.getImg()
+						: "https://www.cisco.com/web/fw/tools/ssue/cp/lifecycle/acc/images/acc_access-overview-demo.png";
 				learn.setImg(img);
-
 
 			});
 
