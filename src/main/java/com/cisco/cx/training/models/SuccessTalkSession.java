@@ -12,7 +12,7 @@ public class SuccessTalkSession implements HasId {
 	private String sessionStartDate;
 	private String presenterName;
 	private String registrationUrl;
-	public RegistrationStatusEnum registrationStatus;
+	private RegistrationStatusEnum registrationStatus;
 	@JsonIgnore
 	private String region;
 	private Boolean scheduled;

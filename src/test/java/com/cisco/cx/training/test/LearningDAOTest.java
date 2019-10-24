@@ -3,10 +3,6 @@ package com.cisco.cx.training.test;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
 
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -25,7 +21,6 @@ import com.cisco.cx.training.app.dao.impl.LearningDAOImpl;
 import com.cisco.cx.training.app.exception.GenericException;
 import com.cisco.cx.training.models.ElasticSearchResults;
 import com.cisco.cx.training.models.Learning;
-import com.cisco.cx.training.models.LearningModel;
 
 @RunWith(SpringRunner.class)
 public class LearningDAOTest {
