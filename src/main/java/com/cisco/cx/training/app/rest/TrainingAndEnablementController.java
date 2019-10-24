@@ -105,11 +105,11 @@ public class TrainingAndEnablementController {
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during retrieve", response = ErrorResponse.class) })
-	public ResponseEntity<?> getAllCommunities(
+	public ResponseEntity<List<Community>> getAllCommunities(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake" , required=false) String xMasheryHandshake)
 			throws Exception {
 		List<Community> communityList = trainingAndEnablementService.getAllCommunities();
-		return new ResponseEntity<>(communityList, HttpStatus.OK);
+		return new ResponseEntity<List<Community>>(communityList, HttpStatus.OK);
 	}
 
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/communities/{solution}/{usecase}")
@@ -118,12 +118,12 @@ public class TrainingAndEnablementController {
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during retrieve", response = ErrorResponse.class) })
-	public ResponseEntity<?> getAllCommunities(@PathVariable(value = "solution", required = false) String solution,
+	public ResponseEntity<List<Community>> getAllCommunities(@PathVariable(value = "solution", required = false) String solution,
 			@PathVariable(value = "usecase", required = false) String usecase, 
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake" , required=false) String xMasheryHandshake)
 			throws Exception {
 		List<Community> communityList = trainingAndEnablementService.getFilteredCommunities(solution, usecase);
-		return new ResponseEntity<>(communityList, HttpStatus.OK);
+		return new ResponseEntity<List<Community>>(communityList, HttpStatus.OK);
 	}
 	
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalk")
@@ -146,11 +146,11 @@ public class TrainingAndEnablementController {
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during retrieve", response = ErrorResponse.class) })
-	public ResponseEntity<?> getAllSuccessTalks(
+	public ResponseEntity<SuccessTalkResponseSchema> getAllSuccessTalks(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake" , required=false) String xMasheryHandshake)
 			throws Exception {
 		SuccessTalkResponseSchema successTalkResponseSchema = trainingAndEnablementService.getAllSuccessTalks();
-		return new ResponseEntity<>(successTalkResponseSchema, HttpStatus.OK);
+		return new ResponseEntity<SuccessTalkResponseSchema>(successTalkResponseSchema, HttpStatus.OK);
 	}
 
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalks/{solution}/{usecase}")
@@ -159,12 +159,12 @@ public class TrainingAndEnablementController {
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during retrieve", response = ErrorResponse.class) })
-	public ResponseEntity<?> getFilteredSuccessTalks(@PathVariable(value = "solution", required = false) String solution,
+	public ResponseEntity<SuccessTalkResponseSchema> getFilteredSuccessTalks(@PathVariable(value = "solution", required = false) String solution,
 			@PathVariable(value = "usecase", required = false) String usecase, 
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake" , required=false) String xMasheryHandshake)
 			throws Exception {
 		SuccessTalkResponseSchema successTalkResponseSchema = trainingAndEnablementService.getFilteredSuccessTalks(solution, usecase);
-		return new ResponseEntity<>(successTalkResponseSchema, HttpStatus.OK);
+		return new ResponseEntity<SuccessTalkResponseSchema>(successTalkResponseSchema, HttpStatus.OK);
 	}
 	
 
@@ -175,11 +175,11 @@ public class TrainingAndEnablementController {
             @ApiResponse(code = 400, message = "Bad Request", response = ErrorResponse.class),
             @ApiResponse(code = 403, message = "Operation forbidden due to business policies", response = ErrorResponse.class),
             @ApiResponse(code = 500, message = "Error during registration", response = ErrorResponse.class)})
-    public ResponseEntity<?> registerToSuccessTalk(@ApiParam(value = "successTalkId", required = true) String successTalkId,
+    public ResponseEntity<String> registerToSuccessTalk(@ApiParam(value = "successTalkId", required = true) String successTalkId,
     		@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required=false) String xMasheryHandshake,
             @ApiParam(value = "The SessionId of this SuccessTalk", required = true) String sessionId) throws Exception {
          String successTalkResultId = trainingAndEnablementService.registerUserToSuccessTalkSession(sessionId, successTalkId);
-         return new ResponseEntity<>(successTalkResultId, HttpStatus.OK);
+         return new ResponseEntity<String>(successTalkResultId, HttpStatus.OK);
     }
     
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "successTalk/cancel")
@@ -189,12 +189,11 @@ public class TrainingAndEnablementController {
             @ApiResponse(code = 400, message = "Bad Request", response = ErrorResponse.class),
             @ApiResponse(code = 403, message = "Operation forbidden due to business policies", response = ErrorResponse.class),
             @ApiResponse(code = 500, message = "Error during cancellation", response = ErrorResponse.class)})
-    public ResponseEntity<?> cancelToSuccessTalk(@ApiParam(value = "successTalkId", required = true) String successTalkId,
+    public ResponseEntity<String> cancelToSuccessTalk(@ApiParam(value = "successTalkId", required = true) String successTalkId,
     		@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required=false) String xMasheryHandshake,
             @ApiParam(value = "The SessionId of this SuccessTalk", required = true) String sessionId) throws Exception {
     	 String successTalkResultId =  trainingAndEnablementService.cancelUserToSuccessTalkSession(sessionId, successTalkId);
-         System.out.println("in controller");
-         return new ResponseEntity<>(successTalkResultId, HttpStatus.OK);
+         return new ResponseEntity<String>(successTalkResultId, HttpStatus.OK);
     }
     
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, path = "/learning")
@@ -218,11 +217,11 @@ public class TrainingAndEnablementController {
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
-	public ResponseEntity<?> getAllLeanings(
+	public ResponseEntity<List<LearningModel>> getAllLeanings(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake)
 			throws Exception {
 		List<LearningModel> learningList = trainingAndEnablementService.getAllLearning();
-		return new ResponseEntity<>(learningList, HttpStatus.OK);
+		return new ResponseEntity<List<LearningModel>>(learningList, HttpStatus.OK);
 	}
 
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/learnings/{solution}/{usecase}")
@@ -231,12 +230,12 @@ public class TrainingAndEnablementController {
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
-	public ResponseEntity<?> getAllLearnings(@PathVariable(value = "solution", required = false) String solution,
+	public ResponseEntity<List<LearningModel>> getAllLearnings(@PathVariable(value = "solution", required = false) String solution,
 			@PathVariable(value = "usecase", required = false) String usecase,
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake)
 			throws Exception {		
 		List<LearningModel> learningList = trainingAndEnablementService.getFilteredLearning(solution, usecase);
-		return new ResponseEntity<>(learningList, HttpStatus.OK);
+		return new ResponseEntity<List<LearningModel>>(learningList, HttpStatus.OK);
 	}
 
 }
