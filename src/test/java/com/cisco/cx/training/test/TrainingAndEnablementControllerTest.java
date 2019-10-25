@@ -30,7 +30,6 @@ import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.config.Swagger2Config;
 import com.cisco.cx.training.app.dao.CommunityDAO;
 import com.cisco.cx.training.app.rest.TrainingAndEnablementController;
-import com.cisco.cx.training.app.service.CiscoProfileService;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
 import com.cisco.cx.training.models.Community;
 import com.cisco.cx.training.models.SuccessTalk;
@@ -44,7 +43,7 @@ import springfox.documentation.swagger2.web.Swagger2Controller;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = { TrainingAndEnablementController.class, Swagger2Controller.class })
-@ContextConfiguration(classes = { TrainingAndEnablementApplication.class, CiscoProfileService.class,
+@ContextConfiguration(classes = { TrainingAndEnablementApplication.class,
 		PropertyConfiguration.class, ElasticSearchConfig.class, Swagger2Config.class, FilterConfig.class })
 
 public class TrainingAndEnablementControllerTest {

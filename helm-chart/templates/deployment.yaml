@@ -72,6 +72,16 @@ spec:
             - name: APPDYNAMICS_JVM_PARAMETER
               value: {{ .Values.appDynamics.appdynamics_jvm_parameter }}
           {{- end}}
+            - name: cxpp_elasticsearch_username
+              valueFrom:
+                secretKeyRef:
+                  name: cxpp-common
+                  key: cxpp_elasticsearch_username
+            - name: cxpp_elasticsearch_password
+              valueFrom:
+                secretKeyRef:
+                  name: cxpp-common
+                  key: cxpp_elasticsearch_password
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           # command: ["/bin/bash"]

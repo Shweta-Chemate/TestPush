@@ -35,9 +35,6 @@ public class PropertyConfiguration {
 	@Value("${cisco.ldap.userid}")
 	private String ldapUserId;
 
-	@Value("${cisco.ldap.password}")
-	private String ldapPassword;
-
 	@Value("${cisco.oauth.token.url}")
 	private String ciscoOauthTokenUrl;
 
@@ -68,8 +65,6 @@ public class PropertyConfiguration {
 	public String getLdapUrl() { return ldapUrl; }
 
 	public String getLdapUserId() { return ldapUserId; }
-
-	public String getLdapPassword() { return ldapPassword; }
 
 	public String getCiscoOauthTokenUrl() { return ciscoOauthTokenUrl; }
 

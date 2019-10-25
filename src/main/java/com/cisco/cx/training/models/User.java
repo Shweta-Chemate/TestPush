@@ -1,6 +1,5 @@
 package com.cisco.cx.training.models;
 
-import com.cisco.cx.training.app.service.CiscoProfileService;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,10 +35,6 @@ public class User {
 
     public String getAccessLevel() {
         return this.accessLevel;
-    }
-
-    public String getType() {
-        return StringUtils.isNotBlank(this.accessLevel) ? CiscoProfileService.resolveUserType(this.accessLevel) : "Guest";
     }
 
     private User() {}
