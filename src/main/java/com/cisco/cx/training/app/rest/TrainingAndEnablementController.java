@@ -62,7 +62,6 @@ public class TrainingAndEnablementController {
 		// next, check if any of the mandatory dependencies are DOWN
 		boolean isMandatoryDepDown = healthStatus.values().contains("DOWN");
 
-		//process optional dependencies AFTER checking if mandatory dependencies are DOWN
 		ValidationUtil.checkHealth(healthStatus, optionalDependencies);
 
 		if (isMandatoryDepDown) {
@@ -210,7 +209,6 @@ public class TrainingAndEnablementController {
 		return trainingAndEnablementService.insertLearning(learning);
 	}
 	
-    @CrossOrigin(origins = "*", allowedHeaders = "*")
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/learnings")
 	@ApiOperation(value = "Fetch learnings", response = String.class, nickname = "fetchlearnings")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
