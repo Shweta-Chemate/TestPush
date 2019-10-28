@@ -62,6 +62,7 @@ public class TrainingAndEnablementController {
 		// next, check if any of the mandatory dependencies are DOWN
 		boolean isMandatoryDepDown = healthStatus.values().contains("DOWN");
 
+		//process optional dependencies AFTER checking if mandatory dependencies are DOWN
 		ValidationUtil.checkHealth(healthStatus, optionalDependencies);
 
 		if (isMandatoryDepDown) {
