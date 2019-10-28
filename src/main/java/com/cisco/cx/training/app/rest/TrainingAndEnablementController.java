@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,17 +18,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.exception.ErrorResponse;
 import com.cisco.cx.training.app.exception.HealthCheckException;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
+import com.cisco.cx.training.models.BookmarkRequestSchema;
+import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.cisco.cx.training.models.Community;
 import com.cisco.cx.training.models.Learning;
 import com.cisco.cx.training.models.LearningModel;
 import com.cisco.cx.training.models.SuccessTalk;
 import com.cisco.cx.training.models.SuccessTalkResponseSchema;
 import com.cisco.cx.training.models.SuccessTrackAndUseCases;
+import com.cisco.cx.training.models.SuccesstalkUserRegEsSchema;
 import com.cisco.cx.training.util.ValidationUtil;
 
 import io.swagger.annotations.Api;
@@ -140,6 +146,7 @@ public class TrainingAndEnablementController {
 		return trainingAndEnablementService.insertSuccessTalk(successTalk);
 	}
 
+	/*@CrossOrigin(origins = "*", allowedHeaders = "*")
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalks")
 	@ApiOperation(value = "Fetch SuccessTalks", response = SuccessTalkResponseSchema.class, nickname = "fetchSuccessTalks")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
@@ -151,7 +158,7 @@ public class TrainingAndEnablementController {
 			throws Exception {
 		SuccessTalkResponseSchema successTalkResponseSchema = trainingAndEnablementService.getAllSuccessTalks();
 		return new ResponseEntity<SuccessTalkResponseSchema>(successTalkResponseSchema, HttpStatus.OK);
-	}
+	}*/
 
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalks/{solution}/{usecase}")
 	@ApiOperation(value = "Fetch SuccessTalks For Solution and Usecase Filters", response = SuccessTalkResponseSchema.class, nickname = "fetchFilteredSuccessTalks")
@@ -167,34 +174,19 @@ public class TrainingAndEnablementController {
 		return new ResponseEntity<SuccessTalkResponseSchema>(successTalkResponseSchema, HttpStatus.OK);
 	}
 	
-
-    @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "successTalk/register")
-    @ApiOperation(value = "Create New SuccessTalk Registration", nickname = "registerUserToSuccessTalk", response = String.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully registered"),
-            @ApiResponse(code = 400, message = "Bad Request", response = ErrorResponse.class),
-            @ApiResponse(code = 403, message = "Operation forbidden due to business policies", response = ErrorResponse.class),
-            @ApiResponse(code = 500, message = "Error during registration", response = ErrorResponse.class)})
-    public ResponseEntity<String> registerToSuccessTalk(@ApiParam(value = "successTalkId", required = true) String successTalkId,
-    		@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required=false) String xMasheryHandshake,
-            @ApiParam(value = "The SessionId of this SuccessTalk", required = true) String sessionId) throws Exception {
-         String successTalkResultId = trainingAndEnablementService.registerUserToSuccessTalkSession(sessionId, successTalkId);
-         return new ResponseEntity<String>(successTalkResultId, HttpStatus.OK);
-    }
-    
-    @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "successTalk/cancel")
-    @ApiOperation(value = "Cancel SuccessTalk Registration", nickname = "cancelUserToSuccessTalk", response = String.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully cancelled"),
-            @ApiResponse(code = 400, message = "Bad Request", response = ErrorResponse.class),
-            @ApiResponse(code = 403, message = "Operation forbidden due to business policies", response = ErrorResponse.class),
-            @ApiResponse(code = 500, message = "Error during cancellation", response = ErrorResponse.class)})
-    public ResponseEntity<String> cancelToSuccessTalk(@ApiParam(value = "successTalkId", required = true) String successTalkId,
-    		@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required=false) String xMasheryHandshake,
-            @ApiParam(value = "The SessionId of this SuccessTalk", required = true) String sessionId) throws Exception {
-    	 String successTalkResultId =  trainingAndEnablementService.cancelUserToSuccessTalkSession(sessionId, successTalkId);
-         return new ResponseEntity<String>(successTalkResultId, HttpStatus.OK);
-    }
+	@CrossOrigin(origins = "*", allowedHeaders = "*")
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalks/{email}")
+	@ApiOperation(value = "Fetch SuccessTalks For Email Filter", response = SuccessTalkResponseSchema.class, nickname = "fetchUserSuccessTalks")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
+			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
+			@ApiResponse(code = 404, message = "Entity Not Found"),
+			@ApiResponse(code = 500, message = "Error during retrieve", response = ErrorResponse.class) })
+	public ResponseEntity<SuccessTalkResponseSchema> getUserSuccessTalks(@PathVariable(value = "email", required = false) String email,
+			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake" , required=false) String xMasheryHandshake)
+			throws Exception {
+		SuccessTalkResponseSchema successTalkResponseSchema = trainingAndEnablementService.getUserSuccessTalks(email);
+		return new ResponseEntity<SuccessTalkResponseSchema>(successTalkResponseSchema, HttpStatus.OK);
+	}
     
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, path = "/learning")
 	@ApiOperation(value = "Create New Learning", response = String.class, nickname = "createLearning")
@@ -237,5 +229,73 @@ public class TrainingAndEnablementController {
 		List<LearningModel> learningList = trainingAndEnablementService.getFilteredLearning(solution, usecase);
 		return new ResponseEntity<List<LearningModel>>(learningList, HttpStatus.OK);
 	}
+	
+	@CrossOrigin(origins = "*", allowedHeaders = "*")
+    @RequestMapping(method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalk/registration")
+    @ApiOperation(value = "Request a cancellation for a scheduled Success Talk session", nickname = "cancelUserToSucessTalk")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully cancelled"),
+            @ApiResponse(code = 400, message = "Bad Request", response = ErrorResponse.class),
+            @ApiResponse(code = 403, message = "Operation forbidden due to business policies", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Internal server error occured", response = ErrorResponse.class)})
+    public SuccesstalkUserRegEsSchema cancelUserAtxRegistration(
+            @ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
+            @ApiParam(value = "Event Name of selected session", required = true) @RequestParam(value = "title", required = true) String title,
+            @ApiParam(value = "Email of user", required = true) @RequestParam(value = "email", required = true) String email) throws Exception {
+
+        /*if (StringUtils.isBlank(xMasheryHandshake)) {
+            throw new BadRequestException("X-Mashery-Handshake header missing in request");
+        }*/
+
+        return trainingAndEnablementService.cancelUserSuccessTalkRegistration(title, email);
+    }
+
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalk/registration")
+    @ApiOperation(value = "Create New Success Talk Registration", nickname = "registerUserToSuccessTalk", response = SuccesstalkUserRegEsSchema.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully registered"),
+            @ApiResponse(code = 400, message = "Bad Request", response = ErrorResponse.class),
+            @ApiResponse(code = 403, message = "Operation forbidden due to business policies", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Error during registration", response = ErrorResponse.class)})
+    public SuccesstalkUserRegEsSchema registerToAtx(@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
+            @ApiParam(value = "Event Name of selected session", required = true) @RequestParam(value = "title") String title,
+            @ApiParam(value = "Email of user", required = true) @RequestParam(value = "email") String email) throws Exception {
+
+        /*if (StringUtils.isBlank(xMasheryHandshake)) {
+            throw new BadRequestException("X-Mashery-Handshake header missing in request");
+        }*/
+    	System.out.println("in controller with title:"+title);
+    	System.out.println("in controller with email:"+email);
+        return trainingAndEnablementService.registerUserToSuccessTalkRegistration(title, email);
+    }
+    
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalk/bookmarks")
+    @ApiOperation(value = "Create or update bookmark for one of the lifecycle categories", response = BookmarkResponseSchema.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully updated", response = BookmarkResponseSchema.class),
+            @ApiResponse(code = 400, message = "Bad Request", response = ErrorResponse.class),
+            @ApiResponse(code = 403, message = "Operation forbidden due to business policies", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Internal server error occured", response = ErrorResponse.class)})
+    public BookmarkResponseSchema createOrUpdate(@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
+    											 @ApiParam(value = "Email of user", required = true) @RequestParam(value = "email") String email,
+                                                 @ApiParam(value = "JSON Body to Bookmark", required = true) @RequestBody BookmarkRequestSchema bookmarkRequestSchema) {
+
+        LOG.info("API_BOOKMARKS Call start");
+        long startTime = System.currentTimeMillis();
+
+        if (!bookmarkRequestSchema.isNotBlank()) {
+            throw new BadRequestException("Bad Request");
+        }
+
+        BookmarkResponseSchema bookmarkResponseSchema = trainingAndEnablementService.createOrUpdateBookmark(bookmarkRequestSchema, email);
+
+        long endTime = System.currentTimeMillis() - startTime;
+        LOG.info("PERF_TIME_TAKEN | API_BOOKMARKS | " + endTime);
+        LOG.info("API_BOOKMARKS Call end");
+
+        return bookmarkResponseSchema;
+    }
 
 }

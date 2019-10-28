@@ -2,6 +2,8 @@ package com.cisco.cx.training.app.service;
 
 import java.util.List;
 
+import com.cisco.cx.training.app.exception.NotAllowedException;
+import com.cisco.cx.training.app.exception.NotFoundException;
 import com.cisco.cx.training.models.*;
 
 public interface TrainingAndEnablementService {
@@ -26,7 +28,14 @@ public interface TrainingAndEnablementService {
 
 	SuccessTalkResponseSchema getFilteredSuccessTalks(String solution, String usecase);
 	
-    public String registerUserToSuccessTalkSession(String sessionId, String successTalkId);
-    
-    public String cancelUserToSuccessTalkSession(String sessionId, String successTalkId);
+	SuccessTalkResponseSchema getUserSuccessTalks(String email);
+
+	SuccesstalkUserRegEsSchema cancelUserSuccessTalkRegistration(String title, String email) throws Exception;
+
+	SuccesstalkUserRegEsSchema registerUserToSuccessTalkRegistration(String title, String email) throws Exception;
+
+	SuccesstalkUserRegEsSchema fetchSuccessTalkRegistrationDetails(SuccesstalkUserRegEsSchema registration)
+			throws NotFoundException, NotAllowedException;
+
+	BookmarkResponseSchema createOrUpdateBookmark(BookmarkRequestSchema bookmarkRequestSchema, String email);
 }

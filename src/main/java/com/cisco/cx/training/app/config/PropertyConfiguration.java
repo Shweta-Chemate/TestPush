@@ -49,6 +49,18 @@ public class PropertyConfiguration {
 	
     @Value("${successTalk.elasticsearch.index}")
     private String successTalkIndex;
+    
+    @Value("${smartsheet.successTalk.registration.sheetId}")
+    private long successTalkRegistrationSheetId;
+    
+    @Value("${smartsheet.accessToken}")
+    private String smartsheetAccessToken;
+    
+    @Value("${successTalkUserRegistrations.elasticsearch.index}")
+    private String successTalkUserRegistrationsIndex;
+
+    @Value("${bookmarks.elasticsearch.index}")
+    private String bookmarksIndex;
 
 	public String getApplicationName() { return applicationName; }
 
@@ -76,5 +88,21 @@ public class PropertyConfiguration {
 	
     public String getSuccessTalkIndex() {
         return successTalkIndex;
+    }
+    
+    public long getSuccessTalkRegistrationSheetId() {
+        return successTalkRegistrationSheetId;
+    }
+    
+    public String getSmartsheetAccessToken() {
+        return smartsheetAccessToken;
+    }
+    
+    public String getSuccessTalkUserRegistrationsIndex() {
+        return successTalkUserRegistrationsIndex;
+    }
+
+    public String getBookmarksIndex() {
+        return bookmarksIndex;
     }
 }

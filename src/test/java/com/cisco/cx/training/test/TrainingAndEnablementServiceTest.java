@@ -93,22 +93,6 @@ public class TrainingAndEnablementServiceTest {
 		when(successTalkDAO.insertSuccessTalk(successTalk)).thenReturn(successTalk);
 		trainingAndEnablementService.insertSuccessTalk(successTalk);
 	}
-	
-	@Test
-	public void registerUserToSuccessTalkSession() {
-		String sessionId = "sessionId";
-		String successTalkId = "successTalkId";
-		when(successTalkDAO.registerUser("sessionId", "successTalkId")).thenReturn("successTalkId");
-		trainingAndEnablementService.registerUserToSuccessTalkSession(sessionId, successTalkId);
-	}
-	
-	@Test
-	public void cancelUserToSuccessTalkSession() {
-		String sessionId = "sessionId";
-		String successTalkId = "successTalkId";
-		when(successTalkDAO.cancelRegistration("sessionId", "successTalkId")).thenReturn("successTalkId");
-		trainingAndEnablementService.cancelUserToSuccessTalkSession(sessionId, successTalkId);
-	}
 
 	private Community getCommunity() {
 		Community community = new Community();
@@ -135,9 +119,9 @@ public class TrainingAndEnablementServiceTest {
 		session.setPresenterName("John Doe");
 		session.setRegion("region");
 		session.setRegistrationUrl("");
-		session.setScheduled(true);
+		session.setScheduled(false);
 		session.setSessionId("");
-		session.setSessionStartDate("");
+		session.setSessionStartDate(00L);
 		Arrays.asList(session);
 		successTalk.setSessions(sessions);
 		return successTalk;

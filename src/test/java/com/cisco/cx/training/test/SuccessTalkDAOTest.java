@@ -160,9 +160,9 @@ public class SuccessTalkDAOTest {
 		session.setPresenterName("John Doe");
 		session.setRegion("region");
 		session.setRegistrationUrl("");
-		session.setScheduled(true);
+		session.setScheduled(false);
 		session.setSessionId("successTalkSessionId");
-		session.setSessionStartDate("");
+		session.setSessionStartDate(00L);
 		successTalk.setSessions(Arrays.asList(session));
 		return successTalk;
 	}

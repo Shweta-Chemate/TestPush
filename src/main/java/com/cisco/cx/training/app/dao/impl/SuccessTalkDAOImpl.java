@@ -1,10 +1,15 @@
 package com.cisco.cx.training.app.dao.impl;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -18,10 +23,11 @@ import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.dao.ElasticSearchDAO;
 import com.cisco.cx.training.app.dao.SuccessTalkDAO;
 import com.cisco.cx.training.app.exception.GenericException;
+import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.cisco.cx.training.models.ElasticSearchResults;
 import com.cisco.cx.training.models.SuccessTalk;
 import com.cisco.cx.training.models.SuccessTalkSession;
-import com.cisco.cx.training.models.SuccessTalkSession.RegistrationStatusEnum;
+import com.cisco.cx.training.models.SuccesstalkUserRegEsSchema;
 
 @Repository
 public class SuccessTalkDAOImpl implements SuccessTalkDAO{
@@ -35,7 +41,10 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
 	
     @Autowired
     private PropertyConfiguration config;
-    
+
+	@Autowired
+	private BookmarkDAO bookmarkDAO;
+	
     public SuccessTalk insertSuccessTalk(SuccessTalk successTalk) {
         // save the entry to ES
         try {
@@ -114,7 +123,6 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
 			successTalkSessions.forEach(session-> {
 				if(session.getSessionId().equals(successTalkSessionId))
 				{
-					session.setRegistrationStatus(RegistrationStatusEnum.REGISTERED);
 					this.insertSuccessTalk(successTalk);
 				}
 			});
@@ -133,7 +141,6 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
 			successTalkSessions.forEach(session-> {
 				if(session.getSessionId().equals(successTalkSessionId))
 				{
-					session.setRegistrationStatus(RegistrationStatusEnum.CANCELLED);
 					this.insertSuccessTalk(successTalk);
 				}
 			});
@@ -142,6 +149,140 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
 			throw new GenericException(ERROR_MESSAGE);
 		}
 		return successTalkId;
+	}
+	
+	@Override
+    public SuccesstalkUserRegEsSchema saveSuccessTalkRegistration(SuccesstalkUserRegEsSchema registration) throws Exception {
+        // set the updated timestamp of the registration
+        registration.setUpdated(System.currentTimeMillis());
+        // save the entry to ES
+        return elasticSearchDAO.saveEntry(config.getSuccessTalkUserRegistrationsIndex(), registration, SuccesstalkUserRegEsSchema.class);
+    }
+	
+	@Override
+    public SuccessTalk findSuccessTalk(String title) throws IOException {
+        SuccessTalk matchedSuccessTalk = null;
+
+        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+        sourceBuilder.query(QueryBuilders.matchPhraseQuery("title", title));
+        sourceBuilder.size(1);
+
+        List<SuccessTalk> matchedSuccessTalkList = elasticSearchDAO.query(config.getSuccessTalkIndex(), sourceBuilder, SuccessTalk.class).getDocuments();
+
+        if (matchedSuccessTalkList != null && matchedSuccessTalkList.size() > 0) {
+        	SuccessTalk matchedSuccessTalkTemp = matchedSuccessTalkList.stream().findFirst().get();
+
+            List<SuccessTalkSession> successTalkSessions = matchedSuccessTalkTemp.getSessions();
+            /*if (successTalkSessions != null && successTalkSessions.size() > 0) {
+                List<SuccessTalkSession> matchedSessions = successTalkSessions.stream().filter(session -> StringUtils.equalsIgnoreCase(session.getSessionId(), sessionId)).collect(Collectors.toList());
+                if (matchedSessions != null && matchedSessions.size() > 0) {
+                    List<SuccessTalkSession> futureSessions = matchedSessions.stream()
+                            .filter(session -> (session.getSessionStartDate() == null || System.currentTimeMillis() < session.getSessionStartDate()))
+                            .collect(Collectors.toList());
+
+                    if (futureSessions == null || futureSessions.size() < 1) {
+                        throw new NotAllowedException("Cannot register for sessionId: " + sessionId + " because session start date is in the past");
+                    } else {
+                        matchedSuccessTalk = matchedSuccessTalkTemp;
+                        matchedSuccessTalk.setSessions(futureSessions);
+                    }
+                }
+            }*/
+            matchedSuccessTalk = matchedSuccessTalkTemp;
+        }
+
+        return matchedSuccessTalk;
+    }
+
+	@Override
+    public List<SuccesstalkUserRegEsSchema> getRegisteredSuccessTalks(String email) {
+		System.out.println("email"+email);
+        List<SuccesstalkUserRegEsSchema> scheduledRegs = null;
+
+        try {
+            SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+            BoolQueryBuilder boolQuery = new BoolQueryBuilder();
+            QueryBuilder emailQuery = QueryBuilders.matchPhraseQuery("email.keyword", email);
+            QueryBuilder transactionType = QueryBuilders.matchPhraseQuery("registrationStatus.keyword", SuccesstalkUserRegEsSchema.RegistrationStatusEnum.REGISTERED);
+            boolQuery.must(emailQuery).must(transactionType);
+
+            sourceBuilder.query(boolQuery);
+            sourceBuilder.size(1000);
+
+            scheduledRegs = elasticSearchDAO.query(config.getSuccessTalkUserRegistrationsIndex(), sourceBuilder, SuccesstalkUserRegEsSchema.class).getDocuments();
+
+        } catch (IOException ioe) {
+            LOG.error("Error while invoking ES API", ioe);
+            throw new GenericException("Error while invoking ES API");
+        } catch (Exception e) {
+            LOG.error("Error while getting response", e);
+            throw new GenericException("Error while getting response");
+        }
+
+        return scheduledRegs;
+    }
+	
+	@Override
+	public List<SuccessTalk> getUserSuccessTalks(String email) {
+		List<SuccessTalk> successTalkES = new ArrayList<>();
+		
+
+        LocalDateTime currentTime = LocalDateTime.now();
+        ZonedDateTime zdt = ZonedDateTime.of(currentTime, ZoneId.systemDefault());
+        long currentEpochMillis = zdt.toInstant().toEpochMilli();
+        
+		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+		BoolQueryBuilder boolQuery = new BoolQueryBuilder();
+		
+		sourceBuilder.query(boolQuery);
+		sourceBuilder.size(10000);
+
+		try {
+			ElasticSearchResults<SuccessTalk> results = elasticSearchDAO.query(config.getSuccessTalkIndex(), sourceBuilder, SuccessTalk.class);
+
+            List<BookmarkResponseSchema> bookmarksList = bookmarkDAO.getBookmarks(email,null);
+			List<SuccesstalkUserRegEsSchema> registeredSuccessTalkList = getRegisteredSuccessTalks(email);
+			
+			results.getDocuments().forEach(successTalk -> {
+
+                for (BookmarkResponseSchema bookmark : bookmarksList) {
+                    if (successTalk.getTitle().equalsIgnoreCase(bookmark.getTitle())) {
+                    	successTalk.setBookmark(bookmark.isBookmark());
+                    }
+                }
+				
+				System.out.println("inside for loop");
+		        for (SuccesstalkUserRegEsSchema transaction : registeredSuccessTalkList) {
+		            if (transaction.getTitle().equalsIgnoreCase(successTalk.getTitle())) {
+		            	System.out.println("inside if");
+		            	successTalk.setStatus(SuccessTalk.SuccessTalkStatusEnum.SCHEDULED);
+		            	successTalk.getSessions().forEach(
+		                        session -> {
+		                            if (session.getSessionStartDate().equals(transaction.getEventStartDate())) {
+		                                session.setScheduled(true);
+		                                // if the scheduled session has passed current date, mark it complete.
+		                                if (session.getSessionStartDate() <= currentEpochMillis) {
+		                                	successTalk.setStatus(SuccessTalk.SuccessTalkStatusEnum.COMPLETED);
+		                                }
+		                            }
+		                        }
+		                );
+		            }
+		        }
+				
+				
+				successTalk.setImageUrl("https://www.cisco.com/web/fw/tools/ssue/cp/lifecycle/atx/images/ATX-DNA-Center-Wireless-Assurance.png");
+				successTalk.setDuration(4500L);
+				successTalkES.add(successTalk);
+			});
+
+		} catch (IOException ioe) {
+			LOG.error(ERROR_MESSAGE, ioe);
+			throw new GenericException(ERROR_MESSAGE);
+		}
+
+		Collections.sort(successTalkES);
+		return successTalkES;
 	}
 
 }

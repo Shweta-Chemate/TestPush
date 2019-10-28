@@ -163,13 +163,13 @@ public class TrainingAndEnablementControllerTest {
 				.andDo(print()).andExpect(status().isOk());
 	}
 
-	@Test
+	/*@Test
 	public void testFetchSuccessTalks() throws Exception {
 		this.mockMvc
 				.perform(get("/v1/partner/training/successTalks").contentType(MediaType.APPLICATION_JSON_VALUE)
 						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
 				.andDo(print()).andExpect(status().isOk());
-	}
+	}*/
 
 	@Test
 	public void testFetchFilteredSuccessTalks() throws Exception {
@@ -177,28 +177,6 @@ public class TrainingAndEnablementControllerTest {
 				.perform(get("/v1/partner/training/successTalks/IBN/solution")
 						.contentType(MediaType.APPLICATION_JSON_VALUE)
 						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
-				.andDo(print()).andExpect(status().isOk());
-	}
-	
-	@Test
-	public void registerToSuccessTalk() throws Exception {
-		this.mockMvc
-				.perform(post("/v1/partner/training/successTalk/register")
-						.contentType(MediaType.ALL_VALUE)
-						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8")
-						.content("")
-						.content(""))
-				.andDo(print()).andExpect(status().isOk());
-	}
-	
-	@Test
-	public void cancelToSuccessTalk() throws Exception {
-		this.mockMvc
-				.perform(post("/v1/partner/training/successTalk/cancel")
-						.contentType(MediaType.ALL_VALUE)
-						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8")
-						.content("")
-						.content(""))
 				.andDo(print()).andExpect(status().isOk());
 	}
 

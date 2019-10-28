@@ -103,6 +103,11 @@
 			<artifactId>kafka-clients</artifactId>
 		</dependency>
 
+        <dependency>
+            <groupId>com.smartsheet</groupId>
+            <artifactId>smartsheet-sdk-java</artifactId>
+            <version>2.83.0</version>
+        </dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
 
 
