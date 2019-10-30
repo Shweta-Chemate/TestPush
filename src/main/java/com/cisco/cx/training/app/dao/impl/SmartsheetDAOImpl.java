@@ -67,7 +67,6 @@ public class SmartsheetDAOImpl implements SmartsheetDAO {
 	public void saveSuccessTalkRegistration(SuccesstalkUserRegEsSchema registration) throws SmartsheetException {
         // get a hook to the smartsheet sheet
         Smartsheet client = this.createClient();
-        System.out.println("inside smartsheet dao");
         // try to find a matching cancelled smartsheet row for the registration if it exists
         Row previouslyCanceledRegistration = this.updateExistingSuccessTalkRegistration(registration,
                 Arrays.asList(
@@ -76,9 +75,6 @@ public class SmartsheetDAOImpl implements SmartsheetDAO {
 
         if (previouslyCanceledRegistration == null) {
             // add a new row to the smartsheet
-        	System.out.println("inside cancelled is null");
-        	System.out.println("status here is:"+ registration.getRegistrationStatus());
-        	System.out.println("event date"+registration.getEventStartDate());
             client.sheetResources().rowResources().addRows(config.getSuccessTalkRegistrationSheetId(),
                     Arrays.asList(createRow(registration, this.getSuccessTalkRegistrationSmartsheet(client).getColumns())));
         }

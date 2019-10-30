@@ -266,9 +266,6 @@ public class TrainingAndEnablementController {
         /*if (StringUtils.isBlank(xMasheryHandshake)) {
             throw new BadRequestException("X-Mashery-Handshake header missing in request");
         }*/
-    	System.out.println("in controller with title:"+title);
-    	System.out.println("in controller with email:"+email);
-    	System.out.println("in controller with eventStartDate:"+eventStartDate);
         return trainingAndEnablementService.registerUserToSuccessTalkRegistration(title, eventStartDate, email);
     }
     

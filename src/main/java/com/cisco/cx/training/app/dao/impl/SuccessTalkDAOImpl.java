@@ -168,9 +168,7 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
         sourceBuilder.query(QueryBuilders.matchPhraseQuery("title", title));
         sourceBuilder.size(1);
-        System.out.println("in find ST");
         List<SuccessTalk> matchedSuccessTalkList = elasticSearchDAO.query(config.getSuccessTalkIndex(), sourceBuilder, SuccessTalk.class).getDocuments();
-        System.out.println("matched ST" + matchedSuccessTalkList);
         if (matchedSuccessTalkList != null && matchedSuccessTalkList.size() > 0) {
         	SuccessTalk matchedSuccessTalkTemp = matchedSuccessTalkList.stream().findFirst().get();
 
@@ -198,7 +196,6 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
 
 	@Override
     public List<SuccesstalkUserRegEsSchema> getRegisteredSuccessTalks(String email) {
-		System.out.println("email"+email);
         List<SuccesstalkUserRegEsSchema> scheduledRegs = null;
 
         try {
@@ -252,11 +249,8 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
                     	successTalk.setBookmark(bookmark.isBookmark());
                     }
                 }
-				
-				System.out.println("inside for loop");
 		        for (SuccesstalkUserRegEsSchema transaction : registeredSuccessTalkList) {
 		            if (transaction.getTitle().equalsIgnoreCase(successTalk.getTitle())) {
-		            	System.out.println("inside if");
 		            	successTalk.setStatus(SuccessTalk.SuccessTalkStatusEnum.SCHEDULED);
 		            	successTalk.getSessions().forEach(
 		                        session -> {
