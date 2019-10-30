@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.cisco.cx.training.app.config.PropertyConfiguration;
+import com.cisco.cx.training.app.dao.BookmarkDAO;
 import com.cisco.cx.training.app.dao.ElasticSearchDAO;
 import com.cisco.cx.training.app.exception.GenericException;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
@@ -19,8 +20,8 @@ import java.io.IOException;
 import java.util.List;
 
 @Repository
-public class BookmarkDAO {
-    private static final Logger LOG = LoggerFactory.getLogger(BookmarkDAO.class);
+public class BookmarkDAOImpl implements BookmarkDAO {
+    private static final Logger LOG = LoggerFactory.getLogger(BookmarkDAOImpl.class);
 
     @Autowired
     private ElasticSearchDAO elasticSearchDAO;
@@ -28,7 +29,8 @@ public class BookmarkDAO {
     @Autowired
     private PropertyConfiguration config;
 
-    public BookmarkResponseSchema createOrUpdate(BookmarkResponseSchema bookmarkResponseSchema) {
+    @Override
+	public BookmarkResponseSchema createOrUpdate(BookmarkResponseSchema bookmarkResponseSchema) {
         BookmarkResponseSchema savedBookMark;
 
         List<BookmarkResponseSchema> bookmarks = getBookmarks(bookmarkResponseSchema.getEmail(), bookmarkResponseSchema.getId());
@@ -53,7 +55,8 @@ public class BookmarkDAO {
         return savedBookMark;
     }
 
-    public List<BookmarkResponseSchema> getBookmarks(String email , String entityId) {
+    @Override
+	public List<BookmarkResponseSchema> getBookmarks(String email , String entityId) {
         List<BookmarkResponseSchema> searchHits = null;
 
         try {
