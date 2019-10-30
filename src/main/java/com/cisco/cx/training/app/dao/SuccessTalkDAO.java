@@ -22,7 +22,7 @@ public interface SuccessTalkDAO {
 	
 	public SuccesstalkUserRegEsSchema saveSuccessTalkRegistration(SuccesstalkUserRegEsSchema registration) throws Exception;
 	
-	public SuccessTalk findSuccessTalk(String title) throws IOException;
+	public SuccessTalk findSuccessTalk(String title, Long eventStartDate) throws IOException;
 	
 	public List<SuccesstalkUserRegEsSchema> getRegisteredSuccessTalks(String email);
 }

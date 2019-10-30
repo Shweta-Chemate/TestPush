@@ -14,7 +14,7 @@ import java.util.Objects;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SuccesstalkUserRegEsSchema implements HasId {
     private final static Logger LOG = LoggerFactory.getLogger(SuccesstalkUserRegEsSchema.class);
-    private final static String SMARTSHEET_DATE_FORMAT = "EEEEE MMMMM dd yyyy HH:mm:ss.SSSZ";
+    private final static String SMARTSHEET_DATE_FORMAT = "MM-dd-yy";
 
     @JsonAlias("Email")
     private String email;
@@ -51,8 +51,9 @@ public class SuccesstalkUserRegEsSchema implements HasId {
 
     public SuccesstalkUserRegEsSchema() { }
 
-    public SuccesstalkUserRegEsSchema(String title, String email, RegistrationStatusEnum registrationStatus) {
+    public SuccesstalkUserRegEsSchema(String title, Long eventStartDate, String email, RegistrationStatusEnum registrationStatus) {
         this.email = email;
+        this.eventStartDate = eventStartDate;
         this.title = title;
         this.registrationStatus = registrationStatus;
     }
@@ -128,12 +129,12 @@ public class SuccesstalkUserRegEsSchema implements HasId {
         if (o == null || getClass() != o.getClass()) return false;
 
         SuccesstalkUserRegEsSchema that = (SuccesstalkUserRegEsSchema) o;
-        return getEmail().equals(that.getEmail()) && getTitle().equals(that.getTitle());
+        return getEmail().equals(that.getEmail()) && getTitle().equals(that.getTitle()) && getEventStartDate().equals(that.eventStartDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getEmail(), getTitle());
+        return Objects.hash(getEmail(), getTitle(),getEventStartDate());
     }
 
     @Override

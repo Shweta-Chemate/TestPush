@@ -121,9 +121,9 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	}
 	
 	@Override
-	public SuccesstalkUserRegEsSchema cancelUserSuccessTalkRegistration(String title, String email) throws Exception {
+	public SuccesstalkUserRegEsSchema cancelUserSuccessTalkRegistration(String title, Long eventStartDate, String email) throws Exception {
 		// form a schema object for the input (set transaction type to Canceled)
-		SuccesstalkUserRegEsSchema cancelledRegistration = new SuccesstalkUserRegEsSchema(title, email,
+		SuccesstalkUserRegEsSchema cancelledRegistration = new SuccesstalkUserRegEsSchema(title, eventStartDate, email,
 				SuccesstalkUserRegEsSchema.RegistrationStatusEnum.CANCELLED);
 		try {
 			// find and mark registration as Canceled in the Smartsheet
@@ -140,9 +140,9 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	}
 	
 	@Override
-    public SuccesstalkUserRegEsSchema registerUserToSuccessTalkRegistration(String title, String email) throws Exception {
+    public SuccesstalkUserRegEsSchema registerUserToSuccessTalkRegistration(String title, Long eventStartDate, String email) throws Exception {
 		// form a schema object for the input (set transaction type to Pending)
-    	SuccesstalkUserRegEsSchema registration = new SuccesstalkUserRegEsSchema( title, email,
+    	SuccesstalkUserRegEsSchema registration = new SuccesstalkUserRegEsSchema( title, eventStartDate, email,
     			SuccesstalkUserRegEsSchema.RegistrationStatusEnum.PENDING);
 		try {
 			// validate the registration details
@@ -173,7 +173,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		SuccessTalk successTalk = null;
 
 		try {
-			successTalk = successTalkDAO.findSuccessTalk(registration.getTitle());
+			successTalk = successTalkDAO.findSuccessTalk(registration.getTitle(), registration.getEventStartDate());
 		} catch (IOException ioe) {
 			LOG.error("Could not fetch SuccessTalk details", ioe);
 			throw new GenericException("Could not verify if SuccessTalk is valid", ioe);

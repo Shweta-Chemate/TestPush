@@ -23,6 +23,7 @@ import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.dao.ElasticSearchDAO;
 import com.cisco.cx.training.app.dao.SuccessTalkDAO;
 import com.cisco.cx.training.app.exception.GenericException;
+import com.cisco.cx.training.app.exception.NotAllowedException;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.cisco.cx.training.models.ElasticSearchResults;
 import com.cisco.cx.training.models.SuccessTalk;
@@ -160,34 +161,34 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
     }
 	
 	@Override
-    public SuccessTalk findSuccessTalk(String title) throws IOException {
+    public SuccessTalk findSuccessTalk(String title, Long eventStartDate) throws IOException {
         SuccessTalk matchedSuccessTalk = null;
 
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
         sourceBuilder.query(QueryBuilders.matchPhraseQuery("title", title));
         sourceBuilder.size(1);
-
+        System.out.println("in find ST");
         List<SuccessTalk> matchedSuccessTalkList = elasticSearchDAO.query(config.getSuccessTalkIndex(), sourceBuilder, SuccessTalk.class).getDocuments();
-
+        System.out.println("matched ST" + matchedSuccessTalkList);
         if (matchedSuccessTalkList != null && matchedSuccessTalkList.size() > 0) {
         	SuccessTalk matchedSuccessTalkTemp = matchedSuccessTalkList.stream().findFirst().get();
 
             List<SuccessTalkSession> successTalkSessions = matchedSuccessTalkTemp.getSessions();
-            /*if (successTalkSessions != null && successTalkSessions.size() > 0) {
-                List<SuccessTalkSession> matchedSessions = successTalkSessions.stream().filter(session -> StringUtils.equalsIgnoreCase(session.getSessionId(), sessionId)).collect(Collectors.toList());
+            if (successTalkSessions != null && successTalkSessions.size() > 0) {
+                List<SuccessTalkSession> matchedSessions = successTalkSessions.stream().filter(session -> session.getSessionStartDate().equals(eventStartDate)).collect(Collectors.toList());
                 if (matchedSessions != null && matchedSessions.size() > 0) {
                     List<SuccessTalkSession> futureSessions = matchedSessions.stream()
                             .filter(session -> (session.getSessionStartDate() == null || System.currentTimeMillis() < session.getSessionStartDate()))
                             .collect(Collectors.toList());
 
                     if (futureSessions == null || futureSessions.size() < 1) {
-                        throw new NotAllowedException("Cannot register for sessionId: " + sessionId + " because session start date is in the past");
+                        throw new NotAllowedException("Cannot register for session date: " + eventStartDate + " because session start date is in the past");
                     } else {
                         matchedSuccessTalk = matchedSuccessTalkTemp;
                         matchedSuccessTalk.setSessions(futureSessions);
                     }
                 }
-            }*/
+            }
             matchedSuccessTalk = matchedSuccessTalkTemp;
         }
 

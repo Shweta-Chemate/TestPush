@@ -30,9 +30,9 @@ public interface TrainingAndEnablementService {
 	
 	SuccessTalkResponseSchema getUserSuccessTalks(String email);
 
-	SuccesstalkUserRegEsSchema cancelUserSuccessTalkRegistration(String title, String email) throws Exception;
+	SuccesstalkUserRegEsSchema cancelUserSuccessTalkRegistration(String title, Long eventStartDate, String email) throws Exception;
 
-	SuccesstalkUserRegEsSchema registerUserToSuccessTalkRegistration(String title, String email) throws Exception;
+	SuccesstalkUserRegEsSchema registerUserToSuccessTalkRegistration(String title, Long eventStartDate, String email) throws Exception;
 
 	SuccesstalkUserRegEsSchema fetchSuccessTalkRegistrationDetails(SuccesstalkUserRegEsSchema registration)
 			throws NotFoundException, NotAllowedException;

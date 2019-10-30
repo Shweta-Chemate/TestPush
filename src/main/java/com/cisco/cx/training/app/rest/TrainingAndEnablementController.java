@@ -241,13 +241,14 @@ public class TrainingAndEnablementController {
     public SuccesstalkUserRegEsSchema cancelUserAtxRegistration(
             @ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
             @ApiParam(value = "Event Name of selected session", required = true) @RequestParam(value = "title", required = true) String title,
+            @ApiParam(value = "Event Date of selected session", required = true) @RequestParam(value = "eventStartDate") Long eventStartDate,
             @ApiParam(value = "Email of user", required = true) @RequestParam(value = "email", required = true) String email) throws Exception {
 
         /*if (StringUtils.isBlank(xMasheryHandshake)) {
             throw new BadRequestException("X-Mashery-Handshake header missing in request");
         }*/
 
-        return trainingAndEnablementService.cancelUserSuccessTalkRegistration(title, email);
+        return trainingAndEnablementService.cancelUserSuccessTalkRegistration(title, eventStartDate, email);
     }
 
     @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -260,6 +261,7 @@ public class TrainingAndEnablementController {
             @ApiResponse(code = 500, message = "Error during registration", response = ErrorResponse.class)})
     public SuccesstalkUserRegEsSchema registerToAtx(@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
             @ApiParam(value = "Event Name of selected session", required = true) @RequestParam(value = "title") String title,
+            @ApiParam(value = "Event Date of selected session", required = true) @RequestParam(value = "eventStartDate") Long eventStartDate,
             @ApiParam(value = "Email of user", required = true) @RequestParam(value = "email") String email) throws Exception {
 
         /*if (StringUtils.isBlank(xMasheryHandshake)) {
@@ -267,7 +269,8 @@ public class TrainingAndEnablementController {
         }*/
     	System.out.println("in controller with title:"+title);
     	System.out.println("in controller with email:"+email);
-        return trainingAndEnablementService.registerUserToSuccessTalkRegistration(title, email);
+    	System.out.println("in controller with eventStartDate:"+eventStartDate);
+        return trainingAndEnablementService.registerUserToSuccessTalkRegistration(title, eventStartDate, email);
     }
     
     @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -279,7 +282,7 @@ public class TrainingAndEnablementController {
             @ApiResponse(code = 403, message = "Operation forbidden due to business policies", response = ErrorResponse.class),
             @ApiResponse(code = 500, message = "Internal server error occured", response = ErrorResponse.class)})
     public BookmarkResponseSchema createOrUpdate(@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
-    											 @ApiParam(value = "Email of user", required = true) @RequestParam(value = "email") String email,
+    											 @ApiParam(value = "Email of user", required = false) @RequestParam(value = "email") String email,
                                                  @ApiParam(value = "JSON Body to Bookmark", required = true) @RequestBody BookmarkRequestSchema bookmarkRequestSchema) {
 
         LOG.info("API_BOOKMARKS Call start");
