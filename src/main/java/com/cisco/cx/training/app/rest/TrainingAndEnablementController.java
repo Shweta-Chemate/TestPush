@@ -202,7 +202,6 @@ public class TrainingAndEnablementController {
 		return trainingAndEnablementService.insertLearning(learning);
 	}
 	
-    @CrossOrigin(origins = "*", allowedHeaders = "*")
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/learnings")
 	@ApiOperation(value = "Fetch learnings", response = String.class, nickname = "fetchlearnings")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),

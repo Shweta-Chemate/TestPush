@@ -82,6 +82,16 @@ spec:
                 secretKeyRef:
                   name: cxpp-common
                   key: cxpp_elasticsearch_password
+            - name: cxp_basicauth_username
+              valueFrom:
+                secretKeyRef:
+                  name: cxcp-common-high
+                  key: cxcp_basicauth_username
+            - name: cxp_basicauth_password
+              valueFrom:
+                secretKeyRef:
+                  name: cxcp-common-high
+                  key: cxcp_basicauth_password
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           # command: ["/bin/bash"]

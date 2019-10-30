@@ -1,5 +1,7 @@
 package com.cisco.cx.training.app.config;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -61,6 +63,28 @@ public class PropertyConfiguration {
 
     @Value("${bookmarks.elasticsearch.index}")
     private String bookmarksIndex;
+    
+	@Value("${cxp.basicauth.username}")
+	private String cxpBasicAuthUserName;
+
+	@Value("${cxp.basicauth.password}")
+	private String cxpBasicAuthPassword;
+	
+	public String getCxpBasicAuthUserName() {
+		if (StringUtils.isBlank(cxpBasicAuthUserName)) {
+			throw new IllegalStateException("CXP Basic Auth Username not present in ENV. Please set cxp_basicauth_username");
+		}
+
+		return cxpBasicAuthUserName;
+	}
+
+	public String getCxpBasicAuthPassword() {
+		if (StringUtils.isBlank(cxpBasicAuthPassword)) {
+			throw new IllegalStateException("CXP Basic Auth Password not present in ENV. Please set cxp_basicauth_password");
+		}
+
+		return cxpBasicAuthPassword;
+	}
 
 	public String getApplicationName() { return applicationName; }
 
@@ -105,4 +129,7 @@ public class PropertyConfiguration {
     public String getBookmarksIndex() {
         return bookmarksIndex;
     }
+    public String createCxpBasicAuthToken() {
+		return new String(Base64.encodeBase64((this.getCxpBasicAuthUserName() + ":" + this.getCxpBasicAuthPassword()).getBytes()));
+	}
 }
