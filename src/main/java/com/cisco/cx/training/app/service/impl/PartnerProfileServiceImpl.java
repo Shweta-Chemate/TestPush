@@ -26,8 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class PartnerProfileServiceImpl implements PartnerProfileService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PartnerProfileServiceImpl.class);
 
-	@Autowired
-	RestTemplate restTemplate;
+	RestTemplate restTemplate = new RestTemplate();
 
 	@Autowired
 	PropertyConfiguration config;
