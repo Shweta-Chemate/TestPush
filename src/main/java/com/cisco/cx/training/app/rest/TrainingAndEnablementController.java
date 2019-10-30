@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.exception.ErrorResponse;
 import com.cisco.cx.training.app.exception.HealthCheckException;
+import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
 import com.cisco.cx.training.models.BookmarkRequestSchema;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
@@ -55,7 +56,9 @@ public class TrainingAndEnablementController {
 	
 	@Autowired
 	private TrainingAndEnablementService trainingAndEnablementService;
-
+	
+	@Autowired
+	private PartnerProfileService partnerProfileService;
 
 	@RequestMapping(path = "/ready", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Template API Readiness probe", hidden = true)
@@ -174,7 +177,6 @@ public class TrainingAndEnablementController {
 		return new ResponseEntity<SuccessTalkResponseSchema>(successTalkResponseSchema, HttpStatus.OK);
 	}
 	
-	@CrossOrigin(origins = "*", allowedHeaders = "*")
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalks/{email}")
 	@ApiOperation(value = "Fetch SuccessTalks For Email Filter", response = SuccessTalkResponseSchema.class, nickname = "fetchUserSuccessTalks")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
@@ -229,7 +231,6 @@ public class TrainingAndEnablementController {
 		return new ResponseEntity<List<LearningModel>>(learningList, HttpStatus.OK);
 	}
 	
-	@CrossOrigin(origins = "*", allowedHeaders = "*")
     @RequestMapping(method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalk/registration")
     @ApiOperation(value = "Request a cancellation for a scheduled Success Talk session", nickname = "cancelUserToSucessTalk")
     @ApiResponses(value = {
@@ -250,7 +251,6 @@ public class TrainingAndEnablementController {
         return trainingAndEnablementService.cancelUserSuccessTalkRegistration(title, eventStartDate, email);
     }
 
-    @CrossOrigin(origins = "*", allowedHeaders = "*")
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalk/registration")
     @ApiOperation(value = "Create New Success Talk Registration", nickname = "registerUserToSuccessTalk", response = SuccesstalkUserRegEsSchema.class)
     @ApiResponses(value = {
@@ -269,7 +269,6 @@ public class TrainingAndEnablementController {
         return trainingAndEnablementService.registerUserToSuccessTalkRegistration(title, eventStartDate, email);
     }
     
-    @CrossOrigin(origins = "*", allowedHeaders = "*")
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalk/bookmarks")
     @ApiOperation(value = "Create or update bookmark for one of the lifecycle categories", response = BookmarkResponseSchema.class)
     @ApiResponses(value = {
