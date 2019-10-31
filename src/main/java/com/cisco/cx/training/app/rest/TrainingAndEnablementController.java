@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.exception.ErrorResponse;
 import com.cisco.cx.training.app.exception.HealthCheckException;
+import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
 import com.cisco.cx.training.models.BookmarkRequestSchema;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
@@ -34,6 +35,7 @@ import com.cisco.cx.training.models.SuccessTalk;
 import com.cisco.cx.training.models.SuccessTalkResponseSchema;
 import com.cisco.cx.training.models.SuccessTrackAndUseCases;
 import com.cisco.cx.training.models.SuccesstalkUserRegEsSchema;
+import com.cisco.cx.training.models.UserDetails;
 import com.cisco.cx.training.util.ValidationUtil;
 
 import io.swagger.annotations.Api;
@@ -55,6 +57,9 @@ public class TrainingAndEnablementController {
 	
 	@Autowired
 	private TrainingAndEnablementService trainingAndEnablementService;
+	
+	@Autowired
+	private PartnerProfileService partnerProfileService;
 
 	@RequestMapping(path = "/ready", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Template API Readiness probe", hidden = true)
@@ -182,7 +187,12 @@ public class TrainingAndEnablementController {
 	public ResponseEntity<SuccessTalkResponseSchema> getUserSuccessTalks(@PathVariable(value = "email", required = false) String email,
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake" , required=false) String xMasheryHandshake)
 			throws Exception {
-		SuccessTalkResponseSchema successTalkResponseSchema = trainingAndEnablementService.getUserSuccessTalks(email);
+		
+		if (StringUtils.isBlank(xMasheryHandshake)) {
+            throw new BadRequestException("X-Mashery-Handshake header missing in request");
+        }
+		UserDetails userDetails= partnerProfileService.fetchUserDetails(xMasheryHandshake);
+		SuccessTalkResponseSchema successTalkResponseSchema = trainingAndEnablementService.getUserSuccessTalks(userDetails.getEmail());
 		return new ResponseEntity<SuccessTalkResponseSchema>(successTalkResponseSchema, HttpStatus.OK);
 	}
     
@@ -240,11 +250,12 @@ public class TrainingAndEnablementController {
             @ApiParam(value = "Event Date of selected session", required = true) @RequestParam(value = "eventStartDate") Long eventStartDate,
             @ApiParam(value = "Email of user", required = true) @RequestParam(value = "email", required = true) String email) throws Exception {
 
-        /*if (StringUtils.isBlank(xMasheryHandshake)) {
+        if (StringUtils.isBlank(xMasheryHandshake)) {
             throw new BadRequestException("X-Mashery-Handshake header missing in request");
-        }*/
+        }
 
-        return trainingAndEnablementService.cancelUserSuccessTalkRegistration(title, eventStartDate, email);
+    	UserDetails userDetails= partnerProfileService.fetchUserDetails(xMasheryHandshake);
+    	return trainingAndEnablementService.cancelUserSuccessTalkRegistration(title, eventStartDate, userDetails.getEmail());
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalk/registration")
@@ -259,10 +270,12 @@ public class TrainingAndEnablementController {
             @ApiParam(value = "Event Date of selected session", required = true) @RequestParam(value = "eventStartDate") Long eventStartDate,
             @ApiParam(value = "Email of user", required = true) @RequestParam(value = "email") String email) throws Exception {
 
-        /*if (StringUtils.isBlank(xMasheryHandshake)) {
+        if (StringUtils.isBlank(xMasheryHandshake)) {
             throw new BadRequestException("X-Mashery-Handshake header missing in request");
-        }*/
-        return trainingAndEnablementService.registerUserToSuccessTalkRegistration(title, eventStartDate, email);
+        }
+             	
+    	UserDetails userDetails= partnerProfileService.fetchUserDetails(xMasheryHandshake);
+        return trainingAndEnablementService.registerUserToSuccessTalkRegistration(title, eventStartDate, userDetails.getEmail());
     }
     
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalk/bookmarks")
@@ -282,8 +295,13 @@ public class TrainingAndEnablementController {
         if (!bookmarkRequestSchema.isNotBlank()) {
             throw new BadRequestException("Bad Request");
         }
+        
+        if (StringUtils.isBlank(xMasheryHandshake)) {
+            throw new BadRequestException("X-Mashery-Handshake header missing in request");
+        }
 
-        BookmarkResponseSchema bookmarkResponseSchema = trainingAndEnablementService.createOrUpdateBookmark(bookmarkRequestSchema, email);
+        UserDetails userDetails= partnerProfileService.fetchUserDetails(xMasheryHandshake);
+        BookmarkResponseSchema bookmarkResponseSchema = trainingAndEnablementService.createOrUpdateBookmark(bookmarkRequestSchema, userDetails.getEmail());
 
         long endTime = System.currentTimeMillis() - startTime;
         LOG.info("PERF_TIME_TAKEN | API_BOOKMARKS | " + endTime);
