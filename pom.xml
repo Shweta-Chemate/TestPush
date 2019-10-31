@@ -144,8 +144,11 @@
 								<exclude>**/constants/**</exclude>
 								<exclude>**/model/**</exclude>
 								<exclude>com/cisco/cx/training/app/dao/ElasticSearchDAO.class</exclude>
+								<exclude>com/cisco/cx/training/app/dao/impl/SmartsheetDAOImpl.class</exclude>
 								<exclude>com/cisco/cx/training/app/service/CiscoProfileService.class</exclude>
 								<exclude>com/cisco/cx/training/models/User.class</exclude>
+								<exclude>com/cisco/cx/training/models/UserProfile.class</exclude>
+								<exclude>com/cisco/cx/training/app/config/PropertyConfiguration.class</exclude>
 							</excludes>
 						</configuration>
 					</execution>
