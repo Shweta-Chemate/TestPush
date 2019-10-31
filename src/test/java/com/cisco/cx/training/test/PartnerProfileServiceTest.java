@@ -47,6 +47,8 @@ public class PartnerProfileServiceTest {
 
 		ResponseEntity<String> result = new ResponseEntity<>(getUserDetails(), HttpStatus.OK);
 		when(restTemplate.exchange("", HttpMethod.GET, requestEntity, String.class)).thenReturn(result);
+		partnerProfileService.fetchUserDetails(xMasheryHandshake);
+		when(restTemplate.exchange("", HttpMethod.GET, requestEntity, String.class)).thenReturn(result);
 	}
 
 	private String getUserDetails() throws JsonProcessingException {

@@ -4,6 +4,8 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -16,6 +18,7 @@ import org.mockito.Mock;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.cisco.cx.training.app.config.PropertyConfiguration;
+import com.cisco.cx.training.app.dao.BookmarkDAO;
 import com.cisco.cx.training.app.dao.ElasticSearchDAO;
 import com.cisco.cx.training.app.dao.SuccessTalkDAO;
 import com.cisco.cx.training.app.dao.impl.SuccessTalkDAOImpl;
@@ -29,9 +32,12 @@ public class SuccessTalkDAOTest {
 
 	@Mock
 	private ElasticSearchDAO elasticSearchDAO;
+	
+	@Mock
+    private PropertyConfiguration config;
 
 	@Mock
-	private PropertyConfiguration config;
+	private BookmarkDAO bookmarkDAO;
 
 	@InjectMocks
 	private SuccessTalkDAO successTalkDAO = new SuccessTalkDAOImpl();
@@ -64,6 +70,20 @@ public class SuccessTalkDAOTest {
 		when(config.getSuccessTalkIndex()).thenReturn("");
 		when(elasticSearchDAO.query(config.getSuccessTalkIndex(), sourceBuilder, SuccessTalk.class)).thenReturn(results);
 		successTalkDAO.getAllSuccessTalks();
+	}
+	
+	@Test
+	public void findSuccessTalks() throws IOException {
+		String title = "title";
+		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+        sourceBuilder.query(QueryBuilders.matchPhraseQuery("title", title));
+        sourceBuilder.size(1);
+        SuccessTalk successTalk = getSuccessTask();
+		ElasticSearchResults<SuccessTalk> results = new ElasticSearchResults<>();
+		results.addDocument(successTalk);
+		when(config.getSuccessTalkIndex()).thenReturn("");
+		when(elasticSearchDAO.query(config.getSuccessTalkIndex(), sourceBuilder, SuccessTalk.class)).thenReturn(results);
+		successTalkDAO.findSuccessTalk(title, successTalk.getSessions().get(0).getSessionStartDate());
 	}
 	
 	@Test(expected = GenericException.class)
@@ -146,9 +166,20 @@ public class SuccessTalkDAOTest {
 		when(elasticSearchDAO.getDocument(config.getSuccessTalkIndex(), successTalkId, SuccessTalk.class)).thenThrow(IOException.class);
 		successTalkDAO.cancelRegistration(successTalkSessionId, successTalkId);
 	}
+	
+	@Test
+	public void getUserSuccessTalks() {
+		
+	}
 
 	private SuccessTalk getSuccessTask() {
+		Date currentDate = new Date();
+		Calendar c = Calendar.getInstance();
+        c.setTime(currentDate);
+        c.add(Calendar.MONTH, 1);
+        
 		SuccessTalk successTalk = new SuccessTalk();
+		successTalk.setTitle("title");
 		successTalk.setBookmark(true);
 		successTalk.setDescription("");
 		successTalk.setDocId("id");
@@ -162,7 +193,7 @@ public class SuccessTalkDAOTest {
 		session.setRegistrationUrl("");
 		session.setScheduled(false);
 		session.setSessionId("successTalkSessionId");
-		session.setSessionStartDate(00L);
+		session.setSessionStartDate(c.getTime().getTime());
 		successTalk.setSessions(Arrays.asList(session));
 		return successTalk;
 	}

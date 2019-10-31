@@ -12,13 +12,20 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.beans.BeanUtils;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.cisco.cx.training.app.dao.BookmarkDAO;
 import com.cisco.cx.training.app.dao.CommunityDAO;
+import com.cisco.cx.training.app.dao.LearningDAO;
+import com.cisco.cx.training.app.dao.SmartsheetDAO;
 import com.cisco.cx.training.app.dao.SuccessTalkDAO;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
 import com.cisco.cx.training.app.service.impl.TrainingAndEnablementServiceImpl;
+import com.cisco.cx.training.models.BookmarkRequestSchema;
+import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.cisco.cx.training.models.Community;
+import com.cisco.cx.training.models.Learning;
 import com.cisco.cx.training.models.SuccessTalk;
 import com.cisco.cx.training.models.SuccessTalkSession;
 import com.cisco.cx.training.models.SuccessTrackAndUseCases;
@@ -31,6 +38,15 @@ public class TrainingAndEnablementServiceTest {
 
 	@Mock
 	private SuccessTalkDAO successTalkDAO;
+
+	@Mock
+	private LearningDAO learningDAO;
+
+	@Mock
+	private SmartsheetDAO smartsheetDAO;
+
+	@Mock
+	private BookmarkDAO bookmarkDAO;
 
 	@InjectMocks
 	private TrainingAndEnablementService trainingAndEnablementService = new TrainingAndEnablementServiceImpl();
@@ -52,10 +68,25 @@ public class TrainingAndEnablementServiceTest {
 		trainingAndEnablementService.getUsecases();
 	}
 
-//	@Test
-//	public void testGetLearnings() {
-//		trainingAndEnablementService.getAllLearning();
-//	}
+	@Test
+	public void testGetLearnings() {
+		trainingAndEnablementService.getAllLearning();
+	}
+
+	@Test
+	public void testInsertLearnings() {
+		trainingAndEnablementService.insertLearning(getLearning());
+	}
+
+	@Test
+	public void getFilteredLearning() {
+		trainingAndEnablementService.getFilteredLearning("solution", "usecase");
+	}
+
+	@Test
+	public void insertLearning() {
+		trainingAndEnablementService.getAllLearning();
+	}
 
 	@Test
 	public void getAllCommunitiesTest() {
@@ -79,19 +110,41 @@ public class TrainingAndEnablementServiceTest {
 		when(successTalkDAO.getAllSuccessTalks()).thenReturn(Arrays.asList(successTalk));
 		trainingAndEnablementService.getAllSuccessTalks();
 	}
-	
+
 	@Test
 	public void getFilteredSuccessTalksTest() {
 		SuccessTalk successTalk = getSuccessTask();
 		when(successTalkDAO.getFilteredSuccessTalks("IBN", "usecase")).thenReturn(Arrays.asList(successTalk));
 		trainingAndEnablementService.getFilteredSuccessTalks("IBN", "usecase");
 	}
-	
+
 	@Test
 	public void insertSuccessTalksTest() {
 		SuccessTalk successTalk = getSuccessTask();
 		when(successTalkDAO.insertSuccessTalk(successTalk)).thenReturn(successTalk);
 		trainingAndEnablementService.insertSuccessTalk(successTalk);
+	}
+
+	@Test
+	public void getUserSuccessTalks() {
+		String email = "email";
+		successTalkDAO.getUserSuccessTalks(email);
+	}
+	
+	@Test
+	public void createOrUpdateBookmark() {
+		String email = "email";
+		BookmarkRequestSchema bookmarkRequestSchema = new BookmarkResponseSchema(); 
+		BookmarkResponseSchema bookmarkResponseSchema = new BookmarkResponseSchema();
+		BeanUtils.copyProperties(bookmarkRequestSchema, bookmarkResponseSchema);
+		bookmarkResponseSchema.setEmail(email );
+		bookmarkDAO.createOrUpdate(bookmarkResponseSchema);
+	}
+
+	private Learning getLearning() {
+		Learning learning = new Learning();
+		learning.setAlFrescoId("alFrescoId");
+		return learning;
 	}
 
 	private Community getCommunity() {
@@ -104,7 +157,7 @@ public class TrainingAndEnablementServiceTest {
 		community.setUsecase("IBN");
 		return community;
 	}
-	
+
 	private SuccessTalk getSuccessTask() {
 		SuccessTalk successTalk = new SuccessTalk();
 		successTalk.setBookmark(true);
