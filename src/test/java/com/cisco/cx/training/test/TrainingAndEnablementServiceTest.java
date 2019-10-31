@@ -179,6 +179,14 @@ public class TrainingAndEnablementServiceTest {
 		trainingAndEnablementService.cancelUserSuccessTalkRegistration(title, eventStartDate, email);
 	}
 	
+	@Test
+	public void registerUserToSuccessTalkRegistration() throws Exception {
+		String email = "email";
+		String title = "title";
+		Long eventStartDate = 1L;
+		trainingAndEnablementService.registerUserToSuccessTalkRegistration(title, eventStartDate, email);
+	}
+	
 	private Learning getLearning() {
 		Learning learning = new Learning();
 		learning.setAlFrescoId("alFrescoId");
