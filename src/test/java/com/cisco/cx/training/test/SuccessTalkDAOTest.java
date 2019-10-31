@@ -3,9 +3,11 @@ package com.cisco.cx.training.test;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -26,6 +28,7 @@ import com.cisco.cx.training.app.exception.GenericException;
 import com.cisco.cx.training.models.ElasticSearchResults;
 import com.cisco.cx.training.models.SuccessTalk;
 import com.cisco.cx.training.models.SuccessTalkSession;
+import com.cisco.cx.training.models.SuccesstalkUserRegEsSchema;
 
 @RunWith(SpringRunner.class)
 public class SuccessTalkDAOTest {
@@ -167,10 +170,64 @@ public class SuccessTalkDAOTest {
 		successTalkDAO.cancelRegistration(successTalkSessionId, successTalkId);
 	}
 	
-	@Test
-	public void getUserSuccessTalks() {
+	@Test(expected = GenericException.class)
+	public void getUserSuccessTalksError() throws IOException {
+		String email = "email";
+		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+		BoolQueryBuilder boolQuery = new BoolQueryBuilder();
+		sourceBuilder.query(boolQuery);
+		sourceBuilder.size(10000);
 		
+		SuccessTalk successTalk = getSuccessTask();
+		ElasticSearchResults<SuccessTalk> results = new ElasticSearchResults<SuccessTalk>();
+		results.addDocument(successTalk);
+
+		when(elasticSearchDAO.query(config.getSuccessTalkIndex(), sourceBuilder, SuccessTalk.class)).thenReturn(results);
+		
+		List<SuccesstalkUserRegEsSchema> registeredSuccessTalkList = new ArrayList<SuccesstalkUserRegEsSchema>();
+		when(successTalkDAO.getRegisteredSuccessTalks(email)).thenReturn(registeredSuccessTalkList);
+		
+		successTalkDAO.getUserSuccessTalks(email);
 	}
+	
+	@Test
+	public void getRegisteredSuccessTalks() throws IOException {
+		String email = "email";
+        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+        BoolQueryBuilder boolQuery = new BoolQueryBuilder();
+        QueryBuilder emailQuery = QueryBuilders.matchPhraseQuery("email.keyword", email);
+        QueryBuilder transactionType = QueryBuilders.matchPhraseQuery("registrationStatus.keyword", SuccesstalkUserRegEsSchema.RegistrationStatusEnum.REGISTERED);
+        boolQuery.must(emailQuery).must(transactionType);
+
+        sourceBuilder.query(boolQuery);
+        sourceBuilder.size(1000);
+        
+        ElasticSearchResults<SuccesstalkUserRegEsSchema> results = new ElasticSearchResults<SuccesstalkUserRegEsSchema>();
+        SuccesstalkUserRegEsSchema successtalkUserRegEsSchema = new SuccesstalkUserRegEsSchema();
+        results.addDocument(successtalkUserRegEsSchema);
+        when(elasticSearchDAO.query(config.getSuccessTalkUserRegistrationsIndex(), sourceBuilder, SuccesstalkUserRegEsSchema.class)).thenReturn(results);
+        successTalkDAO.getRegisteredSuccessTalks(email);
+	}
+	
+	@Test(expected = GenericException.class)
+	public void getRegisteredSuccessTalksError() throws IOException {
+		String email = "email";
+        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+        BoolQueryBuilder boolQuery = new BoolQueryBuilder();
+        QueryBuilder emailQuery = QueryBuilders.matchPhraseQuery("email.keyword", email);
+        QueryBuilder transactionType = QueryBuilders.matchPhraseQuery("registrationStatus.keyword", SuccesstalkUserRegEsSchema.RegistrationStatusEnum.REGISTERED);
+        boolQuery.must(emailQuery).must(transactionType);
+
+        sourceBuilder.query(boolQuery);
+        sourceBuilder.size(1000);
+        
+        ElasticSearchResults<SuccesstalkUserRegEsSchema> results = new ElasticSearchResults<SuccesstalkUserRegEsSchema>();
+        SuccesstalkUserRegEsSchema successtalkUserRegEsSchema = new SuccesstalkUserRegEsSchema();
+        results.addDocument(successtalkUserRegEsSchema);
+        when(elasticSearchDAO.query(config.getSuccessTalkUserRegistrationsIndex(), sourceBuilder, SuccesstalkUserRegEsSchema.class)).thenThrow(IOException.class);
+        successTalkDAO.getRegisteredSuccessTalks(email);
+	}
+	
 
 	private SuccessTalk getSuccessTask() {
 		Date currentDate = new Date();
