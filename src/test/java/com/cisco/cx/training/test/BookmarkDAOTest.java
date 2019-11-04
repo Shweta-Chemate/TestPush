@@ -3,9 +3,7 @@ package com.cisco.cx.training.test;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.util.List;
 
-import org.assertj.core.util.Arrays;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;

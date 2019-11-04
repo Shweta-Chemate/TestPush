@@ -9,6 +9,4 @@ public interface CommunityDAO {
 	public Community insertCommunity(Community community);
 
 	public List<Community> getCommunities();
-
-	public List<Community> getFilteredCommunities(String solution, String usecase);
 }

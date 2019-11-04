@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,27 +53,5 @@ public class CommunityDAOImpl implements CommunityDAO {
 			LOG.error(ERROR_MESSAGE, ioe);
 			throw new GenericException(ERROR_MESSAGE);
 		}
-	}
-
-	public List<Community> getFilteredCommunities(String solution, String usecase) {
-		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-		BoolQueryBuilder boolQuery = new BoolQueryBuilder();
-
-		QueryBuilder matchQueryBuilderSolution = QueryBuilders.matchPhraseQuery("solution.keyword", solution);
-		QueryBuilder matchQueryBuilderTechnology = QueryBuilders.matchPhraseQuery("usecase.keyword", usecase);
-
-		boolQuery = boolQuery.must(matchQueryBuilderSolution).must(matchQueryBuilderTechnology);
-		sourceBuilder.query(boolQuery);
-		sourceBuilder.size(10000);
-
-		try {
-			ElasticSearchResults<Community> results = elasticSearchDAO.query(INDEX, sourceBuilder, Community.class);
-			return results.getDocuments().stream().map(community -> community).collect(Collectors.toList());
-
-		} catch (IOException ioe) {
-			LOG.error(ERROR_MESSAGE, ioe);
-			throw new GenericException(ERROR_MESSAGE);
-		}
-
 	}
 }

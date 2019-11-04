@@ -104,36 +104,6 @@ public class SuccessTalkDAOTest {
 	}
 
 	@Test
-	public void getFilteredSuccessTalks() throws IOException {
-		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-		BoolQueryBuilder boolQuery = new BoolQueryBuilder();
-		QueryBuilder matchQueryBuilderSolution = QueryBuilders.matchPhraseQuery("solution.keyword", "IBN");
-		QueryBuilder matchQueryBuilderTechnology = QueryBuilders.matchPhraseQuery("usecase.keyword", "usecase");
-		boolQuery = boolQuery.must(matchQueryBuilderSolution).must(matchQueryBuilderTechnology);
-		sourceBuilder.query(boolQuery);
-		sourceBuilder.size(10000);
-		ElasticSearchResults<SuccessTalk> results = new ElasticSearchResults<>();
-		results.addDocument(getSuccessTask());
-		when(config.getSuccessTalkIndex()).thenReturn("");
-		when(elasticSearchDAO.query(config.getSuccessTalkIndex(), sourceBuilder, SuccessTalk.class)).thenReturn(results);
-		successTalkDAO.getFilteredSuccessTalks("IBN", "usecase");
-	}
-	
-	@Test(expected = GenericException.class)
-	public void getFilteredSuccessTalksESFailure() throws IOException {
-		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-		BoolQueryBuilder boolQuery = new BoolQueryBuilder();
-		QueryBuilder matchQueryBuilderSolution = QueryBuilders.matchPhraseQuery("solution.keyword", "IBN");
-		QueryBuilder matchQueryBuilderTechnology = QueryBuilders.matchPhraseQuery("usecase.keyword", "usecase");
-		boolQuery = boolQuery.must(matchQueryBuilderSolution).must(matchQueryBuilderTechnology);
-		sourceBuilder.query(boolQuery);
-		sourceBuilder.size(10000);
-		when(config.getSuccessTalkIndex()).thenReturn("");
-		when(elasticSearchDAO.query(config.getSuccessTalkIndex(), sourceBuilder, SuccessTalk.class)).thenThrow(IOException.class);
-		successTalkDAO.getFilteredSuccessTalks("IBN", "usecase");
-	}
-
-	@Test
 	public void registerUser() throws IOException {
 		SuccessTalk successTalk = getSuccessTask();
 		when(config.getSuccessTalkIndex()).thenReturn("");

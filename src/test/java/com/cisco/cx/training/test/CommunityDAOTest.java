@@ -5,8 +5,6 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -71,38 +69,6 @@ public class CommunityDAOTest {
 		results.addDocument(community);
 		when(elasticSearchDAO.query(INDEX, sourceBuilder, Community.class)).thenThrow(IOException.class);
 		communityDAO.getCommunities();
-	}
-
-	@Test
-	public void getFilteredCommunities() throws IOException {
-		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-		BoolQueryBuilder boolQuery = new BoolQueryBuilder();
-		QueryBuilder matchQueryBuilderSolution = QueryBuilders.matchPhraseQuery("solution.keyword", "IBN");
-		QueryBuilder matchQueryBuilderTechnology = QueryBuilders.matchPhraseQuery("usecase.keyword", "usecase");
-		boolQuery = boolQuery.must(matchQueryBuilderSolution).must(matchQueryBuilderTechnology);
-		sourceBuilder.query(boolQuery);
-		sourceBuilder.size(10000);
-		Community community = getCommunity();
-		ElasticSearchResults<Community> results = new ElasticSearchResults<>();
-		results.addDocument(community);
-		when(elasticSearchDAO.query(INDEX, sourceBuilder, Community.class)).thenReturn(results);
-		communityDAO.getFilteredCommunities("IBN", "usecase");
-	}
-	
-	@Test(expected = GenericException.class)
-	public void getFilteredCommunitiesESFailure() throws IOException {
-		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-		BoolQueryBuilder boolQuery = new BoolQueryBuilder();
-		QueryBuilder matchQueryBuilderSolution = QueryBuilders.matchPhraseQuery("solution.keyword", "IBN");
-		QueryBuilder matchQueryBuilderTechnology = QueryBuilders.matchPhraseQuery("usecase.keyword", "usecase");
-		boolQuery = boolQuery.must(matchQueryBuilderSolution).must(matchQueryBuilderTechnology);
-		sourceBuilder.query(boolQuery);
-		sourceBuilder.size(10000);
-		Community community = getCommunity();
-		ElasticSearchResults<Community> results = new ElasticSearchResults<>();
-		results.addDocument(community);
-		when(elasticSearchDAO.query(INDEX, sourceBuilder, Community.class)).thenThrow(IOException.class);
-		communityDAO.getFilteredCommunities("IBN", "usecase");
 	}
 
 	private Community getCommunity() {

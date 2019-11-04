@@ -86,36 +86,6 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
 
     }
     
-    public List<SuccessTalk> getFilteredSuccessTalks(String solution, String usecase){
-    	
-		List<SuccessTalk> successTalkES = new ArrayList<>();
-		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-		BoolQueryBuilder boolQuery = new BoolQueryBuilder();
-		
-		QueryBuilder matchQueryBuilderSolution = QueryBuilders.matchPhraseQuery("solution.keyword", solution);
-		QueryBuilder matchQueryBuilderTechnology = QueryBuilders.matchPhraseQuery("usecase.keyword", usecase);
-		
-		boolQuery = boolQuery.must(matchQueryBuilderSolution).must(matchQueryBuilderTechnology);
-		
-		sourceBuilder.query(boolQuery);
-		sourceBuilder.size(10000);
-
-		try {
-			ElasticSearchResults<SuccessTalk> results = elasticSearchDAO.query(config.getSuccessTalkIndex(), sourceBuilder, SuccessTalk.class);
-
-			results.getDocuments().forEach(successTalk -> {
-				successTalkES.add(successTalk);
-			});
-
-		} catch (IOException ioe) {
-			LOG.error(ERROR_MESSAGE, ioe);
-			throw new GenericException(ERROR_MESSAGE);
-		}
-
-		return successTalkES;
-
-    }
-    
 	@Override
 	public String registerUser(String successTalkSessionId, String successTalkId) {
 		try {

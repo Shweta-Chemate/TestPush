@@ -32,7 +32,6 @@ import com.cisco.cx.training.app.dao.CommunityDAO;
 import com.cisco.cx.training.app.rest.TrainingAndEnablementController;
 import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
-import com.cisco.cx.training.models.Community;
 import com.cisco.cx.training.models.SuccessTalk;
 import com.cisco.cx.training.models.SuccessTalk.SuccessTalkStatusEnum;
 import com.cisco.cx.training.models.SuccessTalkSession;
@@ -72,27 +71,6 @@ public class TrainingAndEnablementControllerTest {
 	}
 
 	@Test
-	public void testCreateCommunity() throws Exception {
-
-		Community community = new Community();
-		community.setDocId("1234");
-		community.setName("community");
-		community.setDescription("hello");
-		community.setSolution("solution");
-		community.setUrl("http://df.fdsds.com");
-		community.setUsecase("IBN");
-
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-		ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
-		String requestJson = ow.writeValueAsString(community);
-
-		this.mockMvc.perform(post("/v1/partner/training/community").contentType(MediaType.APPLICATION_JSON_VALUE)
-				.header("X-Mashery-Handshake", this.XMasheryHeader).content(requestJson).characterEncoding("utf-8"))
-				.andDo(print()).andExpect(status().isOk());
-	}
-
-	@Test
 	public void testFetchCommunities() throws Exception {
 		this.mockMvc
 				.perform(get("/v1/partner/training/communities").contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -112,14 +90,6 @@ public class TrainingAndEnablementControllerTest {
 	public void testLearning() throws Exception {
 		this.mockMvc
 				.perform(get("/v1/partner/training/learnings").contentType(MediaType.APPLICATION_JSON_VALUE)
-						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
-				.andDo(print()).andExpect(status().isOk());
-	}
-
-	@Test
-	public void testGetPitstops() throws Exception {
-		this.mockMvc
-				.perform(get("/v1/partner/training/usecases").contentType(MediaType.APPLICATION_JSON_VALUE)
 						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
 				.andDo(print()).andExpect(status().isOk());
 	}
@@ -166,15 +136,6 @@ public class TrainingAndEnablementControllerTest {
 				.andDo(print()).andExpect(status().isOk());
 	}
 
-	@Test
-	public void testFetchCommunitiesWithFilter() throws Exception {
-		this.mockMvc
-				.perform(get("/v1/partner/training/communities/IBN/solution")
-						.contentType(MediaType.APPLICATION_JSON_VALUE)
-						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
-				.andDo(print()).andExpect(status().isOk());
-	}
-
 	/*@Test
 	public void testFetchSuccessTalks() throws Exception {
 		this.mockMvc
@@ -183,15 +144,6 @@ public class TrainingAndEnablementControllerTest {
 				.andDo(print()).andExpect(status().isOk());
 	}*/
 
-	@Test
-	public void testFetchFilteredSuccessTalks() throws Exception {
-		this.mockMvc
-				.perform(get("/v1/partner/training/successTalks/IBN/solution")
-						.contentType(MediaType.APPLICATION_JSON_VALUE)
-						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
-				.andDo(print()).andExpect(status().isOk());
-	}
-	
 
 	private String loadFromFile(String filePath) throws IOException {
 		return new String(Files.readAllBytes(resourceLoader.getResource("classpath:" + filePath).getFile().toPath()));

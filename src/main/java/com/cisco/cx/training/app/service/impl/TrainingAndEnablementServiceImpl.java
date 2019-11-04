@@ -1,11 +1,7 @@
 package com.cisco.cx.training.app.service.impl;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +26,6 @@ import com.cisco.cx.training.models.LearningModel;
 import com.cisco.cx.training.models.SuccessTalk;
 import com.cisco.cx.training.models.SuccessTalkResponseSchema;
 import com.cisco.cx.training.models.SuccessTalkSession;
-import com.cisco.cx.training.models.SuccessTrackAndUseCases;
 import com.cisco.cx.training.models.SuccesstalkUserRegEsSchema;
 import com.smartsheet.api.SmartsheetException;
 
@@ -54,23 +49,8 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	private BookmarkDAO bookmarkDAO;
 
 	@Override
-	public SuccessTrackAndUseCases getUsecases() {
-		Map<String, List<String>> useCases = new HashMap<String, List<String>>();
-		useCases.put("IBN", new ArrayList<>(Arrays.asList("Campus Network Assurance", "Network Device Onboarding",
-				"Campus Software Image management", "Campus Network Segmentation", "Scalable Access Policy")));
-		SuccessTrackAndUseCases successTrackAndUseCases = new SuccessTrackAndUseCases();
-		successTrackAndUseCases.setUseCases(useCases);
-		return successTrackAndUseCases;
-	}
-
-	@Override
 	public List<LearningModel> getAllLearning() {
 		return learningDAO.getLearnings();
-	}
-
-	@Override
-	public Community insertCommunity(Community community) {
-		return communityDAO.insertCommunity(community);
 	}
 
 	@Override
@@ -78,11 +58,6 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		return communityDAO.getCommunities();
 	}
 
-	@Override
-	public List<Community> getFilteredCommunities(String solution, String usecase) {
-		return communityDAO.getFilteredCommunities(solution, usecase);
-	}
-	
 	@Override
 	public SuccessTalk insertSuccessTalk(SuccessTalk successTalk) {
 		return successTalkDAO.insertSuccessTalk(successTalk);
@@ -94,14 +69,6 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		successTalkResponseSchema.setItems(successTalkDAO.getAllSuccessTalks());
 		return successTalkResponseSchema;
 	}
-
-	@Override
-	public SuccessTalkResponseSchema getFilteredSuccessTalks(String solution, String usecase) {
-		SuccessTalkResponseSchema successTalkResponseSchema = new SuccessTalkResponseSchema();
-		successTalkResponseSchema.setItems(successTalkDAO.getFilteredSuccessTalks(solution, usecase));
-		return successTalkResponseSchema;
-	}
-	
 
 	@Override
 	public SuccessTalkResponseSchema getUserSuccessTalks(String email) {

@@ -30,9 +30,4 @@ public class CommunitytDAOTest {
 	public void getAllCommunitiesTest() {
 		communityDAO.getCommunities();
 	}
-
-	@Test
-	public void getFilteredCommunitiesTest() {
-		communityDAO.getFilteredCommunities("", "");
-	}
 }

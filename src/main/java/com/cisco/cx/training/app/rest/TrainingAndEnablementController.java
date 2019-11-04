@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -33,7 +32,6 @@ import com.cisco.cx.training.models.Learning;
 import com.cisco.cx.training.models.LearningModel;
 import com.cisco.cx.training.models.SuccessTalk;
 import com.cisco.cx.training.models.SuccessTalkResponseSchema;
-import com.cisco.cx.training.models.SuccessTrackAndUseCases;
 import com.cisco.cx.training.models.SuccesstalkUserRegEsSchema;
 import com.cisco.cx.training.models.UserDetails;
 import com.cisco.cx.training.util.ValidationUtil;
@@ -48,7 +46,6 @@ import io.swagger.annotations.ApiResponses;
 @RequestMapping("/v1/partner/training")
 @Api(value = "Trainining and Enablement APIs", description = "REST APIs for Training And Enablement")
 public class TrainingAndEnablementController {
-	@SuppressWarnings("unused")
 	private final Logger LOG = LoggerFactory.getLogger(TrainingAndEnablementController.class);
 
 	private final Map<String, Callable<Boolean>> mandatoryDependencies = new HashMap<>();
@@ -82,31 +79,10 @@ public class TrainingAndEnablementController {
 		return healthStatus;
 	}
 	
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/usecases")
-	@ApiOperation(value = "Fetch usecases and solutions", response = SuccessTrackAndUseCases.class)
-	public SuccessTrackAndUseCases getPitstop() {
-		return trainingAndEnablementService.getUsecases();
-	}
-
 	@RequestMapping("/live")
 	@ApiOperation(value = "Training And Enablement API Liveness Probe", hidden = true)
 	public String checkAlive() {
 		return "Yes I am alive.";
-	}
-
-	
-	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, path = "/community")
-	@ApiOperation(value = "Create New Community", response = Community.class, nickname = "createCommunity")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully inserted community"),
-			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
-			@ApiResponse(code = 403, message = "Operation forbidden due to business policies", response = ErrorResponse.class),
-			@ApiResponse(code = 500, message = "Error during create", response = ErrorResponse.class) })
-	public Community createCommunity(
-			@ApiParam(value = "Body for the Request", required = true) @RequestBody Community community,
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake" , required=false) String xMasheryHandshake)
-			throws Exception {
-
-		return trainingAndEnablementService.insertCommunity(community);
 	}
 
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/communities")
@@ -122,20 +98,6 @@ public class TrainingAndEnablementController {
 		return new ResponseEntity<List<Community>>(communityList, HttpStatus.OK);
 	}
 
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/communities/{solution}/{usecase}")
-	@ApiOperation(value = "Fetch Communities For Solution and Usecase Filter", response = Community.class, responseContainer = "List", nickname = "fetchFilteredCommunities")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
-			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
-			@ApiResponse(code = 404, message = "Entity Not Found"),
-			@ApiResponse(code = 500, message = "Error during retrieve", response = ErrorResponse.class) })
-	public ResponseEntity<List<Community>> getAllCommunities(@PathVariable(value = "solution", required = false) String solution,
-			@PathVariable(value = "usecase", required = false) String usecase, 
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake" , required=false) String xMasheryHandshake)
-			throws Exception {
-		List<Community> communityList = trainingAndEnablementService.getFilteredCommunities(solution, usecase);
-		return new ResponseEntity<List<Community>>(communityList, HttpStatus.OK);
-	}
-	
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalk")
 	@ApiOperation(value = "Create New SuccessTalk", response = SuccessTalk.class, nickname = "creatSuccessTalk")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully inserted success talk"),
@@ -164,20 +126,6 @@ public class TrainingAndEnablementController {
 		return new ResponseEntity<SuccessTalkResponseSchema>(successTalkResponseSchema, HttpStatus.OK);
 	}*/
 
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalks/{solution}/{usecase}")
-	@ApiOperation(value = "Fetch SuccessTalks For Solution and Usecase Filters", response = SuccessTalkResponseSchema.class, nickname = "fetchFilteredSuccessTalks")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
-			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
-			@ApiResponse(code = 404, message = "Entity Not Found"),
-			@ApiResponse(code = 500, message = "Error during retrieve", response = ErrorResponse.class) })
-	public ResponseEntity<SuccessTalkResponseSchema> getFilteredSuccessTalks(@PathVariable(value = "solution", required = false) String solution,
-			@PathVariable(value = "usecase", required = false) String usecase, 
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake" , required=false) String xMasheryHandshake)
-			throws Exception {
-		SuccessTalkResponseSchema successTalkResponseSchema = trainingAndEnablementService.getFilteredSuccessTalks(solution, usecase);
-		return new ResponseEntity<SuccessTalkResponseSchema>(successTalkResponseSchema, HttpStatus.OK);
-	}
-	
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalks/{email}")
 	@ApiOperation(value = "Fetch SuccessTalks For Email Filter", response = SuccessTalkResponseSchema.class, nickname = "fetchUserSuccessTalks")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
