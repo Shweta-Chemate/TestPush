@@ -67,11 +67,7 @@ files:
     elasticsearch.host: ${elasticsearch_app_host}
     elasticsearch.port: ${elasticsearch_app_port}
     elasticsearch.scheme: ${elasticsearch_app_scheme}
-    #elasticsearch.username: "***REMOVED***"
-    #elasticsearch.password: "***REMOVED***"
     cisco.ldap.external.url: ${cisco_ldap_external_url}
-    #cisco.ldap.userid: "***REMOVED***"
-    #cisco.ldap.password: "***REMOVED***"
     cisco.oauth.token.url: ${cisco_oauth_token_url}
     cxp.emailapi.context.url: https://cpp-api.${CLUSTER_NAME_FULL}/email/
     cxp.emailapi.readiness.url: https://cpp-api.${CLUSTER_NAME_FULL}/email/v1/ready

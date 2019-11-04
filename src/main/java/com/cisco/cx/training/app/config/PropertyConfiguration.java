@@ -8,10 +8,8 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 
 @Configuration
-@PropertySources({
-		@PropertySource(value = "classpath:environment.properties"),
-		@PropertySource(value = "file:/myapp/environment.properties", ignoreResourceNotFound = true)
-})
+@PropertySources({ @PropertySource(value = "classpath:environment.properties"),
+		@PropertySource(value = "file:/myapp/environment.properties", ignoreResourceNotFound = true) })
 public class PropertyConfiguration {
 	@Value("${spring.application.name}")
 	private String applicationName;
@@ -31,45 +29,30 @@ public class PropertyConfiguration {
 	@Value("${elasticsearch.password}")
 	private String elasticsearchPassword;
 
-	@Value("${cisco.ldap.external.url}")
-	private String ldapUrl;
-
-	@Value("${cisco.ldap.userid}")
-	private String ldapUserId;
-
-	@Value("${cisco.oauth.token.url}")
-	private String ciscoOauthTokenUrl;
-
 	@Value("${entitlement.user.party.affiliation.url}")
 	private String entitlementUserPartyAffiliationUrl;
 
-	@Value("${cxp.emailapi.context.url}")
-	private String cxpEmailApiContextUrl;
+	@Value("${successTalk.elasticsearch.index}")
+	private String successTalkIndex;
 
-	@Value("${cxp.emailapi.readiness.url}")
-	private String cxpEmailReadinessUrl;
-	
-    @Value("${successTalk.elasticsearch.index}")
-    private String successTalkIndex;
-    
-    @Value("${smartsheet.successTalk.registration.sheetId}")
-    private long successTalkRegistrationSheetId;
-    
-    @Value("${smartsheet.accessToken}")
-    private String smartsheetAccessToken;
-    
-    @Value("${successTalkUserRegistrations.elasticsearch.index}")
-    private String successTalkUserRegistrationsIndex;
+	@Value("${smartsheet.successTalk.registration.sheetId}")
+	private long successTalkRegistrationSheetId;
 
-    @Value("${bookmarks.elasticsearch.index}")
-    private String bookmarksIndex;
-    
+	@Value("${smartsheet.accessToken}")
+	private String smartsheetAccessToken;
+
+	@Value("${successTalkUserRegistrations.elasticsearch.index}")
+	private String successTalkUserRegistrationsIndex;
+
+	@Value("${bookmarks.elasticsearch.index}")
+	private String bookmarksIndex;
+
 	@Value("${cxp.basicauth.username}")
 	private String cxpBasicAuthUserName;
 
 	@Value("${cxp.basicauth.password}")
 	private String cxpBasicAuthPassword;
-	
+
 	public String getCxpBasicAuthUserName() {
 		if (StringUtils.isBlank(cxpBasicAuthUserName)) {
 			throw new IllegalStateException("CXP Basic Auth Username not present in ENV. Please set cxp_basicauth_username");
@@ -86,50 +69,59 @@ public class PropertyConfiguration {
 		return cxpBasicAuthPassword;
 	}
 
-	public String getApplicationName() { return applicationName; }
+	public String getApplicationName() {
+		return applicationName;
+	}
 
-	public String getElasticsearchHost() { return elasticsearchHost; }
+	public String getElasticsearchHost() {
+		return elasticsearchHost;
+	}
 
-	public int getElasticsearchPort() { return elasticsearchPort; }
+	public int getElasticsearchPort() {
+		return elasticsearchPort;
+	}
 
-	public String getElasticsearchScheme() { return elasticsearchScheme; }
+	public String getElasticsearchScheme() {
+		return elasticsearchScheme;
+	}
 
-	public String getElasticsearchUsername() { return elasticsearchUsername; }
+	public String getElasticsearchUsername() {
+		return elasticsearchUsername;
+	}
 
-	public String getElasticsearchPassword() { return elasticsearchPassword; }
+	public String getElasticsearchPassword() {
+		return elasticsearchPassword;
+	}
 
-	public String getLdapUrl() { return ldapUrl; }
+	public String getSuccessTalkIndex() {
+		return successTalkIndex;
+	}
 
-	public String getLdapUserId() { return ldapUserId; }
+	public long getSuccessTalkRegistrationSheetId() {
+		return successTalkRegistrationSheetId;
+	}
 
-	public String getCiscoOauthTokenUrl() { return ciscoOauthTokenUrl; }
+	public String getSmartsheetAccessToken() {
+		return smartsheetAccessToken;
+	}
 
-	public String getEntitlementUserPartyAffiliationUrl() { return entitlementUserPartyAffiliationUrl; }
+	public String getSuccessTalkUserRegistrationsIndex() {
+		return successTalkUserRegistrationsIndex;
+	}
 
-	public String getCxpEmailApiContextUrl() { return cxpEmailApiContextUrl; }
+	public String getBookmarksIndex() {
+		return bookmarksIndex;
+	}
 
-	public String getCxpEmailReadinessUrl() { return cxpEmailReadinessUrl; }
-	
-    public String getSuccessTalkIndex() {
-        return successTalkIndex;
-    }
-    
-    public long getSuccessTalkRegistrationSheetId() {
-        return successTalkRegistrationSheetId;
-    }
-    
-    public String getSmartsheetAccessToken() {
-        return smartsheetAccessToken;
-    }
-    
-    public String getSuccessTalkUserRegistrationsIndex() {
-        return successTalkUserRegistrationsIndex;
-    }
-
-    public String getBookmarksIndex() {
-        return bookmarksIndex;
-    }
-    public String createCxpBasicAuthToken() {
+	public String createCxpBasicAuthToken() {
 		return new String(Base64.encodeBase64((this.getCxpBasicAuthUserName() + ":" + this.getCxpBasicAuthPassword()).getBytes()));
+	}
+	
+	public String getEntitlementUserPartyAffiliationUrl() {
+		return entitlementUserPartyAffiliationUrl;
+	}
+
+	public void setEntitlementUserPartyAffiliationUrl(String entitlementUserPartyAffiliationUrl) {
+		this.entitlementUserPartyAffiliationUrl = entitlementUserPartyAffiliationUrl;
 	}
 }
