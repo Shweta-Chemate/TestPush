@@ -1,6 +1,7 @@
 package com.cisco.cx.training.app.service.impl;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -17,6 +18,7 @@ import com.cisco.cx.training.app.dao.SuccessTalkDAO;
 import com.cisco.cx.training.app.exception.GenericException;
 import com.cisco.cx.training.app.exception.NotAllowedException;
 import com.cisco.cx.training.app.exception.NotFoundException;
+import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
 import com.cisco.cx.training.models.BookmarkRequestSchema;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
@@ -27,6 +29,7 @@ import com.cisco.cx.training.models.SuccessTalk;
 import com.cisco.cx.training.models.SuccessTalkResponseSchema;
 import com.cisco.cx.training.models.SuccessTalkSession;
 import com.cisco.cx.training.models.SuccesstalkUserRegEsSchema;
+import com.cisco.cx.training.models.UserDetails;
 import com.smartsheet.api.SmartsheetException;
 
 @Service
@@ -47,6 +50,9 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 
 	@Autowired
 	private BookmarkDAO bookmarkDAO;
+	
+	@Autowired
+	private PartnerProfileService partnerProfileService;
 
 	@Override
 	public List<LearningModel> getAllLearning() {
@@ -66,9 +72,10 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	}
 
 	@Override
-	public SuccessTalkResponseSchema getUserSuccessTalks(String email) {
+	public SuccessTalkResponseSchema getUserSuccessTalks(String xMasheryHandshake) {
+		UserDetails userDetails= partnerProfileService.fetchUserDetails(xMasheryHandshake);
 		SuccessTalkResponseSchema successTalkResponseSchema = new SuccessTalkResponseSchema();
-		successTalkResponseSchema.setItems(successTalkDAO.getUserSuccessTalks(email));
+		successTalkResponseSchema.setItems(successTalkDAO.getUserSuccessTalks(userDetails.getEmail()));
 		return successTalkResponseSchema;
 	}
 	
@@ -83,9 +90,10 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	}
 	
 	@Override
-	public SuccesstalkUserRegEsSchema cancelUserSuccessTalkRegistration(String title, Long eventStartDate, String email) throws Exception {
+	public SuccesstalkUserRegEsSchema cancelUserSuccessTalkRegistration(String title, Long eventStartDate, String xMasheryHandshake) throws Exception {
+		UserDetails userDetails= partnerProfileService.fetchUserDetails(xMasheryHandshake);
 		// form a schema object for the input (set transaction type to Canceled)
-		SuccesstalkUserRegEsSchema cancelledRegistration = new SuccesstalkUserRegEsSchema(title, eventStartDate, email,
+		SuccesstalkUserRegEsSchema cancelledRegistration = new SuccesstalkUserRegEsSchema(title, eventStartDate, userDetails.getEmail(),
 				SuccesstalkUserRegEsSchema.RegistrationStatusEnum.CANCELLED);
 		try {
 			// find and mark registration as Canceled in the Smartsheet
@@ -102,13 +110,14 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	}
 	
 	@Override
-    public SuccesstalkUserRegEsSchema registerUserToSuccessTalkRegistration(String title, Long eventStartDate, String email) throws Exception {
+    public SuccesstalkUserRegEsSchema registerUserToSuccessTalkRegistration(String title, Long eventStartDate, String xMasheryHandshake) throws Exception {
+		UserDetails userDetails= partnerProfileService.fetchUserDetails(xMasheryHandshake);
 		// form a schema object for the input (set transaction type to Pending)
-    	SuccesstalkUserRegEsSchema registration = new SuccesstalkUserRegEsSchema( title, eventStartDate, email,
+    	SuccesstalkUserRegEsSchema registration = new SuccesstalkUserRegEsSchema( title, eventStartDate, userDetails.getEmail(),
     			SuccesstalkUserRegEsSchema.RegistrationStatusEnum.PENDING);
 		try {
 			// validate the registration details
-			registration = this.fetchSuccessTalkRegistrationDetails(registration);
+			registration = this.fetchSuccessTalkRegistrationDetails(registration, userDetails);
 
 			if (smartsheetDAO.checkRegistrationExists(registration)) {
 				throw new NotAllowedException("Success Talk Registration already exists");
@@ -128,7 +137,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	}
 
 	@Override
-	public SuccesstalkUserRegEsSchema fetchSuccessTalkRegistrationDetails(SuccesstalkUserRegEsSchema registration)
+	public SuccesstalkUserRegEsSchema fetchSuccessTalkRegistrationDetails(SuccesstalkUserRegEsSchema registration, UserDetails userDetails)
 			throws NotFoundException, NotAllowedException {
 		SuccessTalk successTalk = null;
 
@@ -143,15 +152,14 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 			registration.setTitle(successTalk.getTitle());
 			SuccessTalkSession successTalkSession = successTalk.getSessions().stream().findFirst().get();
 			registration.setEventStartDate(successTalkSession.getSessionStartDate());
-			//registration.setSessionRegion(atxSessionSchema.getRegion());
-			/*try {
-				CiscoUserProfileSchema userProfile = profileService.getUserProfile(masheryUser.getCcoId());
-				registration.setUserEmail(userProfile.getUserEmail());
-				registration.setUserFullName(userProfile.getUserFullName());
-				registration.setCustomerName(userProfile.getCompanyName());
-			} catch (Exception e) {
-				LOG.error("Could not fetch User Profile information from CCO LDAP for " + masheryUser.getCcoId() + ". Some fields may not be available in ATX Registration", e);
-			}*/
+			registration.setEmail(userDetails.getEmail());
+            registration.setFirstName(userDetails.getFirstName());
+			registration.setLastName(userDetails.getFirstName());
+			registration.setUserTitle(userDetails.getTitle());
+			registration.setPhone(userDetails.getPhone());
+			registration.setCompany(userDetails.getCompany());
+			registration.setCountry(userDetails.getCountry());
+			registration.setRegistrationDate(new Date().getTime());
 		} else {
 			throw new NotFoundException("Invalid SuccessTalk Details: " + registration.getTitle());
 		}
@@ -160,12 +168,13 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	}
 	
 	@Override
-	public BookmarkResponseSchema createOrUpdateBookmark(BookmarkRequestSchema bookmarkRequestSchema, String email) {
+	public BookmarkResponseSchema createOrUpdateBookmark(BookmarkRequestSchema bookmarkRequestSchema, String xMasheryHandshake) {
+		UserDetails userDetails= partnerProfileService.fetchUserDetails(xMasheryHandshake);
         BookmarkResponseSchema bookmarkResponseSchema = new BookmarkResponseSchema();
 
         BeanUtils.copyProperties(bookmarkRequestSchema, bookmarkResponseSchema);
 
-        bookmarkResponseSchema.setEmail(email);
+        bookmarkResponseSchema.setEmail(userDetails.getEmail());
 
         bookmarkResponseSchema = bookmarkDAO.createOrUpdate(bookmarkResponseSchema);
 

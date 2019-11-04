@@ -54,9 +54,6 @@ public class TrainingAndEnablementController {
 	
 	@Autowired
 	private TrainingAndEnablementService trainingAndEnablementService;
-	
-	@Autowired
-	private PartnerProfileService partnerProfileService;
 
 	@RequestMapping(path = "/ready", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Template API Readiness probe", hidden = true)
@@ -96,38 +93,6 @@ public class TrainingAndEnablementController {
 			throws Exception {
 		List<Community> communityList = trainingAndEnablementService.getAllCommunities();
 		return new ResponseEntity<List<Community>>(communityList, HttpStatus.OK);
-	}
-
-	/*@CrossOrigin(origins = "*", allowedHeaders = "*")
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalks")
-	@ApiOperation(value = "Fetch SuccessTalks", response = SuccessTalkResponseSchema.class, nickname = "fetchSuccessTalks")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
-			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
-			@ApiResponse(code = 404, message = "Entity Not Found"),
-			@ApiResponse(code = 500, message = "Error during retrieve", response = ErrorResponse.class) })
-	public ResponseEntity<SuccessTalkResponseSchema> getAllSuccessTalks(
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake" , required=false) String xMasheryHandshake)
-			throws Exception {
-		SuccessTalkResponseSchema successTalkResponseSchema = trainingAndEnablementService.getAllSuccessTalks();
-		return new ResponseEntity<SuccessTalkResponseSchema>(successTalkResponseSchema, HttpStatus.OK);
-	}*/
-
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalks/{email}")
-	@ApiOperation(value = "Fetch SuccessTalks For Email Filter", response = SuccessTalkResponseSchema.class, nickname = "fetchUserSuccessTalks")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
-			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
-			@ApiResponse(code = 404, message = "Entity Not Found"),
-			@ApiResponse(code = 500, message = "Error during retrieve", response = ErrorResponse.class) })
-	public ResponseEntity<SuccessTalkResponseSchema> getUserSuccessTalks(@PathVariable(value = "email", required = false) String email,
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake" , required=false) String xMasheryHandshake)
-			throws Exception {
-		
-		if (StringUtils.isBlank(xMasheryHandshake)) {
-            throw new BadRequestException("X-Mashery-Handshake header missing in request");
-        }
-		UserDetails userDetails= partnerProfileService.fetchUserDetails(xMasheryHandshake);
-		SuccessTalkResponseSchema successTalkResponseSchema = trainingAndEnablementService.getUserSuccessTalks(userDetails.getEmail());
-		return new ResponseEntity<SuccessTalkResponseSchema>(successTalkResponseSchema, HttpStatus.OK);
 	}
     
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, path = "/learning")
@@ -170,6 +135,22 @@ public class TrainingAndEnablementController {
 		List<LearningModel> learningList = trainingAndEnablementService.getFilteredLearning(solution, usecase);
 		return new ResponseEntity<List<LearningModel>>(learningList, HttpStatus.OK);
 	}
+
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalks")
+	@ApiOperation(value = "Fetch SuccessTalks For User", response = SuccessTalkResponseSchema.class, nickname = "fetchUserSuccessTalks")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
+			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
+			@ApiResponse(code = 404, message = "Entity Not Found"),
+			@ApiResponse(code = 500, message = "Error during retrieve", response = ErrorResponse.class) })
+	public ResponseEntity<SuccessTalkResponseSchema> getUserSuccessTalks(@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake" , required=false) String xMasheryHandshake)
+			throws Exception {
+		
+		if (StringUtils.isBlank(xMasheryHandshake)) {
+            throw new BadRequestException("X-Mashery-Handshake header missing in request");
+        }
+		SuccessTalkResponseSchema successTalkResponseSchema = trainingAndEnablementService.getUserSuccessTalks(xMasheryHandshake);
+		return new ResponseEntity<SuccessTalkResponseSchema>(successTalkResponseSchema, HttpStatus.OK);
+	}
 	
     @RequestMapping(method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalk/registration")
     @ApiOperation(value = "Request a cancellation for a scheduled Success Talk session", nickname = "cancelUserToSucessTalk")
@@ -181,15 +162,12 @@ public class TrainingAndEnablementController {
     public SuccesstalkUserRegEsSchema cancelUserAtxRegistration(
             @ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
             @ApiParam(value = "Event Name of selected session", required = true) @RequestParam(value = "title", required = true) String title,
-            @ApiParam(value = "Event Date of selected session", required = true) @RequestParam(value = "eventStartDate") Long eventStartDate,
-            @ApiParam(value = "Email of user", required = true) @RequestParam(value = "email", required = true) String email) throws Exception {
+            @ApiParam(value = "Event Date of selected session", required = true) @RequestParam(value = "eventStartDate") Long eventStartDate) throws Exception {
 
         if (StringUtils.isBlank(xMasheryHandshake)) {
             throw new BadRequestException("X-Mashery-Handshake header missing in request");
         }
-
-    	UserDetails userDetails= partnerProfileService.fetchUserDetails(xMasheryHandshake);
-    	return trainingAndEnablementService.cancelUserSuccessTalkRegistration(title, eventStartDate, userDetails.getEmail());
+    	return trainingAndEnablementService.cancelUserSuccessTalkRegistration(title, eventStartDate, xMasheryHandshake);
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalk/registration")
@@ -201,15 +179,12 @@ public class TrainingAndEnablementController {
             @ApiResponse(code = 500, message = "Error during registration", response = ErrorResponse.class)})
     public SuccesstalkUserRegEsSchema registerToAtx(@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
             @ApiParam(value = "Event Name of selected session", required = true) @RequestParam(value = "title") String title,
-            @ApiParam(value = "Event Date of selected session", required = true) @RequestParam(value = "eventStartDate") Long eventStartDate,
-            @ApiParam(value = "Email of user", required = true) @RequestParam(value = "email") String email) throws Exception {
+            @ApiParam(value = "Event Date of selected session", required = true) @RequestParam(value = "eventStartDate") Long eventStartDate) throws Exception {
 
         if (StringUtils.isBlank(xMasheryHandshake)) {
             throw new BadRequestException("X-Mashery-Handshake header missing in request");
         }
-             	
-    	UserDetails userDetails= partnerProfileService.fetchUserDetails(xMasheryHandshake);
-        return trainingAndEnablementService.registerUserToSuccessTalkRegistration(title, eventStartDate, userDetails.getEmail());
+        return trainingAndEnablementService.registerUserToSuccessTalkRegistration(title, eventStartDate, xMasheryHandshake);
     }
     
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalk/bookmarks")
@@ -220,7 +195,7 @@ public class TrainingAndEnablementController {
             @ApiResponse(code = 403, message = "Operation forbidden due to business policies", response = ErrorResponse.class),
             @ApiResponse(code = 500, message = "Internal server error occured", response = ErrorResponse.class)})
     public BookmarkResponseSchema createOrUpdate(@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
-    											 @ApiParam(value = "Email of user", required = false) @RequestParam(value = "email") String email,
+    											 
                                                  @ApiParam(value = "JSON Body to Bookmark", required = true) @RequestBody BookmarkRequestSchema bookmarkRequestSchema) {
 
         LOG.info("API_BOOKMARKS Call start");
@@ -233,9 +208,7 @@ public class TrainingAndEnablementController {
         if (StringUtils.isBlank(xMasheryHandshake)) {
             throw new BadRequestException("X-Mashery-Handshake header missing in request");
         }
-
-        UserDetails userDetails= partnerProfileService.fetchUserDetails(xMasheryHandshake);
-        BookmarkResponseSchema bookmarkResponseSchema = trainingAndEnablementService.createOrUpdateBookmark(bookmarkRequestSchema, userDetails.getEmail());
+        BookmarkResponseSchema bookmarkResponseSchema = trainingAndEnablementService.createOrUpdateBookmark(bookmarkRequestSchema, xMasheryHandshake);
 
         long endTime = System.currentTimeMillis() - startTime;
         LOG.info("PERF_TIME_TAKEN | API_BOOKMARKS | " + endTime);

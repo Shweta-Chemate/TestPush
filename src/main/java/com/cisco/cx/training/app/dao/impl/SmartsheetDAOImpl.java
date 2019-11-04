@@ -35,11 +35,15 @@ public class SmartsheetDAOImpl implements SmartsheetDAO {
     private static Map<String, String> successTalkRegColTitleToSchemaKeyMap = Stream.of(new Object[][] {
             { "Event Name", "title" },
             { "Email", "email" },
-            { "FirstName", "firstname" },
-            { "LastName", "lastname" },
+            { "FirstName", "firstName" },
+            { "LastName", "lastName" },
             { "Registered", "registrationStatus" },
             { "Attended", "attended" },
-            { "Registration Date/Time", "registrationDateTime"},
+            { "Title", "userTitle"},
+            { "Phone", "phone"},
+            { "Company", "company"},
+            { "Country/Region", "country"},
+            { "Registration Date/Time", "registrationDateFormatted"},
             { "Event Start Date", "eventStartDateFormatted"}
     }).collect(Collectors.toMap(data -> (String) data[0], data -> (String) data[1]));
 

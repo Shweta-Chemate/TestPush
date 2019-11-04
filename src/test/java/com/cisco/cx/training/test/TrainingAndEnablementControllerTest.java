@@ -58,9 +58,6 @@ public class TrainingAndEnablementControllerTest {
 
 	@MockBean
 	private TrainingAndEnablementService trainingAndEnablementService;
-	
-	@MockBean
-	private PartnerProfileService partnerProfileService;
 
 	private String XMasheryHeader;
 

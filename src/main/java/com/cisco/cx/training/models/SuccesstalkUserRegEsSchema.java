@@ -29,7 +29,10 @@ public class SuccesstalkUserRegEsSchema implements HasId {
     private String attended;
     
     @JsonAlias("Registration Date/Time")
-    private Long registrationDateTime;       
+    private Long registrationDate;
+    
+    @JsonAlias("Registration Date Formatted")
+    private String registrationDateFormatted;
     
     @JsonAlias("Event Start Date")
     private Long eventStartDate;
@@ -43,7 +46,23 @@ public class SuccesstalkUserRegEsSchema implements HasId {
     @JsonAlias("Registered")
     private RegistrationStatusEnum registrationStatus=RegistrationStatusEnum.PENDING;
     
+	@JsonAlias("First Name")
+	private String firstName;
 
+	@JsonAlias("Last Name")
+	private String lastName;
+	@JsonAlias("Title")
+	private String userTitle;
+
+	@JsonAlias("Phone")
+	private String phone;
+
+	@JsonAlias("Company")
+	private String company;
+
+	@JsonAlias("Country/Region")
+	private String country;
+	
     private Long created = System.currentTimeMillis();
 
     private Long updated;
@@ -90,14 +109,6 @@ public class SuccesstalkUserRegEsSchema implements HasId {
 
 	public void setAttended(String attended) {
 		this.attended = attended;
-	}
-
-	public Long getRegistrationDateTime() {
-		return registrationDateTime;
-	}
-
-	public void setRegistrationDateTime(Long registrationDateTime) {
-		this.registrationDateTime = registrationDateTime;
 	}
 
 	public String getTitle() {
@@ -197,5 +208,79 @@ public class SuccesstalkUserRegEsSchema implements HasId {
         } catch (Exception e) {
             LOG.warn("Could not parse pattern {} from date value {}", SMARTSHEET_DATE_FORMAT, eventStartDateFormatted);
         }
+	}
+
+	public Long getRegistrationDate() {
+		return registrationDate;
+	}
+
+	public void setRegistrationDate(Long registrationDate) {
+		this.registrationDate = registrationDate;
+		this.registrationDateFormatted = (registrationDate != null) ? new SimpleDateFormat(SMARTSHEET_DATE_FORMAT).format(new Date(registrationDate)) : null;
+	}
+	
+
+	public String getRegistrationDateFormatted() {
+		return registrationDateFormatted;
+	}
+
+	public void setRegistrationDateFormatted(String registrationDateFormatted) {
+		this.registrationDateFormatted = registrationDateFormatted;
+		try {
+			this.registrationDate = StringUtils.isNotBlank(registrationDateFormatted)
+					? new SimpleDateFormat(SMARTSHEET_DATE_FORMAT).parse(registrationDateFormatted).getTime()
+					: null;
+		} catch (Exception e) {
+			LOG.warn("Could not parse pattern {} from date value {}", SMARTSHEET_DATE_FORMAT,
+					registrationDateFormatted);
+		}
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public String getUserTitle() {
+		return userTitle;
+	}
+
+	public void setUserTitle(String userTitle) {
+		this.userTitle = userTitle;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public String getCompany() {
+		return company;
+	}
+
+	public void setCompany(String company) {
+		this.company = company;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
 	}
 }

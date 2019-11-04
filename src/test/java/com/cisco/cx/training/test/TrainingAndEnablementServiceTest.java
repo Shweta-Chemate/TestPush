@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.beans.BeanUtils;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -25,6 +26,7 @@ import com.cisco.cx.training.app.dao.ElasticSearchDAO;
 import com.cisco.cx.training.app.dao.LearningDAO;
 import com.cisco.cx.training.app.dao.SmartsheetDAO;
 import com.cisco.cx.training.app.dao.SuccessTalkDAO;
+import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
 import com.cisco.cx.training.app.service.impl.TrainingAndEnablementServiceImpl;
 import com.cisco.cx.training.models.BookmarkRequestSchema;
@@ -35,6 +37,7 @@ import com.cisco.cx.training.models.Learning;
 import com.cisco.cx.training.models.SuccessTalk;
 import com.cisco.cx.training.models.SuccessTalkSession;
 import com.cisco.cx.training.models.SuccesstalkUserRegEsSchema;
+import com.cisco.cx.training.models.UserDetails;
 
 @RunWith(SpringRunner.class)
 public class TrainingAndEnablementServiceTest {
@@ -63,6 +66,8 @@ public class TrainingAndEnablementServiceTest {
 	@InjectMocks
 	private TrainingAndEnablementService trainingAndEnablementService = new TrainingAndEnablementServiceImpl();
 
+	@Mock
+	private PartnerProfileService partnerProfileService;
 
 	@Test
 	public void testGetLearnings() {
@@ -102,6 +107,9 @@ public class TrainingAndEnablementServiceTest {
 
 	@Test
 	public void getRegisteredSuccessTalks() throws IOException {
+		UserDetails userDetails = new UserDetails();
+		userDetails.setEmail("email");
+		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(userDetails);
 		String email = "email";
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
         BoolQueryBuilder boolQuery = new BoolQueryBuilder();
@@ -122,6 +130,9 @@ public class TrainingAndEnablementServiceTest {
 	
 	@Test
 	public void createOrUpdateBookmark() {
+		UserDetails userDetails = new UserDetails();
+		userDetails.setEmail("email");
+		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(userDetails);
 		String email = "email";
 		BookmarkRequestSchema bookmarkRequestSchema = new BookmarkResponseSchema(); 
 		BookmarkResponseSchema bookmarkResponseSchema = new BookmarkResponseSchema();
@@ -136,6 +147,9 @@ public class TrainingAndEnablementServiceTest {
 		String email = "email";
 		String title = "title";
 		Long eventStartDate = 1L;
+		UserDetails userDetails = new UserDetails();
+		userDetails.setEmail("email");
+		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(userDetails);
 		trainingAndEnablementService.cancelUserSuccessTalkRegistration(title, eventStartDate, email);
 	}
 	
@@ -144,6 +158,9 @@ public class TrainingAndEnablementServiceTest {
 		String email = "email";
 		String title = "title";
 		Long eventStartDate = 1L;
+		UserDetails userDetails = new UserDetails();
+		userDetails.setEmail("email");
+		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(userDetails);
 		trainingAndEnablementService.registerUserToSuccessTalkRegistration(title, eventStartDate, email);
 	}
 	
