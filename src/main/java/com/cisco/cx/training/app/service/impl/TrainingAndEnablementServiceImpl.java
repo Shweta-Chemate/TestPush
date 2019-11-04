@@ -59,11 +59,6 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	}
 
 	@Override
-	public SuccessTalk insertSuccessTalk(SuccessTalk successTalk) {
-		return successTalkDAO.insertSuccessTalk(successTalk);
-	}
-
-	@Override
 	public SuccessTalkResponseSchema getAllSuccessTalks() {
 		SuccessTalkResponseSchema successTalkResponseSchema = new SuccessTalkResponseSchema();
 		successTalkResponseSchema.setItems(successTalkDAO.getAllSuccessTalks());

@@ -98,20 +98,6 @@ public class TrainingAndEnablementController {
 		return new ResponseEntity<List<Community>>(communityList, HttpStatus.OK);
 	}
 
-	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalk")
-	@ApiOperation(value = "Create New SuccessTalk", response = SuccessTalk.class, nickname = "creatSuccessTalk")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully inserted success talk"),
-			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
-			@ApiResponse(code = 403, message = "Operation forbidden due to business policies", response = ErrorResponse.class),
-			@ApiResponse(code = 500, message = "Error during create", response = ErrorResponse.class) })
-	public SuccessTalk createSuccessTalk(
-			@ApiParam(value = "Body for the Request", required = true) @RequestBody SuccessTalk successTalk,
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake" , required=false) String xMasheryHandshake)
-			throws Exception {
-
-		return trainingAndEnablementService.insertSuccessTalk(successTalk);
-	}
-
 	/*@CrossOrigin(origins = "*", allowedHeaders = "*")
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalks")
 	@ApiOperation(value = "Fetch SuccessTalks", response = SuccessTalkResponseSchema.class, nickname = "fetchSuccessTalks")

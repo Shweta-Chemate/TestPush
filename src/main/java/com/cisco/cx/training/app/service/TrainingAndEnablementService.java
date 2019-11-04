@@ -16,8 +16,6 @@ public interface TrainingAndEnablementService {
 
 	List<Community> getAllCommunities();
 
-	SuccessTalk insertSuccessTalk(SuccessTalk successTalk);
-
 	SuccessTalkResponseSchema getAllSuccessTalks();
 
 	SuccessTalkResponseSchema getUserSuccessTalks(String email);
