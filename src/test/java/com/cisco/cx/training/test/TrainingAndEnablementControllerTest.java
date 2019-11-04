@@ -111,31 +111,6 @@ public class TrainingAndEnablementControllerTest {
 				.andDo(print()).andExpect(status().isOk());
 	}
 
-	@Test
-	public void testCreateSuccessTalks() throws Exception {
-		SuccessTalk successTalk = new SuccessTalk();
-		successTalk.setBookmark(true);
-		successTalk.setDescription("description");
-		successTalk.setDocId("someId");
-		successTalk.setDuration(100L);
-		successTalk.setImageUrl("");
-		successTalk.setRecordingUrl("");
-		List<SuccessTalkSession> sessions = new ArrayList<SuccessTalkSession>();
-		successTalk.setSessions(sessions);
-		successTalk.setStatus(SuccessTalkStatusEnum.COMPLETED);
-		successTalk.setSuccessTalkId("");
-		successTalk.setTitle("title");
-
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-		ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
-		String requestJson = ow.writeValueAsString(successTalk);
-
-		this.mockMvc.perform(post("/v1/partner/training/successTalk").contentType(MediaType.APPLICATION_JSON_VALUE)
-				.header("X-Mashery-Handshake", this.XMasheryHeader).content(requestJson).characterEncoding("utf-8"))
-				.andDo(print()).andExpect(status().isOk());
-	}
-
 	/*@Test
 	public void testFetchSuccessTalks() throws Exception {
 		this.mockMvc

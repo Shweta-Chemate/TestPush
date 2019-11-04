@@ -101,13 +101,6 @@ public class TrainingAndEnablementServiceTest {
 	}
 
 	@Test
-	public void insertSuccessTalksTest() {
-		SuccessTalk successTalk = getSuccessTask();
-		when(successTalkDAO.insertSuccessTalk(successTalk)).thenReturn(successTalk);
-		trainingAndEnablementService.insertSuccessTalk(successTalk);
-	}
-
-	@Test
 	public void getRegisteredSuccessTalks() throws IOException {
 		String email = "email";
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
