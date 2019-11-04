@@ -30,7 +30,6 @@ import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.cisco.cx.training.models.Community;
 import com.cisco.cx.training.models.Learning;
 import com.cisco.cx.training.models.LearningModel;
-import com.cisco.cx.training.models.SuccessTalk;
 import com.cisco.cx.training.models.SuccessTalkResponseSchema;
 import com.cisco.cx.training.models.SuccesstalkUserRegEsSchema;
 import com.cisco.cx.training.models.UserDetails;

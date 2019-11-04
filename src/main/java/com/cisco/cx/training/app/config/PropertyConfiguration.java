@@ -52,6 +52,12 @@ public class PropertyConfiguration {
 
 	@Value("${cxp.basicauth.password}")
 	private String cxpBasicAuthPassword;
+	
+	@Value("${partner.community.heading.partnerresources}")
+	private String communityHeading;
+	
+	@Value("${partner.community.link.partnerresources}")
+	private String communityLink;
 
 	public String getCxpBasicAuthUserName() {
 		if (StringUtils.isBlank(cxpBasicAuthUserName)) {
@@ -112,16 +118,16 @@ public class PropertyConfiguration {
 	public String getBookmarksIndex() {
 		return bookmarksIndex;
 	}
+	
+	public String getCommunityHeading() {
+		return communityHeading;
+	}
+
+	public String getCommunityLink() {
+		return communityLink;
+	}
 
 	public String createCxpBasicAuthToken() {
 		return new String(Base64.encodeBase64((this.getCxpBasicAuthUserName() + ":" + this.getCxpBasicAuthPassword()).getBytes()));
-	}
-	
-	public String getEntitlementUserPartyAffiliationUrl() {
-		return entitlementUserPartyAffiliationUrl;
-	}
-
-	public void setEntitlementUserPartyAffiliationUrl(String entitlementUserPartyAffiliationUrl) {
-		this.entitlementUserPartyAffiliationUrl = entitlementUserPartyAffiliationUrl;
 	}
 }

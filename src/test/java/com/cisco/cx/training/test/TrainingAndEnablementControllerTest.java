@@ -1,14 +1,11 @@
 package com.cisco.cx.training.test;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Before;
@@ -32,12 +29,6 @@ import com.cisco.cx.training.app.dao.CommunityDAO;
 import com.cisco.cx.training.app.rest.TrainingAndEnablementController;
 import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
-import com.cisco.cx.training.models.SuccessTalk;
-import com.cisco.cx.training.models.SuccessTalk.SuccessTalkStatusEnum;
-import com.cisco.cx.training.models.SuccessTalkSession;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.SerializationFeature;
 
 import springfox.documentation.swagger2.web.Swagger2Controller;
 

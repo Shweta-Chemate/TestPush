@@ -6,7 +6,5 @@ import com.cisco.cx.training.models.Community;
 
 public interface CommunityDAO {
 
-	public Community insertCommunity(Community community);
-
 	public List<Community> getCommunities();
 }

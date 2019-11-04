@@ -1,84 +1,28 @@
 package com.cisco.cx.training.test;
 
-import static org.mockito.Mockito.when;
-
 import java.io.IOException;
 
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.dao.CommunityDAO;
-import com.cisco.cx.training.app.dao.ElasticSearchDAO;
 import com.cisco.cx.training.app.dao.impl.CommunityDAOImpl;
-import com.cisco.cx.training.app.exception.GenericException;
-import com.cisco.cx.training.models.Community;
-import com.cisco.cx.training.models.ElasticSearchResults;
 
 @RunWith(SpringRunner.class)
 public class CommunityDAOTest {
-
-	private final String INDEX = "cxpp_training_enablement_communities";
-
 	@Mock
-	private ElasticSearchDAO elasticSearchDAO;
+	private PropertyConfiguration config;
 
 	@InjectMocks
 	private CommunityDAO communityDAO = new CommunityDAOImpl();
 
 	@Test
-	public void insertCommunity() throws IOException {
-		Community community = getCommunity();
-		communityDAO.insertCommunity(community);
-		when(elasticSearchDAO.saveEntry(INDEX, community, Community.class)).thenReturn(community);
-		communityDAO.insertCommunity(community);
-	}
-	
-	@Test(expected = GenericException.class)
-	public void insertCommunityESFailure() throws IOException {
-		Community community = getCommunity();
-		when(elasticSearchDAO.saveEntry(INDEX, community, Community.class)).thenThrow(IOException.class);
-		communityDAO.insertCommunity(community);
-	}
-
-	@Test
 	public void getCommunities() throws IOException {
-		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-		BoolQueryBuilder boolQuery = new BoolQueryBuilder();
-		sourceBuilder.query(boolQuery);
-		sourceBuilder.size(10000);
-		Community community = getCommunity();
-		ElasticSearchResults<Community> results = new ElasticSearchResults<>();
-		results.addDocument(community);
-		when(elasticSearchDAO.query(INDEX, sourceBuilder, Community.class)).thenReturn(results);
-		communityDAO.getCommunities();
-	}
-	
-	@Test(expected = GenericException.class)
-	public void getCommunitiesESFailure() throws IOException {
-		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-		BoolQueryBuilder boolQuery = new BoolQueryBuilder();
-		sourceBuilder.query(boolQuery);
-		sourceBuilder.size(10000);
-		Community community = getCommunity();
-		ElasticSearchResults<Community> results = new ElasticSearchResults<>();
-		results.addDocument(community);
-		when(elasticSearchDAO.query(INDEX, sourceBuilder, Community.class)).thenThrow(IOException.class);
 		communityDAO.getCommunities();
 	}
 
-	private Community getCommunity() {
-		Community community = new Community();
-		community.setDescription("description");
-		community.setDocId("id");
-		community.setName("name");
-		community.setSolution("solution");
-		community.setUrl("IBN");
-		community.setUsecase("usecase");
-		return community;
-	}
 }
