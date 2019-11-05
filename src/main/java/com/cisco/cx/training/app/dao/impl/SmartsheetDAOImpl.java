@@ -76,7 +76,7 @@ public class SmartsheetDAOImpl implements SmartsheetDAO {
                 Arrays.asList(
                 		SuccesstalkUserRegEsSchema.RegistrationStatusEnum.CANCELLED.toString()
                 ));
-        
+
         if (previouslyCanceledRegistration == null) {
             // add a new row to the smartsheet
             client.sheetResources().rowResources().addRows(config.getSuccessTalkRegistrationSheetId(),
