@@ -76,7 +76,7 @@ public class SmartsheetDAOImpl implements SmartsheetDAO {
                 Arrays.asList(
                 		SuccesstalkUserRegEsSchema.RegistrationStatusEnum.CANCELLED.toString()
                 ));
-
+        
         if (previouslyCanceledRegistration == null) {
             // add a new row to the smartsheet
             client.sheetResources().rowResources().addRows(config.getSuccessTalkRegistrationSheetId(),
@@ -167,7 +167,7 @@ public class SmartsheetDAOImpl implements SmartsheetDAO {
                         isCellQualified = isCellQualified && (Objects.equals(registration.getTitle(), currentCell.getValue()));
                     } else if (StringUtils.equalsIgnoreCase(columnIdToTitleMap.get(currentCell.getColumnId()), "Email")) {
                         isCellQualified = isCellQualified && (Objects.equals(registration.getEmail(), currentCell.getValue()));
-                    } else if (StringUtils.equalsIgnoreCase(columnIdToTitleMap.get(currentCell.getColumnId()), "Registration Status")) {
+                    } else if (StringUtils.equalsIgnoreCase(columnIdToTitleMap.get(currentCell.getColumnId()), "Registered")) {
                         isCellQualified = isCellQualified && (status == null || status.isEmpty() || status.contains(currentCell.getValue()));
                     }
 
