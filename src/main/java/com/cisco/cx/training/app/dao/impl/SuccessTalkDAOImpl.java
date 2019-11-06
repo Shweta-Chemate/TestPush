@@ -223,13 +223,14 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
 		            	successTalk.setStatus(SuccessTalk.SuccessTalkStatusEnum.SCHEDULED);
 		            	successTalk.getSessions().forEach(
 		                        session -> {
-		                            if (session.getSessionStartDate().equals(transaction.getEventStartDate())) {
-		                                session.setScheduled(true);
-		                                // if the scheduled session has passed current date, mark it complete.
-		                                if (session.getSessionStartDate() <= currentEpochMillis) {
-		                                	successTalk.setStatus(SuccessTalk.SuccessTalkStatusEnum.COMPLETED);
-		                                }
-		                            }
+									if (session.getSessionStartDate().equals(transaction.getEventStartDate())) {
+										session.setScheduled(true);
+										// if the Attended field in smartsheet is set to Yes, mark it complete.
+										if (transaction.getAttendedStatus() != null && transaction.getAttendedStatus()
+												.equals(SuccesstalkUserRegEsSchema.AttendedStatusEnum.YES)) {
+											successTalk.setStatus(SuccessTalk.SuccessTalkStatusEnum.COMPLETED);
+										}
+									}
 		                        }
 		                );
 		            }

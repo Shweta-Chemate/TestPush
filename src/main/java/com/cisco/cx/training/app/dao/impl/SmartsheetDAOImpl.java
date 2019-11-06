@@ -38,7 +38,7 @@ public class SmartsheetDAOImpl implements SmartsheetDAO {
             { "FirstName", "firstName" },
             { "LastName", "lastName" },
             { "Registered", "registrationStatus" },
-            { "Attended", "attended" },
+            { "Attended", "attendedStatus" },
             { "Title", "userTitle"},
             { "Phone", "phone"},
             { "Company", "company"},

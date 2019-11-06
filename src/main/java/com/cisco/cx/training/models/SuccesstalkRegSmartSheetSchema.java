@@ -1,6 +1,5 @@
 package com.cisco.cx.training.models;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -23,7 +22,7 @@ public class SuccesstalkRegSmartSheetSchema {
     private SuccesstalkUserRegEsSchema.RegistrationStatusEnum registrationStatus;
     
     @JsonProperty("Attended")
-    private String attended;
+    private SuccesstalkUserRegEsSchema.AttendedStatusEnum attendedStatus;
     
     @JsonProperty("Registration Date/Time")
     private Long registrationDateTime;    
@@ -72,13 +71,13 @@ public class SuccesstalkRegSmartSheetSchema {
 		this.lastname = lastname;
 	}
 
-	public String getAttended() {
-		return attended;
-	}
+	public SuccesstalkUserRegEsSchema.AttendedStatusEnum getAttendedStatus() {
+        return attendedStatus;
+    }
 
-	public void setAttended(String attended) {
-		this.attended = attended;
-	}
+    public void setAttendedStatus(SuccesstalkUserRegEsSchema.AttendedStatusEnum attendedStatus) {
+        this.attendedStatus = attendedStatus;
+    }
 
 	public Long getRegistrationDateTime() {
 		return registrationDateTime;
