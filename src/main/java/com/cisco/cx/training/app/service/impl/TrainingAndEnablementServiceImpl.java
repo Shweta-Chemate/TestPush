@@ -154,7 +154,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 			registration.setEventStartDate(successTalkSession.getSessionStartDate());
 			registration.setEmail(userDetails.getEmail());
             registration.setFirstName(userDetails.getFirstName());
-			registration.setLastName(userDetails.getFirstName());
+			registration.setLastName(userDetails.getLastName());
 			registration.setUserTitle(userDetails.getTitle());
 			registration.setPhone(userDetails.getPhone());
 			registration.setCompany(userDetails.getCompany());
