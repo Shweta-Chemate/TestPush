@@ -33,15 +33,11 @@ public class SuccessTalk implements HasId, Comparable<SuccessTalk> {
 	private List<SuccessTalkSession> sessions;
 
 	public enum SuccessTalkStatusEnum {
-        COMPLETED("completed"),
+        ATTENDED("attended"),
 
         RECOMMENDED("recommended"),
 
-        SCHEDULED("scheduled"),
-
         REQUESTED("requested"),
-
-        INPROGRESS("in-progress"),
 
         REGISTERED("registered"),
         
