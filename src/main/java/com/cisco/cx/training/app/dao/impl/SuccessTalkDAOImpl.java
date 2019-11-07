@@ -1,9 +1,6 @@
 package com.cisco.cx.training.app.dao.impl;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -193,11 +190,6 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
 	@Override
 	public List<SuccessTalk> getUserSuccessTalks(String email) {
 		List<SuccessTalk> successTalkES = new ArrayList<>();
-		
-
-        LocalDateTime currentTime = LocalDateTime.now();
-        ZonedDateTime zdt = ZonedDateTime.of(currentTime, ZoneId.systemDefault());
-        long currentEpochMillis = zdt.toInstant().toEpochMilli();
         
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 		BoolQueryBuilder boolQuery = new BoolQueryBuilder();
