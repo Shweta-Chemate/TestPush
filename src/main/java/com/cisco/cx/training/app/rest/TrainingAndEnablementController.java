@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.exception.ErrorResponse;
 import com.cisco.cx.training.app.exception.HealthCheckException;
-import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
 import com.cisco.cx.training.models.BookmarkRequestSchema;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
@@ -32,7 +31,6 @@ import com.cisco.cx.training.models.Learning;
 import com.cisco.cx.training.models.LearningModel;
 import com.cisco.cx.training.models.SuccessTalkResponseSchema;
 import com.cisco.cx.training.models.SuccesstalkUserRegEsSchema;
-import com.cisco.cx.training.models.UserDetails;
 import com.cisco.cx.training.util.ValidationUtil;
 
 import io.swagger.annotations.Api;
