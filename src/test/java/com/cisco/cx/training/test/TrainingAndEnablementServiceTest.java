@@ -105,7 +105,7 @@ public class TrainingAndEnablementServiceTest {
 
 	@Test
 	public void getAllSuccessTalksTest() {
-		SuccessTalk successTalk = getSuccessTask();
+		SuccessTalk successTalk = getSuccessTalk();
 		when(successTalkDAO.getAllSuccessTalks()).thenReturn(Arrays.asList(successTalk));
 		trainingAndEnablementService.getAllSuccessTalks();
 	}
@@ -180,7 +180,7 @@ public class TrainingAndEnablementServiceTest {
 		userDetails.setEmail("email");
 		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(userDetails);
 		SuccesstalkUserRegEsSchema registration = new SuccesstalkUserRegEsSchema(title, eventStartDate, userDetails.getEmail(), SuccesstalkUserRegEsSchema.RegistrationStatusEnum.REGISTERED);
-		when(successTalkDAO.findSuccessTalk(registration.getTitle(), registration.getEventStartDate())).thenReturn(getSuccessTask());
+		when(successTalkDAO.findSuccessTalk(registration.getTitle(), registration.getEventStartDate())).thenReturn(getSuccessTalk());
 		trainingAndEnablementService.registerUserToSuccessTalkRegistration(title, eventStartDate, email);
 	}
 	
@@ -205,7 +205,7 @@ public class TrainingAndEnablementServiceTest {
 		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(userDetails);
 		SuccesstalkUserRegEsSchema registration = new SuccesstalkUserRegEsSchema(title, eventStartDate, userDetails.getEmail(), SuccesstalkUserRegEsSchema.RegistrationStatusEnum.PENDING);
 		doThrow(SmartsheetException.class).when(smartsheetDAO).saveSuccessTalkRegistration(any(SuccesstalkUserRegEsSchema.class));
-		when(successTalkDAO.findSuccessTalk(registration.getTitle(), registration.getEventStartDate())).thenReturn(getSuccessTask());
+		when(successTalkDAO.findSuccessTalk(registration.getTitle(), registration.getEventStartDate())).thenReturn(getSuccessTalk());
 		trainingAndEnablementService.registerUserToSuccessTalkRegistration(title, eventStartDate, email);
 	}
 	
@@ -217,7 +217,7 @@ public class TrainingAndEnablementServiceTest {
 		UserDetails userDetails = new UserDetails();
 		userDetails.setEmail(email);
 		SuccesstalkUserRegEsSchema registration = new SuccesstalkUserRegEsSchema(title, eventStartDate, userDetails.getEmail(), SuccesstalkUserRegEsSchema.RegistrationStatusEnum.REGISTERED);
-		SuccessTalk successTalk = getSuccessTask();
+		SuccessTalk successTalk = getSuccessTalk();
 		when(successTalkDAO.findSuccessTalk(registration.getTitle(), registration.getEventStartDate())).thenReturn(successTalk);
 		trainingAndEnablementService.fetchSuccessTalkRegistrationDetails(registration, userDetails);
 	}
@@ -251,7 +251,7 @@ public class TrainingAndEnablementServiceTest {
 		return community;
 	}
 
-	private SuccessTalk getSuccessTask() {
+	private SuccessTalk getSuccessTalk() {
 		SuccessTalk successTalk = new SuccessTalk();
 		successTalk.setBookmark(true);
 		successTalk.setDescription("");
