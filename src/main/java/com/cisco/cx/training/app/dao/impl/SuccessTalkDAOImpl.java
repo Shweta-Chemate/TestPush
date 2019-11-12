@@ -120,7 +120,7 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
 	}
 	
 	@Override
-    public SuccesstalkUserRegEsSchema saveSuccessTalkRegistration(SuccesstalkUserRegEsSchema registration) throws Exception {
+    public SuccesstalkUserRegEsSchema saveSuccessTalkRegistration(SuccesstalkUserRegEsSchema registration) throws IOException {
         // set the updated timestamp of the registration
         registration.setUpdated(System.currentTimeMillis());
         // save the entry to ES

@@ -35,22 +35,22 @@ import com.smartsheet.api.SmartsheetException;
 @Service
 public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementService {
 	private final Logger LOG = LoggerFactory.getLogger(this.getClass().getName());
-	
+
 	@Autowired
 	private CommunityDAO communityDAO;
-	
+
 	@Autowired
 	private SuccessTalkDAO successTalkDAO;
-	
+
 	@Autowired
 	private LearningDAO learningDAO;
-	
+
 	@Autowired
 	private SmartsheetDAO smartsheetDAO;
 
 	@Autowired
 	private BookmarkDAO bookmarkDAO;
-	
+
 	@Autowired
 	private PartnerProfileService partnerProfileService;
 
@@ -73,72 +73,73 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 
 	@Override
 	public SuccessTalkResponseSchema getUserSuccessTalks(String xMasheryHandshake) {
-		UserDetails userDetails= partnerProfileService.fetchUserDetails(xMasheryHandshake);
+		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
 		SuccessTalkResponseSchema successTalkResponseSchema = new SuccessTalkResponseSchema();
 		successTalkResponseSchema.setItems(successTalkDAO.getUserSuccessTalks(userDetails.getEmail()));
 		return successTalkResponseSchema;
 	}
-	
+
 	@Override
-	public Learning insertLearning(Learning learning) {		
+	public Learning insertLearning(Learning learning) {
 		return learningDAO.insertLearning(learning);
 	}
 
 	@Override
-	public List<LearningModel> getFilteredLearning(String solution, String usecase) {		
+	public List<LearningModel> getFilteredLearning(String solution, String usecase) {
 		return learningDAO.getFilteredLearnings(solution, usecase);
 	}
-	
+
 	@Override
-	public SuccesstalkUserRegEsSchema cancelUserSuccessTalkRegistration(String title, Long eventStartDate, String xMasheryHandshake) throws Exception {
-		UserDetails userDetails= partnerProfileService.fetchUserDetails(xMasheryHandshake);
+	public SuccesstalkUserRegEsSchema cancelUserSuccessTalkRegistration(String title, Long eventStartDate,
+			String xMasheryHandshake) throws IOException {
+		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
 		// form a schema object for the input (set transaction type to Canceled)
-		SuccesstalkUserRegEsSchema cancelledRegistration = new SuccesstalkUserRegEsSchema(title, eventStartDate, userDetails.getEmail(),
-				SuccesstalkUserRegEsSchema.RegistrationStatusEnum.CANCELLED);
+		SuccesstalkUserRegEsSchema cancelledRegistration = new SuccesstalkUserRegEsSchema(title, eventStartDate,
+				userDetails.getEmail(), SuccesstalkUserRegEsSchema.RegistrationStatusEnum.CANCELLED);
 		try {
 			// find and mark registration as Canceled in the Smartsheet
 			smartsheetDAO.cancelUserSuccessTalkRegistration(cancelledRegistration);
+			return successTalkDAO.saveSuccessTalkRegistration(cancelledRegistration);
 		} catch (SmartsheetException se) {
-			// log error if smartsheet throws exception and mark it Cancel_Failed for the ES index
+			// log error if smartsheet throws exception and mark it Cancel_Failed for the ES
+			// index
 			LOG.error("Error while cancelling Success Talk Registration in Smartsheet", se);
 			cancelledRegistration.setRegistrationStatus(SuccesstalkUserRegEsSchema.RegistrationStatusEnum.CANCELFAILED);
+			successTalkDAO.saveSuccessTalkRegistration(cancelledRegistration);
 			throw new GenericException("Error while cancelling Success Talk Registration: " + se.getMessage(), se);
-		} finally {
-			// save the registration object to ES
-			return successTalkDAO.saveSuccessTalkRegistration(cancelledRegistration);
 		}
 	}
-	
+
 	@Override
-    public SuccesstalkUserRegEsSchema registerUserToSuccessTalkRegistration(String title, Long eventStartDate, String xMasheryHandshake) throws Exception {
-		UserDetails userDetails= partnerProfileService.fetchUserDetails(xMasheryHandshake);
+	public SuccesstalkUserRegEsSchema registerUserToSuccessTalkRegistration(String title, Long eventStartDate, String xMasheryHandshake) throws Exception {
+		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
 		// form a schema object for the input (set transaction type to Pending)
-    	SuccesstalkUserRegEsSchema registration = new SuccesstalkUserRegEsSchema( title, eventStartDate, userDetails.getEmail(),
-    			SuccesstalkUserRegEsSchema.RegistrationStatusEnum.PENDING);
+		SuccesstalkUserRegEsSchema registration = new SuccesstalkUserRegEsSchema(title, eventStartDate,
+				userDetails.getEmail(), SuccesstalkUserRegEsSchema.RegistrationStatusEnum.PENDING);
 		try {
 			// validate the registration details
 			registration = this.fetchSuccessTalkRegistrationDetails(registration, userDetails);
 
 			if (smartsheetDAO.checkRegistrationExists(registration)) {
+				// TODO: Should be No Operation as Success Talk is registered already
 				throw new NotAllowedException("Success Talk Registration already exists");
 			} else {
 				// save a new row in the smartsheet for this registration
 				smartsheetDAO.saveSuccessTalkRegistration(registration);
 			}
+			return successTalkDAO.saveSuccessTalkRegistration(registration);
 		} catch (SmartsheetException se) {
 			// log error if smartsheet throws exception and mark it Register_Failed for the ES index
 			LOG.error("Error while saving SuccessTalk Registration in Smartsheet", se);
 			registration.setRegistrationStatus(SuccesstalkUserRegEsSchema.RegistrationStatusEnum.REGISTERFAILED);
+			successTalkDAO.saveSuccessTalkRegistration(registration);
 			throw new GenericException("Error while saving SuccessTalk Registration: " + se.getMessage(), se);
-		} finally {
-			// save the registration object to ES
-			return successTalkDAO.saveSuccessTalkRegistration(registration);
 		}
 	}
 
 	@Override
-	public SuccesstalkUserRegEsSchema fetchSuccessTalkRegistrationDetails(SuccesstalkUserRegEsSchema registration, UserDetails userDetails)
-			throws NotFoundException, NotAllowedException {
+	public SuccesstalkUserRegEsSchema fetchSuccessTalkRegistrationDetails(SuccesstalkUserRegEsSchema registration,
+			UserDetails userDetails) throws NotFoundException, NotAllowedException {
 		SuccessTalk successTalk = null;
 
 		try {
@@ -153,7 +154,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 			SuccessTalkSession successTalkSession = successTalk.getSessions().stream().findFirst().get();
 			registration.setEventStartDate(successTalkSession.getSessionStartDate());
 			registration.setEmail(userDetails.getEmail());
-            registration.setFirstName(userDetails.getFirstName());
+			registration.setFirstName(userDetails.getFirstName());
 			registration.setLastName(userDetails.getLastName());
 			registration.setUserTitle(userDetails.getTitle());
 			registration.setPhone(userDetails.getPhone());
@@ -166,18 +167,19 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 
 		return registration;
 	}
-	
+
 	@Override
-	public BookmarkResponseSchema createOrUpdateBookmark(BookmarkRequestSchema bookmarkRequestSchema, String xMasheryHandshake) {
-		UserDetails userDetails= partnerProfileService.fetchUserDetails(xMasheryHandshake);
-        BookmarkResponseSchema bookmarkResponseSchema = new BookmarkResponseSchema();
+	public BookmarkResponseSchema createOrUpdateBookmark(BookmarkRequestSchema bookmarkRequestSchema,
+			String xMasheryHandshake) {
+		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
+		BookmarkResponseSchema bookmarkResponseSchema = new BookmarkResponseSchema();
 
-        BeanUtils.copyProperties(bookmarkRequestSchema, bookmarkResponseSchema);
+		BeanUtils.copyProperties(bookmarkRequestSchema, bookmarkResponseSchema);
 
-        bookmarkResponseSchema.setEmail(userDetails.getEmail());
+		bookmarkResponseSchema.setEmail(userDetails.getEmail());
 
-        bookmarkResponseSchema = bookmarkDAO.createOrUpdate(bookmarkResponseSchema);
+		bookmarkResponseSchema = bookmarkDAO.createOrUpdate(bookmarkResponseSchema);
 
-        return bookmarkResponseSchema;
+		return bookmarkResponseSchema;
 	}
 }

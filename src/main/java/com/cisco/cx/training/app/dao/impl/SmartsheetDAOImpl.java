@@ -200,7 +200,8 @@ public class SmartsheetDAOImpl implements SmartsheetDAO {
         );
     }
 
-    private Row createRow(SuccesstalkUserRegEsSchema registration, List<Column> columns) {
+    @SuppressWarnings("unchecked")
+	private Row createRow(SuccesstalkUserRegEsSchema registration, List<Column> columns) {
         Row registrationRow = new Row();
         registrationRow.setCells(this.constructCells(mapper.convertValue(registration, Map.class), columns)).setToBottom(true);
         return registrationRow;

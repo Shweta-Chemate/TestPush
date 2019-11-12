@@ -18,6 +18,7 @@ import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.dao.BookmarkDAO;
 import com.cisco.cx.training.app.dao.ElasticSearchDAO;
 import com.cisco.cx.training.app.dao.impl.BookmarkDAOImpl;
+import com.cisco.cx.training.app.exception.GenericException;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.cisco.cx.training.models.ElasticSearchResults;
 
@@ -53,7 +54,7 @@ public class BookmarkDAOTest {
 
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test(expected = GenericException.class)
 	public void createOrUpdateBookmarkWithError() throws IOException {
 		String entityId = "entityId";
 		String email = "email";

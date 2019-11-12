@@ -18,7 +18,7 @@ public interface SuccessTalkDAO {
 
 	public String cancelRegistration(String successTalkSessionId, String successTalkId);
 	
-	public SuccesstalkUserRegEsSchema saveSuccessTalkRegistration(SuccesstalkUserRegEsSchema registration) throws Exception;
+	public SuccesstalkUserRegEsSchema saveSuccessTalkRegistration(SuccesstalkUserRegEsSchema registration) throws IOException;
 	
 	public SuccessTalk findSuccessTalk(String title, Long eventStartDate) throws IOException;
 	
