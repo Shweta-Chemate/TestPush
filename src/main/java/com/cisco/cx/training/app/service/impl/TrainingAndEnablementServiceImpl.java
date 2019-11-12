@@ -121,8 +121,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 			registration = this.fetchSuccessTalkRegistrationDetails(registration, userDetails);
 
 			if (smartsheetDAO.checkRegistrationExists(registration)) {
-				// TODO: Should be No Operation as Success Talk is registered already
-				throw new NotAllowedException("Success Talk Registration already exists");
+				// No Operation as Success Talk is registered already
 			} else {
 				// save a new row in the smartsheet for this registration
 				smartsheetDAO.saveSuccessTalkRegistration(registration);
