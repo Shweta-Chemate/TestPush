@@ -78,6 +78,7 @@ pipeline:
     when:
       event:
         - tag
+        - push
     branch:
       include:
         - v*__deploy__*istg*
