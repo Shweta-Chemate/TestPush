@@ -158,7 +158,7 @@ public class TrainingAndEnablementServiceTest {
 		trainingAndEnablementService.cancelUserSuccessTalkRegistration(title, eventStartDate, email);
 	}
 	
-	@Test(expected = GenericException.class)
+	@Test(expected = IOException.class)
 	public void cancelUserSuccessTalkRegistrationError() throws Exception {
 		String email = "email";
 		String title = "title";
@@ -167,7 +167,7 @@ public class TrainingAndEnablementServiceTest {
 		userDetails.setEmail("email");
 		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(userDetails);
 		SuccesstalkUserRegEsSchema cancelledRegistration = new SuccesstalkUserRegEsSchema(title, eventStartDate, userDetails.getEmail(), SuccesstalkUserRegEsSchema.RegistrationStatusEnum.CANCELLED);
-		doThrow(SmartsheetException.class).when(smartsheetDAO).cancelUserSuccessTalkRegistration(cancelledRegistration);
+		doThrow(IOException.class).when(successTalkDAO).saveSuccessTalkRegistration(cancelledRegistration);
 		trainingAndEnablementService.cancelUserSuccessTalkRegistration(title, eventStartDate, email);
 	}
 	
@@ -195,7 +195,7 @@ public class TrainingAndEnablementServiceTest {
 		trainingAndEnablementService.registerUserToSuccessTalkRegistration(title, eventStartDate, email);
 	}
 	
-	@Test(expected = GenericException.class)
+	@Test(expected = IOException.class)
 	public void registerUserToSuccessTalkRegistrationSmartsheetError() throws Exception {
 		String email = "email";
 		String title = "title";
@@ -204,7 +204,7 @@ public class TrainingAndEnablementServiceTest {
 		userDetails.setEmail("email");
 		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(userDetails);
 		SuccesstalkUserRegEsSchema registration = new SuccesstalkUserRegEsSchema(title, eventStartDate, userDetails.getEmail(), SuccesstalkUserRegEsSchema.RegistrationStatusEnum.PENDING);
-		doThrow(SmartsheetException.class).when(smartsheetDAO).saveSuccessTalkRegistration(any(SuccesstalkUserRegEsSchema.class));
+		doThrow(IOException.class).when(successTalkDAO).saveSuccessTalkRegistration(any(SuccesstalkUserRegEsSchema.class));
 		when(successTalkDAO.findSuccessTalk(registration.getTitle(), registration.getEventStartDate())).thenReturn(getSuccessTalk());
 		trainingAndEnablementService.registerUserToSuccessTalkRegistration(title, eventStartDate, email);
 	}
