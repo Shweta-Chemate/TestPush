@@ -98,6 +98,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 				userDetails.getEmail(), SuccesstalkUserRegEsSchema.RegistrationStatusEnum.CANCELLED);
 		try {
 			// find and mark registration as Canceled in the Smartsheet
+			//commenting out for now till workflow is finalized
 			//smartsheetDAO.cancelUserSuccessTalkRegistration(cancelledRegistration);
 			return successTalkDAO.saveSuccessTalkRegistration(cancelledRegistration);
 		} catch (Exception se) {
@@ -124,6 +125,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 				// No Operation as Success Talk is registered already
 			} else {
 				// save a new row in the smartsheet for this registration
+				//commenting out for now till workflow is finalized
 				//smartsheetDAO.saveSuccessTalkRegistration(registration);
 			}
 			return successTalkDAO.saveSuccessTalkRegistration(registration);
