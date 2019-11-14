@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.cisco.cx.training.constants.Constants;
+
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 	@Value("${cxpp.interceptor.exclude.path.patterns}")
@@ -12,6 +14,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new RequestInterceptor()).excludePathPatterns(excludePathPatterns);
+    	 String[] excludePatterns = excludePathPatterns.split(Constants.COMMA.trim());
+        registry.addInterceptor(new RequestInterceptor()).excludePathPatterns(excludePatterns);
     }
 }
