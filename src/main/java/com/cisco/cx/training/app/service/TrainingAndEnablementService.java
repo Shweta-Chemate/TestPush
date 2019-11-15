@@ -8,11 +8,7 @@ import com.cisco.cx.training.models.*;
 
 public interface TrainingAndEnablementService {
 
-	List<LearningModel> getAllLearning();
-	
-	Learning insertLearning(Learning learning);
-		
-	List<LearningModel> getFilteredLearning(String solution, String usecase);
+	List<SuccessAcademyModel> getAllLearning();		
 
 	List<Community> getAllCommunities();
 

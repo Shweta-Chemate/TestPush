@@ -28,8 +28,7 @@ import com.cisco.cx.training.app.service.TrainingAndEnablementService;
 import com.cisco.cx.training.models.BookmarkRequestSchema;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.cisco.cx.training.models.Community;
-import com.cisco.cx.training.models.Learning;
-import com.cisco.cx.training.models.LearningModel;
+import com.cisco.cx.training.models.SuccessAcademyModel;
 import com.cisco.cx.training.models.SuccessTalkResponseSchema;
 import com.cisco.cx.training.models.SuccesstalkUserRegEsSchema;
 import com.cisco.cx.training.models.UserDetails;
@@ -94,19 +93,7 @@ public class TrainingAndEnablementController {
 		return new ResponseEntity<List<Community>>(communityList, HttpStatus.OK);
 	}
     
-    @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, path = "/learning")
-	@ApiOperation(value = "Create New Learning", response = String.class, nickname = "createLearning")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
-			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
-			@ApiResponse(code = 403, message = "Operation forbidden due to business policies", response = ErrorResponse.class),
-			@ApiResponse(code = 500, message = "Error during create", response = ErrorResponse.class) })
-	public Learning createLearning(
-			@ApiParam(value = "Body for the Request", required = true) @RequestBody Learning learning,
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake)
-			throws Exception {
-
-		return trainingAndEnablementService.insertLearning(learning);
-	}
+   
 	
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/learnings")
 	@ApiOperation(value = "Fetch learnings", response = String.class, nickname = "fetchlearnings")
@@ -114,26 +101,14 @@ public class TrainingAndEnablementController {
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
-	public ResponseEntity<List<LearningModel>> getAllLeanings(
+	public ResponseEntity<List<SuccessAcademyModel>> getAllLeanings(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake)
 			throws Exception {
-		List<LearningModel> learningList = trainingAndEnablementService.getAllLearning();
-		return new ResponseEntity<List<LearningModel>>(learningList, HttpStatus.OK);
+		List<SuccessAcademyModel> learningList = trainingAndEnablementService.getAllLearning();
+		return new ResponseEntity<List<SuccessAcademyModel>>(learningList, HttpStatus.OK);
 	}
 
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/learnings/{solution}/{usecase}")
-	@ApiOperation(value = "Fetch Learnings with filter", response = String.class, nickname = "fetchFilteredLearnings")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
-			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
-			@ApiResponse(code = 404, message = "Entity Not Found"),
-			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
-	public ResponseEntity<List<LearningModel>> getAllLearnings(@PathVariable(value = "solution", required = false) String solution,
-			@PathVariable(value = "usecase", required = false) String usecase,
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake)
-			throws Exception {		
-		List<LearningModel> learningList = trainingAndEnablementService.getFilteredLearning(solution, usecase);
-		return new ResponseEntity<List<LearningModel>>(learningList, HttpStatus.OK);
-	}
+	
 
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalks")
 	@ApiOperation(value = "Fetch SuccessTalks For User", response = SuccessTalkResponseSchema.class, nickname = "fetchUserSuccessTalks")

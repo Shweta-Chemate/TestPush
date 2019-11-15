@@ -23,7 +23,7 @@ import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.dao.BookmarkDAO;
 import com.cisco.cx.training.app.dao.CommunityDAO;
 import com.cisco.cx.training.app.dao.ElasticSearchDAO;
-import com.cisco.cx.training.app.dao.LearningDAO;
+import com.cisco.cx.training.app.dao.SuccessAcademyDAO;
 import com.cisco.cx.training.app.dao.SmartsheetDAO;
 import com.cisco.cx.training.app.dao.SuccessTalkDAO;
 import com.cisco.cx.training.app.service.PartnerProfileService;
@@ -33,7 +33,7 @@ import com.cisco.cx.training.models.BookmarkRequestSchema;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.cisco.cx.training.models.Community;
 import com.cisco.cx.training.models.ElasticSearchResults;
-import com.cisco.cx.training.models.Learning;
+import com.cisco.cx.training.models.SuccessAcademyLearning;
 import com.cisco.cx.training.models.SuccessTalk;
 import com.cisco.cx.training.models.SuccessTalkSession;
 import com.cisco.cx.training.models.SuccesstalkUserRegEsSchema;
@@ -49,7 +49,7 @@ public class TrainingAndEnablementServiceTest {
 	private SuccessTalkDAO successTalkDAO;
 
 	@Mock
-	private LearningDAO learningDAO;
+	private SuccessAcademyDAO learningDAO;
 
 	@Mock
 	private SmartsheetDAO smartsheetDAO;
@@ -73,21 +73,7 @@ public class TrainingAndEnablementServiceTest {
 	public void testGetLearnings() {
 		trainingAndEnablementService.getAllLearning();
 	}
-
-	@Test
-	public void testInsertLearnings() {
-		trainingAndEnablementService.insertLearning(getLearning());
-	}
-
-	@Test
-	public void getFilteredLearning() {
-		trainingAndEnablementService.getFilteredLearning("solution", "usecase");
-	}
-
-	@Test
-	public void insertLearning() {
-		trainingAndEnablementService.getAllLearning();
-	}
+	
 
 	@Test
 	public void getAllCommunitiesTest() {
@@ -164,11 +150,7 @@ public class TrainingAndEnablementServiceTest {
 		trainingAndEnablementService.registerUserToSuccessTalkRegistration(title, eventStartDate, email);
 	}
 	
-	private Learning getLearning() {
-		Learning learning = new Learning();
-		learning.setAlFrescoId("alFrescoId");
-		return learning;
-	}
+	
 
 	private Community getCommunity() {
 		Community community = new Community();

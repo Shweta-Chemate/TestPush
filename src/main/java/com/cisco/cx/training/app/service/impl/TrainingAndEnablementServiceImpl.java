@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.cisco.cx.training.app.dao.BookmarkDAO;
 import com.cisco.cx.training.app.dao.CommunityDAO;
-import com.cisco.cx.training.app.dao.LearningDAO;
+import com.cisco.cx.training.app.dao.SuccessAcademyDAO;
 import com.cisco.cx.training.app.dao.SmartsheetDAO;
 import com.cisco.cx.training.app.dao.SuccessTalkDAO;
 import com.cisco.cx.training.app.exception.GenericException;
@@ -23,8 +23,7 @@ import com.cisco.cx.training.app.service.TrainingAndEnablementService;
 import com.cisco.cx.training.models.BookmarkRequestSchema;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.cisco.cx.training.models.Community;
-import com.cisco.cx.training.models.Learning;
-import com.cisco.cx.training.models.LearningModel;
+import com.cisco.cx.training.models.SuccessAcademyModel;
 import com.cisco.cx.training.models.SuccessTalk;
 import com.cisco.cx.training.models.SuccessTalkResponseSchema;
 import com.cisco.cx.training.models.SuccessTalkSession;
@@ -43,7 +42,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	private SuccessTalkDAO successTalkDAO;
 	
 	@Autowired
-	private LearningDAO learningDAO;
+	private SuccessAcademyDAO learningDAO;
 	
 	@Autowired
 	private SmartsheetDAO smartsheetDAO;
@@ -55,7 +54,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	private PartnerProfileService partnerProfileService;
 
 	@Override
-	public List<LearningModel> getAllLearning() {
+	public List<SuccessAcademyModel> getAllLearning() {
 		return learningDAO.getLearnings();
 	}
 
@@ -79,15 +78,6 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		return successTalkResponseSchema;
 	}
 	
-	@Override
-	public Learning insertLearning(Learning learning) {		
-		return learningDAO.insertLearning(learning);
-	}
-
-	@Override
-	public List<LearningModel> getFilteredLearning(String solution, String usecase) {		
-		return learningDAO.getFilteredLearnings(solution, usecase);
-	}
 	
 	@Override
 	public SuccesstalkUserRegEsSchema cancelUserSuccessTalkRegistration(String title, Long eventStartDate, String xMasheryHandshake) throws Exception {

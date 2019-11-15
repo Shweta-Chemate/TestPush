@@ -65,14 +65,7 @@ public class TrainingAndEnablementControllerTest {
 						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
 				.andDo(print()).andExpect(status().isOk());
 	}
-	
-	@Test
-	public void getAllLearnings() throws Exception {
-		this.mockMvc
-				.perform(get("/v1/partner/training/learnings/ibn/usecase").contentType(MediaType.APPLICATION_JSON_VALUE)
-						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
-				.andDo(print()).andExpect(status().isOk());
-	}
+		
 
 	@Test
 	public void testLearning() throws Exception {
