@@ -1,17 +1,25 @@
 package com.cisco.cx.training.app.service.impl;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.elasticsearch.action.update.UpdateRequest;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.dao.BookmarkDAO;
 import com.cisco.cx.training.app.dao.CommunityDAO;
+import com.cisco.cx.training.app.dao.ElasticSearchDAO;
 import com.cisco.cx.training.app.dao.LearningDAO;
 import com.cisco.cx.training.app.dao.SmartsheetDAO;
 import com.cisco.cx.training.app.dao.SuccessTalkDAO;
@@ -23,6 +31,8 @@ import com.cisco.cx.training.app.service.TrainingAndEnablementService;
 import com.cisco.cx.training.models.BookmarkRequestSchema;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.cisco.cx.training.models.Community;
+import com.cisco.cx.training.models.CountResponseSchema;
+import com.cisco.cx.training.models.CountSchema;
 import com.cisco.cx.training.models.Learning;
 import com.cisco.cx.training.models.LearningModel;
 import com.cisco.cx.training.models.SuccessTalk;
@@ -50,6 +60,12 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 
 	@Autowired
 	private BookmarkDAO bookmarkDAO;
+	
+	@Autowired
+	private ElasticSearchDAO elasticSearchDAO;
+	
+	@Autowired
+	private PropertyConfiguration config;
 
 	@Autowired
 	private PartnerProfileService partnerProfileService;
@@ -182,5 +198,44 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		bookmarkResponseSchema = bookmarkDAO.createOrUpdate(bookmarkResponseSchema);
 
 		return bookmarkResponseSchema;
+	}
+	
+	@Override
+	public CountResponseSchema getIndexCounts() {
+		List<CountSchema> indexCounts = new ArrayList<CountSchema>();;
+		CountResponseSchema countResponse = new CountResponseSchema();
+		try {
+
+			CountSchema communityCount = new CountSchema();
+			communityCount.setLabel("Community");
+			//Count is currently hardcoded to 1
+			communityCount.setCount(1L);
+			indexCounts.add(communityCount);
+			
+			CountSchema successTalkCount = new CountSchema();
+			//Adding filter to exculde cancelled SuccessTalks
+            SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+            BoolQueryBuilder boolQuery = new BoolQueryBuilder();
+            QueryBuilder includeCancelledQuery = QueryBuilders.matchPhraseQuery("status.keyword", SuccessTalk.SuccessTalkStatusEnum.CANCELLED);
+            boolQuery.mustNot(includeCancelledQuery);
+            sourceBuilder.query(boolQuery);
+            
+			successTalkCount.setLabel("Success Talks");
+			successTalkCount.setCount(elasticSearchDAO.countRecordsWithFilter(config.getSuccessTalkIndex(),sourceBuilder));
+			indexCounts.add(successTalkCount);
+			
+			CountSchema successAcamedyCount = new CountSchema();
+			successAcamedyCount.setLabel("Success Academy");
+			successAcamedyCount.setCount(elasticSearchDAO.countRecords(config.getSuccessAcademyIndex()));
+			indexCounts.add(successAcamedyCount);
+			countResponse.setLearningStatus(indexCounts);
+			
+		}catch (Exception e) {
+			LOG.error("Could not fetch index counts",e);
+			throw new GenericException("Could not fetch index counts", e);
+		
+		}
+
+		return countResponse;
 	}
 }

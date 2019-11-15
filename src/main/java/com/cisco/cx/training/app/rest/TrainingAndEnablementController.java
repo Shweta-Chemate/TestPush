@@ -27,6 +27,7 @@ import com.cisco.cx.training.app.service.TrainingAndEnablementService;
 import com.cisco.cx.training.models.BookmarkRequestSchema;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.cisco.cx.training.models.Community;
+import com.cisco.cx.training.models.CountResponseSchema;
 import com.cisco.cx.training.models.Learning;
 import com.cisco.cx.training.models.LearningModel;
 import com.cisco.cx.training.models.SuccessTalkResponseSchema;
@@ -213,5 +214,21 @@ public class TrainingAndEnablementController {
 
         return bookmarkResponseSchema;
     }
+    
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/indexCounts")
+	@ApiOperation(value = "Fetch all index counts", response = SuccessTalkResponseSchema.class, nickname = "fetchIndexCounts")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
+			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
+			@ApiResponse(code = 404, message = "Entity Not Found"),
+			@ApiResponse(code = 500, message = "Error during retrieve", response = ErrorResponse.class) })
+	public ResponseEntity<CountResponseSchema> getIndexCounts(@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake" , required=false) String xMasheryHandshake)
+			throws Exception {
+		
+		if (StringUtils.isBlank(xMasheryHandshake)) {
+            throw new BadRequestException("X-Mashery-Handshake header missing in request");
+        }
+		CountResponseSchema countResponseSchema = trainingAndEnablementService.getIndexCounts();
+		return new ResponseEntity<CountResponseSchema>(countResponseSchema, HttpStatus.OK);
+	}
 
 }
