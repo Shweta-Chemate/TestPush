@@ -65,20 +65,16 @@ pipeline:
         - pull_request
 
   "[ANALYSIS] Corona":
-    detach: true
+    #detach: true
     image: containers.cisco.com/servicescf-devops/drone-corona
     pull: true
     docker_image: containers.cisco.com/cx-platforms/cxpp-training-enablement:${CI_COMMIT_SHA}
     docker_registry: containers.cisco.com/
-    corona_product_id: 3759
+    corona_product_id: 4142
     corona_release_version: 0.1.1
-    #ipc_id: <IPCentral ID> #[Mandatory]: Can be found in the IPCentral project
     secrets: [ corona_login, corona_password, docker_username, docker_password] #[Mandatory]
-    #secrets: [ corona_login, corona_password, docker_username, docker_password, corona_nfs_scp_key ] #[Optional]: in case of NfsUpload: true
-    #secrets: [ corona_login, corona_password, corona_nfs_scp_key, ecr_access_key, ecr_secret_key] #[Optional]: for AWS ECR
     corona_nfs_upload: false #[Optional]: true, if file size is huge > 500MB
     corona_scan_timeout: 50
-    #corona_image_name: <Image name - $${DRONE_BUILD_NUMBER}> e.g.CXCOL-apiservice-$${DRONE_BUILD_NUMBER}  #[Optional]: needed if image name needs to be provided
     when:
       event:
         - tag

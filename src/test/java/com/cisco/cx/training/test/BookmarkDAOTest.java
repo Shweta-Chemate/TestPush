@@ -18,6 +18,7 @@ import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.dao.BookmarkDAO;
 import com.cisco.cx.training.app.dao.ElasticSearchDAO;
 import com.cisco.cx.training.app.dao.impl.BookmarkDAOImpl;
+import com.cisco.cx.training.app.exception.GenericException;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.cisco.cx.training.models.ElasticSearchResults;
 
@@ -52,17 +53,28 @@ public class BookmarkDAOTest {
 		bookmarkDAO.getBookmarks(email, entityId);
 
 	}
-	
-//	@Test
-//	public void createOrUpdateBookmark() throws IOException {
-//		String entityId = "entityId";
-//		String email = "email";
-//		when(config.getBookmarksIndex()).thenReturn("");
-//		ElasticSearchResults<BookmarkResponseSchema> results = new ElasticSearchResults<>();
-//		results.addDocument(getBookmarkResponseSchema());
-//		List<BookmarkResponseSchema> asList = ()Arrays.asList(getBookmarkResponseSchema());
-//		when(bookmarkDAO.getBookmarks(email, entityId)).thenReturn(Arrays.asList(getBookmarkResponseSchema()));
-//	}
+
+	@Test(expected = GenericException.class)
+	public void createOrUpdateBookmarkWithError() throws IOException {
+		String entityId = "entityId";
+		String email = "email";
+		
+		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+        BoolQueryBuilder boolQuery = new BoolQueryBuilder();
+        QueryBuilder ccoIdQuery = QueryBuilders.matchPhraseQuery("email.keyword", email);
+        QueryBuilder entityIdQuery;
+        boolQuery.must(ccoIdQuery);
+        entityIdQuery = QueryBuilders.matchPhraseQuery("id.keyword", entityId);
+        boolQuery.must(entityIdQuery);
+        sourceBuilder.query(boolQuery);
+        sourceBuilder.size(1000);
+		
+		when(config.getBookmarksIndex()).thenReturn("");
+		ElasticSearchResults<BookmarkResponseSchema> results = new ElasticSearchResults<>();
+		results.addDocument(getBookmarkResponseSchema());
+		when(elasticSearchDAO.query(config.getBookmarksIndex(), sourceBuilder, BookmarkResponseSchema.class)).thenReturn(results);
+		bookmarkDAO.createOrUpdate(getBookmarkResponseSchema());
+	}
 
 	private BookmarkResponseSchema getBookmarkResponseSchema() {
 		BookmarkResponseSchema schema = new BookmarkResponseSchema();

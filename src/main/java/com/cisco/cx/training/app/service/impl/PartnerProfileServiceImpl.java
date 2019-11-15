@@ -35,6 +35,8 @@ public class PartnerProfileServiceImpl implements PartnerProfileService {
 	public String entitlementUrl;
 
 	private static final String X_MASHERY_HANSHAKE = "X-Mashery-Handshake";
+	
+	private ObjectMapper mapper = new ObjectMapper();
 
 	@Override
 	public UserDetails fetchUserDetails(String xMasheryHandshake) {
@@ -42,11 +44,11 @@ public class PartnerProfileServiceImpl implements PartnerProfileService {
 		headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
 		headers.set("Authorization", "Basic " + config.createCxpBasicAuthToken());
 		HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
-		ResponseEntity<String> result = restTemplate.exchange(entitlementUrl, HttpMethod.GET, requestEntity, String.class);
-		LOGGER.info("Entitlement url response : " + result.getBody());
+		
 		UserDetails userDetails;
 		try {
-			ObjectMapper mapper = new ObjectMapper();
+			ResponseEntity<String> result = restTemplate.exchange(entitlementUrl, HttpMethod.GET, requestEntity, String.class);
+			LOGGER.info("Entitlement url response : " + result.getBody());
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			userDetails = mapper.readValue(result.getBody(), UserDetails.class);
 		} catch (JsonParseException e) {
@@ -59,6 +61,7 @@ public class PartnerProfileServiceImpl implements PartnerProfileService {
 		return userDetails;
 	}
 
+	@Override
 	public String getEntitlementUrl() {
 		return entitlementUrl;
 	}

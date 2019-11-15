@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
-
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SuccesstalkUserRegEsSchema implements HasId {
@@ -18,15 +17,9 @@ public class SuccesstalkUserRegEsSchema implements HasId {
 
     @JsonAlias("Email")
     private String email;
-    
-    @JsonAlias("FirstName")
-    private String firstname;
-
-    @JsonAlias("LastName")
-    private String lastname;
 
     @JsonAlias("Attended")
-    private String attended;
+    private AttendedStatusEnum attendedStatus;
     
     @JsonAlias("Registration Date/Time")
     private Long registrationDate;
@@ -78,6 +71,14 @@ public class SuccesstalkUserRegEsSchema implements HasId {
     }
 
 
+	public AttendedStatusEnum getAttendedStatus() {
+        return attendedStatus;
+    }
+
+    public void setAttendedStatus(AttendedStatusEnum attendedStatus) {
+        this.attendedStatus = attendedStatus;
+    }
+
 
     public String getEmail() {
 		return email;
@@ -85,30 +86,6 @@ public class SuccesstalkUserRegEsSchema implements HasId {
 
 	public void setEmail(String email) {
 		this.email = email;
-	}
-
-    public String getFirstname() {
-		return firstname;
-	}
-
-	public void setFirstname(String firstname) {
-		this.firstname = firstname;
-	}
-
-	public String getLastname() {
-		return lastname;
-	}
-
-	public void setLastname(String lastname) {
-		this.lastname = lastname;
-	}
-
-	public String getAttended() {
-		return attended;
-	}
-
-	public void setAttended(String attended) {
-		this.attended = attended;
 	}
 
 	public String getTitle() {
@@ -180,6 +157,33 @@ public class SuccesstalkUserRegEsSchema implements HasId {
         @JsonCreator
         public static SuccesstalkUserRegEsSchema.RegistrationStatusEnum fromValue(String text) {
             for (SuccesstalkUserRegEsSchema.RegistrationStatusEnum b : SuccesstalkUserRegEsSchema.RegistrationStatusEnum.values()) {
+                if (String.valueOf(b.value).equals(text)) {
+                    return b;
+                }
+            }
+            return null;
+        }
+    }
+    
+    public enum AttendedStatusEnum {
+        YES("Yes"),
+        NO("No");
+
+        private String value;
+
+        AttendedStatusEnum(String value) {
+            this.value = value;
+        }
+
+        @Override
+        @JsonValue
+        public String toString() {
+            return String.valueOf(value);
+        }
+
+        @JsonCreator
+        public static SuccesstalkUserRegEsSchema.AttendedStatusEnum fromValue(String text) {
+            for (SuccesstalkUserRegEsSchema.AttendedStatusEnum b : SuccesstalkUserRegEsSchema.AttendedStatusEnum.values()) {
                 if (String.valueOf(b.value).equals(text)) {
                     return b;
                 }

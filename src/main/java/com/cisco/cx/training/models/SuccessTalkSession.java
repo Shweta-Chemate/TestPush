@@ -1,9 +1,7 @@
 package com.cisco.cx.training.models;
 
 import com.cisco.cx.training.util.HasId;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonValue;
 
 
 public class SuccessTalkSession implements HasId {

@@ -7,4 +7,7 @@ public interface PartnerProfileService {
 	UserDetails fetchUserDetails(String xMasheryHandshake);
 
 	void setEntitlementUrl(String entitlementUrl);
+	
+	String getEntitlementUrl();
+	
 }

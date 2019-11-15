@@ -1,9 +1,6 @@
 package com.cisco.cx.training.app.dao.impl;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -123,7 +120,7 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
 	}
 	
 	@Override
-    public SuccesstalkUserRegEsSchema saveSuccessTalkRegistration(SuccesstalkUserRegEsSchema registration) throws Exception {
+    public SuccesstalkUserRegEsSchema saveSuccessTalkRegistration(SuccesstalkUserRegEsSchema registration) throws IOException {
         // set the updated timestamp of the registration
         registration.setUpdated(System.currentTimeMillis());
         // save the entry to ES
@@ -193,11 +190,6 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
 	@Override
 	public List<SuccessTalk> getUserSuccessTalks(String email) {
 		List<SuccessTalk> successTalkES = new ArrayList<>();
-		
-
-        LocalDateTime currentTime = LocalDateTime.now();
-        ZonedDateTime zdt = ZonedDateTime.of(currentTime, ZoneId.systemDefault());
-        long currentEpochMillis = zdt.toInstant().toEpochMilli();
         
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 		BoolQueryBuilder boolQuery = new BoolQueryBuilder();
@@ -220,16 +212,17 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
                 }
 		        for (SuccesstalkUserRegEsSchema transaction : registeredSuccessTalkList) {
 		            if (transaction.getTitle().equalsIgnoreCase(successTalk.getTitle())) {
-		            	successTalk.setStatus(SuccessTalk.SuccessTalkStatusEnum.SCHEDULED);
+		            	successTalk.setStatus(SuccessTalk.SuccessTalkStatusEnum.REGISTERED);
 		            	successTalk.getSessions().forEach(
 		                        session -> {
-		                            if (session.getSessionStartDate().equals(transaction.getEventStartDate())) {
-		                                session.setScheduled(true);
-		                                // if the scheduled session has passed current date, mark it complete.
-		                                if (session.getSessionStartDate() <= currentEpochMillis) {
-		                                	successTalk.setStatus(SuccessTalk.SuccessTalkStatusEnum.COMPLETED);
-		                                }
-		                            }
+									if (session.getSessionStartDate().equals(transaction.getEventStartDate())) {
+										session.setScheduled(true);
+										// if the Attended field in smartsheet is set to Yes, mark it complete.
+										if (transaction.getAttendedStatus() != null && transaction.getAttendedStatus()
+												.equals(SuccesstalkUserRegEsSchema.AttendedStatusEnum.YES)) {
+											successTalk.setStatus(SuccessTalk.SuccessTalkStatusEnum.ATTENDED);
+										}
+									}
 		                        }
 		                );
 		            }

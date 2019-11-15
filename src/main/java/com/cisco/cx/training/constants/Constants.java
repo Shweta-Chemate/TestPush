@@ -8,4 +8,5 @@ package com.cisco.cx.training.constants;
  */
 public final class Constants {
 	public static final String MASHERY_HANDSHAKE_HEADER_NAME = "X-Mashery-Handshake";
+	public static final String COMMA = ",";
 }
