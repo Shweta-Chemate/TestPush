@@ -27,6 +27,8 @@ public class SuccessAcademyLearning implements HasId{
 	@JsonProperty("docId")
     private String docId;
 	
+	@JsonProperty("img")
+    private String imgLoc;	
 	
 	@JsonProperty("learning")
     private List<SuccessAcademyLearningTopics> learning = new ArrayList<>();
@@ -89,6 +91,14 @@ public class SuccessAcademyLearning implements HasId{
 	public void setDocId(String id) {
 		this.docId = id;
 		
+	}
+
+	public String getImgLoc() {
+		return imgLoc;
+	}
+
+	public void setImgLoc(String imgLoc) {
+		this.imgLoc = imgLoc;
 	}
 
 }

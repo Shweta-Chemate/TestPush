@@ -12,6 +12,12 @@ public class SuccessAcademyLearningTopics {
 	
 	@JsonProperty("link")
     private String link;
+	
+	@JsonProperty("vodLink")
+    private String vodLink;
+	
+	@JsonProperty("pptLink")
+    private String pptLink;
 
 	public String getName() {
 		return name;
@@ -35,6 +41,22 @@ public class SuccessAcademyLearningTopics {
 
 	public void setLink(String link) {
 		this.link = link;
+	}
+
+	public String getVodLink() {
+		return vodLink;
+	}
+
+	public void setVodLink(String vodLink) {
+		this.vodLink = vodLink;
+	}
+
+	public String getPptLink() {
+		return pptLink;
+	}
+
+	public void setPptLink(String pptLink) {
+		this.pptLink = pptLink;
 	}
 
 }
