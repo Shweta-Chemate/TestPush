@@ -25,4 +25,12 @@ public interface TrainingAndEnablementService {
 	BookmarkResponseSchema createOrUpdateBookmark(BookmarkRequestSchema bookmarkRequestSchema , String xMasheryHandshake);
 
 	CountResponseSchema getIndexCounts();
+
+	CountSchema getCommunityCount();
+
+	CountSchema getSuccessTalkCount();
+
+	CountSchema getSuccessAcademyCount();
+
+	CountSchema getPartnerModelCount();
 }

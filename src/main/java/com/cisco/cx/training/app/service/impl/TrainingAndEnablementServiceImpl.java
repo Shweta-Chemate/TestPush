@@ -196,52 +196,16 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		CountResponseSchema countResponse = new CountResponseSchema();
 		try {
 
-			CountSchema communityCount = new CountSchema();
-			communityCount.setLabel("Community");
-			// Community Count is currently hardcoded to 1
-			communityCount.setCount(1L);
+			CountSchema communityCount= getCommunityCount();
 			indexCounts.add(communityCount);
 
-			CountSchema successTalkCount = new CountSchema();
-			// Success Talks count - Adding filter to exculde cancelled SuccessTalks
-			SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-			BoolQueryBuilder boolQuery = new BoolQueryBuilder();
-			QueryBuilder includeCancelledQuery = QueryBuilders.matchPhraseQuery("status.keyword",
-					SuccessTalk.SuccessTalkStatusEnum.CANCELLED);
-			boolQuery.mustNot(includeCancelledQuery);
-			sourceBuilder.query(boolQuery);
-
-			successTalkCount.setLabel("Success Talks");
-			successTalkCount
-					.setCount(elasticSearchDAO.countRecordsWithFilter(config.getSuccessTalkIndex(), sourceBuilder));
+			CountSchema successTalkCount = getSuccessTalkCount();
 			indexCounts.add(successTalkCount);
-
-			// Success Academy count - Adding filter to exclude Monetize Operate Organize
-			SearchSourceBuilder successAcademySourceBuilder = new SearchSourceBuilder();
-			BoolQueryBuilder successAcademyBoolQuery = new BoolQueryBuilder();
-			QueryBuilder includeMonetizeQuery = QueryBuilders.matchPhraseQuery("parentFilter.keyword", "Monetize");
-			QueryBuilder includeOperateQuery = QueryBuilders.matchPhraseQuery("parentFilter.keyword", "Operate");
-			QueryBuilder includeOrganizeQuery = QueryBuilders.matchPhraseQuery("parentFilter.keyword", "Organize");
-			successAcademyBoolQuery.mustNot(includeMonetizeQuery).mustNot(includeOperateQuery)
-					.mustNot(includeOrganizeQuery);
-			successAcademySourceBuilder.query(successAcademyBoolQuery);
-
-			CountSchema successAcamedyCount = new CountSchema();
-			successAcamedyCount.setLabel("Success Academy");
-			successAcamedyCount.setCount(elasticSearchDAO.countRecordsWithFilter(config.getSuccessAcademyIndex(),
-					successAcademySourceBuilder));
+			
+			CountSchema successAcamedyCount = getSuccessAcademyCount();
 			indexCounts.add(successAcamedyCount);
 
-			// Partner Model count - Adding filter to include Monetize Operate Organize
-			SearchSourceBuilder partnerModelSourceBuilder = new SearchSourceBuilder();
-			BoolQueryBuilder partnerModelBoolQuery = new BoolQueryBuilder();
-			partnerModelBoolQuery.should(includeMonetizeQuery).should(includeOperateQuery).should(includeOrganizeQuery);
-			partnerModelSourceBuilder.query(partnerModelBoolQuery);
-
-			CountSchema partnerModelCount = new CountSchema();
-			partnerModelCount.setLabel("Partner Model");
-			partnerModelCount.setCount(elasticSearchDAO.countRecordsWithFilter(config.getSuccessAcademyIndex(),
-					partnerModelSourceBuilder));
+			CountSchema partnerModelCount = getPartnerModelCount();
 			indexCounts.add(partnerModelCount);
 
 			countResponse.setLearningStatus(indexCounts);
@@ -253,5 +217,81 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		}
 
 		return countResponse;
+	}
+	
+	@Override
+	public CountSchema getCommunityCount() {
+
+		CountSchema communityCount = new CountSchema();
+		communityCount.setLabel("Community");
+		// Community Count is currently hardcoded to 1
+		communityCount.setCount(1L);
+		return communityCount;
+	}
+	
+	@Override
+	public CountSchema getSuccessTalkCount() {
+
+		CountSchema successTalkCount = new CountSchema();
+		// Success Talks count - Adding filter to exculde cancelled SuccessTalks
+		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+		BoolQueryBuilder boolQuery = new BoolQueryBuilder();
+		QueryBuilder includeCancelledQuery = QueryBuilders.matchPhraseQuery("status.keyword",
+				SuccessTalk.SuccessTalkStatusEnum.CANCELLED);
+		boolQuery.mustNot(includeCancelledQuery);
+		sourceBuilder.query(boolQuery);
+
+		successTalkCount.setLabel("Success Talks");
+		try {
+			successTalkCount
+					.setCount(elasticSearchDAO.countRecordsWithFilter(config.getSuccessTalkIndex(), sourceBuilder));
+		} catch (IOException e) {
+			LOG.error("Could not fetch index counts for Success Talks", e);
+		}
+		return successTalkCount;
+	}
+	
+	@Override
+	public CountSchema getSuccessAcademyCount() {
+
+		SearchSourceBuilder successAcademySourceBuilder = new SearchSourceBuilder();
+		BoolQueryBuilder successAcademyBoolQuery = new BoolQueryBuilder();
+		QueryBuilder includeMonetizeQuery = QueryBuilders.matchPhraseQuery("parentFilter.keyword", "Monetize");
+		QueryBuilder includeOperateQuery = QueryBuilders.matchPhraseQuery("parentFilter.keyword", "Operate");
+		QueryBuilder includeOrganizeQuery = QueryBuilders.matchPhraseQuery("parentFilter.keyword", "Organize");
+		successAcademyBoolQuery.mustNot(includeMonetizeQuery).mustNot(includeOperateQuery)
+				.mustNot(includeOrganizeQuery);
+		successAcademySourceBuilder.query(successAcademyBoolQuery);
+
+		CountSchema successAcamedyCount = new CountSchema();
+		successAcamedyCount.setLabel("Success Academy");
+		try {
+			successAcamedyCount.setCount(elasticSearchDAO.countRecordsWithFilter(config.getSuccessAcademyIndex(),
+					successAcademySourceBuilder));
+		} catch (IOException e) {
+			LOG.error("Could not fetch index counts for Success Academy", e);
+		}
+		return successAcamedyCount;
+	}
+	
+	@Override
+	public CountSchema getPartnerModelCount() {
+		QueryBuilder includeMonetizeQuery = QueryBuilders.matchPhraseQuery("parentFilter.keyword", "Monetize");
+		QueryBuilder includeOperateQuery = QueryBuilders.matchPhraseQuery("parentFilter.keyword", "Operate");
+		QueryBuilder includeOrganizeQuery = QueryBuilders.matchPhraseQuery("parentFilter.keyword", "Organize");
+		SearchSourceBuilder partnerModelSourceBuilder = new SearchSourceBuilder();
+		BoolQueryBuilder partnerModelBoolQuery = new BoolQueryBuilder();
+		partnerModelBoolQuery.should(includeMonetizeQuery).should(includeOperateQuery).should(includeOrganizeQuery);
+		partnerModelSourceBuilder.query(partnerModelBoolQuery);
+
+		CountSchema partnerModelCount = new CountSchema();
+		partnerModelCount.setLabel("Partner Model");
+		try {
+			partnerModelCount.setCount(elasticSearchDAO.countRecordsWithFilter(config.getSuccessAcademyIndex(),
+					partnerModelSourceBuilder));
+		} catch (IOException e) {
+			LOG.error("Could not fetch index counts for Partner Model", e);
+		}
+		return partnerModelCount;
 	}
 }
