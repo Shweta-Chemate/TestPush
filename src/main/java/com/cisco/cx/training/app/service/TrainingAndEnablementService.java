@@ -23,4 +23,6 @@ public interface TrainingAndEnablementService {
 	SuccesstalkUserRegEsSchema fetchSuccessTalkRegistrationDetails(SuccesstalkUserRegEsSchema registration, UserDetails userDetails) throws NotFoundException, NotAllowedException;
 
 	BookmarkResponseSchema createOrUpdateBookmark(BookmarkRequestSchema bookmarkRequestSchema , String xMasheryHandshake);
+
+	CountResponseSchema getIndexCounts();
 }

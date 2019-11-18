@@ -15,6 +15,8 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.core.CountRequest;
+import org.elasticsearch.client.core.CountResponse;
 import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -182,5 +184,24 @@ public class ElasticSearchDAO {
 			LOG.warn("Index {} does not exist. No documents to delete.", index);
 			return 0L;
 		}
+	}
+	
+
+	
+	public long countRecords(String index) throws IOException
+	{
+		CountRequest countRequest = new CountRequest();
+		countRequest.indices(index);
+		CountResponse countResponse = elasticRestClient.count(countRequest, RequestOptions.DEFAULT);
+		return countResponse.getCount();
+	}
+	
+	public long countRecordsWithFilter(String index, SearchSourceBuilder sourceBuilder) throws IOException
+	{
+		CountRequest countRequest = new CountRequest();
+		countRequest.indices(index);
+		countRequest.source(sourceBuilder);
+		CountResponse countResponse = elasticRestClient.count(countRequest, RequestOptions.DEFAULT);
+		return countResponse.getCount();
 	}
 }
