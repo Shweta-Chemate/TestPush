@@ -39,7 +39,7 @@ public class SuccessAcademyDAOImpl implements SuccessAcademyDAO {
 	private final String FILTER_INDEX = "cxpp_success_academy_filters_alias";
 
 	@Override
-	public List<SuccessAcademyModel> getLearnings() {
+	public List<SuccessAcademyModel> getSuccessAcademy() {
 
 		List<SuccessAcademyModel> learningModelES = new ArrayList<SuccessAcademyModel>();
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();

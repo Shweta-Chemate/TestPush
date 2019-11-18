@@ -52,7 +52,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	private SuccessTalkDAO successTalkDAO;
 
 	@Autowired
-	private SuccessAcademyDAO learningDAO;
+	private SuccessAcademyDAO successAcademyDAO;
 	
 
 	@Autowired
@@ -71,8 +71,8 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	private PartnerProfileService partnerProfileService;
 
 	@Override
-	public List<SuccessAcademyModel> getAllLearning() {
-		return learningDAO.getLearnings();
+	public List<SuccessAcademyModel> getAllSuccessAcademy() {
+		return successAcademyDAO.getSuccessAcademy();
 	}
 
 	@Override

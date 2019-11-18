@@ -73,7 +73,7 @@ public class TrainingAndEnablementControllerTest {
 		
 
 	@Test
-	public void testLearning() throws Exception {
+	public void testSuccessAcademy() throws Exception {
 		this.mockMvc
 				.perform(get("/v1/partner/training/learnings").contentType(MediaType.APPLICATION_JSON_VALUE)
 						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))

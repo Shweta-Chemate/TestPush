@@ -44,9 +44,9 @@ public class SuccessAcademyDAOTest {
 		sourceBuilder.query(boolQuery);
 		sourceBuilder.size(10000);
 		ElasticSearchResults<SuccessAcademyLearning> results = new ElasticSearchResults<SuccessAcademyLearning>();
-		results.addDocument(learning());
+		results.addDocument(successAcademy());
 		when(elasticSearchDAO.query(INDEX, sourceBuilder, SuccessAcademyLearning.class)).thenReturn(results);
-		learningDAO.getLearnings();
+		learningDAO.getSuccessAcademy();
 	}
 
 	@Test(expected = GenericException.class)
@@ -56,11 +56,11 @@ public class SuccessAcademyDAOTest {
 		sourceBuilder.query(boolQuery);
 		sourceBuilder.size(10000);
 		when(elasticSearchDAO.query(INDEX, sourceBuilder, SuccessAcademyLearning.class)).thenThrow(IOException.class);
-		learningDAO.getLearnings();
+		learningDAO.getSuccessAcademy();
 	}
 
 
-	private SuccessAcademyLearning learning() {
+	private SuccessAcademyLearning successAcademy() {
 		SuccessAcademyLearning learning = new SuccessAcademyLearning();
 		learning.setName("Customer Success Manager");
 		learning.setDescription("The Cisco Customer Success Manager Learning Map is a foundational training curriculum that allows an aspiring Customer Success Manager to understand the role as part of a high performing team");

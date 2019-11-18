@@ -7,6 +7,6 @@ import com.cisco.cx.training.models.SuccessAcademyModel;
 
 public interface SuccessAcademyDAO {
 
-	List<SuccessAcademyModel> getLearnings();
+	List<SuccessAcademyModel> getSuccessAcademy();
 
 }

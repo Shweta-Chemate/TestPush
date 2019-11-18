@@ -54,7 +54,7 @@ public class TrainingAndEnablementServiceTest {
 	private SuccessTalkDAO successTalkDAO;
 
 	@Mock
-	private SuccessAcademyDAO learningDAO;
+	private SuccessAcademyDAO successAcademyDAO;
 
 	@Mock
 	private SmartsheetDAO smartsheetDAO;
@@ -75,8 +75,8 @@ public class TrainingAndEnablementServiceTest {
 	private PartnerProfileService partnerProfileService;
 
 	@Test
-	public void testGetLearnings() {
-		trainingAndEnablementService.getAllLearning();
+	public void testGetSuccessAcademy() {
+		trainingAndEnablementService.getAllSuccessAcademy();
 	}
 	
 

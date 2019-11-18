@@ -95,7 +95,7 @@ public class TrainingAndEnablementController {
    
 	
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/learnings")
-	@ApiOperation(value = "Fetch learnings", response = String.class, nickname = "fetchlearnings")
+	@ApiOperation(value = "Fetch SuccessAcademy", response = String.class, nickname = "fetchsuccessacademy")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
@@ -103,8 +103,8 @@ public class TrainingAndEnablementController {
 	public ResponseEntity<List<SuccessAcademyModel>> getAllLeanings(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake)
 			throws Exception {
-		List<SuccessAcademyModel> learningList = trainingAndEnablementService.getAllLearning();
-		return new ResponseEntity<List<SuccessAcademyModel>>(learningList, HttpStatus.OK);
+		List<SuccessAcademyModel> sucessAcademyList = trainingAndEnablementService.getAllSuccessAcademy();
+		return new ResponseEntity<List<SuccessAcademyModel>>(sucessAcademyList, HttpStatus.OK);
 	}
 
 	
