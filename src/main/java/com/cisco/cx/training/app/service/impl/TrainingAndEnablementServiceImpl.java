@@ -267,17 +267,17 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 				.mustNot(includeOrganizeQuery);
 		successAcademySourceBuilder.query(successAcademyBoolQuery);
 
-		CountSchema successAcamedyCount = new CountSchema();
-		successAcamedyCount.setLabel("Success Academy");
+		CountSchema successAcademyCount = new CountSchema();
+		successAcademyCount.setLabel("Success Academy");
 		try {
 			ElasticSearchResults<SuccessAcademyLearning> results = elasticSearchDAO.query(config.getSuccessAcademyIndex(), successAcademySourceBuilder,
 					SuccessAcademyLearning.class);
 			Integer learningCount = results.getDocuments().stream().map(successAcademyLearning -> successAcademyLearning.getLearning().size()).collect(Collectors.summingInt(Integer::intValue));
-			successAcamedyCount.setCount(learningCount.longValue());
+			successAcademyCount.setCount(learningCount.longValue());
 		} catch (IOException e) {
 			LOG.error("Could not fetch index counts for Success Academy", e);
 		}
-		return successAcamedyCount;
+		return successAcademyCount;
 	}
 	
 	@Override
