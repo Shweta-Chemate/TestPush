@@ -89,7 +89,10 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 
 	@Override
 	public SuccessTalkResponseSchema getUserSuccessTalks(String xMasheryHandshake) {
+		long requestStartTime = System.currentTimeMillis();
 		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
+		long elapsedTime = System.currentTimeMillis() - requestStartTime;
+		LOG.info("elapsed time: " + elapsedTime);
 		SuccessTalkResponseSchema successTalkResponseSchema = new SuccessTalkResponseSchema();
 		successTalkResponseSchema.setItems(successTalkDAO.getUserSuccessTalks(userDetails.getEmail()));
 		return successTalkResponseSchema;
