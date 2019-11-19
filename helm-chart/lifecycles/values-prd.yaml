@@ -1,6 +1,6 @@
 files:
   environment.properties:
-    cisco.ldap.userid: "***REMOVED***"
+    cisco.ldap.userid: "cxportal.gen"
     cisco.ldap.password: "***REMOVED***"
 
 appDynamics:

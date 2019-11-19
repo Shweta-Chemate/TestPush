@@ -82,6 +82,16 @@ spec:
                 secretKeyRef:
                   name: cxpp-common
                   key: cxpp_elasticsearch_password
+            - name: cxpp_te_successtalk_registration_sheet
+              valueFrom:
+                secretKeyRef:
+                  name: cxpp-common
+                  key: cxpp_te_successtalk_registration_sheet
+            - name: cxpp_te_successtalk_registration_token
+              valueFrom:
+                secretKeyRef:
+                  name: cxpp-common
+                  key: cxpp_te_successtalk_registration_token
             - name: cxp_basicauth_username
               valueFrom:
                 secretKeyRef:
