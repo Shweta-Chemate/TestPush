@@ -48,7 +48,6 @@ public class PartnerProfileServiceImpl implements PartnerProfileService {
 		UserDetails userDetails;
 		try {
 			ResponseEntity<String> result = restTemplate.exchange(entitlementUrl, HttpMethod.GET, requestEntity, String.class);
-			LOGGER.info("Entitlement url response : " + result.getBody());
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			userDetails = mapper.readValue(result.getBody(), UserDetails.class);
 		} catch (JsonParseException e) {
