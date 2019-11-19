@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -34,6 +36,8 @@ import com.cisco.cx.training.models.Community;
 import com.cisco.cx.training.models.SuccessAcademyModel;
 import com.cisco.cx.training.models.CountResponseSchema;
 import com.cisco.cx.training.models.CountSchema;
+import com.cisco.cx.training.models.ElasticSearchResults;
+import com.cisco.cx.training.models.SuccessAcademyLearning;
 import com.cisco.cx.training.models.SuccessTalk;
 import com.cisco.cx.training.models.SuccessTalkResponseSchema;
 import com.cisco.cx.training.models.SuccessTalkSession;
@@ -266,8 +270,10 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		CountSchema successAcamedyCount = new CountSchema();
 		successAcamedyCount.setLabel("Success Academy");
 		try {
-			successAcamedyCount.setCount(elasticSearchDAO.countRecordsWithFilter(config.getSuccessAcademyIndex(),
-					successAcademySourceBuilder));
+			ElasticSearchResults<SuccessAcademyLearning> results = elasticSearchDAO.query(config.getSuccessAcademyIndex(), successAcademySourceBuilder,
+					SuccessAcademyLearning.class);
+			Integer learningCount = results.getDocuments().stream().map(successAcademyLearning -> successAcademyLearning.getLearning().size()).collect(Collectors.summingInt(Integer::intValue));
+			successAcamedyCount.setCount(learningCount.longValue());
 		} catch (IOException e) {
 			LOG.error("Could not fetch index counts for Success Academy", e);
 		}
@@ -287,8 +293,10 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		CountSchema partnerModelCount = new CountSchema();
 		partnerModelCount.setLabel("Partner Model");
 		try {
-			partnerModelCount.setCount(elasticSearchDAO.countRecordsWithFilter(config.getSuccessAcademyIndex(),
-					partnerModelSourceBuilder));
+			ElasticSearchResults<SuccessAcademyLearning> results = elasticSearchDAO.query(config.getSuccessAcademyIndex(), partnerModelSourceBuilder,
+					SuccessAcademyLearning.class);
+			Integer modelCount = results.getDocuments().stream().map(partnerModel -> partnerModel.getLearning().size()).collect(Collectors.summingInt(Integer::intValue));
+			partnerModelCount.setCount(modelCount.longValue());
 		} catch (IOException e) {
 			LOG.error("Could not fetch index counts for Partner Model", e);
 		}
