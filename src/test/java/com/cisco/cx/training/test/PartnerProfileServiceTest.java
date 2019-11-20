@@ -15,6 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
 import com.cisco.cx.training.app.config.PropertyConfiguration;
+import com.cisco.cx.training.app.exception.GenericException;
 import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.app.service.impl.PartnerProfileServiceImpl;
 import com.cisco.cx.training.models.UserDetails;
@@ -50,7 +51,39 @@ public class PartnerProfileServiceTest {
 		partnerProfileService.fetchUserDetails(xMasheryHandshake);
 		partnerProfileService.getEntitlementUrl();
 	}
+	
+	@Test(expected = GenericException.class)
+	public void fetchUserDetailsJsonMappingError() throws JsonProcessingException {
+		partnerProfileService.setEntitlementUrl("");
+		when(config.createCxpBasicAuthToken()).thenReturn("");
+		HttpHeaders headers = new HttpHeaders();
+		String xMasheryHandshake = "";
+		headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
+		headers.set("Authorization", "Basic " + "");
+		HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
 
+		ResponseEntity<String> result = new ResponseEntity<>("", HttpStatus.OK);
+		when(restTemplate.exchange("", HttpMethod.GET, requestEntity, String.class)).thenReturn(result);
+		partnerProfileService.fetchUserDetails(xMasheryHandshake);
+		partnerProfileService.getEntitlementUrl();
+	}
+	
+	@Test(expected = GenericException.class)
+	public void fetchUserDetailsJsonParseError() throws JsonProcessingException {
+		partnerProfileService.setEntitlementUrl("");
+		when(config.createCxpBasicAuthToken()).thenReturn("");
+		HttpHeaders headers = new HttpHeaders();
+		String xMasheryHandshake = "";
+		headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
+		headers.set("Authorization", "Basic " + "");
+		HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
+
+		ResponseEntity<String> result = new ResponseEntity<>("some @ data", HttpStatus.OK);
+		when(restTemplate.exchange("", HttpMethod.GET, requestEntity, String.class)).thenReturn(result);
+		partnerProfileService.fetchUserDetails(xMasheryHandshake);
+		partnerProfileService.getEntitlementUrl();
+	}
+	
 	private String getUserDetails() throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);

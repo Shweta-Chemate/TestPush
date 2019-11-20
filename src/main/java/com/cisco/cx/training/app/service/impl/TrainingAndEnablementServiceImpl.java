@@ -249,6 +249,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 					.setCount(elasticSearchDAO.countRecordsWithFilter(config.getSuccessTalkIndex(), sourceBuilder));
 		} catch (IOException e) {
 			LOG.error("Could not fetch index counts for Success Talks", e);
+			throw new GenericException("Could not fetch index counts for Success Talks", e);
 		}
 		return successTalkCount;
 	}
@@ -274,6 +275,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 			successAcademyCount.setCount(learningCount.longValue());
 		} catch (IOException e) {
 			LOG.error("Could not fetch index counts for Success Academy", e);
+			throw new GenericException("Could not fetch index counts for Success Academy", e);
 		}
 		return successAcademyCount;
 	}
@@ -297,6 +299,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 			partnerModelCount.setCount(modelCount.longValue());
 		} catch (IOException e) {
 			LOG.error("Could not fetch index counts for Partner Model", e);
+			throw new GenericException("Could not fetch index counts for Partner Model");
 		}
 		return partnerModelCount;
 	}
