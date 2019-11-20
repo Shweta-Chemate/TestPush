@@ -70,12 +70,27 @@ public class TrainingAndEnablementControllerTest {
 						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
 				.andDo(print()).andExpect(status().isOk());
 	}
-		
-
+	
+	@Test(expected = Exception.class)
+	public void testFetchCommunitiesNoMasheryHeader() throws Exception {
+		this.mockMvc
+				.perform(get("/v1/partner/training/communities").contentType(MediaType.APPLICATION_JSON_VALUE)
+						.characterEncoding("utf-8"))
+				.andDo(print()).andExpect(status().isOk());
+	}
+	
 	@Test
 	public void testSuccessAcademy() throws Exception {
 		this.mockMvc
 				.perform(get("/v1/partner/training/learnings").contentType(MediaType.APPLICATION_JSON_VALUE)
+						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
+				.andDo(print()).andExpect(status().isOk());
+	}
+	
+	@Test
+	public void testFetchIndexCounts() throws Exception {
+		this.mockMvc
+				.perform(get("/v1/partner/training/indexCounts").contentType(MediaType.APPLICATION_JSON_VALUE)
 						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
 				.andDo(print()).andExpect(status().isOk());
 	}
