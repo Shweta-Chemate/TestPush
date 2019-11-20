@@ -53,6 +53,30 @@ public class BookmarkDAOTest {
 		bookmarkDAO.getBookmarks(email, entityId);
 
 	}
+	
+	@Test(expected = GenericException.class)
+	public void getBookmarksError() throws IOException {
+		String entityId = "entityId";
+		String email = "email";
+		
+		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+		BoolQueryBuilder boolQuery = new BoolQueryBuilder();
+		QueryBuilder ccoIdQuery = QueryBuilders.matchPhraseQuery("email.keyword", email);
+		QueryBuilder entityIdQuery;
+		boolQuery.must(ccoIdQuery);
+		entityIdQuery = QueryBuilders.matchPhraseQuery("id.keyword", entityId);
+		boolQuery.must(entityIdQuery);
+		sourceBuilder.query(boolQuery);
+		sourceBuilder.size(1000);
+		
+		
+		when(config.getBookmarksIndex()).thenReturn("");
+		ElasticSearchResults<BookmarkResponseSchema> results = new ElasticSearchResults<>();
+		results.addDocument(getBookmarkResponseSchema());
+		when(elasticSearchDAO.query(config.getBookmarksIndex(), sourceBuilder, BookmarkResponseSchema.class)).thenThrow(IOException.class);
+		bookmarkDAO.getBookmarks(email, entityId);
+
+	}
 
 	@Test(expected = GenericException.class)
 	public void createOrUpdateBookmarkWithError() throws IOException {
