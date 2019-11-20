@@ -30,7 +30,7 @@ public class SuccessTalk implements HasId, Comparable<SuccessTalk> {
 	@ApiModelProperty(notes = "Is bookmark", example = "true")
 	private boolean bookmark;
 	@ApiModelProperty(notes = "Boolean to identify if this is a technical session")
-	private Boolean technicalSession =false;
+	private boolean technicalSession = false;
 	@ApiModelProperty(notes = "List of available sessions for selected SuccessTalk")
 	private List<SuccessTalkSession> sessions;
 
