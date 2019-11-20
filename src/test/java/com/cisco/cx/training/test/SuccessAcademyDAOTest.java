@@ -3,11 +3,11 @@ package com.cisco.cx.training.test;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +21,8 @@ import com.cisco.cx.training.app.dao.SuccessAcademyDAO;
 import com.cisco.cx.training.app.dao.impl.SuccessAcademyDAOImpl;
 import com.cisco.cx.training.app.exception.GenericException;
 import com.cisco.cx.training.models.ElasticSearchResults;
+import com.cisco.cx.training.models.SuccessAcademyFilter;
+import com.cisco.cx.training.models.SuccessAcademyFilterMap;
 import com.cisco.cx.training.models.SuccessAcademyLearning;
 import com.cisco.cx.training.models.SuccessAcademyLearningTopics;
 
@@ -36,6 +38,8 @@ public class SuccessAcademyDAOTest {
 	private SuccessAcademyDAO learningDAO = new SuccessAcademyDAOImpl();
 
 	private final String INDEX = "cxpp_success_academy_alias";
+	
+	private String FILTER_INDEX = "cxpp_success_academy_filters_alias";
 	
 	@Test
 	public void getLearnings() throws IOException {
@@ -57,6 +61,40 @@ public class SuccessAcademyDAOTest {
 		sourceBuilder.size(10000);
 		when(elasticSearchDAO.query(INDEX, sourceBuilder, SuccessAcademyLearning.class)).thenThrow(IOException.class);
 		learningDAO.getSuccessAcademy();
+	}
+	
+	@Test
+	public void getSuccessAcademyFilter() throws IOException {
+		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+		ElasticSearchResults<SuccessAcademyFilter> results = new ElasticSearchResults<SuccessAcademyFilter>();
+		
+		SuccessAcademyFilter academyFilter = new SuccessAcademyFilter();
+		academyFilter.setDocId("id");
+		List<SuccessAcademyFilterMap> filters = new ArrayList<SuccessAcademyFilterMap>();
+		SuccessAcademyFilterMap academyFilterMap = new SuccessAcademyFilterMap();
+		filters.add(academyFilterMap);
+		academyFilter.setFilters(filters);
+		results.addDocument(academyFilter);
+		
+		when(elasticSearchDAO.query(FILTER_INDEX, sourceBuilder, SuccessAcademyFilter.class)).thenReturn(results);
+		learningDAO.getSuccessAcademyFilter();
+	}
+	
+	@Test(expected = GenericException.class)
+	public void getSuccessAcademyFilterError() throws IOException {
+		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+		ElasticSearchResults<SuccessAcademyFilter> results = new ElasticSearchResults<SuccessAcademyFilter>();
+		
+		SuccessAcademyFilter academyFilter = new SuccessAcademyFilter();
+		academyFilter.setDocId("id");
+		List<SuccessAcademyFilterMap> filters = new ArrayList<SuccessAcademyFilterMap>();
+		SuccessAcademyFilterMap academyFilterMap = new SuccessAcademyFilterMap();
+		filters.add(academyFilterMap);
+		academyFilter.setFilters(filters);
+		results.addDocument(academyFilter);
+		
+		when(elasticSearchDAO.query(FILTER_INDEX, sourceBuilder, SuccessAcademyFilter.class)).thenThrow(IOException.class);
+		learningDAO.getSuccessAcademyFilter();
 	}
 
 
