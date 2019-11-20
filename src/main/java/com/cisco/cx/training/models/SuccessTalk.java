@@ -29,6 +29,8 @@ public class SuccessTalk implements HasId, Comparable<SuccessTalk> {
 	private Long duration;
 	@ApiModelProperty(notes = "Is bookmark", example = "true")
 	private boolean bookmark;
+	@ApiModelProperty(notes = "Boolean to identify if this is a technical session")
+	private Boolean technicalSession =false;
 	@ApiModelProperty(notes = "List of available sessions for selected SuccessTalk")
 	private List<SuccessTalkSession> sessions;
 
@@ -167,6 +169,13 @@ public class SuccessTalk implements HasId, Comparable<SuccessTalk> {
 	public int compareTo(SuccessTalk successTalk) {
 		return this.getSuccessTalkId().compareTo(((SuccessTalk) successTalk).getSuccessTalkId());
 	}
-	
+
+	public Boolean getTechnicalSession() {
+		return technicalSession;
+	}
+
+	public void setTechnicalSession(Boolean technicalSession) {
+		this.technicalSession = technicalSession;
+	}
 
 }
