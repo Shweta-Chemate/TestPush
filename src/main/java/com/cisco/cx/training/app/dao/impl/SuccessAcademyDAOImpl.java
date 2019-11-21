@@ -33,6 +33,8 @@ public class SuccessAcademyDAOImpl implements SuccessAcademyDAO {
 	private ElasticSearchDAO elasticSearchDAO;
 
 	private ObjectMapper objectMapper = new ObjectMapper();
+	SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+	BoolQueryBuilder boolQuery = new BoolQueryBuilder();
 
 	private final String INDEX = "cxpp_success_academy_alias";
 
@@ -42,19 +44,15 @@ public class SuccessAcademyDAOImpl implements SuccessAcademyDAO {
 	public List<SuccessAcademyModel> getSuccessAcademy() {
 
 		List<SuccessAcademyModel> learningModelES = new ArrayList<SuccessAcademyModel>();
-		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-		BoolQueryBuilder boolQuery = new BoolQueryBuilder();
+		
 		TreeMap<String, String> orderMap = new TreeMap<>();
 		HashMap<String, List<SuccessAcademyLearning>> modelMap = new HashMap<>();
-
-		sourceBuilder.query(boolQuery);
 		sourceBuilder.size(10000);
 
 		try {
 
 			ElasticSearchResults<SuccessAcademyLearning> results = elasticSearchDAO.query(INDEX, sourceBuilder,
-					SuccessAcademyLearning.class);
-			// SuccessAcademyFilter successAcademyFilter = new SuccessAcademyFilter();
+					SuccessAcademyLearning.class);		
 
 			SuccessAcademyFilter successAcademyFilter = getSuccessAcademyFilter();
 			results.getDocuments().forEach(learn -> {
@@ -108,12 +106,12 @@ public class SuccessAcademyDAOImpl implements SuccessAcademyDAO {
 	}
 
 	@Override
-	public SuccessAcademyFilter getSuccessAcademyFilter() {
-		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-		SuccessAcademyFilter successAcademyFilter = new SuccessAcademyFilter();
-		ElasticSearchResults<SuccessAcademyFilter> results;
+	public SuccessAcademyFilter getSuccessAcademyFilter() {		
+		SuccessAcademyFilter successAcademyFilter = new SuccessAcademyFilter();	
+		sourceBuilder.size(10000);
+	
 		try {
-			results = elasticSearchDAO.query(FILTER_INDEX, sourceBuilder, SuccessAcademyFilter.class);
+			ElasticSearchResults<SuccessAcademyFilter> results = elasticSearchDAO.query(FILTER_INDEX, sourceBuilder, SuccessAcademyFilter.class);
 			if (results != null) {
 				String filterjson = objectMapper.writeValueAsString(results.getDocuments().get(0));
 				successAcademyFilter = objectMapper.readValue(filterjson, SuccessAcademyFilter.class);
