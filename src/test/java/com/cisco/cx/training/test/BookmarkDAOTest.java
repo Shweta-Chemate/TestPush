@@ -1,5 +1,6 @@
 package com.cisco.cx.training.test;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -82,22 +83,74 @@ public class BookmarkDAOTest {
 	public void createOrUpdateBookmarkWithError() throws IOException {
 		String entityId = "entityId";
 		String email = "email";
-		
+
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-        BoolQueryBuilder boolQuery = new BoolQueryBuilder();
-        QueryBuilder ccoIdQuery = QueryBuilders.matchPhraseQuery("email.keyword", email);
-        QueryBuilder entityIdQuery;
-        boolQuery.must(ccoIdQuery);
-        entityIdQuery = QueryBuilders.matchPhraseQuery("id.keyword", entityId);
-        boolQuery.must(entityIdQuery);
-        sourceBuilder.query(boolQuery);
-        sourceBuilder.size(1000);
-		
+		BoolQueryBuilder boolQuery = new BoolQueryBuilder();
+		QueryBuilder ccoIdQuery = QueryBuilders.matchPhraseQuery("email.keyword", email);
+		QueryBuilder entityIdQuery;
+		boolQuery.must(ccoIdQuery);
+		entityIdQuery = QueryBuilders.matchPhraseQuery("id.keyword", entityId);
+		boolQuery.must(entityIdQuery);
+		sourceBuilder.query(boolQuery);
+		sourceBuilder.size(1000);
+
 		when(config.getBookmarksIndex()).thenReturn("");
 		ElasticSearchResults<BookmarkResponseSchema> results = new ElasticSearchResults<>();
 		results.addDocument(getBookmarkResponseSchema());
-		when(elasticSearchDAO.query(config.getBookmarksIndex(), sourceBuilder, BookmarkResponseSchema.class)).thenReturn(results);
-		bookmarkDAO.createOrUpdate(getBookmarkResponseSchema());
+		when(elasticSearchDAO.query(config.getBookmarksIndex(), sourceBuilder, BookmarkResponseSchema.class))
+				.thenThrow(IOException.class);
+
+		BookmarkResponseSchema bookmark = new BookmarkResponseSchema();
+		bookmark.setBookmark(true);
+		bookmark.setBookmarkRequestId("bookmarkRequestId");
+		bookmark.setCreated(1L);
+		bookmark.setDocId("docid");
+		bookmark.setEmail("email");
+		bookmark.setId("id");
+		bookmark.setTitle("title");
+		bookmark.setUpdated(1L);
+
+		when(elasticSearchDAO.saveEntry(config.getBookmarksIndex(), bookmark, BookmarkResponseSchema.class))
+				.thenThrow(IOException.class);
+		BookmarkResponseSchema actual = bookmarkDAO.createOrUpdate(bookmark);
+		assertEquals(bookmark, actual);
+	}
+
+	@Test
+	public void createOrUpdateBookmarkTest() throws IOException {
+		String entityId = "entityId";
+		String email = "email";
+
+		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+		BoolQueryBuilder boolQuery = new BoolQueryBuilder();
+		QueryBuilder ccoIdQuery = QueryBuilders.matchPhraseQuery("email.keyword", email);
+		QueryBuilder entityIdQuery;
+		boolQuery.must(ccoIdQuery);
+		entityIdQuery = QueryBuilders.matchPhraseQuery("id.keyword", entityId);
+		boolQuery.must(entityIdQuery);
+		sourceBuilder.query(boolQuery);
+		sourceBuilder.size(1000);
+
+		when(config.getBookmarksIndex()).thenReturn("");
+		ElasticSearchResults<BookmarkResponseSchema> results = new ElasticSearchResults<>();
+		results.addDocument(getBookmarkResponseSchema());
+		when(elasticSearchDAO.query(config.getBookmarksIndex(), sourceBuilder, BookmarkResponseSchema.class))
+				.thenReturn(results);
+
+		BookmarkResponseSchema bookmark = new BookmarkResponseSchema();
+		bookmark.setBookmark(true);
+		bookmark.setBookmarkRequestId("bookmarkRequestId");
+		bookmark.setCreated(1L);
+		bookmark.setDocId("docid");
+		bookmark.setEmail("email");
+		bookmark.setId("id");
+		bookmark.setTitle("title");
+		bookmark.setUpdated(1L);
+
+		when(elasticSearchDAO.saveEntry(config.getBookmarksIndex(), bookmark, BookmarkResponseSchema.class))
+				.thenReturn(bookmark);
+		BookmarkResponseSchema actual = bookmarkDAO.createOrUpdate(bookmark);
+		assertEquals(bookmark, actual);
 	}
 
 	private BookmarkResponseSchema getBookmarkResponseSchema() {

@@ -1,6 +1,7 @@
 package com.cisco.cx.training.app.dao.impl;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -18,6 +19,7 @@ import com.cisco.cx.training.app.dao.BookmarkDAO;
 import com.cisco.cx.training.app.dao.ElasticSearchDAO;
 import com.cisco.cx.training.app.exception.GenericException;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
+import com.cisco.cx.training.models.ElasticSearchResults;
 
 @Repository
 public class BookmarkDAOImpl implements BookmarkDAO {
@@ -58,7 +60,7 @@ public class BookmarkDAOImpl implements BookmarkDAO {
 
 	@Override
 	public List<BookmarkResponseSchema> getBookmarks(String email, String entityId) {
-		List<BookmarkResponseSchema> searchHits = null;
+		List<BookmarkResponseSchema> searchHits = new ArrayList<BookmarkResponseSchema>();
 
 		try {
 			SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
@@ -75,7 +77,11 @@ public class BookmarkDAOImpl implements BookmarkDAO {
 			sourceBuilder.query(boolQuery);
 			sourceBuilder.size(1000);
 
-			searchHits = elasticSearchDAO.query(config.getBookmarksIndex(), sourceBuilder, BookmarkResponseSchema.class).getDocuments();
+			ElasticSearchResults<BookmarkResponseSchema> results = elasticSearchDAO.query(config.getBookmarksIndex(),
+					sourceBuilder, BookmarkResponseSchema.class);
+			if (results != null) {
+				searchHits = results.getDocuments();
+			}
 			return searchHits;
 		} catch (IOException ioe) {
 			LOG.error("Error while invoking ES API", ioe);
