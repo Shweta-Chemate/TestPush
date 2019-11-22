@@ -47,6 +47,7 @@ public class SuccessAcademyDAOTest {
 		sourceBuilder.size(10000);
 		ElasticSearchResults<SuccessAcademyLearning> results = new ElasticSearchResults<SuccessAcademyLearning>();
 		results.addDocument(successAcademy());
+		results.addDocument(successAcademy());
 		ElasticSearchResults<SuccessAcademyFilter> filterResults = new ElasticSearchResults<SuccessAcademyFilter>();
 		filterResults.addDocument(successAcademyFilter());
 		when(elasticSearchDAO.query(FILTER_INDEX, sourceBuilder, SuccessAcademyFilter.class)).thenReturn(filterResults);	
@@ -106,9 +107,11 @@ public class SuccessAcademyDAOTest {
 		learning.setParentFilter("Role Based Training");
 		learning.setTrainingColour("");
 		learning.setUrl("");
+		learning.setDocId("");
 		SuccessAcademyLearningTopics learningTopics = new SuccessAcademyLearningTopics();
 		learningTopics.setName("Foundational Learning Map");
 		learningTopics.setLink("https://salesconnect.cisco.com/#/mylearningmap/SC_LMS_479");
+		learningTopics.setDescription("Foundational Learning Map");
 		learning.setLearning(Arrays.asList(learningTopics));
 		return learning;
 	}
