@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -136,8 +137,9 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
         sourceBuilder.size(1);
         List<SuccessTalk> matchedSuccessTalkList = elasticSearchDAO.query(config.getSuccessTalkIndex(), sourceBuilder, SuccessTalk.class).getDocuments();
         if (matchedSuccessTalkList != null && matchedSuccessTalkList.size() > 0) {
-        	SuccessTalk matchedSuccessTalkTemp = matchedSuccessTalkList.stream().findFirst().get();
-
+        	Optional<SuccessTalk> optionalMatchedSuccessTalkTemp = matchedSuccessTalkList.stream().findFirst();
+        	if(optionalMatchedSuccessTalkTemp.isPresent()) {
+        	SuccessTalk matchedSuccessTalkTemp = optionalMatchedSuccessTalkTemp.get();
             List<SuccessTalkSession> successTalkSessions = matchedSuccessTalkTemp.getSessions();
             if (successTalkSessions != null && successTalkSessions.size() > 0) {
                 List<SuccessTalkSession> matchedSessions = successTalkSessions.stream().filter(session -> session.getSessionStartDate().equals(eventStartDate)).collect(Collectors.toList());
@@ -155,8 +157,8 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
                 }
             }
             matchedSuccessTalk = matchedSuccessTalkTemp;
-        }
-
+            }
+        }	
         return matchedSuccessTalk;
     }
 

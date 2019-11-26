@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -131,10 +132,12 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 
 			if (smartsheetDAO.checkRegistrationExists(registration)) {
 				// No Operation as Success Talk is registered already
+				LOG.info("No Operation as Success Talk is registered already");
 			} else {
 				// save a new row in the smartsheet for this registration
 				//commenting out for now till workflow is finalized
 				//smartsheetDAO.saveSuccessTalkRegistration(registration);
+				LOG.info("Success Talk is not registered");
 			}
 			return successTalkDAO.saveSuccessTalkRegistration(registration);
 		} catch (SmartsheetException se) {
@@ -147,8 +150,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	}
 
 	@Override
-	public SuccesstalkUserRegEsSchema fetchSuccessTalkRegistrationDetails(SuccesstalkUserRegEsSchema registration,
-			UserDetails userDetails) throws NotFoundException, NotAllowedException {
+	public SuccesstalkUserRegEsSchema fetchSuccessTalkRegistrationDetails(SuccesstalkUserRegEsSchema registration, UserDetails userDetails) throws NotFoundException, NotAllowedException {
 		SuccessTalk successTalk = null;
 
 		try {
@@ -159,17 +161,20 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		}
 
 		if (successTalk != null) {
-			registration.setTitle(successTalk.getTitle());
-			SuccessTalkSession successTalkSession = successTalk.getSessions().stream().findFirst().get();
-			registration.setEventStartDate(successTalkSession.getSessionStartDate());
-			registration.setEmail(userDetails.getEmail());
-			registration.setFirstName(userDetails.getFirstName());
-			registration.setLastName(userDetails.getLastName());
-			registration.setUserTitle(userDetails.getTitle());
-			registration.setPhone(userDetails.getPhone());
-			registration.setCompany(userDetails.getCompany());
-			registration.setCountry(userDetails.getCountry());
-			registration.setRegistrationDate(new Date().getTime());
+			Optional<SuccessTalkSession> optionalSession = successTalk.getSessions().stream().findFirst();
+			if (optionalSession.isPresent()) {
+				registration.setTitle(successTalk.getTitle());
+				SuccessTalkSession successTalkSession = optionalSession.get();
+				registration.setEventStartDate(successTalkSession.getSessionStartDate());
+				registration.setEmail(userDetails.getEmail());
+				registration.setFirstName(userDetails.getFirstName());
+				registration.setLastName(userDetails.getLastName());
+				registration.setUserTitle(userDetails.getTitle());
+				registration.setPhone(userDetails.getPhone());
+				registration.setCompany(userDetails.getCompany());
+				registration.setCountry(userDetails.getCountry());
+				registration.setRegistrationDate(new Date().getTime());
+			}
 		} else {
 			throw new NotFoundException("Invalid SuccessTalk Details: " + registration.getTitle());
 		}

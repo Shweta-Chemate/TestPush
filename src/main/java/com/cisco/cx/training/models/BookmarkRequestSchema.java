@@ -47,6 +47,11 @@ public class BookmarkRequestSchema {
         return Objects.hash(getTitle());
     }
     
+    @Override
+    public boolean equals(Object obj) {
+    	return super.equals(obj);
+    }
+    
     public String getId() {
     	this.id = String.valueOf(this.hashCode());
     	return id;
