@@ -162,6 +162,7 @@
 								<exclude>com/cisco/cx/training/models/UserProfile.class</exclude>
 								<exclude>com/cisco/cx/training/models/SuccesstalkRegSmartSheetSchema.class</exclude>
 								<exclude>com/cisco/cx/training/models/SuccesstalkUserRegEsSchema.class</exclude>
+								<exclude>com/cisco/cx/training/models/SuccessTalk.class</exclude>
 								<exclude>com/cisco/cx/training/app/config/PropertyConfiguration.class</exclude>
 							</excludes>
 						</configuration>
