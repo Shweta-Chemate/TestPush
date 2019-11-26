@@ -25,8 +25,10 @@ import com.cisco.cx.training.app.dao.ElasticSearchDAO;
 import com.cisco.cx.training.app.dao.SuccessTalkDAO;
 import com.cisco.cx.training.app.dao.impl.SuccessTalkDAOImpl;
 import com.cisco.cx.training.app.exception.GenericException;
+import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.cisco.cx.training.models.ElasticSearchResults;
 import com.cisco.cx.training.models.SuccessTalk;
+import com.cisco.cx.training.models.SuccessTalk.SuccessTalkStatusEnum;
 import com.cisco.cx.training.models.SuccessTalkSession;
 import com.cisco.cx.training.models.SuccesstalkUserRegEsSchema;
 
@@ -140,6 +142,48 @@ public class SuccessTalkDAOTest {
 		successTalkDAO.cancelRegistration(successTalkSessionId, successTalkId);
 	}
 	
+	@Test
+	public void getUserSuccessTalks() throws IOException {
+		String email = "email";
+		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+		BoolQueryBuilder boolQuery = new BoolQueryBuilder();
+		sourceBuilder.query(boolQuery);
+		sourceBuilder.size(10000);
+		SuccessTalk successTalk = getSuccessTask();
+		ElasticSearchResults<SuccessTalk> results = new ElasticSearchResults<SuccessTalk>();
+		results.addDocument(successTalk);
+		when(elasticSearchDAO.query(config.getSuccessTalkIndex(), sourceBuilder, SuccessTalk.class)).thenReturn(results);
+		
+        SearchSourceBuilder registrationSourceBuilder = new SearchSourceBuilder();
+        BoolQueryBuilder registrationBoolQuery = new BoolQueryBuilder();
+        QueryBuilder emailQuery = QueryBuilders.matchPhraseQuery("email.keyword", email);
+        QueryBuilder transactionType = QueryBuilders.matchPhraseQuery("registrationStatus.keyword", SuccesstalkUserRegEsSchema.RegistrationStatusEnum.REGISTERED);
+        registrationBoolQuery.must(emailQuery).must(transactionType);
+        registrationSourceBuilder.query(registrationBoolQuery);
+        registrationSourceBuilder.size(1000);
+		when(config.getSuccessTalkUserRegistrationsIndex()).thenReturn("");
+		List<SuccesstalkUserRegEsSchema> registeredSuccessTalkList = new ArrayList<SuccesstalkUserRegEsSchema>();
+		registeredSuccessTalkList.add(getRegistration());
+		ElasticSearchResults<SuccesstalkUserRegEsSchema> registrationResults = new ElasticSearchResults<>();
+		registrationResults.addDocument(getRegistration());
+		when(elasticSearchDAO.query(config.getSuccessTalkUserRegistrationsIndex(), registrationSourceBuilder, SuccesstalkUserRegEsSchema.class))
+				.thenReturn(registrationResults);
+		
+		BookmarkResponseSchema bookmark = new BookmarkResponseSchema();
+		bookmark.setBookmark(true);
+		bookmark.setBookmarkRequestId("bookmarkRequestId");
+		bookmark.setCreated(1L);
+		bookmark.setDocId("docid");
+		bookmark.setEmail("email");
+		bookmark.setId("id");
+		bookmark.setTitle("title");
+		bookmark.setUpdated(1L);
+		List<BookmarkResponseSchema> bookMarkList= new ArrayList<BookmarkResponseSchema>();
+		bookMarkList.add(bookmark);
+		when(bookmarkDAO.getBookmarks(email, null)).thenReturn(bookMarkList);
+		successTalkDAO.getUserSuccessTalks(email);
+	}
+	
 	@Test(expected = GenericException.class)
 	public void getUserSuccessTalksError() throws IOException {
 		String email = "email";
@@ -147,16 +191,38 @@ public class SuccessTalkDAOTest {
 		BoolQueryBuilder boolQuery = new BoolQueryBuilder();
 		sourceBuilder.query(boolQuery);
 		sourceBuilder.size(10000);
-		
 		SuccessTalk successTalk = getSuccessTask();
 		ElasticSearchResults<SuccessTalk> results = new ElasticSearchResults<SuccessTalk>();
 		results.addDocument(successTalk);
-
-		when(elasticSearchDAO.query(config.getSuccessTalkIndex(), sourceBuilder, SuccessTalk.class)).thenReturn(results);
+		when(elasticSearchDAO.query(config.getSuccessTalkIndex(), sourceBuilder, SuccessTalk.class)).thenThrow(IOException.class);
 		
+        SearchSourceBuilder registrationSourceBuilder = new SearchSourceBuilder();
+        BoolQueryBuilder registrationBoolQuery = new BoolQueryBuilder();
+        QueryBuilder emailQuery = QueryBuilders.matchPhraseQuery("email.keyword", email);
+        QueryBuilder transactionType = QueryBuilders.matchPhraseQuery("registrationStatus.keyword", SuccesstalkUserRegEsSchema.RegistrationStatusEnum.REGISTERED);
+        registrationBoolQuery.must(emailQuery).must(transactionType);
+        registrationSourceBuilder.query(registrationBoolQuery);
+        registrationSourceBuilder.size(1000);
+		when(config.getSuccessTalkUserRegistrationsIndex()).thenReturn("");
 		List<SuccesstalkUserRegEsSchema> registeredSuccessTalkList = new ArrayList<SuccesstalkUserRegEsSchema>();
-		when(successTalkDAO.getRegisteredSuccessTalks(email)).thenReturn(registeredSuccessTalkList);
+		registeredSuccessTalkList.add(getRegistration());
+		ElasticSearchResults<SuccesstalkUserRegEsSchema> registrationResults = new ElasticSearchResults<>();
+		registrationResults.addDocument(getRegistration());
+		when(elasticSearchDAO.query(config.getSuccessTalkUserRegistrationsIndex(), registrationSourceBuilder, SuccesstalkUserRegEsSchema.class))
+		.thenThrow(IOException.class);
 		
+		BookmarkResponseSchema bookmark = new BookmarkResponseSchema();
+		bookmark.setBookmark(true);
+		bookmark.setBookmarkRequestId("bookmarkRequestId");
+		bookmark.setCreated(1L);
+		bookmark.setDocId("docid");
+		bookmark.setEmail("email");
+		bookmark.setId("id");
+		bookmark.setTitle("title");
+		bookmark.setUpdated(1L);
+		List<BookmarkResponseSchema> bookMarkList= new ArrayList<BookmarkResponseSchema>();
+		bookMarkList.add(bookmark);
+		when(bookmarkDAO.getBookmarks(email, null)).thenReturn(bookMarkList);
 		successTalkDAO.getUserSuccessTalks(email);
 	}
 	
@@ -223,5 +289,31 @@ public class SuccessTalkDAOTest {
 		session.setSessionStartDate(c.getTime().getTime());
 		successTalk.setSessions(Arrays.asList(session));
 		return successTalk;
+	}
+	
+	private SuccesstalkUserRegEsSchema getRegistration() {
+		Date currentDate = new Date();
+		Calendar c = Calendar.getInstance();
+		c.setTime(currentDate);
+		c.add(Calendar.MONTH, 1);
+
+		SuccesstalkUserRegEsSchema registration = new SuccesstalkUserRegEsSchema();
+		registration.setEmail("email");
+		registration.setFirstName("name");
+		registration.setLastName("");
+		registration.setCompany("");
+		registration.setCountry("");
+		registration.setDocId("");
+		registration.setAttendedStatus(SuccesstalkUserRegEsSchema.AttendedStatusEnum.NO);
+		registration.setEventStartDate(c.getTime().getTime());
+		registration.setEventStartDateFormatted("");
+		registration.setPhone("");
+		registration.setRegistrationDate(c.getTime().getTime());
+		registration.setRegistrationDateFormatted("");
+		registration.setRegistrationStatus(SuccesstalkUserRegEsSchema.RegistrationStatusEnum.PENDING);
+		registration.setTitle("");
+		registration.setUpdated(c.getTime().getTime());
+		registration.setUserTitle("");
+		return registration;
 	}
 }
