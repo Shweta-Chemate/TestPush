@@ -164,7 +164,7 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
 
 	@Override
     public List<SuccesstalkUserRegEsSchema> getRegisteredSuccessTalks(String email) {
-        List<SuccesstalkUserRegEsSchema> scheduledRegs = new ArrayList<SuccesstalkUserRegEsSchema>();
+        List<SuccesstalkUserRegEsSchema> scheduledRegs = new ArrayList<>();
 
         try {
             SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
@@ -182,11 +182,11 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
             	scheduledRegs = results.getDocuments();
             }
         } catch (IOException ioe) {
-            LOG.error("Error while invoking ES API", ioe);
-            throw new GenericException("Error while invoking ES API");
+            LOG.error(ERROR_MESSAGE, ioe);
+            throw new GenericException(ERROR_MESSAGE);
         } catch (Exception e) {
-            LOG.error("Error while getting response", e);
-            throw new GenericException("Error while getting response");
+            LOG.error(ERROR_MESSAGE, e);
+            throw new GenericException(ERROR_MESSAGE);
         }
 
         return scheduledRegs;

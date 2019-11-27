@@ -199,7 +199,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	
 	@Override
 	public CountResponseSchema getIndexCounts() {
-		List<CountSchema> indexCounts = new ArrayList<CountSchema>();
+		List<CountSchema> indexCounts = new ArrayList<>();
 		CountResponseSchema countResponse = new CountResponseSchema();
 		try {
 

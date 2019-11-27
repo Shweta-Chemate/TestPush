@@ -43,7 +43,7 @@ public class SuccessAcademyDAOImpl implements SuccessAcademyDAO {
 	@Override
 	public List<SuccessAcademyModel> getSuccessAcademy() {
 
-		List<SuccessAcademyModel> learningModelES = new ArrayList<SuccessAcademyModel>();
+		List<SuccessAcademyModel> learningModelES = new ArrayList<>();
 		
 		TreeMap<String, String> orderMap = new TreeMap<>();
 		HashMap<String, List<SuccessAcademyLearning>> modelMap = new HashMap<>();
@@ -66,7 +66,7 @@ public class SuccessAcademyDAOImpl implements SuccessAcademyDAO {
 							modelMap.get(successAcademyFilterMap.getKey()).add(learn);
 
 						} else {
-							List<SuccessAcademyLearning> learningES = new ArrayList<SuccessAcademyLearning>();
+							List<SuccessAcademyLearning> learningES = new ArrayList<>();
 
 							learningES.add(learn);
 							modelMap.put(successAcademyFilterMap.getKey(), learningES);

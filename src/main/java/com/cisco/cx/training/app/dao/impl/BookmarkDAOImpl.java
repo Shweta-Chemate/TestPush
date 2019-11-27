@@ -30,6 +30,8 @@ public class BookmarkDAOImpl implements BookmarkDAO {
 
 	@Autowired
 	private PropertyConfiguration config;
+	
+	private static final String ERROR_MESSAGE = "Error while invoking ES API";
 
 	@Override
 	public BookmarkResponseSchema createOrUpdate(BookmarkResponseSchema bookmarkResponseSchema) {
@@ -39,20 +41,20 @@ public class BookmarkDAOImpl implements BookmarkDAO {
 
 		try {
 			// Check if document already exists. If yes update else create
-			if (bookmarks.size() <= 0) {
-				// create
-				bookmarkResponseSchema.setCreated(System.currentTimeMillis());
-			} else {
+			if (bookmarks.isEmpty()) {
 				// update
 				LOG.info("Records found, Updating");
 				bookmarkResponseSchema.setBookmarkRequestId(bookmarks.get(0).getDocId());
 				bookmarkResponseSchema.setUpdated(System.currentTimeMillis());
+			} else {
+				// create
+				bookmarkResponseSchema.setCreated(System.currentTimeMillis());
 			}
 			savedBookMark = elasticSearchDAO.saveEntry(config.getBookmarksIndex(), bookmarkResponseSchema,
 					BookmarkResponseSchema.class);
 		} catch (IOException ioe) {
-			LOG.error("Error while invoking ES API", ioe);
-			throw new GenericException("Error while invoking ES API");
+			LOG.error(ERROR_MESSAGE, ioe);
+			throw new GenericException(ERROR_MESSAGE);
 		}
 
 		return savedBookMark;
@@ -60,7 +62,7 @@ public class BookmarkDAOImpl implements BookmarkDAO {
 
 	@Override
 	public List<BookmarkResponseSchema> getBookmarks(String email, String entityId) {
-		List<BookmarkResponseSchema> searchHits = new ArrayList<BookmarkResponseSchema>();
+		List<BookmarkResponseSchema> searchHits = new ArrayList<>();
 
 		try {
 			SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
@@ -84,11 +86,11 @@ public class BookmarkDAOImpl implements BookmarkDAO {
 			}
 			return searchHits;
 		} catch (IOException ioe) {
-			LOG.error("Error while invoking ES API", ioe);
-			throw new GenericException("Error while invoking ES API");
+			LOG.error(ERROR_MESSAGE, ioe);
+			throw new GenericException(ERROR_MESSAGE);
 		} catch (Exception e) {
-			LOG.error("Error while getting response", e);
-			throw new GenericException("Error while getting response");
+			LOG.error(ERROR_MESSAGE, e);
+			throw new GenericException(ERROR_MESSAGE);
 		}
 	}
 }
