@@ -42,13 +42,13 @@ public class BookmarkDAOImpl implements BookmarkDAO {
 		try {
 			// Check if document already exists. If yes update else create
 			if (bookmarks.isEmpty()) {
+				// create
+				bookmarkResponseSchema.setCreated(System.currentTimeMillis());
+			} else {
 				// update
 				LOG.info("Records found, Updating");
 				bookmarkResponseSchema.setBookmarkRequestId(bookmarks.get(0).getDocId());
 				bookmarkResponseSchema.setUpdated(System.currentTimeMillis());
-			} else {
-				// create
-				bookmarkResponseSchema.setCreated(System.currentTimeMillis());
 			}
 			savedBookMark = elasticSearchDAO.saveEntry(config.getBookmarksIndex(), bookmarkResponseSchema,
 					BookmarkResponseSchema.class);
