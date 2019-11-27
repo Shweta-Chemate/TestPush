@@ -9,7 +9,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 public class TrainingAndEnablementApplication {
 
     public static void main(String[] args) throws Throwable {
-        SpringApplication.run(TrainingAndEnablementApplication.class, args);
+        SpringApplication.run(TrainingAndEnablementApplication.class);
     }
 
 	@Bean
