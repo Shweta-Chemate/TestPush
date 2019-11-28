@@ -288,6 +288,10 @@ public class SuccessTalkDAOTest {
 		session.setSessionId("successTalkSessionId");
 		session.setSessionStartDate(c.getTime().getTime());
 		successTalk.setSessions(Arrays.asList(session));
+		successTalk.setQuarter("");
+		successTalk.setStatus(SuccessTalk.SuccessTalkStatusEnum.CONFIRMED);
+		successTalk.setTechnicalSession(false);
+		successTalk.setSuccessTalkId("");
 		return successTalk;
 	}
 	

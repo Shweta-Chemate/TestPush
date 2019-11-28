@@ -212,9 +212,6 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 			CountSchema successAcamedyCount = getSuccessAcademyCount();
 			indexCounts.add(successAcamedyCount);
 
-			CountSchema partnerModelCount = getPartnerModelCount();
-			indexCounts.add(partnerModelCount);
-
 			countResponse.setLearningStatus(indexCounts);
 
 		} catch (Exception e) {
@@ -230,7 +227,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	public CountSchema getCommunityCount() {
 
 		CountSchema communityCount = new CountSchema();
-		communityCount.setLabel("Community");
+		communityCount.setLabel("Cisco Communities");
 		// Community Count is currently hardcoded to 1
 		communityCount.setCount(1L);
 		return communityCount;
@@ -271,41 +268,31 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 				.mustNot(includeOrganizeQuery);
 		successAcademySourceBuilder.query(successAcademyBoolQuery);
 
-		CountSchema successAcademyCount = new CountSchema();
-		successAcademyCount.setLabel("Success Academy");
-		try {
-			ElasticSearchResults<SuccessAcademyLearning> results = elasticSearchDAO.query(config.getSuccessAcademyIndex(), successAcademySourceBuilder,
-					SuccessAcademyLearning.class);
-			Integer learningCount = results.getDocuments().stream().map(successAcademyLearning -> successAcademyLearning.getLearning().size()).collect(Collectors.summingInt(Integer::intValue));
-			successAcademyCount.setCount(learningCount.longValue());
-		} catch (IOException e) {
-			LOG.error("Could not fetch index counts for Success Academy", e);
-			throw new GenericException("Could not fetch index counts for Success Academy", e);
-		}
-		return successAcademyCount;
-	}
-	
-	@Override
-	public CountSchema getPartnerModelCount() {
-		QueryBuilder includeMonetizeQuery = QueryBuilders.matchPhraseQuery("parentFilter.keyword", "Monetize");
-		QueryBuilder includeOperateQuery = QueryBuilders.matchPhraseQuery("parentFilter.keyword", "Operate");
-		QueryBuilder includeOrganizeQuery = QueryBuilders.matchPhraseQuery("parentFilter.keyword", "Organize");
 		SearchSourceBuilder partnerModelSourceBuilder = new SearchSourceBuilder();
 		BoolQueryBuilder partnerModelBoolQuery = new BoolQueryBuilder();
 		partnerModelBoolQuery.should(includeMonetizeQuery).should(includeOperateQuery).should(includeOrganizeQuery);
 		partnerModelSourceBuilder.query(partnerModelBoolQuery);
 
-		CountSchema partnerModelCount = new CountSchema();
-		partnerModelCount.setLabel("Partner Model");
+		CountSchema successAcademyCount = new CountSchema();
+		successAcademyCount.setLabel("Success Academy");
 		try {
-			ElasticSearchResults<SuccessAcademyLearning> results = elasticSearchDAO.query(config.getSuccessAcademyIndex(), partnerModelSourceBuilder,
-					SuccessAcademyLearning.class);
-			Integer modelCount = results.getDocuments().stream().map(partnerModel -> partnerModel.getLearning().size()).collect(Collectors.summingInt(Integer::intValue));
-			partnerModelCount.setCount(modelCount.longValue());
+			ElasticSearchResults<SuccessAcademyLearning> successAcademyResults = elasticSearchDAO
+					.query(config.getSuccessAcademyIndex(), successAcademySourceBuilder, SuccessAcademyLearning.class);
+			ElasticSearchResults<SuccessAcademyLearning> partnerModelResults = elasticSearchDAO
+					.query(config.getSuccessAcademyIndex(), partnerModelSourceBuilder, SuccessAcademyLearning.class);
+			if (successAcademyResults != null && partnerModelResults != null) {
+				Integer learningCount = successAcademyResults.getDocuments().stream()
+						.map(successAcademyLearning -> successAcademyLearning.getLearning().size())
+						.collect(Collectors.summingInt(Integer::intValue));
+				Integer modelCount = partnerModelResults.getDocuments().stream()
+						.map(partnerModel -> partnerModel.getLearning().size())
+						.collect(Collectors.summingInt(Integer::intValue));
+				successAcademyCount.setCount(learningCount.longValue() + modelCount.longValue());
+			}
 		} catch (IOException e) {
-			LOG.error("Could not fetch index counts for Partner Model", e);
-			throw new GenericException("Could not fetch index counts for Partner Model");
+			LOG.error("Could not fetch index counts for Success Academy", e);
+			throw new GenericException("Could not fetch index counts for Success Academy", e);
 		}
-		return partnerModelCount;
+		return successAcademyCount;
 	}
 }

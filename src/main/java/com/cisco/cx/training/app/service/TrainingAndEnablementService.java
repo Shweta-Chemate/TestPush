@@ -31,6 +31,4 @@ public interface TrainingAndEnablementService {
 	CountSchema getSuccessTalkCount();
 
 	CountSchema getSuccessAcademyCount();
-
-	CountSchema getPartnerModelCount();
 }

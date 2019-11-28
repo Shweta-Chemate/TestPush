@@ -227,13 +227,15 @@ public class TrainingAndEnablementServiceTest {
 		QueryBuilder includeMonetizeQuery = QueryBuilders.matchPhraseQuery("parentFilter.keyword", "Monetize");
 		QueryBuilder includeOperateQuery = QueryBuilders.matchPhraseQuery("parentFilter.keyword", "Operate");
 		QueryBuilder includeOrganizeQuery = QueryBuilders.matchPhraseQuery("parentFilter.keyword", "Organize");
-		successAcademyBoolQuery.mustNot(includeMonetizeQuery).mustNot(includeOperateQuery).mustNot(includeOrganizeQuery);
+		successAcademyBoolQuery.mustNot(includeMonetizeQuery).mustNot(includeOperateQuery)
+				.mustNot(includeOrganizeQuery);
 		successAcademySourceBuilder.query(successAcademyBoolQuery);
 		ElasticSearchResults<SuccessAcademyLearning> results = new ElasticSearchResults<SuccessAcademyLearning>();
-		when(elasticSearchDAO.query(config.getSuccessAcademyIndex(), successAcademySourceBuilder, SuccessAcademyLearning.class)).thenReturn(results);
+		when(elasticSearchDAO.query(config.getSuccessAcademyIndex(), successAcademySourceBuilder,
+				SuccessAcademyLearning.class)).thenReturn(results);
 		trainingAndEnablementService.getSuccessAcademyCount();
 	}
-	
+
 	@Test(expected = GenericException.class)
 	public void getSuccessAcademyCountError() throws IOException {
 		SearchSourceBuilder successAcademySourceBuilder = new SearchSourceBuilder();
@@ -241,44 +243,17 @@ public class TrainingAndEnablementServiceTest {
 		QueryBuilder includeMonetizeQuery = QueryBuilders.matchPhraseQuery("parentFilter.keyword", "Monetize");
 		QueryBuilder includeOperateQuery = QueryBuilders.matchPhraseQuery("parentFilter.keyword", "Operate");
 		QueryBuilder includeOrganizeQuery = QueryBuilders.matchPhraseQuery("parentFilter.keyword", "Organize");
-		successAcademyBoolQuery.mustNot(includeMonetizeQuery).mustNot(includeOperateQuery).mustNot(includeOrganizeQuery);
+		successAcademyBoolQuery.mustNot(includeMonetizeQuery).mustNot(includeOperateQuery)
+				.mustNot(includeOrganizeQuery);
 		successAcademySourceBuilder.query(successAcademyBoolQuery);
-		when(elasticSearchDAO.query(config.getSuccessAcademyIndex(), successAcademySourceBuilder, SuccessAcademyLearning.class)).thenThrow(IOException.class);
+		when(elasticSearchDAO.query(config.getSuccessAcademyIndex(), successAcademySourceBuilder,
+				SuccessAcademyLearning.class)).thenThrow(IOException.class);
 		trainingAndEnablementService.getSuccessAcademyCount();
 	}
 	
 	@Test
 	public void getCommunityCount() {
 		trainingAndEnablementService.getCommunityCount();
-	}
-	
-	@Test
-	public void getpartnerModelCount() throws IOException {
-		QueryBuilder includeMonetizeQuery = QueryBuilders.matchPhraseQuery("parentFilter.keyword", "Monetize");
-		QueryBuilder includeOperateQuery = QueryBuilders.matchPhraseQuery("parentFilter.keyword", "Operate");
-		QueryBuilder includeOrganizeQuery = QueryBuilders.matchPhraseQuery("parentFilter.keyword", "Organize");
-		SearchSourceBuilder partnerModelSourceBuilder = new SearchSourceBuilder();
-		BoolQueryBuilder partnerModelBoolQuery = new BoolQueryBuilder();
-		partnerModelBoolQuery.should(includeMonetizeQuery).should(includeOperateQuery).should(includeOrganizeQuery);
-		partnerModelSourceBuilder.query(partnerModelBoolQuery);
-		
-		ElasticSearchResults<SuccessAcademyLearning> results = new ElasticSearchResults<SuccessAcademyLearning>();
-		when(elasticSearchDAO.query(config.getSuccessAcademyIndex(), partnerModelSourceBuilder, SuccessAcademyLearning.class)).thenReturn(results);
-		trainingAndEnablementService.getPartnerModelCount();
-	}
-	
-	@Test(expected = GenericException.class)
-	public void getpartnerModelCountError() throws IOException {
-		QueryBuilder includeMonetizeQuery = QueryBuilders.matchPhraseQuery("parentFilter.keyword", "Monetize");
-		QueryBuilder includeOperateQuery = QueryBuilders.matchPhraseQuery("parentFilter.keyword", "Operate");
-		QueryBuilder includeOrganizeQuery = QueryBuilders.matchPhraseQuery("parentFilter.keyword", "Organize");
-		SearchSourceBuilder partnerModelSourceBuilder = new SearchSourceBuilder();
-		BoolQueryBuilder partnerModelBoolQuery = new BoolQueryBuilder();
-		partnerModelBoolQuery.should(includeMonetizeQuery).should(includeOperateQuery).should(includeOrganizeQuery);
-		partnerModelSourceBuilder.query(partnerModelBoolQuery);
-		
-		when(elasticSearchDAO.query(config.getSuccessAcademyIndex(), partnerModelSourceBuilder, SuccessAcademyLearning.class)).thenThrow(IOException.class);
-		trainingAndEnablementService.getPartnerModelCount();
 	}
 	
 	@Test
@@ -303,8 +278,23 @@ public class TrainingAndEnablementServiceTest {
 		trainingAndEnablementService.getSuccessTalkCount();
 	}
 	
+	@Test
+	public void getIndexCounts() {
+		trainingAndEnablementService.getIndexCounts();
+	}
+	
 	@Test(expected = GenericException.class)
-	public void getIndexCountsError() {
+	public void getIndexCountsError() throws IOException{
+		SearchSourceBuilder successAcademySourceBuilder = new SearchSourceBuilder();
+		BoolQueryBuilder successAcademyBoolQuery = new BoolQueryBuilder();
+		QueryBuilder includeMonetizeQuery = QueryBuilders.matchPhraseQuery("parentFilter.keyword", "Monetize");
+		QueryBuilder includeOperateQuery = QueryBuilders.matchPhraseQuery("parentFilter.keyword", "Operate");
+		QueryBuilder includeOrganizeQuery = QueryBuilders.matchPhraseQuery("parentFilter.keyword", "Organize");
+		successAcademyBoolQuery.mustNot(includeMonetizeQuery).mustNot(includeOperateQuery)
+				.mustNot(includeOrganizeQuery);
+		successAcademySourceBuilder.query(successAcademyBoolQuery);
+		when(elasticSearchDAO.query(config.getSuccessAcademyIndex(), successAcademySourceBuilder,
+				SuccessAcademyLearning.class)).thenThrow(IOException.class);
 		trainingAndEnablementService.getIndexCounts();
 	}
 
