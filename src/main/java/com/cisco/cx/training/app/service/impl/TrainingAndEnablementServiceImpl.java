@@ -227,7 +227,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	public CountSchema getCommunityCount() {
 
 		CountSchema communityCount = new CountSchema();
-		communityCount.setLabel("Cisco Communities");
+		communityCount.setLabel("Cisco Community");
 		// Community Count is currently hardcoded to 1
 		communityCount.setCount(1L);
 		return communityCount;
