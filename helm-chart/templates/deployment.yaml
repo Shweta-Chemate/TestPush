@@ -45,8 +45,6 @@ spec:
                   name: appd-secret-cx
             - name: APPDYNAMICS_ENABLED
               value: {{ .Values.appDynamics.enabled | quote }}
-            - name: APPDYNAMICS_JAVA_AGENT_REUSE_NODE_NAME
-              value: {{ .Values.appDynamics.appdynamics_java_agent_reuse_node_name | quote }}
             - name: APPDYNAMICS_JAVA_AGENT_REUSE_NODE_NAME_PREFIX
               valueFrom:
                 fieldRef:
@@ -59,18 +57,6 @@ spec:
               value: {{ .Values.appDynamics.appdynamics_agent_application_name }}
             - name: APPDYNAMICS_CONTROLLER_HOST_NAME
               value: {{ .Values.appDynamics.appdynamics_controller_host_name }}
-            - name: APPDYNAMICS_CONTROLLER_PORT
-              value: {{ .Values.appDynamics.appdynamics_controller_port | quote }}
-            - name: APPDYNAMICS_CONTROLLER_SSL_ENABLED
-              value: {{ .Values.appDynamics.appdynamics_controller_ssl_enabled | quote }}
-            - name: APPD_ES_HOST
-              value: {{ .Values.appDynamics.appd_es_host }}
-            - name: APPD_ES_PORT
-              value: {{ .Values.appDynamics.appd_es_port | quote }}
-            - name: APPD_ES_SSL
-              value: {{ .Values.appDynamics.appd_es_ssl | quote }}
-            - name: APPDYNAMICS_JVM_PARAMETER
-              value: {{ .Values.appDynamics.appdynamics_jvm_parameter }}
           {{- end}}
             - name: cxpp_elasticsearch_username
               valueFrom:

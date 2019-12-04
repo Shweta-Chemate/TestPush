@@ -49,15 +49,8 @@ affinity: {}
 
 appDynamics:
   enabled: false
-  appd_es_host: analytics.api.appdynamics.com
-  appd_es_port: 443
-  appd_es_ssl: True
   appdynamics_controller_host_name: cisco-cx-test.saas.appdynamics.com
-  appdynamics_controller_port: 443
-  appdynamics_controller_ssl_enabled: True
-  appdynamics_jvm_parameter: -Dappdynamics.agent.maxMetrics=7000 -Dappdynamics.agent.log4j2.disabled=true -Dlog4j.ignoreTCL=true
-  appdynamics_agent_application_name: CP-DEV
-  appdynamics_java_agent_reuse_node_name: True
+  appdynamics_agent_application_name: pp-${DESCRIPTOR_CLOUD}-${DESCRIPTOR_LIFECYCLE}
   init_repo: 810598127841.dkr.ecr.us-east-2.amazonaws.com/appdynamics
   init_tag: sdp-javaagent-4.5.9
   appd_mount_dir: /AppServerAgent
