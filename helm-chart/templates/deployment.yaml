@@ -58,11 +58,6 @@ spec:
             - name: APPDYNAMICS_CONTROLLER_HOST_NAME
               value: {{ .Values.appDynamics.appdynamics_controller_host_name }}
           {{- end}}
-          envFrom:
-          {{- if .Values.appDynamics.enabled}}
-          - configMapRef:
-              name: appd-cx
-          {{- end}}
             - name: cxpp_elasticsearch_username
               valueFrom:
                 secretKeyRef:
@@ -93,6 +88,11 @@ spec:
                 secretKeyRef:
                   name: cxcp-common-high
                   key: cxcp_basicauth_password
+          envFrom:
+          {{- if .Values.appDynamics.enabled}}
+          - configMapRef:
+              name: appd-cx
+          {{- end}}        
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           # command: ["/bin/bash"]
