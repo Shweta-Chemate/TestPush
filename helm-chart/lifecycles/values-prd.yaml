@@ -5,5 +5,4 @@ files:
 
 appDynamics:
   enabled: true
-  appdynamics_agent_application_name: CP-PRD
-
+  appdynamics_controller_host_name: cisco-cx.saas.appdynamics.com

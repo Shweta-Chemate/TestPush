@@ -1,4 +1,2 @@
 appDynamics:
   enabled: true
-  appdynamics_agent_application_name: CP-LT
-
