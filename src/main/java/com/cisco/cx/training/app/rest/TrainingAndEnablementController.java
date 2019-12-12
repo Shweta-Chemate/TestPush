@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,6 +44,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 @RestController
+@Validated
 @RequestMapping("/v1/partner/training")
 @Api(value = "Trainining and Enablement APIs", description = "REST APIs for Training And Enablement")
 public class TrainingAndEnablementController {
@@ -133,8 +139,8 @@ public class TrainingAndEnablementController {
             @ApiResponse(code = 500, message = "Internal server error occured", response = ErrorResponse.class)})
     public SuccesstalkUserRegEsSchema cancelUserAtxRegistration(
             @ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
-            @ApiParam(value = "Event Name of selected session", required = true) @RequestParam(value = "title", required = true) String title,
-            @ApiParam(value = "Event Date of selected session", required = true) @RequestParam(value = "eventStartDate") Long eventStartDate) throws Exception {
+            @ApiParam(value = "Event Name of selected session", required = true) @RequestParam(value = "title", required = true) @NotBlank @Size(max =1000) String title,
+            @ApiParam(value = "Event Date of selected session", required = true) @RequestParam(value = "eventStartDate") @NotNull Long eventStartDate) throws Exception {
 
         if (StringUtils.isBlank(xMasheryHandshake)) {
             throw new BadRequestException("X-Mashery-Handshake header missing in request");
@@ -150,8 +156,8 @@ public class TrainingAndEnablementController {
             @ApiResponse(code = 403, message = "Operation forbidden due to business policies", response = ErrorResponse.class),
             @ApiResponse(code = 500, message = "Error during registration", response = ErrorResponse.class)})
     public SuccesstalkUserRegEsSchema registerToAtx(@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
-            @ApiParam(value = "Event Name of selected session", required = true) @RequestParam(value = "title") String title,
-            @ApiParam(value = "Event Date of selected session", required = true) @RequestParam(value = "eventStartDate") Long eventStartDate) throws Exception {
+    		@ApiParam(value = "Event Name of selected session", required = true) @RequestParam(value = "title") @NotBlank @Size(max =1000) String title,
+            @ApiParam(value = "Event Date of selected session", required = true) @RequestParam(value = "eventStartDate") @NotNull Long eventStartDate) throws Exception {
 
         if (StringUtils.isBlank(xMasheryHandshake)) {
             throw new BadRequestException("X-Mashery-Handshake header missing in request");

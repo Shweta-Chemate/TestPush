@@ -123,7 +123,7 @@ public class TrainingAndEnablementControllerTest {
 	@Test
 	public void registerToATX() throws Exception {
 		this.mockMvc.perform(post("/v1/partner/training/successTalk/registration")
-				.contentType(MediaType.APPLICATION_JSON_VALUE).param("title", "").param("eventStartDate", "")
+				.contentType(MediaType.APPLICATION_JSON_VALUE).param("title", "test").param("eventStartDate", "1234")
 				.param("email", "").header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
 				.andDo(print()).andExpect(status().isOk());
 	}
@@ -131,7 +131,7 @@ public class TrainingAndEnablementControllerTest {
 	@Test
 	public void cancelUserAtxRegistration() throws Exception {
 		this.mockMvc.perform(delete("/v1/partner/training/successTalk/registration")
-				.contentType(MediaType.APPLICATION_JSON_VALUE).param("title", "").param("eventStartDate", "")
+				.contentType(MediaType.APPLICATION_JSON_VALUE).param("title", "test").param("eventStartDate", "1234")
 				.param("email", "").header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
 				.andDo(print()).andExpect(status().isOk());
 	}
