@@ -127,6 +127,14 @@ public class TrainingAndEnablementControllerTest {
 				.param("email", "").header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
 				.andDo(print()).andExpect(status().isOk());
 	}
+	
+	@Test
+	public void registerToATXError() throws Exception {
+		this.mockMvc.perform(post("/v1/partner/training/successTalk/registration")
+				.contentType(MediaType.APPLICATION_JSON_VALUE).param("title", "").param("eventStartDate", "1234")
+				.param("email", "").header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
+				.andDo(print()).andExpect(status().isBadRequest());
+	}
 
 	@Test
 	public void cancelUserAtxRegistration() throws Exception {
@@ -134,6 +142,14 @@ public class TrainingAndEnablementControllerTest {
 				.contentType(MediaType.APPLICATION_JSON_VALUE).param("title", "test").param("eventStartDate", "1234")
 				.param("email", "").header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
 				.andDo(print()).andExpect(status().isOk());
+	}
+	
+	@Test
+	public void cancelUserAtxRegistrationError() throws Exception {
+		this.mockMvc.perform(delete("/v1/partner/training/successTalk/registration")
+				.contentType(MediaType.APPLICATION_JSON_VALUE).param("title", "").param("eventStartDate", "1234")
+				.param("email", "").header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
+				.andDo(print()).andExpect(status().isBadRequest());
 	}
 	
 	@Test
