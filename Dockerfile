@@ -1,4 +1,4 @@
-FROM openjdk:8-jre-alpine
+FROM containers.cisco.com/cx-platforms/base-hardened-jre:stable
 
 RUN mkdir -p /app
 WORKDIR /app
