@@ -125,7 +125,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
 		// form a schema object for the input (set transaction type to Pending)
 		SuccesstalkUserRegEsSchema registration = new SuccesstalkUserRegEsSchema(title, eventStartDate,
-				userDetails.getEmail(), SuccesstalkUserRegEsSchema.RegistrationStatusEnum.PENDING);
+				userDetails.getEmail(), SuccesstalkUserRegEsSchema.RegistrationStatusEnum.REGISTERED);
 		try {
 			// validate the registration details
 			registration = this.fetchSuccessTalkRegistrationDetails(registration, userDetails);
