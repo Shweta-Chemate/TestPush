@@ -6,13 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 
-import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.dao.ElasticSearchDAO;
 import com.cisco.cx.training.app.dao.SuccessAcademyDAO;
 import com.cisco.cx.training.app.exception.GenericException;
@@ -31,14 +31,12 @@ public class SuccessAcademyDAOImpl implements SuccessAcademyDAO {
 
 	@Autowired
 	private ElasticSearchDAO elasticSearchDAO;
+	
+	@Autowired
+    private PropertyConfiguration config;
 
 	private ObjectMapper objectMapper = new ObjectMapper();
-	SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-	BoolQueryBuilder boolQuery = new BoolQueryBuilder();
-
-	private final String INDEX = "cxpp_success_academy_alias";
-
-	private final String FILTER_INDEX = "cxpp_success_academy_filters_alias";
+	SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();	
 
 	@Override
 	public List<SuccessAcademyModel> getSuccessAcademy() {
@@ -51,7 +49,7 @@ public class SuccessAcademyDAOImpl implements SuccessAcademyDAO {
 
 		try {
 
-			ElasticSearchResults<SuccessAcademyLearning> results = elasticSearchDAO.query(INDEX, sourceBuilder,
+			ElasticSearchResults<SuccessAcademyLearning> results = elasticSearchDAO.query(config.getSuccessAcademyIndex(), sourceBuilder,
 					SuccessAcademyLearning.class);		
 
 			SuccessAcademyFilter successAcademyFilter = getSuccessAcademyFilter();
@@ -100,7 +98,10 @@ public class SuccessAcademyDAOImpl implements SuccessAcademyDAO {
 		} catch (IOException ioe) {
 			LOG.error(ERROR_MESSAGE, ioe);
 			throw new GenericException(ERROR_MESSAGE);
-		}
+		} catch (Exception e) {
+            LOG.error(ERROR_MESSAGE, e);
+            throw new GenericException(ERROR_MESSAGE);
+        }
 
 		return learningModelES;
 	}
@@ -111,17 +112,19 @@ public class SuccessAcademyDAOImpl implements SuccessAcademyDAO {
 		sourceBuilder.size(10000);
 	
 		try {
-			ElasticSearchResults<SuccessAcademyFilter> results = elasticSearchDAO.query(FILTER_INDEX, sourceBuilder, SuccessAcademyFilter.class);
-			if (results != null) {
+			ElasticSearchResults<SuccessAcademyFilter> results = elasticSearchDAO.query(config.getSuccessAcademyFilterIndex(), sourceBuilder, SuccessAcademyFilter.class);
+			if (results != null && !results.getDocuments().isEmpty()){
 				String filterjson = objectMapper.writeValueAsString(results.getDocuments().get(0));
-				successAcademyFilter = objectMapper.readValue(filterjson, SuccessAcademyFilter.class);
-				LOG.info("Filter JSON filter:: {}", successAcademyFilter.getFilters());
+				successAcademyFilter = objectMapper.readValue(filterjson, SuccessAcademyFilter.class);				
 			}
 
 		} catch (IOException e) {
 			LOG.error(ERROR_MESSAGE, e);
 			throw new GenericException(ERROR_MESSAGE);
-		}
+		} catch (Exception e) {
+            LOG.error(ERROR_MESSAGE, e);
+            throw new GenericException(ERROR_MESSAGE);
+        }
 		return successAcademyFilter;
 
 	}

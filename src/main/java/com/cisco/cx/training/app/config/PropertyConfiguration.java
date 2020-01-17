@@ -37,6 +37,9 @@ public class PropertyConfiguration {
 	
 	@Value("${successAcademy.elasticsearch.index}")
 	private String successAcademyIndex;
+	
+	@Value("${successAcademy.elasticsearch.filter.index}")
+	private String successAcademyFilterIndex;
 
 	@Value("${smartsheet.successTalk.registration.sheetId}")
 	private long successTalkRegistrationSheetId;
@@ -108,6 +111,10 @@ public class PropertyConfiguration {
 
 	public String getSuccessAcademyIndex() {
 		return successAcademyIndex;
+	}
+	
+	public String getSuccessAcademyFilterIndex() {
+		return successAcademyFilterIndex;
 	}
 	
 	public long getSuccessTalkRegistrationSheetId() {
