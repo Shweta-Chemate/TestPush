@@ -36,10 +36,6 @@ public class SuccessAcademyDAOTest {
 
 	@InjectMocks
 	private SuccessAcademyDAO learningDAO = new SuccessAcademyDAOImpl();
-
-	private final String INDEX = "cxpp_success_academy_alias";
-	
-	private String FILTER_INDEX = "cxpp_success_academy_filters_alias";
 	
 	@Test
 	public void getLearnings() throws IOException {
@@ -50,8 +46,8 @@ public class SuccessAcademyDAOTest {
 		results.addDocument(successAcademy());
 		ElasticSearchResults<SuccessAcademyFilter> filterResults = new ElasticSearchResults<SuccessAcademyFilter>();
 		filterResults.addDocument(successAcademyFilter());
-		when(elasticSearchDAO.query(FILTER_INDEX, sourceBuilder, SuccessAcademyFilter.class)).thenReturn(filterResults);	
-		when(elasticSearchDAO.query(INDEX, sourceBuilder, SuccessAcademyLearning.class)).thenReturn(results);	
+		when(elasticSearchDAO.query(config.getSuccessAcademyFilterIndex(), sourceBuilder, SuccessAcademyFilter.class)).thenReturn(filterResults);	
+		when(elasticSearchDAO.query(config.getSuccessAcademyIndex(), sourceBuilder, SuccessAcademyLearning.class)).thenReturn(results);	
 		learningDAO.getSuccessAcademy();
 	}
 
@@ -59,7 +55,7 @@ public class SuccessAcademyDAOTest {
 	public void getLearningsESFailure() throws IOException {
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();		
 		sourceBuilder.size(10000);
-		when(elasticSearchDAO.query(INDEX, sourceBuilder, SuccessAcademyLearning.class)).thenThrow(IOException.class);
+		when(elasticSearchDAO.query(config.getSuccessAcademyIndex(), sourceBuilder, SuccessAcademyLearning.class)).thenThrow(IOException.class);
 		learningDAO.getSuccessAcademy();
 	}
 	
@@ -77,7 +73,7 @@ public class SuccessAcademyDAOTest {
 		academyFilter.setFilters(filters);
 		results.addDocument(academyFilter);
 		
-		when(elasticSearchDAO.query(FILTER_INDEX, sourceBuilder, SuccessAcademyFilter.class)).thenReturn(results);
+		when(elasticSearchDAO.query(config.getSuccessAcademyFilterIndex(), sourceBuilder, SuccessAcademyFilter.class)).thenReturn(results);
 		learningDAO.getSuccessAcademyFilter();
 	}
 	
@@ -95,7 +91,7 @@ public class SuccessAcademyDAOTest {
 		academyFilter.setFilters(filters);
 		results.addDocument(academyFilter);
 		
-		when(elasticSearchDAO.query(FILTER_INDEX, sourceBuilder, SuccessAcademyFilter.class)).thenThrow(IOException.class);
+		when(elasticSearchDAO.query(config.getSuccessAcademyFilterIndex(), sourceBuilder, SuccessAcademyFilter.class)).thenThrow(IOException.class);
 		learningDAO.getSuccessAcademyFilter();
 	}
 
