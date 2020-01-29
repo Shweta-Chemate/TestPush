@@ -124,29 +124,11 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	public SuccesstalkUserRegEsSchema registerUserToSuccessTalkRegistration(String title, Long eventStartDate, String xMasheryHandshake) throws Exception {
 		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
 		// form a schema object for the input (set transaction type to Pending)
-		SuccesstalkUserRegEsSchema registration = new SuccesstalkUserRegEsSchema(title, eventStartDate,
-				userDetails.getEmail(), SuccesstalkUserRegEsSchema.RegistrationStatusEnum.REGISTERED);
-		try {
-			// validate the registration details
-			registration = this.fetchSuccessTalkRegistrationDetails(registration, userDetails);
+		SuccesstalkUserRegEsSchema registration = new SuccesstalkUserRegEsSchema(title, eventStartDate, userDetails.getEmail(), SuccesstalkUserRegEsSchema.RegistrationStatusEnum.REGISTERED);
 
-			if (smartsheetDAO.checkRegistrationExists(registration)) {
-				// No Operation as Success Talk is registered already
-				LOG.info("No Operation as Success Talk is registered already");
-			} else {
-				// save a new row in the smartsheet for this registration
-				//commenting out for now till workflow is finalized
-				//smartsheetDAO.saveSuccessTalkRegistration(registration);
-				LOG.info("Success Talk is not registered");
-			}
-			return successTalkDAO.saveSuccessTalkRegistration(registration);
-		} catch (SmartsheetException se) {
-			// log error if smartsheet throws exception and mark it Register_Failed for the ES index
-			LOG.error("Error while saving SuccessTalk Registration in Smartsheet", se);
-			registration.setRegistrationStatus(SuccesstalkUserRegEsSchema.RegistrationStatusEnum.REGISTERFAILED);
-			successTalkDAO.saveSuccessTalkRegistration(registration);
-			throw new GenericException("Error while saving SuccessTalk Registration: " + se.getMessage(), se);
-		}
+		// validate the registration details
+		registration = this.fetchSuccessTalkRegistrationDetails(registration, userDetails);
+		return successTalkDAO.saveSuccessTalkRegistration(registration);
 	}
 
 	@Override
