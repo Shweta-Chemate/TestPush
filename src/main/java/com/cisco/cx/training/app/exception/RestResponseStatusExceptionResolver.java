@@ -47,7 +47,7 @@ public class RestResponseStatusExceptionResolver extends AbstractHandlerExceptio
         }
 
         response.setStatus(errorStatus);
-        ErrorResponse errorBody = new ErrorResponse(errorStatus, errorMsg, errorCode, ex.getMessage());
+        ErrorResponse errorBody = new ErrorResponse(errorStatus, ex.getMessage(), errorCode, errorMsg);
 
         LOG.error("Unexpected Error", ex);
 
