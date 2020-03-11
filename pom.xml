@@ -1,141 +1,109 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.cisco.services</groupId>
-	<artifactId>cxpp-training-enablement</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
-	<name>cxpp-training-enablement</name>
-	<description>helm automate Spring Boot</description>
+    <groupId>com.cisco.services</groupId>
+    <artifactId>cxpp-training-enablement</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <name>cxpp-training-enablement</name>
+    <description>cxpp training and enablement application</description>
 
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.2.1.RELEASE</version>
-	</parent>
+    <!-- + ===================================================
+         + Most maven constructs are managed by cxe-parent-pom
+         + ===================================================
+         + -->
+    <parent>
+        <groupId>com.cisco.services</groupId>
+        <artifactId>cxe-parent-pom</artifactId>
+        <version>1-CXE-SNAPSHOT</version>
+    </parent>
 
-	<properties>
-		<java.version>1.8</java.version>
-		<docker.hub>containers.cisco.com</docker.hub>
-		<docker.organization>cx-platforms</docker.organization>
-		<docker.image.version>${project.version}</docker.image.version>
-		<docker.image.name>${docker.organization}/bcs:${docker.image.version}</docker.image.name>
-	</properties>
 
-	<dependencies>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-starter-logging</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<!-- tag::security[] -->
-
-		<!-- end::security[] -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-mail</artifactId>
-
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-starter-logging</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-log4j2</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger2</artifactId>
-			<version>2.9.2</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava</artifactId>
-                </exclusion>
-            </exclusions>
-		</dependency>
-		
+    <!-- + ==========================================================
+         + Some properties and versions are managed by cxe-parent-pom
+         + ==========================================================
+         + -->
+    <properties>
+       
+    </properties>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
+        </dependency>
+      <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+      </dependency>      
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>28.1-jre</version>
         </dependency>
-
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger-ui</artifactId>
-			<version>2.9.2</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.elasticsearch.client</groupId>
-			<artifactId>elasticsearch-rest-high-level-client</artifactId>
-			<version>7.2.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.elasticsearch</groupId>
-			<artifactId>elasticsearch</artifactId>
-			<version>7.2.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.ehcache</groupId>
-			<artifactId>ehcache</artifactId>
-			<version>3.8.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.kafka</groupId>
-			<artifactId>kafka-clients</artifactId>
-		</dependency>
 
         <dependency>
-            <groupId>com.smartsheet</groupId>
-            <artifactId>smartsheet-sdk-java</artifactId>
-            <version>2.83.0</version>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
         </dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+	</dependency>
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>elasticsearch-rest-high-level-client</artifactId>
+            <version>7.2.0</version>
+        </dependency>
 
+        <dependency>
+            <groupId>org.elasticsearch</groupId>
+            <artifactId>elasticsearch</artifactId>
+            <version>7.2.0</version>
+        </dependency>
+	<dependency>
+	     <groupId>org.ehcache</groupId>
+	     <artifactId>ehcache</artifactId>
+	</dependency>
+	<dependency>
+             <groupId>com.smartsheet</groupId>
+             <artifactId>smartsheet-sdk-java</artifactId>
+             <version>2.83.0</version>
+        </dependency>
+    </dependencies>
 
-	</dependencies>
-
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.2</version>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
 				<executions>
 					<execution>
 						<goals>
@@ -168,47 +136,51 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>
-		</plugins>
-	</build>
+            </plugin>
 
-	<repositories>
-		<repository>
-			<id>service-cf-group</id>
-			<name>Service Capability Framework Group</name>
-			<url>http://engci-maven.cisco.com/artifactory/services-cf-group</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
+        </plugins>
+    </build>
 
-	<pluginRepositories>
-		<pluginRepository>
-			<id>service-cf-group</id>
-			<name>Service Capability Framework Group</name>
-			<url>http://engci-maven.cisco.com/artifactory/services-cf-group</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</pluginRepository>
-		<pluginRepository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</pluginRepository>
-	</pluginRepositories>
 
-	<distributionManagement>
-		<repository>
-			<id>cstg-ee-release</id>
-			<name>CF DevOps Release Repository</name>
-			<url>http://engci-maven.cisco.com/artifactory/cstg-ee-release</url>
-		</repository>
-		<snapshotRepository>
-			<id>cstg-ee-snapshot</id>
-			<name>CF DevOps Snapshot Repository</name>
-			<url>http://engci-maven.cisco.com/artifactory/cstg-ee-snapshot</url>
-		</snapshotRepository>
-	</distributionManagement>
+    <repositories>
+        <repository>
+            <id>services-cf-group</id>
+            <name>CXE Virtual Repository Group</name>
+            <url>http://engci-maven.cisco.com/artifactory/services-cf-group/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>services-cf-group</id>
+            <name>CXE Virtual Repository Group</name>
+            <url>http://engci-maven.cisco.com/artifactory/services-cf-group/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <distributionManagement>
+        <repository>
+            <id>cstg-ee-release</id>
+            <name>CF DevOps Release Repository</name>
+            <url>http://engci-maven.cisco.com/artifactory/cstg-ee-release/</url>
+        </repository>
+        <snapshotRepository>
+            <id>cstg-ee-snapshot</id>
+            <name>CF DevOps Snapshot Repository</name>
+            <url>http://engci-maven.cisco.com/artifactory/cstg-ee-snapshot/</url>
+        </snapshotRepository>
+    </distributionManagement>
 
 </project>
