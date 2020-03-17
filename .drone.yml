@@ -64,24 +64,6 @@ pipeline:
         - push
         - pull_request
 
-  "[ANALYSIS] Corona":
-    #detach: true
-    image: containers.cisco.com/servicescf-devops/drone-corona
-    pull: true
-    docker_image: containers.cisco.com/cx-platforms/cxpp-training-enablement:${CI_COMMIT_SHA}
-    docker_registry: containers.cisco.com/
-    corona_product_id: 4142
-    corona_release_version: 0.1.1
-    secrets: [ corona_login, corona_password, docker_username, docker_password] #[Mandatory]
-    corona_nfs_upload: false #[Optional]: true, if file size is huge > 500MB
-    corona_scan_timeout: 50
-    when:
-      event:
-        - tag
-    branch:
-      include:
-        - v*__deploy__*istg*
-
 
   ## ==========================================================================
   ## Event is a tag with deploy tag format, then deploy to given environment.
@@ -122,6 +104,24 @@ pipeline:
         include:
           - master
           - v*__deploy__*
+          
+  "[ANALYSIS] Corona":
+    #detach: true
+    image: containers.cisco.com/servicescf-devops/drone-corona
+    pull: true
+    docker_image: containers.cisco.com/cx-platforms/cxpp-training-enablement:${CI_COMMIT_SHA}
+    docker_registry: containers.cisco.com/
+    corona_product_id: 4142
+    corona_release_version: 0.1.1
+    secrets: [ corona_login, corona_password, docker_username, docker_password] #[Mandatory]
+    corona_nfs_upload: false #[Optional]: true, if file size is huge > 500MB
+    corona_scan_timeout: 50
+    when:
+      event:
+        - tag
+    branch:
+      include:
+        - v*__deploy__*istg*
 
   "[NOTIFY] webex teams":
     image: containers.cisco.com/servicescf-devops/drone-spark
