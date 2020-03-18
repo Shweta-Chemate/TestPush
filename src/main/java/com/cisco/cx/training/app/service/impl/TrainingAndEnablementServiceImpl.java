@@ -57,6 +57,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	private SuccessAcademyDAO successAcademyDAO;
 	
 
+	@SuppressWarnings("unused")
 	@Autowired
 	private SmartsheetDAO smartsheetDAO;
 
