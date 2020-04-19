@@ -28,7 +28,7 @@ import com.cisco.cx.training.models.SuccessAcademyLearningTopics;
 
 @RunWith(SpringRunner.class)
 public class SuccessAcademyDAOTest {
-	@Mock
+	/*@Mock
 	private ElasticSearchDAO elasticSearchDAO;
 
 	@Mock
@@ -134,6 +134,6 @@ public class SuccessAcademyDAOTest {
 		return academyFilter;
 		
 	}
-
+*/
 
 }

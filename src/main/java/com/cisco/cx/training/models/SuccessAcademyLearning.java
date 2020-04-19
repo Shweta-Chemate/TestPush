@@ -6,60 +6,82 @@ import java.util.List;
 import com.cisco.cx.training.util.HasId;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class SuccessAcademyLearning implements HasId{
+public class SuccessAcademyLearning{
 	
 
-	@JsonProperty("name")
-    private String name;
+	@JsonProperty("title")
+    private String title;
 	
-	@JsonProperty("parentFilter")
-    private String parentFilter;
+	@JsonProperty("assetModel")
+	private String assetModel;
 	
-	@JsonProperty("trainingColour")
-    private String trainingColour;
+	@JsonProperty("assetFacet")
+	private String assetFacet;
 	
-	@JsonProperty("url")
-    private String url;
+	@JsonProperty("assetGroup")
+	private String assetGroup;
+	
+	@JsonProperty("supportedFormats")
+	private String supportedFormats;
+	
+	@JsonProperty("postDate")
+	private String postDate;
 	
 	@JsonProperty("description")
-    private String description;
+	private String description;
 	
-	@JsonProperty("docId")
-    private String docId;	
+	@JsonProperty("link")
+	private String link;
 	
-	@JsonProperty("learning")
-    private List<SuccessAcademyLearningTopics> learning = new ArrayList<>();
+	@JsonProperty("isBookMarked")
+	private Boolean isBookMarked = false;
 
-	public String getName() {
-		return name;
+	public String getTitle() {
+		return title;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
-	public String getParentFilter() {
-		return parentFilter;
+	public String getAssetModel() {
+		return assetModel;
 	}
 
-	public void setParentFilter(String parentFilter) {
-		this.parentFilter = parentFilter;
+	public void setAssetModel(String assetModel) {
+		this.assetModel = assetModel;
 	}
 
-	public String getTrainingColour() {
-		return trainingColour;
+	public String getAssetFacet() {
+		return assetFacet;
 	}
 
-	public void setTrainingColour(String trainingColour) {
-		this.trainingColour = trainingColour;
+	public void setAssetFacet(String assetFacet) {
+		this.assetFacet = assetFacet;
 	}
 
-	public String getUrl() {
-		return url;
+	public String getAssetGroup() {
+		return assetGroup;
 	}
 
-	public void setUrl(String url) {
-		this.url = url;
+	public void setAssetGroup(String assetGroup) {
+		this.assetGroup = assetGroup;
+	}
+
+	public String getSupportedFormats() {
+		return supportedFormats;
+	}
+
+	public void setSupportedFormats(String supportedFormats) {
+		this.supportedFormats = supportedFormats;
+	}
+
+	public String getPostDate() {
+		return postDate;
+	}
+
+	public void setPostDate(String postDate) {
+		this.postDate = postDate;
 	}
 
 	public String getDescription() {
@@ -70,25 +92,25 @@ public class SuccessAcademyLearning implements HasId{
 		this.description = description;
 	}
 
-	public List<SuccessAcademyLearningTopics> getLearning() {
-		return learning;
+	public String getLink() {
+		return link;
 	}
 
-	public void setLearning(List<SuccessAcademyLearningTopics> learning) {
-		this.learning = learning;
+	public void setLink(String link) {
+		this.link = link;
 	}
 
-	@Override
-	public String getDocId() {
-		
-		return docId;
+	public Boolean getIsBookMarked() {
+		return isBookMarked;
 	}
 
-	@Override
-	public void setDocId(String id) {
-		this.docId = id;
-		
+	public void setIsBookMarked(Boolean isBookMarked) {
+		this.isBookMarked = isBookMarked;
 	}
-
+	
+	
+	
+	
+	
 	
 }
