@@ -57,6 +57,7 @@ pipeline:
     when:
       branch:
         - master
+        - "feature/*"
         - refs/heads/master
         - v*__deploy__*
         - refs/tags/v*__deploy__*
