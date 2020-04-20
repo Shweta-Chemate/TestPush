@@ -342,7 +342,13 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		subFilters = new ArrayList<String>();
 		subFilters.add("Enterprise Networking");
 		subFilters.add("LAN");
-		subFilters.add("Mobility");		
+		subFilters.add("Mobility");	
+		subFilters.add("WAN");
+		subFilters.add("Security");
+		subFilters.add("Data Center");	
+		subFilters.add("Collaboration");
+		subFilters.add("IOT Overview");
+		subFilters.add("Cloud");	
 		filter.setFilters(subFilters);
 		filter.setTabLocationOnUI("4");
 		filters.add(filter);	
