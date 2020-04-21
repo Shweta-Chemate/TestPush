@@ -8,6 +8,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SuccessAcademyLearning{
 	
+	@JsonProperty("rowId")
+    private String rowId;
 
 	@JsonProperty("title")
     private String title;
@@ -106,6 +108,14 @@ public class SuccessAcademyLearning{
 
 	public void setIsBookMarked(Boolean isBookMarked) {
 		this.isBookMarked = isBookMarked;
+	}
+
+	public String getRowId() {
+		return rowId;
+	}
+
+	public void setRowId(String rowId) {
+		this.rowId = rowId;
 	}
 	
 	

@@ -1,12 +1,9 @@
 package com.cisco.cx.training.app.dao;
 
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.cisco.cx.training.models.SuccessAcademyFilter;
-import com.cisco.cx.training.models.SuccessAcademyModel;
+import com.cisco.cx.training.app.entities.SuccessAcademyLearningEntity;
 
-public interface SuccessAcademyDAO {
-	/*List<SuccessAcademyModel> getSuccessAcademy();
-
-	SuccessAcademyFilter getSuccessAcademyFilter();*/
+public interface SuccessAcademyDAO extends JpaRepository<SuccessAcademyLearningEntity, String>{
+		
 }

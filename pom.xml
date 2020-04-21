@@ -89,10 +89,24 @@
 	     <artifactId>ehcache</artifactId>
 	</dependency>
 	<dependency>
-             <groupId>com.smartsheet</groupId>
-             <artifactId>smartsheet-sdk-java</artifactId>
-             <version>2.83.0</version>
+         <groupId>com.smartsheet</groupId>
+         <artifactId>smartsheet-sdk-java</artifactId>
+         <version>2.83.0</version>
+    </dependency>
+    <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
         </dependency>
+        <dependency>
+		    <groupId>com.h2database</groupId>
+		    <artifactId>h2</artifactId>
+		    <scope>test</scope>
+		</dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>   
+        
     </dependencies>
 
     <build>

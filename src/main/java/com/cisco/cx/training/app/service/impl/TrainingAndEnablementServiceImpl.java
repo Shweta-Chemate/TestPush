@@ -24,6 +24,7 @@ import com.cisco.cx.training.app.dao.ElasticSearchDAO;
 import com.cisco.cx.training.app.dao.SmartsheetDAO;
 import com.cisco.cx.training.app.dao.SuccessAcademyDAO;
 import com.cisco.cx.training.app.dao.SuccessTalkDAO;
+import com.cisco.cx.training.app.entities.SuccessAcademyLearningEntity;
 import com.cisco.cx.training.app.exception.GenericException;
 import com.cisco.cx.training.app.exception.NotAllowedException;
 import com.cisco.cx.training.app.exception.NotFoundException;
@@ -43,6 +44,7 @@ import com.cisco.cx.training.models.SuccessTalkResponseSchema;
 import com.cisco.cx.training.models.SuccessTalkSession;
 import com.cisco.cx.training.models.SuccesstalkUserRegEsSchema;
 import com.cisco.cx.training.models.UserDetails;
+import com.cisco.cx.training.util.SuccessAcademyMapper;
 
 @Service
 public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementService {
@@ -74,72 +76,14 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	private PartnerProfileService partnerProfileService;
 
 	@Override
-	public List<SuccessAcademyLearning> getAllSuccessAcademyLearnings() {
+	public List<SuccessAcademyLearning> getAllSuccessAcademyLearnings() {		
+		List<SuccessAcademyLearningEntity> entities = successAcademyDAO.findAll();
 		List<SuccessAcademyLearning> learnings = new ArrayList<>();
-		SuccessAcademyLearning learning = new SuccessAcademyLearning();
-		learning.setAssetFacet("Renewals Manager");
-		learning.setAssetGroup("Test 1");
-		learning.setAssetModel("Role");
-		learning.setDescription("This is test description");
-		learning.setIsBookMarked(false);
-		learning.setLink("https://salesconnect.cisco.com/open.html?l=SC_LMS_592");
-		learning.setPostDate("14/11/19");
-		learning.setSupportedFormats("PPT/PDF");
-		learning.setTitle("Understanding Account Team & Working Models");
-		learnings.add(learning);
-		
-		learning = new SuccessAcademyLearning();
-		learning.setAssetFacet("Customer Success Manager");
-		learning.setAssetGroup("Foundational Training");
-		learning.setAssetModel("Role");
-		learning.setDescription("This is test description");
-		learning.setIsBookMarked(true);
-		learning.setLink("https://salesconnect.cisco.com/open.html?l=SC_LMS_592");
-		learning.setPostDate("14/11/19");
-		learning.setSupportedFormats("COLT,PPT/PDF,VOD");
-		learning.setTitle("1. Customer Experience and the Customer Lifecycle");
-		learnings.add(learning);
-		
-		
-		learning = new SuccessAcademyLearning();
-		learning.setAssetFacet("Customer Success Manager");
-		learning.setAssetGroup("Advanced Training");
-		learning.setAssetModel("Role");
-		learning.setDescription("This is test description");
-		learning.setIsBookMarked(false);
-		learning.setLink("https://salesconnect.cisco.com/open.html?l=SC_LMS_592");
-		learning.setPostDate("14/11/19");
-		learning.setSupportedFormats("Email");
-		learning.setTitle("1. Customer's Financial Picture and Cisco's Value Proposition");
-		learnings.add(learning);
-		
-		
-		learning = new SuccessAcademyLearning();
-		learning.setAssetFacet("Enterprise Networking");
-		learning.setAssetGroup("Test 1");
-		learning.setAssetModel("Technology");
-		learning.setDescription("This is test description");
-		learning.setIsBookMarked(true);
-		learning.setLink("https://salesconnect.cisco.com/open.html?c=56398fcb-19f5-426a-9f58-9fc7acda5ed0");
-		learning.setPostDate("01/05/19");
-		learning.setSupportedFormats("VOD");
-		learning.setTitle("Protocols and Standards");
-		learnings.add(learning);
-		
-		
-		learning = new SuccessAcademyLearning();
-		learning.setAssetFacet("Operate");
-		learning.setAssetGroup("Renewals, Roles & Blueprints");
-		learning.setAssetModel("Model");
-		learning.setDescription("This is test description");
-		learning.setIsBookMarked(false);
-		learning.setLink("https://salesconnect.cisco.com/open.html?l=SC_LMS_592");
-		learning.setPostDate("14/11/19");
-		learning.setSupportedFormats("PPT/PDF");
-		learning.setTitle("Lifecycle Partner Model - Renewal and Roles Blueprint");
-		learnings.add(learning);
-		
-		return learnings;
+		for(SuccessAcademyLearningEntity entity : entities){
+			SuccessAcademyLearning learning = SuccessAcademyMapper.getLearningsFromEntity(entity);
+			learnings.add(learning);
+		}
+		return learnings;		
 	}
 
 	@Override
