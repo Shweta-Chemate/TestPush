@@ -31,4 +31,6 @@ public interface TrainingAndEnablementService {
 	CountSchema getSuccessTalkCount();
 	
 	List<SuccessAcademyFilter> getSuccessAcademyFilters();
+	
+	List<SuccessAcademyLearning> getAllSuccessAcademyLearningsFromDB();
 }
