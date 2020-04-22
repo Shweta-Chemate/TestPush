@@ -78,6 +78,16 @@ spec:
                 secretKeyRef:
                   name: cxpp-common
                   key: cxpp_te_successtalk_registration_token
+            - name: cxpp_mysql_username
+              valueFrom:
+                secretKeyRef:
+                  name: cxpp-common
+                  key: cxpp_mysql_username
+            - name: cxpp_mysql_password
+              valueFrom:
+                secretKeyRef:
+                  name: cxpp-common
+                  key: cxpp_mysql_password
             - name: cxp_basicauth_username
               valueFrom:
                 secretKeyRef:
