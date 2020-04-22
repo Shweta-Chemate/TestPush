@@ -76,8 +76,6 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	private PartnerProfileService partnerProfileService;
 
 	public List<SuccessAcademyLearning> getAllSuccessAcademyLearningsFromDB() {		
-		LOG.info("DB UserName", config.getDbUsername());
-		LOG.info("Db Pwd", config.getDbPwd());
 		List<SuccessAcademyLearningEntity> entities = successAcademyDAO.findAll();
 		List<SuccessAcademyLearning> learnings = new ArrayList<>();
 		for(SuccessAcademyLearningEntity entity : entities){

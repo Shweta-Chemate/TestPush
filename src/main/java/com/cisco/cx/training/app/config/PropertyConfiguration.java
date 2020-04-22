@@ -63,13 +63,7 @@ public class PropertyConfiguration {
 	private String communityHeading;
 	
 	@Value("${partner.community.link.partnerresources}")
-	private String communityLink;
-	
-	@Value("${spring.datasource.username}")
-	private String dbUsername;
-	
-	@Value("${spring.datasource.password}")
-	private String dbPwd;
+	private String communityLink;	
 
 	public String getCxpBasicAuthUserName() {
 		if (StringUtils.isBlank(cxpBasicAuthUserName)) {
@@ -151,19 +145,4 @@ public class PropertyConfiguration {
 		return new String(Base64.encodeBase64((this.getCxpBasicAuthUserName() + ":" + this.getCxpBasicAuthPassword()).getBytes()));
 	}
 
-	public String getDbUsername() {
-		return dbUsername;
-	}
-
-	public void setDbUsername(String dbUsername) {
-		this.dbUsername = dbUsername;
-	}
-
-	public String getDbPwd() {
-		return dbPwd;
-	}
-
-	public void setDbPwd(String dbPwd) {
-		this.dbPwd = dbPwd;
-	}
 }

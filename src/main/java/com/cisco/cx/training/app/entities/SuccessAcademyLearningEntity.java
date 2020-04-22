@@ -8,7 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="success_academy_learnings")
+@Table(name="cxpp_success_academy_learnings")
 public class SuccessAcademyLearningEntity implements Serializable{
 
 	private static final long serialVersionUID = -3852054556671714530L;
