@@ -237,18 +237,4 @@ public class TrainingAndEnablementController {
                                                  @ApiParam(value = "JSON Body to Bookmark", required = true) @RequestBody BookmarkRequestSchema bookmarkRequestSchema) {
 		return new ResponseEntity<>(HttpStatus.OK);
     }
-	
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/learningsFromDB")
-	@ApiOperation(value = "Fetch SuccessAcademy", response = String.class, nickname = "fetchsuccessacademy")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
-			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
-			@ApiResponse(code = 404, message = "Entity Not Found"),
-			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
-	public ResponseEntity<List<SuccessAcademyLearning>> getAllLearningsFromDB(
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake)
-			throws Exception {
-		List<SuccessAcademyLearning> sucessAcademyList = trainingAndEnablementService.getAllSuccessAcademyLearningsFromDB();
-		return new ResponseEntity<List<SuccessAcademyLearning>>(sucessAcademyList, HttpStatus.OK);
-	}
-
 }
