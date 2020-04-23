@@ -83,7 +83,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		learning.setDescription("This is test description");
 		learning.setIsBookMarked(false);
 		learning.setLink("https://salesconnect.cisco.com/open.html?l=SC_LMS_592");
-		learning.setPostDate("14/11/2019");
+		learning.setPostDate("14/11/19");
 		learning.setSupportedFormats("PPT/PDF");
 		learning.setTitle("Understanding Account Team & Working Models");
 		learnings.add(learning);
@@ -95,7 +95,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		learning.setDescription("This is test description");
 		learning.setIsBookMarked(true);
 		learning.setLink("https://salesconnect.cisco.com/open.html?l=SC_LMS_592");
-		learning.setPostDate("14/11/2019");
+		learning.setPostDate("14/11/19");
 		learning.setSupportedFormats("COLT,PPT/PDF,VOD");
 		learning.setTitle("1. Customer Experience and the Customer Lifecycle");
 		learnings.add(learning);
@@ -108,7 +108,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		learning.setDescription("This is test description");
 		learning.setIsBookMarked(false);
 		learning.setLink("https://salesconnect.cisco.com/open.html?l=SC_LMS_592");
-		learning.setPostDate("14/11/2019");
+		learning.setPostDate("14/11/19");
 		learning.setSupportedFormats("Email");
 		learning.setTitle("1. Customer's Financial Picture and Cisco's Value Proposition");
 		learnings.add(learning);
@@ -134,7 +134,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		learning.setDescription("This is test description");
 		learning.setIsBookMarked(false);
 		learning.setLink("https://salesconnect.cisco.com/open.html?l=SC_LMS_592");
-		learning.setPostDate("14/11/2019");
+		learning.setPostDate("14/11/19");
 		learning.setSupportedFormats("PPT/PDF");
 		learning.setTitle("Lifecycle Partner Model - Renewal and Roles Blueprint");
 		learnings.add(learning);
