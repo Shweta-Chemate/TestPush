@@ -58,10 +58,12 @@ pipeline:
       branch:
         - master
         - refs/heads/master
+        - "feature/newFeatures"
         - v*__deploy__*
         - refs/tags/v*__deploy__*
       event:
         - push
+        - tag
         - pull_request
 
 
@@ -103,7 +105,6 @@ pipeline:
       branch:
         include:
           - master
-          - "feature/*"
           - v*__deploy__*
           
   "[ANALYSIS] Corona":
