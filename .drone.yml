@@ -57,7 +57,6 @@ pipeline:
     when:
       branch:
         - master
-        - "feature/*"
         - refs/heads/master
         - v*__deploy__*
         - refs/tags/v*__deploy__*
@@ -104,6 +103,7 @@ pipeline:
       branch:
         include:
           - master
+          - "feature/*"
           - v*__deploy__*
           
   "[ANALYSIS] Corona":
