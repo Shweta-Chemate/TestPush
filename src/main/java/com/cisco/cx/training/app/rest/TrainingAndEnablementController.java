@@ -32,6 +32,8 @@ import com.cisco.cx.training.models.BookmarkRequestSchema;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.cisco.cx.training.models.Community;
 import com.cisco.cx.training.models.CountResponseSchema;
+import com.cisco.cx.training.models.SuccessAcademyFilter;
+import com.cisco.cx.training.models.SuccessAcademyLearning;
 import com.cisco.cx.training.models.SuccessAcademyModel;
 import com.cisco.cx.training.models.SuccessTalkResponseSchema;
 import com.cisco.cx.training.models.SuccesstalkUserRegEsSchema;
@@ -105,11 +107,11 @@ public class TrainingAndEnablementController {
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
-	public ResponseEntity<List<SuccessAcademyModel>> getAllLeanings(
+	public ResponseEntity<List<SuccessAcademyLearning>> getAllLearnings(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake)
 			throws Exception {
-		List<SuccessAcademyModel> sucessAcademyList = trainingAndEnablementService.getAllSuccessAcademy();
-		return new ResponseEntity<List<SuccessAcademyModel>>(sucessAcademyList, HttpStatus.OK);
+		List<SuccessAcademyLearning> sucessAcademyList = trainingAndEnablementService.getAllSuccessAcademyLearnings();
+		return new ResponseEntity<List<SuccessAcademyLearning>>(sucessAcademyList, HttpStatus.OK);
 	}
 
 	
@@ -210,5 +212,30 @@ public class TrainingAndEnablementController {
 		CountResponseSchema countResponseSchema = trainingAndEnablementService.getIndexCounts();
 		return new ResponseEntity<CountResponseSchema>(countResponseSchema, HttpStatus.OK);
 	}
+	
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/getLearningFilters")
+	@ApiOperation(value = "Fetch SuccessAcademy Filters", response = String.class, nickname = "fetchsuccessacademyfilters")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
+			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
+			@ApiResponse(code = 404, message = "Entity Not Found"),
+			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
+	public ResponseEntity<List<SuccessAcademyFilter>> getAllLearningFilters(
+			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake)
+			throws Exception {
+		List<SuccessAcademyFilter> sucessAcademyFilterList = trainingAndEnablementService.getSuccessAcademyFilters();
+		return new ResponseEntity<List<SuccessAcademyFilter>>(sucessAcademyFilterList, HttpStatus.OK);
+	}
+	
+	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, path = "/learning/bookmark")
+    @ApiOperation(value = "Create or remove bookmark for one of the learnings", response = BookmarkResponseSchema.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully updated", response = BookmarkResponseSchema.class),
+            @ApiResponse(code = 400, message = "Bad Request", response = ErrorResponse.class),
+            @ApiResponse(code = 403, message = "Operation forbidden due to business policies", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Internal server error occured", response = ErrorResponse.class)})
+    public ResponseEntity addOrRemoveLearningBookmarks(@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,    											 
+                                                 @ApiParam(value = "JSON Body to Bookmark", required = true) @RequestBody BookmarkRequestSchema bookmarkRequestSchema) {
+		return new ResponseEntity<>(HttpStatus.OK);
+    }
 
 }

@@ -25,7 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Repository
 public class SuccessAcademyDAOImpl implements SuccessAcademyDAO {
-	private static final Logger LOG = LoggerFactory.getLogger(SuccessAcademyDAOImpl.class);
+	/*private static final Logger LOG = LoggerFactory.getLogger(SuccessAcademyDAOImpl.class);
 
 	private static final String ERROR_MESSAGE = "Error while invoking ES API";
 
@@ -127,6 +127,6 @@ public class SuccessAcademyDAOImpl implements SuccessAcademyDAO {
         }
 		return successAcademyFilter;
 
-	}
+	}*/
 
 }

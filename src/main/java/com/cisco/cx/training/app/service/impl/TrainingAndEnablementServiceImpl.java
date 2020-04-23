@@ -35,6 +35,7 @@ import com.cisco.cx.training.models.Community;
 import com.cisco.cx.training.models.CountResponseSchema;
 import com.cisco.cx.training.models.CountSchema;
 import com.cisco.cx.training.models.ElasticSearchResults;
+import com.cisco.cx.training.models.SuccessAcademyFilter;
 import com.cisco.cx.training.models.SuccessAcademyLearning;
 import com.cisco.cx.training.models.SuccessAcademyModel;
 import com.cisco.cx.training.models.SuccessTalk;
@@ -54,8 +55,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	private SuccessTalkDAO successTalkDAO;
 
 	@Autowired
-	private SuccessAcademyDAO successAcademyDAO;
-	
+	private SuccessAcademyDAO successAcademyDAO;	
 
 	@SuppressWarnings("unused")
 	@Autowired
@@ -74,8 +74,72 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	private PartnerProfileService partnerProfileService;
 
 	@Override
-	public List<SuccessAcademyModel> getAllSuccessAcademy() {
-		return successAcademyDAO.getSuccessAcademy();
+	public List<SuccessAcademyLearning> getAllSuccessAcademyLearnings() {
+		List<SuccessAcademyLearning> learnings = new ArrayList<>();
+		SuccessAcademyLearning learning = new SuccessAcademyLearning();
+		learning.setAssetFacet("Renewals Manager");
+		learning.setAssetGroup("Test 1");
+		learning.setAssetModel("Role");
+		learning.setDescription("This is test description");
+		learning.setIsBookMarked(false);
+		learning.setLink("https://salesconnect.cisco.com/open.html?l=SC_LMS_592");
+		learning.setPostDate("14/11/2019");
+		learning.setSupportedFormats("PPT/PDF");
+		learning.setTitle("Understanding Account Team & Working Models");
+		learnings.add(learning);
+		
+		learning = new SuccessAcademyLearning();
+		learning.setAssetFacet("Customer Success Manager");
+		learning.setAssetGroup("Foundational Training");
+		learning.setAssetModel("Role");
+		learning.setDescription("This is test description");
+		learning.setIsBookMarked(true);
+		learning.setLink("https://salesconnect.cisco.com/open.html?l=SC_LMS_592");
+		learning.setPostDate("14/11/2019");
+		learning.setSupportedFormats("COLT,PPT/PDF,VOD");
+		learning.setTitle("1. Customer Experience and the Customer Lifecycle");
+		learnings.add(learning);
+		
+		
+		learning = new SuccessAcademyLearning();
+		learning.setAssetFacet("Customer Success Manager");
+		learning.setAssetGroup("Advanced Training");
+		learning.setAssetModel("Role");
+		learning.setDescription("This is test description");
+		learning.setIsBookMarked(false);
+		learning.setLink("https://salesconnect.cisco.com/open.html?l=SC_LMS_592");
+		learning.setPostDate("14/11/2019");
+		learning.setSupportedFormats("Email");
+		learning.setTitle("1. Customer's Financial Picture and Cisco's Value Proposition");
+		learnings.add(learning);
+		
+		
+		learning = new SuccessAcademyLearning();
+		learning.setAssetFacet("Enterprise Networking");
+		learning.setAssetGroup("Test 1");
+		learning.setAssetModel("Technology");
+		learning.setDescription("This is test description");
+		learning.setIsBookMarked(true);
+		learning.setLink("https://salesconnect.cisco.com/open.html?c=56398fcb-19f5-426a-9f58-9fc7acda5ed0");
+		learning.setPostDate("01/05/19");
+		learning.setSupportedFormats("VOD");
+		learning.setTitle("Protocols and Standards");
+		learnings.add(learning);
+		
+		
+		learning = new SuccessAcademyLearning();
+		learning.setAssetFacet("Operate");
+		learning.setAssetGroup("Renewals, Roles & Blueprints");
+		learning.setAssetModel("Model");
+		learning.setDescription("This is test description");
+		learning.setIsBookMarked(false);
+		learning.setLink("https://salesconnect.cisco.com/open.html?l=SC_LMS_592");
+		learning.setPostDate("14/11/2019");
+		learning.setSupportedFormats("PPT/PDF");
+		learning.setTitle("Lifecycle Partner Model - Renewal and Roles Blueprint");
+		learnings.add(learning);
+		
+		return learnings;
 	}
 
 	@Override
@@ -191,7 +255,9 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 			CountSchema successTalkCount = getSuccessTalkCount();
 			indexCounts.add(successTalkCount);
 			
-			CountSchema successAcamedyCount = getSuccessAcademyCount();
+			CountSchema successAcamedyCount = new CountSchema();
+			successAcamedyCount.setLabel("My Learning");
+			successAcamedyCount.setCount(4l);
 			indexCounts.add(successAcamedyCount);
 
 			countResponse.setLearningStatus(indexCounts);
@@ -237,44 +303,50 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		}
 		return successTalkCount;
 	}
-	
+
 	@Override
-	public CountSchema getSuccessAcademyCount() {
+	public List<SuccessAcademyFilter> getSuccessAcademyFilters() {
+		List<SuccessAcademyFilter> filters = new ArrayList<SuccessAcademyFilter>();
+		SuccessAcademyFilter 
 
-		SearchSourceBuilder successAcademySourceBuilder = new SearchSourceBuilder();
-		BoolQueryBuilder successAcademyBoolQuery = new BoolQueryBuilder();
-		QueryBuilder includeMonetizeQuery = QueryBuilders.matchPhraseQuery("parentFilter.keyword", "Monetize");
-		QueryBuilder includeOperateQuery = QueryBuilders.matchPhraseQuery("parentFilter.keyword", "Operate");
-		QueryBuilder includeOrganizeQuery = QueryBuilders.matchPhraseQuery("parentFilter.keyword", "Organize");
-		successAcademyBoolQuery.mustNot(includeMonetizeQuery).mustNot(includeOperateQuery)
-				.mustNot(includeOrganizeQuery);
-		successAcademySourceBuilder.query(successAcademyBoolQuery);
-
-		SearchSourceBuilder partnerModelSourceBuilder = new SearchSourceBuilder();
-		BoolQueryBuilder partnerModelBoolQuery = new BoolQueryBuilder();
-		partnerModelBoolQuery.should(includeMonetizeQuery).should(includeOperateQuery).should(includeOrganizeQuery);
-		partnerModelSourceBuilder.query(partnerModelBoolQuery);
-
-		CountSchema successAcademyCount = new CountSchema();
-		successAcademyCount.setLabel("Success Academy");
-		try {
-			ElasticSearchResults<SuccessAcademyLearning> successAcademyResults = elasticSearchDAO
-					.query(config.getSuccessAcademyIndex(), successAcademySourceBuilder, SuccessAcademyLearning.class);
-			ElasticSearchResults<SuccessAcademyLearning> partnerModelResults = elasticSearchDAO
-					.query(config.getSuccessAcademyIndex(), partnerModelSourceBuilder, SuccessAcademyLearning.class);
-			if (successAcademyResults != null && partnerModelResults != null) {
-				Integer learningCount = successAcademyResults.getDocuments().stream()
-						.map(successAcademyLearning -> successAcademyLearning.getLearning().size())
-						.collect(Collectors.summingInt(Integer::intValue));
-				Integer modelCount = partnerModelResults.getDocuments().stream()
-						.map(partnerModel -> partnerModel.getLearning().size())
-						.collect(Collectors.summingInt(Integer::intValue));
-				successAcademyCount.setCount(learningCount.longValue() + modelCount.longValue());
-			}
-		} catch (IOException e) {
-			LOG.error("Could not fetch index counts for Success Academy", e);
-			throw new GenericException("Could not fetch index counts for Success Academy", e);
-		}
-		return successAcademyCount;
+		filter = new SuccessAcademyFilter();
+		filter.setName("Model");
+		List<String> subFilters = new ArrayList<String>();
+		subFilters.add("Monetise");
+		subFilters.add("Operate");
+		subFilters.add("Organize");
+		filter.setFilters(subFilters);
+		filter.setTabLocationOnUI("1");
+		filters.add(filter);
+		
+		filter = new SuccessAcademyFilter();
+		filter.setName("Role");
+		subFilters = new ArrayList<String>();
+		subFilters.add("Customer Success Manager");
+		subFilters.add("Renewals Manager");
+		filter.setFilters(subFilters);
+		filter.setTabLocationOnUI("2");
+		filters.add(filter);
+		
+		filter = new SuccessAcademyFilter();
+		filter.setName("Product");
+		subFilters = new ArrayList<String>();
+		subFilters.add("IBN");
+		subFilters.add("BCS");
+		filter.setFilters(subFilters);
+		filter.setTabLocationOnUI("3");
+		filters.add(filter);
+		
+		filter = new SuccessAcademyFilter();
+		filter.setName("Technology");
+		subFilters = new ArrayList<String>();
+		subFilters.add("Enterprise Networking");
+		subFilters.add("LAN");
+		subFilters.add("Mobility");		
+		filter.setFilters(subFilters);
+		filter.setTabLocationOnUI("4");
+		filters.add(filter);	
+		
+		return filters;
 	}
 }

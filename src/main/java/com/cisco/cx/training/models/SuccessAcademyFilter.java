@@ -6,32 +6,41 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SuccessAcademyFilter implements HasId {
+public class SuccessAcademyFilter{
 
-	@JsonProperty("filters")
-	private List<SuccessAcademyFilterMap> filters = new ArrayList<>();
+	@JsonProperty("name")
+	private String name;
+	
+	@JsonProperty("subfilters")
+	private List<String> filters = new ArrayList<>();
 
-	@JsonProperty("docId")
-	private String docId;
+	@JsonProperty("tabLocationOnUI")
+    private String tabLocationOnUI;
 
-	public List<SuccessAcademyFilterMap> getFilters() {
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public List<String> getFilters() {
 		return filters;
 	}
 
-	public void setFilters(List<SuccessAcademyFilterMap> filters) {
+	public void setFilters(List<String> filters) {
 		this.filters = filters;
 	}
 
-	@Override
-	public String getDocId() {
-		// TODO Auto-generated method stub
-		return docId;
+	public String getTabLocationOnUI() {
+		return tabLocationOnUI;
 	}
 
-	@Override
-	public void setDocId(String id) {
-		docId = id;
-
+	public void setTabLocationOnUI(String tabLocationOnUI) {
+		this.tabLocationOnUI = tabLocationOnUI;
 	}
+
+	
 
 }

@@ -8,7 +8,7 @@ import com.cisco.cx.training.models.*;
 
 public interface TrainingAndEnablementService {
 
-	List<SuccessAcademyModel> getAllSuccessAcademy();		
+	List<SuccessAcademyLearning> getAllSuccessAcademyLearnings();		
 
 	List<Community> getAllCommunities();
 
@@ -29,6 +29,6 @@ public interface TrainingAndEnablementService {
 	CountSchema getCommunityCount();
 
 	CountSchema getSuccessTalkCount();
-
-	CountSchema getSuccessAcademyCount();
+	
+	List<SuccessAcademyFilter> getSuccessAcademyFilters();
 }
