@@ -15,11 +15,13 @@ pipeline:
         - master
         - refs/heads/master
         - v*__deploy__*
+        - "feature/newFeatures"
         - refs/tags/v*__deploy__*
         - feature/*
         - refs/heads/feature/*
       event:
         - push
+        - tag
         - pull_request
 
   "[ANALYSIS] Sonar":
