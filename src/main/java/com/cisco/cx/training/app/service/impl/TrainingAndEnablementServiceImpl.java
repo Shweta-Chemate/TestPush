@@ -3,7 +3,9 @@ package com.cisco.cx.training.app.service.impl;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -200,8 +202,8 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 			indexCounts.add(successTalkCount);
 			
 			CountSchema successAcamedyCount = new CountSchema();
-			successAcamedyCount.setLabel("My Learning");
-			successAcamedyCount.setCount(4l);
+			successAcamedyCount.setLabel("CX Learning");			
+			successAcamedyCount.setCount(successAcademyDAO.count());
 			indexCounts.add(successAcamedyCount);
 
 			countResponse.setLearningStatus(indexCounts);
@@ -250,53 +252,25 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 
 	@Override
 	public List<SuccessAcademyFilter> getSuccessAcademyFilters() {
+		Map<String, List<String>> mapData = new HashMap<String, List<String>>();
 		List<SuccessAcademyFilter> filters = new ArrayList<SuccessAcademyFilter>();
-		SuccessAcademyFilter 
-
-		filter = new SuccessAcademyFilter();
-		filter.setName("Model");
-		List<String> subFilters = new ArrayList<String>();
-		subFilters.add("Monetise");
-		subFilters.add("Operate");
-		subFilters.add("Organize");
-		filter.setFilters(subFilters);
-		filter.setTabLocationOnUI("1");
-		filters.add(filter);
-		
-		filter = new SuccessAcademyFilter();
-		filter.setName("Role");
-		subFilters = new ArrayList<String>();
-		subFilters.add("Customer Success Manager");
-		subFilters.add("Renewals Manager");
-		filter.setFilters(subFilters);
-		filter.setTabLocationOnUI("2");
-		filters.add(filter);
-		
-		filter = new SuccessAcademyFilter();
-		filter.setName("Product");
-		subFilters = new ArrayList<String>();
-		subFilters.add("IBN");
-		subFilters.add("BCS");
-		filter.setFilters(subFilters);
-		filter.setTabLocationOnUI("3");
-		filters.add(filter);
-		
-		filter = new SuccessAcademyFilter();
-		filter.setName("Technology");
-		subFilters = new ArrayList<String>();
-		subFilters.add("Enterprise Networking");
-		subFilters.add("LAN");
-		subFilters.add("Mobility");	
-		subFilters.add("WAN");
-		subFilters.add("Security");
-		subFilters.add("Data Center");	
-		subFilters.add("Collaboration");
-		subFilters.add("IOT Overview");
-		subFilters.add("Cloud");	
-		filter.setFilters(subFilters);
-		filter.setTabLocationOnUI("4");
-		filters.add(filter);	
-		
+		List<Object[]> filterData = successAcademyDAO.getLearningFilters();
+		for(Object[] objectData : filterData){
+			List<String> subFilters = new ArrayList<String>();
+			if(null != mapData.get(objectData[0])){	
+				subFilters = mapData.get(objectData[0]);
+			}
+			subFilters.add((objectData[1]).toString());
+			mapData.put((objectData[0]).toString(), subFilters);
+		}
+		int i=1;
+		for(String key : mapData.keySet()){			
+			SuccessAcademyFilter filter = new SuccessAcademyFilter();
+			filter.setName(key);
+			filter.setFilters(mapData.get(key));
+			filter.setTabLocationOnUI(""+(i++));
+			filters.add(filter);
+		}
 		return filters;
 	}
 }
