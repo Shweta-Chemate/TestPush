@@ -28,6 +28,11 @@ import com.cisco.cx.training.models.SuccessAcademyLearningTopics;
 
 @RunWith(SpringRunner.class)
 public class SuccessAcademyDAOTest {
+	
+	@Test
+	public void getLearnings() {
+		
+	}
 	/*@Mock
 	private ElasticSearchDAO elasticSearchDAO;
 
