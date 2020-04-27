@@ -15,13 +15,11 @@ pipeline:
         - master
         - refs/heads/master
         - v*__deploy__*
-        - "feature/newFeatures"
         - refs/tags/v*__deploy__*
         - feature/*
         - refs/heads/feature/*
       event:
         - push
-        - tag
         - pull_request
 
   "[ANALYSIS] Sonar":
@@ -60,12 +58,10 @@ pipeline:
       branch:
         - master
         - refs/heads/master
-        - "feature/newFeatures"
         - v*__deploy__*
         - refs/tags/v*__deploy__*
       event:
         - push
-        - tag
         - pull_request
 
 

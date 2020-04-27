@@ -31,7 +31,6 @@ public class SuccessAcademyDAOTest {
 	
 	@Test
 	public void getLearnings() {
-		
 	}
 	/*@Mock
 	private ElasticSearchDAO elasticSearchDAO;
