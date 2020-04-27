@@ -91,7 +91,7 @@ pipeline:
     secrets:
       [
         p3_idev_api_server, p3_idev_kubernetes_token, p3_idev_kubernetes_context,
-        p3_istg_kube_config,
+        p3_istg_kube_config, p3_dev_kube_config, p3_stg_kube_config,
         p3_ilt_api_server, p3_ilt_kubernetes_token, p3_ilt_kubernetes_context,
         p3_prd_api_server, p3_prd_kubernetes_token, p3_prd_kubernetes_context,
         p3_prdemea_api_server, p3_prdemea_kubernetes_token, p3_prdemea_kubernetes_context
