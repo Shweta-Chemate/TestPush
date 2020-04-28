@@ -263,12 +263,29 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 			subFilters.add((objectData[1]).toString());
 			mapData.put((objectData[0]).toString(), subFilters);
 		}
-		int i=1;
+		String tabLocation = "";
 		for(String key : mapData.keySet()){			
 			SuccessAcademyFilter filter = new SuccessAcademyFilter();
 			filter.setName(key);
 			filter.setFilters(mapData.get(key));
-			filter.setTabLocationOnUI(""+(i++));
+			switch(key){
+				case "Model" :
+					tabLocation = "1";
+					break;
+					
+				case "Role" :
+					tabLocation = "2";
+					break;
+					
+				case "Product" :
+					tabLocation = "3";
+					break;
+					
+				case "Technology" :
+					tabLocation = "4";
+					break;				
+			}			
+			filter.setTabLocationOnUI(tabLocation);
 			filters.add(filter);
 		}
 		return filters;
