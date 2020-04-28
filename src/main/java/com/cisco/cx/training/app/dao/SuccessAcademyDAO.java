@@ -9,7 +9,7 @@ import com.cisco.cx.training.app.entities.SuccessAcademyLearningEntity;
 
 public interface SuccessAcademyDAO extends JpaRepository<SuccessAcademyLearningEntity, String>{
 	
-	public static final String GET_LEARNING_FILTERS = "select distinct asset_model , asset_facet from success_academy_learnings";
+	public static final String GET_LEARNING_FILTERS = "select distinct asset_model , asset_facet from cxpp_success_academy_learnings";
 	
 	@Query(value=GET_LEARNING_FILTERS , nativeQuery=true)
 	List<Object[]> getLearningFilters();
