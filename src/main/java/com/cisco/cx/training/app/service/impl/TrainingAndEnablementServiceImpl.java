@@ -285,7 +285,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 			SuccessAcademyFilter filter = new SuccessAcademyFilter();					
 			filter.setName(key);
 			filter.setFilters(mapData.get(key));					
-			filter.setTabLocationOnUI(lookupValues.get(key.toLowerCase()));
+			filter.setTabLocationOnUI(lookupValues.get(key.toLowerCase().replaceAll(" ", "")));
 			filters.add(filter);
 		}
 		return filters;

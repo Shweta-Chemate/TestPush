@@ -1,25 +1,29 @@
 package com.cisco.cx.training.app.filters;
 
+import java.io.IOException;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.exception.NotAllowedException;
-
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 
 @Component
 public class AuthFilter implements Filter {
     private final Logger LOG = LoggerFactory.getLogger(this.getClass().getName());
-
-    @SuppressWarnings("unused")
-	@Autowired
-    private PropertyConfiguration config;
-
+    
+    private static final String READY_URI = "/ready";
+    
+    private static final String LIVE_URI = "/live";
+    
     @Override
     public void init(final FilterConfig filterConfig) throws ServletException {
         LOG.info("Initializing Auth Filter");
@@ -29,7 +33,12 @@ public class AuthFilter implements Filter {
     public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain) throws IOException, ServletException {
         long requestStartTime = System.currentTimeMillis();
         HttpServletRequest req = (HttpServletRequest) request;
-
+        String path = req.getRequestURI();
+        if ((path.endsWith(LIVE_URI))||
+        		(path.endsWith(READY_URI))) {
+        	chain.doFilter(request, response);
+            return;
+        }
         try {
             LOG.info("BEGIN_REQUEST: {}", req.getRequestURI());
             // check if request is authorized
