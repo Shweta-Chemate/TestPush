@@ -88,6 +88,16 @@ spec:
                 secretKeyRef:
                   name: cxpp-common
                   key: cxpp_mysql_password
+            - name: cxpp_aws_generic_access_id
+              valueFrom:
+                secretKeyRef:
+                  name: cxpp-common
+                  key: cxpp_aws_generic_access_id
+            - name: cxpp_aws_generic_access_secret
+              valueFrom:
+                secretKeyRef:
+                  name: cxpp-common
+                  key: cxpp_aws_generic_access_secret            
             - name: cxp_basicauth_username
               valueFrom:
                 secretKeyRef:
