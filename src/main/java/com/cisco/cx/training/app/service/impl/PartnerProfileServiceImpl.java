@@ -11,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.cisco.cx.training.app.config.PropertyConfiguration;
@@ -45,19 +46,15 @@ public class PartnerProfileServiceImpl implements PartnerProfileService {
 		headers.set("Authorization", "Basic " + config.createCxpBasicAuthToken());
 		HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
 		
-		UserDetails userDetails;
+		UserDetails userDetails = null;
 		try {
 			ResponseEntity<String> result = restTemplate.exchange(entitlementUrl, HttpMethod.GET, requestEntity, String.class);
 			LOGGER.info("Got Entitlement url response");
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			userDetails = mapper.readValue(result.getBody(), UserDetails.class);
-		} catch (JsonParseException e) {
-			throw new GenericException(e.getMessage());
-		} catch (JsonMappingException e) {
-			throw new GenericException(e.getMessage());
-		} catch (IOException e) {
-			throw new GenericException(e.getMessage());
-		}
+		} catch (IOException | HttpClientErrorException e) {
+			LOGGER.error("Error while invoking the entitlement API", e);
+		} 
 		return userDetails;
 	}
 

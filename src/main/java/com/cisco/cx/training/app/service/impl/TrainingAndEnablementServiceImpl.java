@@ -31,6 +31,7 @@ import com.cisco.cx.training.app.dao.SuccessAcademyDAO;
 import com.cisco.cx.training.app.dao.SuccessTalkDAO;
 import com.cisco.cx.training.app.entities.PartnerPortalLookUpEntity;
 import com.cisco.cx.training.app.entities.SuccessAcademyLearningEntity;
+import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.exception.GenericException;
 import com.cisco.cx.training.app.exception.NotAllowedException;
 import com.cisco.cx.training.app.exception.NotFoundException;
@@ -91,7 +92,10 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	public List<SuccessAcademyLearning> getAllSuccessAcademyLearnings(String xMasheryHandshake) {		
 		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
 		List<SuccessAcademyLearningEntity> entities = successAcademyDAO.findAll();
-		Set<String> userBookmarks = learningDAO.getBookmarks(userDetails.getEmail());
+		Set<String> userBookmarks = null;
+		if(null != userDetails){
+			userBookmarks = learningDAO.getBookmarks(userDetails.getEmail());
+		}
 		List<SuccessAcademyLearning> learnings = new ArrayList<>();
 		for(SuccessAcademyLearningEntity entity : entities){
 			SuccessAcademyLearning learning = SuccessAcademyMapper.getLearningsFromEntity(entity);
@@ -296,12 +300,16 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 			BookmarkRequestSchema bookmarkRequestSchema,
 			String xMasheryHandshake) {
 		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
-		BookmarkResponseSchema bookmarkResponseSchema = new BookmarkResponseSchema();
-		bookmarkResponseSchema.setEmail(userDetails.getEmail());
-		bookmarkResponseSchema.setLearningid(bookmarkRequestSchema.getLearningid());
-		bookmarkResponseSchema.setBookmark(bookmarkRequestSchema.isBookmark());
-		learningDAO.createOrUpdate(bookmarkResponseSchema);		
-		return bookmarkResponseSchema;
+		if(null == userDetails){
+			throw new BadRequestException("Error from Entitlement System");
+		}else{
+			BookmarkResponseSchema bookmarkResponseSchema = new BookmarkResponseSchema();
+			bookmarkResponseSchema.setEmail(userDetails.getEmail());
+			bookmarkResponseSchema.setLearningid(bookmarkRequestSchema.getLearningid());
+			bookmarkResponseSchema.setBookmark(bookmarkRequestSchema.isBookmark());
+			learningDAO.createOrUpdate(bookmarkResponseSchema);		
+			return bookmarkResponseSchema;
+		}
 	}
 	
 	
