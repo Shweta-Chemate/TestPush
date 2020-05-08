@@ -8,7 +8,7 @@ import com.cisco.cx.training.models.*;
 
 public interface TrainingAndEnablementService {
 
-	List<SuccessAcademyLearning> getAllSuccessAcademyLearnings();		
+	List<SuccessAcademyLearning> getAllSuccessAcademyLearnings(String xMasheryHandshake);		
 
 	List<Community> getAllCommunities();
 
@@ -31,4 +31,6 @@ public interface TrainingAndEnablementService {
 	CountSchema getSuccessTalkCount();
 	
 	List<SuccessAcademyFilter> getSuccessAcademyFilters();
+	
+	BookmarkResponseSchema bookmarkLearningForUser(BookmarkRequestSchema bookmarkRequestSchema , String xMasheryHandshake);
 }

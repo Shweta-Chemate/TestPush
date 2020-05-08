@@ -73,9 +73,8 @@ public class TrainingAndEnablementServiceTest {
 	@Mock
 	private PartnerProfileService partnerProfileService;
 
-	@Test
 	public void testGetSuccessAcademy() {
-		trainingAndEnablementService.getAllSuccessAcademyLearnings();
+		trainingAndEnablementService.getAllSuccessAcademyLearnings("");
 	}
 	
 

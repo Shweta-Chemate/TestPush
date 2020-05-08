@@ -64,6 +64,15 @@ public class PropertyConfiguration {
 	
 	@Value("${partner.community.link.partnerresources}")
 	private String communityLink;	
+	
+	@Value("${cxpp.aws.region}")
+	private String awsRegion;
+	
+	@Value("${cxpp.aws.access.key}")
+	private String awsAccessKey;
+	
+	@Value("${cxpp.aws.access.secret}")
+	private String awsAccessSecret;
 
 	public String getCxpBasicAuthUserName() {
 		if (StringUtils.isBlank(cxpBasicAuthUserName)) {
@@ -143,6 +152,18 @@ public class PropertyConfiguration {
 
 	public String createCxpBasicAuthToken() {
 		return new String(Base64.encodeBase64((this.getCxpBasicAuthUserName() + ":" + this.getCxpBasicAuthPassword()).getBytes()));
+	}
+
+	public String getAwsRegion() {
+		return awsRegion;
+	}
+
+	public String getAwsAccessKey() {
+		return awsAccessKey;
+	}
+
+	public String getAwsAccessSecret() {
+		return awsAccessSecret;
 	}
 
 }

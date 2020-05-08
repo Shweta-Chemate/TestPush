@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -18,14 +18,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.dao.BookmarkDAO;
 import com.cisco.cx.training.app.dao.CommunityDAO;
 import com.cisco.cx.training.app.dao.ElasticSearchDAO;
+import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
+import com.cisco.cx.training.app.dao.PartnerPortalLookupDAO;
 import com.cisco.cx.training.app.dao.SmartsheetDAO;
 import com.cisco.cx.training.app.dao.SuccessAcademyDAO;
 import com.cisco.cx.training.app.dao.SuccessTalkDAO;
+import com.cisco.cx.training.app.entities.PartnerPortalLookUpEntity;
 import com.cisco.cx.training.app.entities.SuccessAcademyLearningEntity;
 import com.cisco.cx.training.app.exception.GenericException;
 import com.cisco.cx.training.app.exception.NotAllowedException;
@@ -37,10 +41,8 @@ import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.cisco.cx.training.models.Community;
 import com.cisco.cx.training.models.CountResponseSchema;
 import com.cisco.cx.training.models.CountSchema;
-import com.cisco.cx.training.models.ElasticSearchResults;
 import com.cisco.cx.training.models.SuccessAcademyFilter;
 import com.cisco.cx.training.models.SuccessAcademyLearning;
-import com.cisco.cx.training.models.SuccessAcademyModel;
 import com.cisco.cx.training.models.SuccessTalk;
 import com.cisco.cx.training.models.SuccessTalkResponseSchema;
 import com.cisco.cx.training.models.SuccessTalkSession;
@@ -59,7 +61,10 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	private SuccessTalkDAO successTalkDAO;
 
 	@Autowired
-	private SuccessAcademyDAO successAcademyDAO;	
+	private SuccessAcademyDAO successAcademyDAO;
+	
+	@Autowired
+	private PartnerPortalLookupDAO partnerPortalLookupDAO;
 
 	@SuppressWarnings("unused")
 	@Autowired
@@ -75,14 +80,25 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	private PropertyConfiguration config;
 
 	@Autowired
-	private PartnerProfileService partnerProfileService;	
+	private PartnerProfileService partnerProfileService;
+	
+	@Autowired
+	private LearningBookmarkDAO learningDAO;
+	
+	private static final String CXPP_UI_TAB_PREFIX = "CXPP_UI_TAB_";
 	
 	@Override
-	public List<SuccessAcademyLearning> getAllSuccessAcademyLearnings() {		
+	public List<SuccessAcademyLearning> getAllSuccessAcademyLearnings(String xMasheryHandshake) {		
+		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
 		List<SuccessAcademyLearningEntity> entities = successAcademyDAO.findAll();
+		Set<String> userBookmarks = learningDAO.getBookmarks(userDetails.getEmail());
 		List<SuccessAcademyLearning> learnings = new ArrayList<>();
 		for(SuccessAcademyLearningEntity entity : entities){
 			SuccessAcademyLearning learning = SuccessAcademyMapper.getLearningsFromEntity(entity);
+			if(null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
+					&& userBookmarks.contains(entity.getRowId())){
+				learning.setIsBookMarked(true);
+			}
 			learnings.add(learning);
 		}
 		return learnings;
@@ -255,6 +271,8 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		Map<String, List<String>> mapData = new HashMap<String, List<String>>();
 		List<SuccessAcademyFilter> filters = new ArrayList<SuccessAcademyFilter>();
 		List<Object[]> filterData = successAcademyDAO.getLearningFilters();
+		List<PartnerPortalLookUpEntity> tabLocationEntities = partnerPortalLookupDAO.getTabLocations();	
+		Map<String, String> lookupValues = getLookUpMapFromEntity(tabLocationEntities);
 		for(Object[] objectData : filterData){
 			List<String> subFilters = new ArrayList<String>();
 			if(null != mapData.get(objectData[0])){	
@@ -263,31 +281,36 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 			subFilters.add((objectData[1]).toString());
 			mapData.put((objectData[0]).toString(), subFilters);
 		}
-		String tabLocation = "";
 		for(String key : mapData.keySet()){			
-			SuccessAcademyFilter filter = new SuccessAcademyFilter();
+			SuccessAcademyFilter filter = new SuccessAcademyFilter();					
 			filter.setName(key);
-			filter.setFilters(mapData.get(key));
-			switch(key){
-				case "Model" :
-					tabLocation = "1";
-					break;
-					
-				case "Role" :
-					tabLocation = "2";
-					break;
-					
-				case "Product" :
-					tabLocation = "3";
-					break;
-					
-				case "Technology" :
-					tabLocation = "4";
-					break;				
-			}			
-			filter.setTabLocationOnUI(tabLocation);
+			filter.setFilters(mapData.get(key));					
+			filter.setTabLocationOnUI(lookupValues.get(key.toLowerCase()));
 			filters.add(filter);
 		}
 		return filters;
+	}
+
+	@Override
+	public BookmarkResponseSchema bookmarkLearningForUser(
+			BookmarkRequestSchema bookmarkRequestSchema,
+			String xMasheryHandshake) {
+		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
+		BookmarkResponseSchema bookmarkResponseSchema = new BookmarkResponseSchema();
+		bookmarkResponseSchema.setEmail(userDetails.getEmail());
+		bookmarkResponseSchema.setLearningid(bookmarkRequestSchema.getLearningid());
+		bookmarkResponseSchema.setBookmark(bookmarkRequestSchema.isBookmark());
+		learningDAO.createOrUpdate(bookmarkResponseSchema);		
+		return bookmarkResponseSchema;
+	}
+	
+	
+	private Map<String,String> getLookUpMapFromEntity(List<PartnerPortalLookUpEntity> entityList){
+		HashMap<String, String> lookUpValues = new HashMap<String, String>();
+		for(PartnerPortalLookUpEntity entity : entityList){
+			String key = entity.getPartnerPortalKey().replaceAll(CXPP_UI_TAB_PREFIX, "");
+			lookUpValues.put(key.toLowerCase(), entity.getPartnerPortalKeyValue());
+		}		
+		return lookUpValues;
 	}
 }

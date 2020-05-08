@@ -110,7 +110,7 @@ public class TrainingAndEnablementController {
 	public ResponseEntity<List<SuccessAcademyLearning>> getAllLearnings(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake)
 			throws Exception {
-		List<SuccessAcademyLearning> sucessAcademyList = trainingAndEnablementService.getAllSuccessAcademyLearnings();
+		List<SuccessAcademyLearning> sucessAcademyList = trainingAndEnablementService.getAllSuccessAcademyLearnings(xMasheryHandshake);
 		return new ResponseEntity<List<SuccessAcademyLearning>>(sucessAcademyList, HttpStatus.OK);
 	}
 
@@ -235,6 +235,15 @@ public class TrainingAndEnablementController {
             @ApiResponse(code = 500, message = "Internal server error occured", response = ErrorResponse.class)})
     public ResponseEntity addOrRemoveLearningBookmarks(@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,    											 
                                                  @ApiParam(value = "JSON Body to Bookmark", required = true) @RequestBody BookmarkRequestSchema bookmarkRequestSchema) {
-		return new ResponseEntity<>(HttpStatus.OK);
+		if(null != bookmarkRequestSchema && StringUtils.isNotBlank(bookmarkRequestSchema.getLearningid())){
+			BookmarkResponseSchema learningBookmarkResponse = trainingAndEnablementService.bookmarkLearningForUser(bookmarkRequestSchema,xMasheryHandshake);
+			if(null != learningBookmarkResponse){
+				return new ResponseEntity<>(HttpStatus.OK);
+			}else{
+				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		}else{
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
     }
 }

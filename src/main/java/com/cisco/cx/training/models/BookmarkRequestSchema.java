@@ -21,6 +21,9 @@ public class BookmarkRequestSchema {
     
     @ApiModelProperty(notes = "Title", example = "New Customer Experience Specialization overview")
     private String title;
+    
+    @ApiModelProperty(notes = "RowId of the CX Learning item")
+    private String learningid;
 
 
     @ApiModelProperty(notes = "is Bookmarked", example = "true | false")
@@ -60,4 +63,12 @@ public class BookmarkRequestSchema {
     public void setId(String id) {
         this.id = id;
     }
+
+	public String getLearningid() {
+		return learningid;
+	}
+
+	public void setLearningid(String learningid) {
+		this.learningid = learningid;
+	}	
 }
