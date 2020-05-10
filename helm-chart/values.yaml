@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 replicaCount: 2
 image:
-  repository: ${LOCATION_PREFIX_DOCKER_REGISTRY}/cx-platforms/cxpp-training-enablement
+  repository: ${LOCATION_PREFIX_DOCKER_REGISTRY}/${LOCATION_DISTRIBUTION_NAME}/cxpp-training-enablement
   tag: ${CI_COMMIT_SHA}
   pullPolicy: Always
 service:

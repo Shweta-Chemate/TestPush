@@ -8,7 +8,7 @@ pipeline:
     image: containers.cisco.com/servicescf-devops/maven-cisco-docker
     pull: true
     scripts:
-      - mvn -B clean verify -Dmaven.test.failure.ignore=true
+      - mvn -B clean verify -Dmaven.test.skip=false -Dmaven.test.failure.ignore=true
       - mvn -B findbugs:findbugs
     when:
       branch:
@@ -25,6 +25,7 @@ pipeline:
         - pull_request
 
   "[ANALYSIS] Sonar":
+    detach: false
     image: containers.cisco.com/servicescf-devops/drone-sonar
     pull: true
     host: https://engci-sonar-blr.cisco.com/sonar
@@ -37,7 +38,8 @@ pipeline:
     junit_reportPath: target/surefire-reports/**/*.xml
     debug: false
     sonar_multilang: false
-    secrets: [ sonar_login ]
+    secrets: 
+      - sonar_login
     when:
       branch:
         - master
@@ -48,14 +50,16 @@ pipeline:
         - pull_request
         - push
 
-  "[PUBLISH] docker image":
+  "[PUBLISH] docker image to ccc":
     image: plugins/docker
     repo: containers.cisco.com/cx-platforms/cxpp-training-enablement
     registry: containers.cisco.com
     tags:
       - latest
       - ${CI_COMMIT_SHA}
-    secrets: [ docker_username, docker_password ]
+    secrets: 
+      - docker_username
+      - docker_password
     when:
       branch:
         - master
@@ -67,7 +71,34 @@ pipeline:
         - push
         - tag
         - pull_request
-
+   
+  "[PUBLISH] docker image to ecr":
+    image: plugins/ecr
+    repo: 252442997537.dkr.ecr.us-west-2.amazonaws.com/cxpp/cxpp-training-enablement
+    registry: 252442997537.dkr.ecr.us-west-2.amazonaws.com
+    region: us-west-2
+    environment:
+      - ECR_ACCESS_KEY=${ECR_ACCESS_KEY}
+      - ECR_SECRET_KEY=${ECR_SECRET_KEY}
+      - ECR_REGION=${ECR_REGION}
+    tags:
+      - latest
+      - ${CI_COMMIT_SHA}
+    secrets:
+      - ecr_access_key
+      - ecr_secret_key
+      - ecr_region
+    when:
+      branch:
+        - master
+        - refs/heads/master
+        - "feature/newFeatures"
+        - v*__deploy__*
+        - refs/tags/v*__deploy__*
+      event:
+        - push
+        - tag
+        - pull_request
 
   ## ==========================================================================
   ## Event is a tag with deploy tag format, then deploy to given environment.
@@ -85,7 +116,7 @@ pipeline:
   ## 3. Reacts to git 'push' (and merge) events to CD auto-deploy to a pre-defined environment.
   ## ==========================================================================
   "[DEPLOY] CIDER to ANY env":
-    image: rtluckie/cicd-toolbox:0.1.4
+    image: containers.cisco.com/cx-platforms/cicd-toolbox:stable
     environment:
       - CIDER_NAME=cider-toolkit
     commands:
@@ -93,13 +124,32 @@ pipeline:
       - export CIDER_DIR=$CI_WORKSPACE/$CIDER_NAME
       - make deploy
     secrets:
-      [
-        p3_idev_api_server, p3_idev_kubernetes_token, p3_idev_kubernetes_context,
-        p3_istg_kube_config, p3_dev_kube_config, p3_stg_kube_config,
-        p3_ilt_api_server, p3_ilt_kubernetes_token, p3_ilt_kubernetes_context,
-        p3_prd_api_server, p3_prd_kubernetes_token, p3_prd_kubernetes_context,
-        p3_prdemea_api_server, p3_prdemea_kubernetes_token, p3_prdemea_kubernetes_context
-      ]
+      ## P3 kube configs for Customer Portal and Partner Portal
+      - p3_idev_kube_config
+      - p3_istg_kube_config
+      - p3_ilt_kube_config
+      - p3_prd_kube_config
+      - p3_prdemea_kube_config
+      ## AWS kube configs for Partner Portal
+      - awscxpp_dev_kube_config
+      - awscxpp_stg_kube_config
+      - awscxpp_lt_kube_config
+      - awscxpp_prd_kube_config
+      - awscxpp_prdemea_kube_config
+      ## AWS access key for Partner Portal
+      - awscxpp_dev_access_key_id
+      - awscxpp_stg_access_key_id
+      - awscxpp_lt_access_key_id
+      - awscxpp_prd_access_key_id
+      - awscxpp_prdemea_access_key_id
+      ## AWS secret key for Partner Portal
+      - awscxpp_dev_secret_access_key
+      - awscxpp_stg_secret_access_key
+      - awscxpp_lt_secret_access_key
+      - awscxpp_prd_secret_access_key
+      - awscxpp_prdemea_secret_access_key
+      ## AWS ECR region
+      - ecr_region
     when:
       event:
         - tag
@@ -107,15 +157,15 @@ pipeline:
       branch:
         include:
           - master
-          - v*__deploy__*
+          - v*__deploy__*  
           
   "[ANALYSIS] Corona":
-    #detach: true
+    detach: false
     image: containers.cisco.com/servicescf-devops/drone-corona
     pull: true
     docker_image: containers.cisco.com/cx-platforms/cxpp-training-enablement:${CI_COMMIT_SHA}
     docker_registry: containers.cisco.com/
-    corona_product_id: 4142
+    corona_product_id: 4967
     corona_release_version: 0.1.1
     secrets: [ corona_login, corona_password, docker_username, docker_password] #[Mandatory]
     corona_nfs_upload: false #[Optional]: true, if file size is huge > 500MB
@@ -140,10 +190,10 @@ pipeline:
 ## ==========================================================================
 branches:
   include:
-    - "master"
-    - "refs/heads/master"
-    - "feature/*"
-    - "refs/heads/feature/*"
-    - "v*__deploy__*"
-    - "refs/tags/v*__deploy__*"
+    - master
+    - refs/heads/master
+    - feature/*
+    - refs/heads/feature/*
+    - v*__deploy__*
+    - refs/tags/v*__deploy__*
 ## EOF
