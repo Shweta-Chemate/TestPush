@@ -133,7 +133,7 @@ spec:
             {{ end }}
           livenessProbe:
              httpGet:
-               path: /training/v1/partner/training/live
+               path: /cxpp-training-enablement/training/v1/partner/training/live
                port: 8080
              initialDelaySeconds: 300
              periodSeconds: 30
@@ -141,7 +141,7 @@ spec:
              failureThreshold: 3
           readinessProbe:
              httpGet:
-               path: /training/v1/partner/training/ready
+               path: /cxpp-training-enablement/training/v1/partner/training/ready
                port: 8080
              initialDelaySeconds: 600
              periodSeconds: 30
