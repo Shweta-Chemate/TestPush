@@ -64,5 +64,4 @@ files:
     cisco.oauth.token.url: ${cisco_oauth_token_url}
     cxp.emailapi.context.url: https://cpp-api.${CLUSTER_NAME_FULL}/email/
     cxp.emailapi.readiness.url: https://cpp-api.${CLUSTER_NAME_FULL}/email/v1/ready
-    cxpp.entitlement.user.profile.url : https://cpp-api.${CLUSTER_NAME_FULL}/cxpp-entitlement-wrapper/v1/entitlement/user/profile
     entitlement.user.party.affiliation.url: https://cpp-api.${CLUSTER_NAME_FULL}/entitlement/v1/user/party/affiliation/{partyId}

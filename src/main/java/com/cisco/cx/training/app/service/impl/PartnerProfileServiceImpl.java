@@ -17,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.exception.GenericException;
 import com.cisco.cx.training.app.service.PartnerProfileService;
+import com.cisco.cx.training.models.MasheryObject;
 import com.cisco.cx.training.models.UserDetails;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -42,14 +43,14 @@ public class PartnerProfileServiceImpl implements PartnerProfileService {
 	@Override
 	public UserDetails fetchUserDetails(String xMasheryHandshake) {
 		HttpHeaders headers = new HttpHeaders();
+		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
 		headers.set("Authorization", "Basic " + config.createCxpBasicAuthToken());
 		HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
-		
+		ResponseEntity<String> result = restTemplate.exchange(entitlementUrl + "/" + userId, HttpMethod.GET, requestEntity, String.class);
+		LOGGER.info("Entitlement url response : " + result.getBody());
 		UserDetails userDetails = null;
 		try {
-			ResponseEntity<String> result = restTemplate.exchange(entitlementUrl, HttpMethod.GET, requestEntity, String.class);
-			LOGGER.info("Got Entitlement url response");
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			userDetails = mapper.readValue(result.getBody(), UserDetails.class);
 		} catch (IOException | HttpClientErrorException e) {
