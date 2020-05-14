@@ -5,14 +5,18 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -25,9 +29,14 @@ import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.dao.BookmarkDAO;
 import com.cisco.cx.training.app.dao.CommunityDAO;
 import com.cisco.cx.training.app.dao.ElasticSearchDAO;
+import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
+import com.cisco.cx.training.app.dao.PartnerPortalLookupDAO;
 import com.cisco.cx.training.app.dao.SmartsheetDAO;
 import com.cisco.cx.training.app.dao.SuccessAcademyDAO;
 import com.cisco.cx.training.app.dao.SuccessTalkDAO;
+import com.cisco.cx.training.app.entities.PartnerPortalLookUpEntity;
+import com.cisco.cx.training.app.entities.SuccessAcademyLearningEntity;
+import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.exception.GenericException;
 import com.cisco.cx.training.app.exception.NotFoundException;
 import com.cisco.cx.training.app.service.PartnerProfileService;
@@ -37,6 +46,7 @@ import com.cisco.cx.training.models.BookmarkRequestSchema;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.cisco.cx.training.models.Community;
 import com.cisco.cx.training.models.ElasticSearchResults;
+import com.cisco.cx.training.models.SuccessAcademyFilter;
 import com.cisco.cx.training.models.SuccessAcademyLearning;
 import com.cisco.cx.training.models.SuccessTalk;
 import com.cisco.cx.training.models.SuccessTalkSession;
@@ -66,15 +76,57 @@ public class TrainingAndEnablementServiceTest {
 	
 	@Mock
     private PropertyConfiguration config;
-
-	@InjectMocks
-	private TrainingAndEnablementService trainingAndEnablementService = new TrainingAndEnablementServiceImpl();
-
+	
+	@Mock
+	private LearningBookmarkDAO learningDAO;
+	
+	@Mock
+	private PartnerPortalLookupDAO partnerPortalLookupDAO;
+	
 	@Mock
 	private PartnerProfileService partnerProfileService;
 
+	@InjectMocks
+	private TrainingAndEnablementService trainingAndEnablementService = new TrainingAndEnablementServiceImpl();	
+
+	@Test
 	public void testGetSuccessAcademy() {
-		trainingAndEnablementService.getAllSuccessAcademyLearnings("");
+		UserDetails userDetails = new UserDetails();
+		userDetails.setEmail("email");
+		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(userDetails);
+		SuccessAcademyLearningEntity entity1 = new SuccessAcademyLearningEntity();
+		entity1.setRowId("1");
+		entity1.setTitle("A");
+		entity1.setAssetFacet("S");
+		entity1.setAssetModel("M");
+		entity1.setAssetGroup("G");
+		entity1.setSupportedFormats("A,B");
+		entity1.setPostedDt("11-11-2019");
+		entity1.setDescription("ABC");
+		entity1.setLearningLink("abc");
+		entity1.setLastModifiedDtTime("11-11-2019");
+		SuccessAcademyLearningEntity entity2 = new SuccessAcademyLearningEntity();
+		entity2.setRowId("2");
+		entity2.setTitle("A");
+		entity2.setAssetFacet("S");
+		entity2.setAssetModel("M");
+		entity2.setAssetGroup("G");
+		entity2.setSupportedFormats("A,B");
+		entity2.setPostedDt("11-11-2019");
+		entity2.setDescription("ABC");
+		entity2.setLearningLink("abc");
+		entity2.setLastModifiedDtTime("11-11-2019");
+		List<SuccessAcademyLearningEntity> entityList = new ArrayList<SuccessAcademyLearningEntity>();
+		entityList.add(entity1);
+		entityList.add(entity2);
+		when(successAcademyDAO.findAll()).thenReturn(entityList);
+		Set<String> bookMarks = new HashSet<String>();
+		bookMarks.add("1");
+		when(learningDAO.getBookmarks(Mockito.anyString())).thenReturn(bookMarks);
+		List<SuccessAcademyLearning> learnings = trainingAndEnablementService.getAllSuccessAcademyLearnings("");
+		Assert.assertEquals(learnings.size(), 2);
+		Assert.assertEquals(learnings.get(0).getIsBookMarked(),true);
+		Assert.assertEquals(learnings.get(1).getIsBookMarked(),false);
 	}
 	
 
@@ -282,5 +334,68 @@ public class TrainingAndEnablementServiceTest {
 		sessions = Arrays.asList(session);
 		successTalk.setSessions(sessions);
 		return successTalk;
+	}
+	
+	@Test
+	public void testGetSuccessAcademyLearningFilters() {
+		Object[] str1 = new Object[2];
+		str1[0]="A";
+		str1[1]="a";
+		
+		Object[] str2 = new Object[2];
+		str2[0]="B";
+		str2[1]="b";
+		
+		List<Object[]> filtersList = new ArrayList<Object[]>();
+		filtersList.add(str1);
+		filtersList.add(str2);
+		when(successAcademyDAO.getLearningFilters()).thenReturn(filtersList);
+		PartnerPortalLookUpEntity entity1 = new PartnerPortalLookUpEntity();
+		entity1.setPartnerPortalKey("A");
+		entity1.setPartnerPortalKeyValue("1");
+		entity1.setRowId("1");
+		entity1.setDescription("Test");
+		entity1.setCreatedBy("abc");
+		entity1.setCreatedDtTime(new Date(System.currentTimeMillis()));
+		entity1.setUpdatedBy("abc");
+		entity1.setUpdatedDtTime(new Date(System.currentTimeMillis()));
+		PartnerPortalLookUpEntity entity2 = new PartnerPortalLookUpEntity();
+		entity2.setPartnerPortalKey("B");
+		entity2.setPartnerPortalKeyValue("2");
+		entity2.setRowId("1");
+		entity2.setDescription("Test");
+		entity2.setCreatedBy("abc");
+		entity2.setCreatedDtTime(new Date(System.currentTimeMillis()));
+		entity2.setUpdatedBy("abc");
+		entity2.setUpdatedDtTime(new Date(System.currentTimeMillis()));
+		List<PartnerPortalLookUpEntity> entityList = new ArrayList<PartnerPortalLookUpEntity>();
+		entityList.add(entity1);
+		entityList.add(entity2);
+		when(partnerPortalLookupDAO.getTabLocations()).thenReturn(entityList);	
+		
+		List<SuccessAcademyFilter> learningAcademyFilter = trainingAndEnablementService.getSuccessAcademyFilters();
+		Assert.assertEquals(learningAcademyFilter.size(), 2);
+		Assert.assertEquals(learningAcademyFilter.get(0).getTabLocationOnUI(), "1");
+		Assert.assertEquals(learningAcademyFilter.get(1).getTabLocationOnUI(), "2");
+	}
+	
+	public void testBookmarkLearningForUser(){
+		UserDetails userDetails = new UserDetails();
+		userDetails.setEmail("email");
+		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(userDetails);	
+		BookmarkRequestSchema request = new BookmarkRequestSchema();
+		request.setLearningid("1");
+		request.setBookmark(true);
+		when(learningDAO.createOrUpdate(Mockito.any(BookmarkResponseSchema.class))).thenReturn(null);
+		BookmarkResponseSchema response = trainingAndEnablementService.bookmarkLearningForUser(null, "");
+		
+		Assert.assertEquals(response.getLearningid(),"1");
+		Assert.assertEquals(response.getEmail(),"email");		
+	}
+		
+	@Test(expected = BadRequestException.class)
+	public void testFailureBookmarkLearningForUser(){		
+		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(null);			
+		trainingAndEnablementService.bookmarkLearningForUser(null, "");
 	}
 }

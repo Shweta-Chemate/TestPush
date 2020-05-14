@@ -43,6 +43,14 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 	
 	private DynamoDbClient dbClient;
 	
+	public DynamoDbClient getDbClient() {
+		return dbClient;
+	}
+
+	public void setDbClient(DynamoDbClient dbClient) {
+		this.dbClient = dbClient;
+	}
+
 	@PostConstruct
 	public void init() {
 		Region region = Region.of(propertyConfig.getAwsRegion());

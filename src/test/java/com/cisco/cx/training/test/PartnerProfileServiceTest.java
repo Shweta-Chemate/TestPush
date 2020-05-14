@@ -2,16 +2,23 @@ package com.cisco.cx.training.test;
 
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+import java.nio.file.Files;
+
+import org.apache.commons.codec.binary.Base64;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
 import com.cisco.cx.training.app.config.PropertyConfiguration;
@@ -27,6 +34,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class PartnerProfileServiceTest {
 	@Mock
 	private PropertyConfiguration config;
+	
+	@Autowired
+	ResourceLoader resourceLoader;
 
 	@Mock
 	RestTemplate restTemplate;
@@ -34,54 +44,54 @@ public class PartnerProfileServiceTest {
 	@InjectMocks
 	private PartnerProfileService partnerProfileService = new PartnerProfileServiceImpl();
 
-	private static final String X_MASHERY_HANSHAKE = "X-Mashery-Handshake";
-
+	private static final String X_MASHERY_HANSHAKE = "X-Mashery-Handshake";	
+	
 	@Test
-	public void fetchUserDetails() throws JsonProcessingException {
+	public void fetchUserDetails() throws IOException {
 		partnerProfileService.setEntitlementUrl("");
 		when(config.createCxpBasicAuthToken()).thenReturn("");
 		HttpHeaders headers = new HttpHeaders();
-		String xMasheryHandshake = "";
+		String xMasheryHandshake = new String(Base64.encodeBase64(loadFromFile("mock/auth-mashery-user1.json").getBytes()));
 		headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
 		headers.set("Authorization", "Basic " + "");
 		HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
 
 		ResponseEntity<String> result = new ResponseEntity<>(getUserDetails(), HttpStatus.OK);
-		when(restTemplate.exchange("", HttpMethod.GET, requestEntity, String.class)).thenReturn(result);
+		when(restTemplate.exchange("/sntccbr5@hotmail.com", HttpMethod.GET, requestEntity, String.class)).thenReturn(result);
 		partnerProfileService.fetchUserDetails(xMasheryHandshake);
 		partnerProfileService.getEntitlementUrl();
 	}
 	
-	@Test(expected = GenericException.class)
-	public void fetchUserDetailsJsonMappingError() throws JsonProcessingException {
+	@Test
+	public void fetchUserDetailsJsonMappingError() throws IOException {
 		partnerProfileService.setEntitlementUrl("");
 		when(config.createCxpBasicAuthToken()).thenReturn("");
 		HttpHeaders headers = new HttpHeaders();
-		String xMasheryHandshake = "";
+		String xMasheryHandshake = new String(Base64.encodeBase64(loadFromFile("mock/auth-mashery-user1.json").getBytes()));
 		headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
 		headers.set("Authorization", "Basic " + "");
 		HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
 
 		ResponseEntity<String> result = new ResponseEntity<>("", HttpStatus.OK);
-		when(restTemplate.exchange("", HttpMethod.GET, requestEntity, String.class)).thenReturn(result);
-		partnerProfileService.fetchUserDetails(xMasheryHandshake);
-		partnerProfileService.getEntitlementUrl();
+		when(restTemplate.exchange("/sntccbr5@hotmail.com", HttpMethod.GET, requestEntity, String.class)).thenReturn(result);
+		UserDetails response = partnerProfileService.fetchUserDetails(xMasheryHandshake);
+		Assert.isNull(response);
 	}
 	
-	@Test(expected = GenericException.class)
-	public void fetchUserDetailsJsonParseError() throws JsonProcessingException {
+	@Test
+	public void fetchUserDetailsJsonParseError() throws IOException {
 		partnerProfileService.setEntitlementUrl("");
 		when(config.createCxpBasicAuthToken()).thenReturn("");
 		HttpHeaders headers = new HttpHeaders();
-		String xMasheryHandshake = "";
+		String xMasheryHandshake = new String(Base64.encodeBase64(loadFromFile("mock/auth-mashery-user1.json").getBytes()));
 		headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
 		headers.set("Authorization", "Basic " + "");
 		HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
 
 		ResponseEntity<String> result = new ResponseEntity<>("some @ data", HttpStatus.OK);
-		when(restTemplate.exchange("", HttpMethod.GET, requestEntity, String.class)).thenReturn(result);
-		partnerProfileService.fetchUserDetails(xMasheryHandshake);
-		partnerProfileService.getEntitlementUrl();
+		when(restTemplate.exchange("/sntccbr5@hotmail.com", HttpMethod.GET, requestEntity, String.class)).thenReturn(result);
+		UserDetails response = partnerProfileService.fetchUserDetails(xMasheryHandshake);
+		Assert.isNull(response);
 	}
 	
 	private String getUserDetails() throws JsonProcessingException {
@@ -106,6 +116,10 @@ public class PartnerProfileServiceTest {
 		userDetails.setZipcode("zipcode");
 
 		return mapper.writeValueAsString(userDetails);
+	}
+	
+	private String loadFromFile(String filePath) throws IOException {
+		return new String(Files.readAllBytes(resourceLoader.getResource("classpath:" + filePath).getFile().toPath()));
 	}
 
 }

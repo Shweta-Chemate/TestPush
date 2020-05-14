@@ -2,7 +2,6 @@ package com.cisco.cx.training.util;
 
 import com.cisco.cx.training.app.entities.SuccessAcademyLearningEntity;
 import com.cisco.cx.training.models.SuccessAcademyLearning;
-import com.cisco.cx.training.models.SuccessAcademyModel;
 
 public class SuccessAcademyMapper {
 	

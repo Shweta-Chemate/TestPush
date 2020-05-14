@@ -1,5 +1,11 @@
 package com.cisco.cx.training.app.rest;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,16 +40,8 @@ import com.cisco.cx.training.models.Community;
 import com.cisco.cx.training.models.CountResponseSchema;
 import com.cisco.cx.training.models.SuccessAcademyFilter;
 import com.cisco.cx.training.models.SuccessAcademyLearning;
-import com.cisco.cx.training.models.SuccessAcademyModel;
 import com.cisco.cx.training.models.SuccessTalkResponseSchema;
 import com.cisco.cx.training.models.SuccesstalkUserRegEsSchema;
-import com.cisco.cx.training.util.ValidationUtil;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 
 @RestController
 @Validated
@@ -62,22 +60,7 @@ public class TrainingAndEnablementController {
 	@RequestMapping(path = "/ready", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Template API Readiness probe", hidden = true)
 	public Map<String, String> checkReady() throws HealthCheckException {
-		Map<String, String> healthStatus = new HashMap<>();
-
-		// process the mandatory dependencies first
-		ValidationUtil.checkHealth(healthStatus, mandatoryDependencies);
-
-		// next, check if any of the mandatory dependencies are DOWN
-		boolean isMandatoryDepDown = healthStatus.values().contains("DOWN");
-
-		//process optional dependencies AFTER checking if mandatory dependencies are DOWN
-		ValidationUtil.checkHealth(healthStatus, optionalDependencies);
-
-		if (isMandatoryDepDown) {
-			throw new HealthCheckException(healthStatus);
-		}
-
-		return healthStatus;
+		return new HashMap<>();
 	}
 	
 	@RequestMapping("/live")
