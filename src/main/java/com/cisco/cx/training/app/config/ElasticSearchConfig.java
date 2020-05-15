@@ -36,8 +36,9 @@ public class ElasticSearchConfig {
                 .setHttpClientConfigCallback(new HttpClientConfigCallback() {
                     @Override
                     public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
-                        return httpClientBuilder
-                                .setDefaultCredentialsProvider(credentialsProvider);
+                    	return httpClientBuilder;
+                    	//return httpClientBuilder
+                        //       .setDefaultCredentialsProvider(credentialsProvider);
                     }
                 });
 
