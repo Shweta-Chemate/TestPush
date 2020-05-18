@@ -37,18 +37,22 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: appd_accesskey
-                  name: appd-secret-cx
+                  name: cxpp-appdynamics
             - name: APPDYNAMICS_AGENT_ACCOUNT_NAME
               valueFrom:
                 secretKeyRef:
                   key: appd_accountname
-                  name: appd-secret-cx
+                  name: cxpp-appdynamics
             - name: APPDYNAMICS_ENABLED
               value: {{ .Values.appDynamics.enabled | quote }}
-            - name: APPDYNAMICS_JAVA_AGENT_REUSE_NODE_NAME_PREFIX
+            - name: APPDYNAMICS_AGENT_NODE_NAME
               valueFrom:
                 fieldRef:
-                  fieldPath: metadata.labels['release']
+                  fieldPath: metadata.name
+            - name: POD_DEPLOYED_NODE
+              valueFrom:
+                 fieldRef:
+                    fieldPath: spec.nodeName
             - name: APPDYNAMICS_AGENT_TIER_NAME
               valueFrom:
                 fieldRef:
@@ -116,7 +120,7 @@ spec:
           envFrom:
           {{- if .Values.appDynamics.enabled}}
           - configMapRef:
-              name: appd-cx
+              name: cxpp-appdynamics-environment-properties
           {{- end}}        
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
