@@ -76,18 +76,12 @@
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
             <artifactId>elasticsearch-rest-high-level-client</artifactId>
-            <version>7.2.0</version>
         </dependency>
 
         <dependency>
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
-            <version>7.2.0</version>
-        </dependency>
-	<dependency>
-	     <groupId>org.ehcache</groupId>
-	     <artifactId>ehcache</artifactId>
-	</dependency>
+        </dependency>	
 	<dependency>
          <groupId>com.smartsheet</groupId>
          <artifactId>smartsheet-sdk-java</artifactId>
