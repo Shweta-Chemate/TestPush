@@ -47,6 +47,14 @@ tolerations: []
 
 affinity: {}
 
+# Config for HPA - horizontal pod scaling
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
 appDynamics:
   enabled: false
   appdynamics_controller_host_name: cisco-cx-test.saas.appdynamics.com
