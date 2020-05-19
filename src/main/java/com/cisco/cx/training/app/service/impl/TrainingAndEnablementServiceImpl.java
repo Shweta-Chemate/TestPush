@@ -42,7 +42,6 @@ import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.cisco.cx.training.models.Community;
 import com.cisco.cx.training.models.CountResponseSchema;
 import com.cisco.cx.training.models.CountSchema;
-import com.cisco.cx.training.models.MasheryObject;
 import com.cisco.cx.training.models.SuccessAcademyFilter;
 import com.cisco.cx.training.models.SuccessAcademyLearning;
 import com.cisco.cx.training.models.SuccessTalk;
@@ -225,6 +224,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 			CountSchema successAcamedyCount = new CountSchema();
 			successAcamedyCount.setLabel("CX Learning");			
 			successAcamedyCount.setCount(successAcademyDAO.count());
+
 			indexCounts.add(successAcamedyCount);
 
 			countResponse.setLearningStatus(indexCounts);

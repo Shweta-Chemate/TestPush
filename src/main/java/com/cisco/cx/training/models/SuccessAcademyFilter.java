@@ -1,10 +1,9 @@
 package com.cisco.cx.training.models;
 
-import com.cisco.cx.training.util.HasId;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SuccessAcademyFilter{
 

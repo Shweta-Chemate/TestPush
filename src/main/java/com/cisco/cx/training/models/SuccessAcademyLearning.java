@@ -116,11 +116,6 @@ public class SuccessAcademyLearning{
 
 	public void setRowId(String rowId) {
 		this.rowId = rowId;
-	}
-	
-	
-	
-	
-	
+	}	
 	
 }
