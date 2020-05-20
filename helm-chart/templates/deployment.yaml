@@ -72,6 +72,11 @@ spec:
                 secretKeyRef:
                   name: cxpp-common
                   key: cxpp_elasticsearch_password
+            - name: cxpp_es_hostname
+              valueFrom:
+                secretKeyRef:
+                  name: cxpp-common
+                  key: cxpp_es_hostname
             - name: cxpp_te_successtalk_registration_sheet
               valueFrom:
                 secretKeyRef:

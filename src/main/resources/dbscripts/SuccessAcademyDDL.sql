@@ -3,7 +3,7 @@ CREATE TABLE success_academy_learnings(
   'title' VARCHAR(250) NOT NULL,
   'asset_model' VARCHAR(250) NOT NULL,
   'asset_facet' VARCHAR(250) NOT NULL,
-  'asset_group' VARCHAR(250) NOT NULL,
+  'asset_group' VARCHAR(250) NULL,
   'supported_formats' VARCHAR(250) NULL,
   'post_date' VARCHAR(45) NULL,
   'description' MEDIUMTEXT NULL,
