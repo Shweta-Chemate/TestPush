@@ -35,8 +35,6 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 	@Autowired
 	private PropertyConfiguration propertyConfig;
 	
-	private static final String TABLE_NAME = "cxpp_user_bookmarks";
-	
 	private static final String USERID_SUFFIX = "-academybookmark";
 	
 	private static final String BOOKMARK_KEY = "bookmarks";
@@ -89,7 +87,7 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 	    itemValue.put("userid", AttributeValue.builder().s(bookmarkResponseSchema.getEmail().concat(USERID_SUFFIX)).build());
 	    itemValue.put("bookmarks", AttributeValue.builder().ss(currentBookMarks).build());
 	    Builder putItemReq = PutItemRequest.builder();
-	    putItemReq.tableName(TABLE_NAME).item(itemValue);
+	    putItemReq.tableName(propertyConfig.getBookmarkTableName()).item(itemValue);
 	    PutItemResponse response = dbClient.putItem(putItemReq.build());
 	    if(response.sdkHttpResponse().isSuccessful()){
 	    	BookmarkResponseSchema responseSchema = new BookmarkResponseSchema();
@@ -111,7 +109,7 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 	    expressionAttributeValues.put(":useridValue",AttributeValue.builder().s(email.concat(USERID_SUFFIX)).build());
 
 	    QueryRequest queryRequest = QueryRequest.builder()
-	        .tableName(TABLE_NAME)
+	        .tableName(propertyConfig.getBookmarkTableName())
 	        .keyConditionExpression("#userid = :useridValue")
 	        .expressionAttributeNames(expressionAttributesNames)
 	        .expressionAttributeValues(expressionAttributeValues).build();

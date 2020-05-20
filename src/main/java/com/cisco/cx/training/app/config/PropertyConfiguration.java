@@ -73,6 +73,9 @@ public class PropertyConfiguration {
 	
 	@Value("${cxpp.aws.access.secret}")
 	private String awsAccessSecret;
+	
+	@Value("${cxpp.learning.bookmark.table}")
+	private String bookmarkTableName;
 
 	public String getCxpBasicAuthUserName() {
 		if (StringUtils.isBlank(cxpBasicAuthUserName)) {
@@ -164,6 +167,14 @@ public class PropertyConfiguration {
 
 	public String getAwsAccessSecret() {
 		return awsAccessSecret;
+	}
+
+	public String getBookmarkTableName() {
+		return bookmarkTableName;
+	}
+
+	public void setBookmarkTableName(String bookmarkTableName) {
+		this.bookmarkTableName = bookmarkTableName;
 	}
 
 }
