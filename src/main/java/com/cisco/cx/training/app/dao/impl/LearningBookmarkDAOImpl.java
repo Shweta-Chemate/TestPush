@@ -8,6 +8,8 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -19,18 +21,19 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClientBuilder;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
-import software.amazon.awssdk.services.dynamodb.model.PutItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest.Builder;
+import software.amazon.awssdk.services.dynamodb.model.PutItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
 import software.amazon.awssdk.services.dynamodb.model.QueryResponse;
 
 import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
-import com.cisco.cx.training.models.BookmarkRequestSchema;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
 
 @Repository
 public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
+	
+	private final Logger LOG = LoggerFactory.getLogger(this.getClass().getName());
 	
 	@Autowired
 	private PropertyConfiguration propertyConfig;
@@ -51,6 +54,8 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 
 	@PostConstruct
 	public void init() {
+		LOG.info("Initializing LearningBookmarkDAOImpl for table :: ",propertyConfig.getBookmarkTableName());
+		LOG.info("Initializing LearningBookmarkDAOImpl with access key :: ",propertyConfig.getAwsAccessKey());
 		Region region = Region.of(propertyConfig.getAwsRegion());
 		DynamoDbClientBuilder dDbClientBuilder = DynamoDbClient.builder();
 		dDbClientBuilder.region(region);
@@ -82,7 +87,10 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 			}
 			currentBookMarks.add(bookmarkResponseSchema.getLearningid());			
 		}else{
-			currentBookMarks.remove(bookmarkResponseSchema.getLearningid());			
+			currentBookMarks.remove(bookmarkResponseSchema.getLearningid());
+			if(currentBookMarks.isEmpty()){
+				currentBookMarks.add("");
+			}
 		}		
 	    itemValue.put("userid", AttributeValue.builder().s(bookmarkResponseSchema.getEmail().concat(USERID_SUFFIX)).build());
 	    itemValue.put("bookmarks", AttributeValue.builder().ss(currentBookMarks).build());
