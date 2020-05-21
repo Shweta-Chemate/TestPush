@@ -111,12 +111,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: cxpp-common
-                  key: cxpp_te_successtalk_registration_token
+                  key: cxpp_aws_generic_access_secret
             - name: cxpp_learning_bookmark_table
               valueFrom:
                 secretKeyRef:
                   name: cxpp-common
-                  key: cxpp_te_successtalk_registration_token
+                  key: cxpp_learning_bookmark_table
             - name: cxp_basicauth_username
               valueFrom:
                 secretKeyRef:
