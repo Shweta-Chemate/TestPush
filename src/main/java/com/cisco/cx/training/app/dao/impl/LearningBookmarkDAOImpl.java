@@ -56,6 +56,7 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 	public void init() {
 		LOG.info("Initializing LearningBookmarkDAOImpl for table :: ",propertyConfig.getBookmarkTableName());
 		LOG.info("Initializing LearningBookmarkDAOImpl with access key :: ",propertyConfig.getAwsAccessKey());
+		LOG.info("Initializing LearningBookmarkDAOImpl with ES hostname :: ",propertyConfig.getElasticsearchHost());
 		Region region = Region.of(propertyConfig.getAwsRegion());
 		DynamoDbClientBuilder dDbClientBuilder = DynamoDbClient.builder();
 		dDbClientBuilder.region(region);
