@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.cisco.cx.training.app.entities.PartnerPortalLookUpEntity;
-import com.cisco.cx.training.app.entities.SuccessAcademyLearningEntity;
 
 public interface PartnerPortalLookupDAO extends JpaRepository<PartnerPortalLookUpEntity, String>{
 	
