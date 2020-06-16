@@ -13,6 +13,7 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -46,6 +47,17 @@ public class SuccessTalkDAOTest {
 	@InjectMocks
 	private SuccessTalkDAO successTalkDAO = new SuccessTalkDAOImpl();
 
+	private Long eventTime ;
+	
+	@Before
+	public void setUp() {
+		Date currentDate = new Date();
+		Calendar c = Calendar.getInstance();
+        c.setTime(currentDate);
+        c.add(Calendar.MONTH, 1);
+		eventTime = c.getTime().getTime();
+	}
+	
 	@Test
 	public void insertSuccessTalk() throws IOException {
 		SuccessTalk successTalk = getSuccessTask();
@@ -149,7 +161,7 @@ public class SuccessTalkDAOTest {
 		sourceBuilder.query(boolQuery);
 		sourceBuilder.size(10000);
 		SuccessTalk successTalk = getSuccessTask();
-		ElasticSearchResults<SuccessTalk> results = new ElasticSearchResults<SuccessTalk>();
+		ElasticSearchResults<SuccessTalk> results = new ElasticSearchResults<>();
 		results.addDocument(successTalk);
 		when(elasticSearchDAO.query(config.getSuccessTalkIndex(), sourceBuilder, SuccessTalk.class)).thenReturn(results);
 		
@@ -213,12 +225,12 @@ public class SuccessTalkDAOTest {
 		BookmarkResponseSchema bookmark = new BookmarkResponseSchema();
 		bookmark.setBookmark(true);
 		bookmark.setBookmarkRequestId("bookmarkRequestId");
-		bookmark.setCreated(1L);
+		bookmark.setCreated(eventTime);
 		bookmark.setDocId("docid");
 		bookmark.setEmail("email");
 		bookmark.setId("id");
 		bookmark.setTitle("title");
-		bookmark.setUpdated(1L);
+		bookmark.setUpdated(eventTime);
 		List<BookmarkResponseSchema> bookMarkList= new ArrayList<BookmarkResponseSchema>();
 		bookMarkList.add(bookmark);
 		when(bookmarkDAO.getBookmarks(email, null)).thenReturn(bookMarkList);
@@ -265,11 +277,6 @@ public class SuccessTalkDAOTest {
 	
 
 	private SuccessTalk getSuccessTask() {
-		Date currentDate = new Date();
-		Calendar c = Calendar.getInstance();
-        c.setTime(currentDate);
-        c.add(Calendar.MONTH, 1);
-        
 		SuccessTalk successTalk = new SuccessTalk();
 		successTalk.setTitle("title");
 		successTalk.setBookmark(true);
@@ -285,7 +292,7 @@ public class SuccessTalkDAOTest {
 		session.setRegistrationUrl("");
 		session.setScheduled(false);
 		session.setSessionId("successTalkSessionId");
-		session.setSessionStartDate(c.getTime().getTime());
+		session.setSessionStartDate(eventTime);
 		successTalk.setSessions(Arrays.asList(session));
 		successTalk.setQuarter("");
 		successTalk.setStatus(SuccessTalk.SuccessTalkStatusEnum.CONFIRMED);
@@ -295,11 +302,6 @@ public class SuccessTalkDAOTest {
 	}
 	
 	private SuccesstalkUserRegEsSchema getRegistration() {
-		Date currentDate = new Date();
-		Calendar c = Calendar.getInstance();
-		c.setTime(currentDate);
-		c.add(Calendar.MONTH, 1);
-
 		SuccesstalkUserRegEsSchema registration = new SuccesstalkUserRegEsSchema();
 		registration.setEmail("email");
 		registration.setFirstName("name");
@@ -308,14 +310,14 @@ public class SuccessTalkDAOTest {
 		registration.setCountry("");
 		registration.setDocId("");
 		registration.setAttendedStatus(SuccesstalkUserRegEsSchema.AttendedStatusEnum.NO);
-		registration.setEventStartDate(c.getTime().getTime());
+		registration.setEventStartDate(eventTime);
 		registration.setEventStartDateFormatted("");
 		registration.setPhone("");
-		registration.setRegistrationDate(c.getTime().getTime());
+		registration.setRegistrationDate(eventTime);
 		registration.setRegistrationDateFormatted("");
 		registration.setRegistrationStatus(SuccesstalkUserRegEsSchema.RegistrationStatusEnum.PENDING);
-		registration.setTitle("");
-		registration.setUpdated(c.getTime().getTime());
+		registration.setTitle("title");
+		registration.setUpdated(eventTime);
 		registration.setUserTitle("");
 		return registration;
 	}
