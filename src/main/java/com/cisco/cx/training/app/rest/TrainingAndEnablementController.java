@@ -50,7 +50,9 @@ import com.cisco.cx.training.models.SuccesstalkUserRegEsSchema;
 public class TrainingAndEnablementController {
 	private final Logger LOG = LoggerFactory.getLogger(TrainingAndEnablementController.class);
 
+	@SuppressWarnings("unused")
 	private final Map<String, Callable<Boolean>> mandatoryDependencies = new HashMap<>();
+	@SuppressWarnings("unused")
 	private final Map<String, Callable<Boolean>> optionalDependencies = new HashMap<>();
 
 	
