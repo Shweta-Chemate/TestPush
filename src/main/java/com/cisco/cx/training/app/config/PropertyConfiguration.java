@@ -28,10 +28,7 @@ public class PropertyConfiguration {
 
 	@Value("${elasticsearch.password}")
 	private String elasticsearchPassword;
-
-	@Value("${entitlement.user.party.affiliation.url}")
-	private String entitlementUserPartyAffiliationUrl;
-
+	
 	@Value("${successTalk.elasticsearch.index}")
 	private String successTalkIndex;
 	
