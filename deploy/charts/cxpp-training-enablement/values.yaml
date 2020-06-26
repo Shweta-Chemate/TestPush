@@ -66,9 +66,7 @@ appDynamics:
 
 files:
   environment.properties:
-    cisco.ldap.external.url: ${cisco_ldap_external_url}
-    cisco.oauth.token.url: ${cisco_oauth_token_url}
-    cxp.emailapi.context.url: https://cpp-api.${CLUSTER_NAME_FULL}/email/
-    cxp.emailapi.readiness.url: https://cpp-api.${CLUSTER_NAME_FULL}/email/v1/ready
-    entitlement.user.party.affiliation.url: https://cpp-api.${CLUSTER_NAME_FULL}/entitlement/v1/user/party/affiliation/{partyId}
+    elasticsearch.host: ${cxpp_es_hostname}
+    spring.datasource.url: ${cxpp_mysql_jdbc_url}
+    cxpp.aws.region: us-west-2
 
