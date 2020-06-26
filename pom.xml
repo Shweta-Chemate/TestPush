@@ -103,7 +103,6 @@
         <dependency>
 		    <groupId>software.amazon.awssdk</groupId>
 		    <artifactId>dynamodb</artifactId>
-			<version>2.11.14</version>
 		</dependency>
         
     </dependencies>
@@ -192,7 +191,9 @@
             <id>repo.cxe.csco.cloud-snapshot</id>
             <url>s3://repo.cxe.csco.cloud/snapshot</url>
         </snapshotRepository>
-		<dependencies>
+    </distributionManagement>
+	<dependencyManagement>
+	   <dependencies>
 	      <dependency>
 	         <groupId>software.amazon.awssdk</groupId>
 	         <artifactId>bom</artifactId>
@@ -201,7 +202,6 @@
 	         <scope>import</scope>
 	      </dependency>
 	   </dependencies>
-
-    </distributionManagement>
+	</dependencyManagement>
 
 </project>
