@@ -1,0 +1,194 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "cxpp-training-enablement.fullname" . }}
+  labels:
+    app: {{ template "cxpp-training-enablement.name" . }}
+    chart: {{ template "cxpp-training-enablement.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "cxpp-training-enablement.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "cxpp-training-enablement.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      initContainers:
+      {{- if .Values.appDynamics.enabled}}
+        - image: {{ .Values.appDynamics.init_repo }}:{{ .Values.appDynamics.init_tag }}
+          name: appdynamicsagent
+          command: ["/bin/sh"]
+          args: ["-c", "cp -r /app_agent/* /AppServerAgent/"]
+          volumeMounts:
+            - mountPath: /AppServerAgent
+              name: appdagent
+      {{- end}}
+      containers:
+        - name: {{ .Chart.Name }}
+          env:
+          {{- if .Values.appDynamics.enabled}}
+            - name: APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: appd_accesskey
+                  name: cxpp-appdynamics
+            - name: APPDYNAMICS_AGENT_ACCOUNT_NAME
+              valueFrom:
+                secretKeyRef:
+                  key: appd_accountname
+                  name: cxpp-appdynamics
+            - name: APPDYNAMICS_ENABLED
+              value: {{ .Values.appDynamics.enabled | quote }}
+            - name: APPDYNAMICS_AGENT_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_DEPLOYED_NODE
+              valueFrom:
+                 fieldRef:
+                    fieldPath: spec.nodeName
+            - name: APPDYNAMICS_AGENT_TIER_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['release']
+            - name: APPDYNAMICS_AGENT_APPLICATION_NAME
+              value: {{ .Values.appDynamics.appdynamics_agent_application_name }}
+            - name: APPDYNAMICS_CONTROLLER_HOST_NAME
+              value: {{ .Values.appDynamics.appdynamics_controller_host_name }}
+          {{- end}}
+            - name: cxpp_elasticsearch_username
+              valueFrom:
+                secretKeyRef:
+                  name: cxpp-common
+                  key: cxpp_elasticsearch_username
+            - name: cxpp_elasticsearch_password
+              valueFrom:
+                secretKeyRef:
+                  name: cxpp-common
+                  key: cxpp_elasticsearch_password
+            - name: cxpp_es_hostname
+              valueFrom:
+                secretKeyRef:
+                  name: cxpp-common
+                  key: cxpp_es_hostname
+            - name: cxpp_te_successtalk_registration_sheet
+              valueFrom:
+                secretKeyRef:
+                  name: cxpp-common
+                  key: cxpp_te_successtalk_registration_sheet
+            - name: cxpp_te_successtalk_registration_token
+              valueFrom:
+                secretKeyRef:
+                  name: cxpp-common
+                  key: cxpp_te_successtalk_registration_token
+            - name: cxpp_mysql_username
+              valueFrom:
+                secretKeyRef:
+                  name: cxpp-common
+                  key: cxpp_mysql_username
+            - name: cxpp_mysql_password
+              valueFrom:
+                secretKeyRef:
+                  name: cxpp-common
+                  key: cxpp_mysql_password
+            - name: cxpp_mysql_jdbc_url
+              valueFrom:
+                secretKeyRef:
+                  name: cxpp-common
+                  key: cxpp_mysql_jdbc_url      
+            - name: cxpp_aws_generic_access_id
+              valueFrom:
+                secretKeyRef:
+                  name: cxpp-common
+                  key: cxpp_aws_generic_access_id
+            - name: cxpp_aws_generic_access_secret
+              valueFrom:
+                secretKeyRef:
+                  name: cxpp-common
+                  key: cxpp_aws_generic_access_secret
+            - name: cxpp_learning_bookmark_table
+              valueFrom:
+                secretKeyRef:
+                  name: cxpp-common
+                  key: cxpp_learning_bookmark_table
+            - name: cxp_basicauth_username
+              valueFrom:
+                secretKeyRef:
+                  name: cxcp-common-high
+                  key: cxcp_basicauth_username
+            - name: cxp_basicauth_password
+              valueFrom:
+                secretKeyRef:
+                  name: cxcp-common-high
+                  key: cxcp_basicauth_password
+          envFrom:
+          {{- if .Values.appDynamics.enabled}}
+          - configMapRef:
+              name: cxpp-appdynamics-environment-properties
+          {{- end}}        
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          # command: ["/bin/bash"]
+          # args: ["-c", "/home/creando/platform/run.sh"]
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            {{- if .Values.service.ssl.enabled -}}
+            - name: https
+              containerPort: 8443
+              protocol: TCP
+            {{ end }}
+          livenessProbe:
+             httpGet:
+               path: /cxpp-training-enablement/training/v1/partner/training/live
+               port: 8080
+             initialDelaySeconds: 300
+             periodSeconds: 30
+             timeoutSeconds: 2
+             failureThreshold: 3
+          readinessProbe:
+             httpGet:
+               path: /cxpp-training-enablement/training/v1/partner/training/ready
+               port: 8080
+             initialDelaySeconds: 300
+             periodSeconds: 30
+             timeoutSeconds: 5
+             failureThreshold: 3
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+          volumeMounts:
+            {{- if .Values.appDynamics.enabled}}
+            - mountPath: {{ .Values.appDynamics.appd_mount_dir }}
+              name: appdagent
+            {{- end }}
+            - mountPath: /myapp/environment.properties
+              name: {{ template "cxpp-training-enablement.fullname" . }}-environment
+              subPath: environment.properties
+
+      volumes:
+      {{- if .Values.appDynamics.enabled}}
+      - name: appdagent
+        emptyDir: {}
+      {{- end}}
+      - name: {{ template "cxpp-training-enablement.fullname" . }}-environment
+        configMap:
+          name: {{ template "cxpp-training-enablement.fullname" . }}-environment-properties

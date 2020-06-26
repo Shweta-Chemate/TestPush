@@ -156,54 +156,42 @@
 
     <repositories>
         <repository>
-            <id>services-cf-group</id>
-            <name>CXE Virtual Repository Group</name>
-            <url>http://engci-maven.cisco.com/artifactory/services-cf-group/</url>
+            <id>repo.cxe.csco.cloud-snapshot</id>
+            <url>s3://repo.cxe.csco.cloud/snapshot</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>repo.cxe.csco.cloud-release</id>
+            <url>s3://repo.cxe.csco.cloud/release</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
             <snapshots>
-                <enabled>true</enabled>
+                <enabled>false</enabled>
             </snapshots>
         </repository>
     </repositories>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>services-cf-group</id>
-            <name>CXE Virtual Repository Group</name>
-            <url>http://engci-maven.cisco.com/artifactory/services-cf-group/</url>
+    <distributionManagement>
+        <repository>
+            <id>repo.cxe.csco.cloud-release</id>
+            <url>s3://repo.cxe.csco.cloud/release</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
             <snapshots>
-                <enabled>true</enabled>
+                <enabled>false</enabled>
             </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
-
-    <distributionManagement>
-        <repository>
-            <id>cstg-ee-release</id>
-            <name>CF DevOps Release Repository</name>
-            <url>http://engci-maven.cisco.com/artifactory/cstg-ee-release/</url>
         </repository>
         <snapshotRepository>
-            <id>cstg-ee-snapshot</id>
-            <name>CF DevOps Snapshot Repository</name>
-            <url>http://engci-maven.cisco.com/artifactory/cstg-ee-snapshot/</url>
+            <id>repo.cxe.csco.cloud-snapshot</id>
+            <url>s3://repo.cxe.csco.cloud/snapshot</url>
         </snapshotRepository>
+
     </distributionManagement>
-    <dependencyManagement>
-	   <dependencies>
-	      <dependency>
-	         <groupId>software.amazon.awssdk</groupId>
-	         <artifactId>bom</artifactId>
-	         <version>2.11.14</version>
-	         <type>pom</type>
-	         <scope>import</scope>
-	      </dependency>
-	   </dependencies>
-	</dependencyManagement>
 
 </project>
