@@ -1,0 +1,26 @@
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+    <!-- NOTE: There are _NO_ credentials in this file. Credentials must be provided by the build secrets. -->
+
+    <servers>
+        <server>
+          <id>repo.cxe.csco.cloud-release</id>
+          
+          <username>${env.ACCESS_KEY_ID}</username>
+          <password>${env.SECRET_ACCESS_KEY}</password>
+          <configuration>
+            <wagonProvider>s3</wagonProvider>
+          </configuration>
+        </server>
+        <server>
+          <id>repo.cxe.csco.cloud-snapshot</id>
+          <username>${env.ACCESS_KEY_ID}</username>
+          <password>${env.SECRET_ACCESS_KEY}</password>
+          <configuration>
+            <wagonProvider>s3</wagonProvider>
+          </configuration>
+        </server>
+      </servers>
+</settings>
