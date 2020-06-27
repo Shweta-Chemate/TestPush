@@ -120,12 +120,12 @@ spec:
             - name: cxp_basicauth_username
               valueFrom:
                 secretKeyRef:
-                  name: cxcp-common-high
+                  name: cxcp-common
                   key: cxcp_basicauth_username
             - name: cxp_basicauth_password
               valueFrom:
                 secretKeyRef:
-                  name: cxcp-common-high
+                  name: cxcp-common
                   key: cxcp_basicauth_password
           envFrom:
           {{- if .Values.appDynamics.enabled}}
