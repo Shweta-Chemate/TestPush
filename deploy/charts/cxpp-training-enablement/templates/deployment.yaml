@@ -90,13 +90,13 @@ spec:
             - name: cxpp_mysql_username
               valueFrom:
                 secretKeyRef:
-                  name: cxpp-common
-                  key: cxpp_mysql_username
+                  name: cxpp-aurora
+                  key: username
             - name: cxpp_mysql_password
               valueFrom:
                 secretKeyRef:
-                  name: cxpp-common
-                  key: cxpp_mysql_password
+                  name: cxpp-aurora
+                  key: password
             - name: cxpp_mysql_jdbc_url
               valueFrom:
                 secretKeyRef:
@@ -120,12 +120,12 @@ spec:
             - name: cxp_basicauth_username
               valueFrom:
                 secretKeyRef:
-                  name: cxcp-common
+                  name: cxpp-common
                   key: cxcp_basicauth_username
             - name: cxp_basicauth_password
               valueFrom:
                 secretKeyRef:
-                  name: cxcp-common
+                  name: cxpp-common
                   key: cxcp_basicauth_password
           envFrom:
           {{- if .Values.appDynamics.enabled}}
