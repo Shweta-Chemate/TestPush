@@ -27,6 +27,22 @@ ingress:
   servicePort: 8080
   tls:
     enabled: false
+    
+tolerations:
+  - effect: NoSchedule
+    key: cxpp
+    operator: Equal
+    value: "true"
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+            - key: cxpp
+              operator: In
+              values:
+                - "true"    
 
 
 resources:
