@@ -66,6 +66,5 @@ appDynamics:
 files:
   environment.properties:
     elasticsearch.host: ${cxpp_es_hostname}
-    spring.datasource.url: ${cxpp_mysql_jdbc_url}
     cxpp.aws.region: us-west-2
 
