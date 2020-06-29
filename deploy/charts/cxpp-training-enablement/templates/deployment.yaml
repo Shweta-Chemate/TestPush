@@ -180,15 +180,8 @@ spec:
             - mountPath: {{ .Values.appDynamics.appd_mount_dir }}
               name: appdagent
             {{- end }}
-            - mountPath: /myapp/environment.properties
-              name: {{ template "cxpp-training-enablement.fullname" . }}-environment
-              subPath: environment.properties
-              
       volumes:
       {{- if .Values.appDynamics.enabled}}
       - name: appdagent
         emptyDir: {}
       {{- end}}
-      - name: {{ template "cxpp-training-enablement.fullname" . }}-environment
-        configMap:
-          name: {{ template "cxpp-training-enablement.fullname" . }}-environment-properties
