@@ -163,6 +163,15 @@ spec:
              failureThreshold: 3
           resources:
 {{ toYaml .Values.resources | indent 12 }}
+          volumeMounts:
+            {{- if .Values.appDynamics.enabled}}
+            - mountPath: {{ .Values.appDynamics.appd_mount_dir }}
+              name: appdagent
+            {{- end }}
+            - mountPath: /myapp/environment.properties
+              name: {{ template "cxpp-training-enablement.fullname" . }}-environment
+              subPath: environment.properties
+              			
     {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
@@ -175,13 +184,12 @@ spec:
       tolerations:
 {{ toYaml . | indent 8 }}
     {{- end }}
-          volumeMounts:
-            {{- if .Values.appDynamics.enabled}}
-            - mountPath: {{ .Values.appDynamics.appd_mount_dir }}
-              name: appdagent
-            {{- end }}
+          
       volumes:
       {{- if .Values.appDynamics.enabled}}
       - name: appdagent
         emptyDir: {}
       {{- end}}
+      - name: {{ template "cxpp-training-enablement.fullname" . }}-environment
+        configMap:
+          name: {{ template "cxpp-training-enablement.fullname" . }}-environment-properties
