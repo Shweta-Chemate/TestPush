@@ -28,23 +28,6 @@ ingress:
   tls:
     enabled: false
     
-tolerations:
-  - effect: NoSchedule
-    key: cxpp
-    operator: Equal
-    value: "true"
-
-affinity:
-  nodeAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-      nodeSelectorTerms:
-      - matchExpressions:
-            - key: cxpp
-              operator: In
-              values:
-                - "true"    
-
-
 resources:
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
@@ -59,9 +42,21 @@ resources:
 
 nodeSelector: {}
 
-tolerations: []
+tolerations:
+  - effect: NoSchedule
+    key: cxpp
+    operator: Equal
+    value: "true"
 
-affinity: {}
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+            - key: cxpp
+              operator: In
+              values:
+                - "true"
 
 # Config for HPA - horizontal pod scaling
 autoscaling:
