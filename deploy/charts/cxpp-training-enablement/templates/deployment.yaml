@@ -175,15 +175,7 @@ spec:
       tolerations:
 {{ toYaml . | indent 8 }}
     {{- end }}
-          volumeMounts:
-            {{- if .Values.appDynamics.enabled}}
-            - mountPath: {{ .Values.appDynamics.appd_mount_dir }}
-              name: appdagent
-            {{- end }}
-            - mountPath: /myapp/environment.properties
-              name: {{ template "cxpp-training-enablement.fullname" . }}-environment
-              subPath: environment.properties
-
+ 
       volumes:
       {{- if .Values.appDynamics.enabled}}
       - name: appdagent
