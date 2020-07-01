@@ -65,13 +65,13 @@ spec:
             - name: cxpp_elasticsearch_username
               valueFrom:
                 secretKeyRef:
-                  name: cxpp-common
-                  key: cxpp_elasticsearch_username
+                  name: cxpp-elasticsearch
+                  key: es_master_user
             - name: cxpp_elasticsearch_password
               valueFrom:
                 secretKeyRef:
-                  name: cxpp-common
-                  key: cxpp_elasticsearch_password
+                  name: cxpp-elasticsearch
+                  key: es_master_password
             - name: cxpp_es_hostname
               valueFrom:
                 secretKeyRef:
