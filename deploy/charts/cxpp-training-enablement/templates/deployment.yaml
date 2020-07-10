@@ -75,8 +75,8 @@ spec:
             - name: cxpp_es_hostname
               valueFrom:
                 secretKeyRef:
-                  name: cxpp-common
-                  key: cxpp_es_hostname
+                  name: cxpp-elasticsearch
+                  key: domain_endpoint
             - name: cxpp_te_successtalk_registration_sheet
               valueFrom:
                 secretKeyRef:
