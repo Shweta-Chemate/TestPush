@@ -14,7 +14,7 @@ public class PropertyConfiguration {
 	@Value("${spring.application.name}")
 	private String applicationName;
 
-	@Value("${elasticsearch.host}")
+	@Value("${cxpp.elasticsearch.host}")
 	private String elasticsearchHost;
 
 	@Value("${elasticsearch.port}")
