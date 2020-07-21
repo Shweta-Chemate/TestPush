@@ -65,12 +65,6 @@ public class PropertyConfiguration {
 	@Value("${cxpp.aws.region}")
 	private String awsRegion;
 	
-	@Value("${cxpp.aws.access.key}")
-	private String awsAccessKey;
-	
-	@Value("${cxpp.aws.access.secret}")
-	private String awsAccessSecret;
-	
 	@Value("${cxpp.learning.bookmark.table}")
 	private String bookmarkTableName;
 
@@ -156,14 +150,6 @@ public class PropertyConfiguration {
 
 	public String getAwsRegion() {
 		return awsRegion;
-	}
-
-	public String getAwsAccessKey() {
-		return awsAccessKey;
-	}
-
-	public String getAwsAccessSecret() {
-		return awsAccessSecret;
 	}
 
 	public String getBookmarkTableName() {
