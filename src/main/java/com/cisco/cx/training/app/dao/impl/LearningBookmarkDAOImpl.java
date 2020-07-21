@@ -62,12 +62,12 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 			
 			@Override
 			public String secretAccessKey() {
-				return propertyConfig.getAwsAccessSecret();
+				return "";
 			}
 			
 			@Override
 			public String accessKeyId() {
-				return propertyConfig.getAwsAccessKey();
+				return "";
 			}
 		};
 		AwsCredentialsProvider credentialsProvider = StaticCredentialsProvider.create(credentials);

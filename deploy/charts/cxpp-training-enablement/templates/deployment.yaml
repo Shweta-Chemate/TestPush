@@ -101,17 +101,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: cxpp-common
-                  key: cxpp_mysql_jdbc_url      
-            - name: cxpp_aws_generic_access_id
-              valueFrom:
-                secretKeyRef:
-                  name: cxpp-common
-                  key: cxpp_aws_generic_access_id
-            - name: cxpp_aws_generic_access_secret
-              valueFrom:
-                secretKeyRef:
-                  name: cxpp-common
-                  key: cxpp_aws_generic_access_secret
+                  key: cxpp_mysql_jdbc_url
             - name: cxpp_learning_bookmark_table
               valueFrom:
                 secretKeyRef:
