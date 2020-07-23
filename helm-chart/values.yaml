@@ -58,9 +58,9 @@ autoscaling:
 appDynamics:
   enabled: false
   appdynamics_controller_host_name: cisco-cx-test.saas.appdynamics.com
-  appdynamics_agent_application_name: pp-${DESCRIPTOR_CLOUD}-${DESCRIPTOR_LIFECYCLE}
-  init_repo: 810598127841.dkr.ecr.us-east-2.amazonaws.com/appdynamics
-  init_tag: sdp-javaagent-4.5.9
+  appdynamics_agent_application_name: pp-aws-testing
+  init_repo: 539909726087.dkr.ecr.us-west-2.amazonaws.com/appd-javaagent
+  init_tag: v0.3.0
   appd_mount_dir: /AppServerAgent
 
 files:
