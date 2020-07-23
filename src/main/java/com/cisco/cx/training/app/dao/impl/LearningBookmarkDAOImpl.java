@@ -58,20 +58,6 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 		Region region = Region.of(propertyConfig.getAwsRegion());
 		DynamoDbClientBuilder dDbClientBuilder = DynamoDbClient.builder();
 		dDbClientBuilder.region(region);
-		AwsCredentials credentials = new AwsCredentials() {
-			
-			@Override
-			public String secretAccessKey() {
-				return "";
-			}
-			
-			@Override
-			public String accessKeyId() {
-				return "";
-			}
-		};
-		AwsCredentialsProvider credentialsProvider = StaticCredentialsProvider.create(credentials);
-		dDbClientBuilder.credentialsProvider(credentialsProvider);
 		dbClient = dDbClientBuilder.build();
 	}	
 
