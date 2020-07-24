@@ -1,17 +1,17 @@
 package com.cisco.cx.training.app.exception;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
-import java.util.Map;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 public class RestResponseStatusExceptionResolver extends AbstractHandlerExceptionResolver {
@@ -20,6 +20,19 @@ public class RestResponseStatusExceptionResolver extends AbstractHandlerExceptio
 
     @Override
     protected ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+        ErrorResponse errorBody = createErrorResponse(ex);
+        response.setStatus(errorBody.getStatus());
+
+        LOG.error("Unexpected Error", ex);
+
+        @SuppressWarnings("unchecked")
+		ModelAndView mav = new ModelAndView("cxpp-customer-portal-mirror-error", objectMapper.convertValue(errorBody, Map.class));
+        mav.setView(new MappingJackson2JsonView());
+
+        return mav;
+    }
+
+    public static ErrorResponse createErrorResponse(Throwable ex) {
         int errorStatus;
         String errorMsg;
         String errorCode;
@@ -36,25 +49,16 @@ public class RestResponseStatusExceptionResolver extends AbstractHandlerExceptio
             errorStatus = 404;
             errorMsg = "Not Found";
             errorCode = "API_INTERNAL_003";
-        } else if (ex instanceof HealthCheckException) {
-            errorStatus = 500;
-            errorMsg = "Health Check Error: " + Arrays.toString(((HealthCheckException) ex).getHealthStatus().entrySet().toArray());
-            errorCode = "API_INTERNAL_004";
+        }else if (ex instanceof NotAuthorizedException) {
+        	errorStatus = 401;
+        	errorMsg = "Not Authorized";
+        	errorCode = "API_INTERNAL_005";
         } else {
             errorStatus = 500;
             errorMsg = "Server Error";
-            errorCode = "API_INTERNAL_005";
+            errorCode = "API_INTERNAL_004";
         }
 
-        response.setStatus(errorStatus);
-        ErrorResponse errorBody = new ErrorResponse(errorStatus, ex.getMessage(), errorCode, errorMsg);
-
-        LOG.error("Unexpected Error", ex);
-
-        @SuppressWarnings("unchecked")
-		ModelAndView mav = new ModelAndView("springboot-template-error", objectMapper.convertValue(errorBody, Map.class));
-        mav.setView(new MappingJackson2JsonView());
-
-        return mav;
+        return new ErrorResponse(errorStatus, errorMsg, errorCode, ex.getMessage());
     }
 }
