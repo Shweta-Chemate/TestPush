@@ -67,7 +67,16 @@ public class PropertyConfiguration {
 	
 	@Value("${cxpp.learning.bookmark.table}")
 	private String bookmarkTableName;
-
+ 
+	@Value("${cxpp.rbac.exclude.path.patterns}")
+	private String rbacExcludedEndPoints;
+	
+	@Value("${cxpp.rbac.include.path.patterns}")
+	private String rbacIncludedEndPoints;
+	
+	@Value("${cxpp.user.management.auth.url}")
+    public String authUrl;
+	
 	public String getCxpBasicAuthUserName() {
 		if (StringUtils.isBlank(cxpBasicAuthUserName)) {
 			throw new IllegalStateException("CXP Basic Auth Username not present in ENV. Please set cxp_basicauth_username");
@@ -160,4 +169,17 @@ public class PropertyConfiguration {
 		this.bookmarkTableName = bookmarkTableName;
 	}
 
+	public String getRbacExcludedEndPoints() {
+		return rbacExcludedEndPoints;
+	}
+
+
+	public String getRbacIncludedEndPoints() {
+		return rbacIncludedEndPoints;
+	}
+
+	public String getAuthUrl() {
+		return authUrl;
+	}	
+	
 }
