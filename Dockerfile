@@ -1,4 +1,4 @@
-FROM 539909726087.dkr.ecr.us-west-2.amazonaws.com/base-hardened-jre:latest
+FROM 539909726087.dkr.ecr.us-west-2.amazonaws.com/base-hardened-jre:stable
 
 LABEL org.opencontainers.image.title="cxpp-training-enablement" \
       org.opencontainers.image.description="CHANGEME" \
