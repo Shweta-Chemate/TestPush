@@ -67,9 +67,6 @@ public class TrainingAndEnablementControllerTest {
 	ResourceLoader resourceLoader;
 	
 	@MockBean
-	HttpService httpService;
-
-	@MockBean
 	private TrainingAndEnablementService trainingAndEnablementService;
 
 	private String XMasheryHeader;
