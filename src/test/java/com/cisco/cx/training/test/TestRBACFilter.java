@@ -25,7 +25,6 @@ import org.springframework.web.client.RestTemplate;
 import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.filters.RBACFilter;
-import com.cisco.cx.training.app.service.impl.HttpService;
 import com.cisco.cx.training.util.AuthorizationUtil;
 
 @RunWith(SpringRunner.class)
