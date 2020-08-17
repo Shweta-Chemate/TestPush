@@ -50,9 +50,6 @@ public class TestRBACFilter {
 	private FilterChain chain;
 	
 	@Mock
-	private HttpService httpService;
-	
-	@Mock
 	private AuthorizationUtil authUtil;
 	
 	@Mock

@@ -43,9 +43,6 @@ public class RBACFilter implements Filter {
 	private PropertyConfiguration propertyConfiguration;
 
 	@Autowired
-	HttpService httpService;
-
-	@Autowired
 	ObjectMapper objectMapper;
 
 	private Configuration conf = Configuration.builder().mappingProvider(new JacksonMappingProvider())
