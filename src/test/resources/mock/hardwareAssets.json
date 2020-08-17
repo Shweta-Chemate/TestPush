@@ -1,0 +1,166 @@
+{
+    "data": [
+        {
+            "deviceName": "NYC-RTR-MPLS.cisco.com",
+            "ipAddress": "10.16.255.1",
+            "collectorId": "CSP0000114978",
+            "wfId": "7eeb825e-ae10-4848-9281-b8cdf0cbf3b6",
+            "criticalAdvisories": "1",
+            "serialNumber": "FOC17362YC9",
+            "productId": "PWR-GE-POE-4400",
+            "productType": "Modules",
+            "productName": "POE Module for On Board GE for Cisco ISR 4400 & 4350",
+            "productFamily": "ISR Modules",
+            "hasFieldNotices": "false",
+            "equipmentType": "MODULE",
+            "neId": "NA,FTX1751AKQZ,ISR4451-X/K9,NA",
+            "hwInstanceId": "FOC17362YC9,PWR-GE-POE-4400,NA,NA,FTX1751AKQZ,ISR4451-X/K9,NA",
+            "contractNumber": "",
+            "supportCovered": false,
+            "solutionInfo": [
+                {
+                    "useCase": "Campus Software Image Management",
+                    "solution": "IBN"
+                },
+                {
+                    "useCase": "Campus Network Segmentation",
+                    "solution": "IBN"
+                },
+                {
+                    "useCase": "Scalable Access Policy",
+                    "solution": "IBN"
+                },
+                {
+                    "useCase": "Campus Network Assurance",
+                    "solution": "IBN"
+                },
+                {
+                    "useCase": "Network Device Onboarding",
+                    "solution": "IBN"
+                }
+            ],
+            "cxLevel": "2",
+            "saId": "104959",
+            "vaId": [
+                "0"
+            ],
+            "mgmtSystemId": "e1515822-31df-450f-9d6a-093e3c7b956d",
+            "mgmtSystemAddr": "192.168.139.149",
+            "mgmtSystemHostname": "dnac1.cisco.com",
+            "mgmtSystemType": "DNAC",
+            "sourceNeId": "e76e5b00-694b-4dfa-ab92-35dde82d5e40",
+            "isCollector": false,
+            "containingHwId": "FTX1751AKQZ,ISR4451-X/K9,NA,FTX1751AKQZ,ISR4451-X/K9,NA,NA"
+        },
+        {
+            "deviceName": "NYC-RTR-MPLS.cisco.com",
+            "ipAddress": "10.16.255.1",
+            "collectorId": "CSP0000114978",
+            "wfId": "7eeb825e-ae10-4848-9281-b8cdf0cbf3b6",
+            "criticalAdvisories": "1",
+            "serialNumber": "FOC174620AQ",
+            "productId": "UCS-E160D-M1/K9",
+            "productType": "Servers - Unified Computing",
+            "productName": "^UCS-E,DoubleWide,6CoreCPU,2x8G SD,1x8G RDIMM,1-3 HDD",
+            "productFamily": "Cisco UCS E-Series Servers",
+            "hasFieldNotices": "false",
+            "equipmentType": "MODULE",
+            "neId": "NA,FTX1751AKQZ,ISR4451-X/K9,NA",
+            "hwInstanceId": "FOC174620AQ,UCS-E160D-M1/K9,NA,NA,FTX1751AKQZ,ISR4451-X/K9,NA",
+            "contractNumber": "",
+            "supportCovered": false,
+            "solutionInfo": [
+                {
+                    "useCase": "Campus Software Image Management",
+                    "solution": "IBN"
+                },
+                {
+                    "useCase": "Campus Network Segmentation",
+                    "solution": "IBN"
+                },
+                {
+                    "useCase": "Scalable Access Policy",
+                    "solution": "IBN"
+                },
+                {
+                    "useCase": "Campus Network Assurance",
+                    "solution": "IBN"
+                },
+                {
+                    "useCase": "Network Device Onboarding",
+                    "solution": "IBN"
+                }
+            ],
+            "cxLevel": "2",
+            "saId": "104959",
+            "vaId": [
+                "0"
+            ],
+            "mgmtSystemId": "e1515822-31df-450f-9d6a-093e3c7b956d",
+            "mgmtSystemAddr": "192.168.139.149",
+            "mgmtSystemHostname": "dnac1.cisco.com",
+            "mgmtSystemType": "DNAC",
+            "sourceNeId": "e76e5b00-694b-4dfa-ab92-35dde82d5e40",
+            "isCollector": false,
+            "containingHwId": "FTX1751AKQZ,ISR4451-X/K9,NA,FTX1751AKQZ,ISR4451-X/K9,NA,NA"
+        },
+        {
+            "deviceName": "NYC-RTR-MPLS.cisco.com",
+            "ipAddress": "10.16.255.1",
+            "collectorId": "CSP0000114978",
+            "wfId": "7eeb825e-ae10-4848-9281-b8cdf0cbf3b6",
+            "criticalAdvisories": "1",
+            "serialNumber": "FTX1751AKQZ",
+            "productId": "ISR4451-X/K9",
+            "productType": "Routers",
+            "productName": "Cisco ISR 4451 (4GE,3NIM,2SM,8G FLASH,4G DRAM)",
+            "productFamily": "Cisco 4000 Series Integrated Services Routers",
+            "hasFieldNotices": "true",
+            "equipmentType": "CHASSIS",
+            "neId": "NA,FTX1751AKQZ,ISR4451-X/K9,NA",
+            "hwInstanceId": "FTX1751AKQZ,ISR4451-X/K9,NA,FTX1751AKQZ,ISR4451-X/K9,NA,NA",
+            "contractNumber": "202299497",
+            "supportCovered": true,
+            "solutionInfo": [
+                {
+                    "useCase": "Campus Software Image Management",
+                    "solution": "IBN"
+                },
+                {
+                    "useCase": "Campus Network Segmentation",
+                    "solution": "IBN"
+                },
+                {
+                    "useCase": "Scalable Access Policy",
+                    "solution": "IBN"
+                },
+                {
+                    "useCase": "Campus Network Assurance",
+                    "solution": "IBN"
+                },
+                {
+                    "useCase": "Network Device Onboarding",
+                    "solution": "IBN"
+                }
+            ],
+            "cxLevel": "2",
+            "saId": "104959",
+            "vaId": [
+                "0"
+            ],
+            "mgmtSystemId": "e1515822-31df-450f-9d6a-093e3c7b956d",
+            "mgmtSystemAddr": "192.168.139.149",
+            "mgmtSystemHostname": "dnac1.cisco.com",
+            "mgmtSystemType": "DNAC",
+            "sourceNeId": "e76e5b00-694b-4dfa-ab92-35dde82d5e40",
+            "isCollector": false,
+            "containingHwId": null
+        }
+    ],
+    "Pagination": {
+        "page": 1,
+        "pages": 1,
+        "rows": 100,
+        "total": 3
+    }
+}
