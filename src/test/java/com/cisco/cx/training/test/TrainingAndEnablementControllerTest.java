@@ -34,7 +34,6 @@ import com.cisco.cx.training.app.filters.AuthFilter;
 import com.cisco.cx.training.app.filters.RBACFilter;
 import com.cisco.cx.training.app.rest.TrainingAndEnablementController;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
-import com.cisco.cx.training.app.service.impl.HttpService;
 import com.cisco.cx.training.models.BookmarkRequestSchema;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.fasterxml.jackson.databind.ObjectMapper;
