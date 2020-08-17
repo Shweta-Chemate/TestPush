@@ -129,7 +129,8 @@
 						<exclude>**/util/**</exclude>
 						<exclude>**/exception/**</exclude>
 						<exclude>**/constants/**</exclude>
-						<exclude>**/model/**</exclude>
+						<exclude>**/models/**</exclude>
+						<exclude>**/entities/**</exclude>
 						<exclude>com/cisco/cx/training/app/dao/ElasticSearchDAO.class</exclude>
 						<exclude>com/cisco/cx/training/app/dao/impl/SmartsheetDAOImpl.class</exclude>
 						<exclude>com/cisco/cx/training/app/service/CiscoProfileService.class</exclude>
@@ -139,6 +140,7 @@
 						<exclude>com/cisco/cx/training/models/SuccesstalkUserRegEsSchema.class</exclude>
 						<exclude>com/cisco/cx/training/models/SuccessTalk.class</exclude>
 						<exclude>com/cisco/cx/training/app/config/PropertyConfiguration.class</exclude>
+						<exclude>com/cisco/cx/training/app/config/FilterConfig.class</exclude>
 					</excludes>
 				</configuration>
 				<executions>
