@@ -69,12 +69,10 @@ public class RBACFilter implements Filter {
 		if (StringUtils.isBlank(xMasheryToken)) {
 			throw new BadRequestException("Mashery handshake is missing");
 		} else {
-			String puidHeader = request.getHeader(Constants.PUID);
-			String puidReqParam = request.getParameter(Constants.PUID);
-			if (puidHeader == null && puidReqParam == null) {
+			String puId = request.getHeader(Constants.PUID);
+			if (StringUtils.isBlank(puId)) {
 				throw new BadRequestException("PUID is missing in input request");
 			}
-			String puId = puidReqParam == null ? puidHeader : puidReqParam;
 			logger.debug("puId: " + puId);
 			String userId = MasheryObject.getInstance(xMasheryToken).getCcoId();
 			try {
