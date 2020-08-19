@@ -26,6 +26,7 @@ COPY target/cxpp-training-enablement-0.0.1-SNAPSHOT.jar ./cxpp-training-enableme
 #AppD environment variables
 ENV APPD_CONF=""
 ENV APPDYNAMICS_ENABLED=""
+ENV JAVA_OPTS="-Xms256m -Xmx900m"
 
 COPY docker-entrypoint.sh /bin/docker-entrypoint.sh
 RUN chmod +x /bin/docker-entrypoint.sh
