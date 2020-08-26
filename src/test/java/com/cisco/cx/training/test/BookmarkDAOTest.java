@@ -57,8 +57,7 @@ public class BookmarkDAOTest {
 	@Test(expected = GenericException.class)
 	public void getBookmarksError() throws IOException {
 		String entityId = "entityId";
-		String email = "email";
-		
+		String email = "email";		
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 		BoolQueryBuilder boolQuery = new BoolQueryBuilder();
 		QueryBuilder ccoIdQuery = QueryBuilders.matchPhraseQuery("email.keyword", email);
