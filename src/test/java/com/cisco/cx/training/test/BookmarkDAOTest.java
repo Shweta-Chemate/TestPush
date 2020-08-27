@@ -66,9 +66,7 @@ public class BookmarkDAOTest {
 		entityIdQuery = QueryBuilders.matchPhraseQuery("id.keyword", entityId);
 		boolQuery.must(entityIdQuery);
 		sourceBuilder.query(boolQuery);
-		sourceBuilder.size(1000);
-		
-		
+		sourceBuilder.size(1000);		
 		when(config.getBookmarksIndex()).thenReturn("");
 		ElasticSearchResults<BookmarkResponseSchema> results = new ElasticSearchResults<>();
 		results.addDocument(getBookmarkResponseSchema());
