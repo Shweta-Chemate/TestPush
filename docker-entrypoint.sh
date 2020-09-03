@@ -6,4 +6,4 @@ APPD_CONF="-javaagent:/AppServerAgent/javaagent.jar -Dappdynamics.agent.uniqueHo
 fi
 
 #running spring boot app
-java ${APPD_CONF} -jar $1
+java ${APPD_CONF} $JAVA_OPTS -jar $1
