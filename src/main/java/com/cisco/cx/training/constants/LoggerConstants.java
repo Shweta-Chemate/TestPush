@@ -16,6 +16,7 @@ public class LoggerConstants {
 
 	public static final String USER_ID = "userId";
 	public static final String USER_TYPE = "userType";
+	public static final String USER_ROLE_ID = "roleId";
 	public static final String PUID = "puid"; //customerId-req param, puid- header
 	
 	public static final String USER_ID_DEFAULT = "unknown user"; //mashery header ccoid
