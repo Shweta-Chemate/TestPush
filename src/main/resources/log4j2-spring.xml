@@ -53,7 +53,8 @@
             +
             + This pattern must be kept in sync with the logging patterns in GTI-Basics. DO NOT EDIT. Create a new property for your pattern.
             + -->
-        <property name="p.verbose">%thread [%date{yyyy-MM-dd HH:mm:ss.SSS Z}] [%-5level] %X{userId} (%file{1}:%line) [%class{1}:%method] %msg%n</property>
+<!--         <property name="p.verbose">%thread [%date{yyyy-MM-dd HH:mm:ss.SSS Z}] [%-5level] %X{userId} (%file{1}:%line) [%class{1}:%method] %msg%n</property> -->
+<property name="p.verbose">[%date{yyyy-MM-dd'T'HH:mm:ss.SSSZ}] %X{refId} %X{customerId} [%-7X{userType}] %X{userId} [%-5level] (%file{1}:%line) [%class{1}:%method] %msg%n</property>
 
         <!--+ ===================
             + Performance Pattern
@@ -63,7 +64,8 @@
             +
             + This pattern must be kept in sync with the logging patterns in GTI-Basics. DO NOT EDIT. Create a new property for your pattern.
             + -->
-        <property name="p.performance">%thread [%date{yyyy-MM-dd HH:mm:ss.SSS Z}] [%-5level] %X{userId} %msg%n</property>
+<!--         <property name="p.performance">%thread [%date{yyyy-MM-dd HH:mm:ss.SSS Z}] [%-5level] %X{userId} %msg%n</property> -->
+<property name="p.performance">[%date{yyyy-MM-dd'T'HH:mm:ss.SSSZ}] %X{refId} %X{customerId} [%-7X{userType}] %X{userId} [%-5level] %msg%n</property>
 
         <!--+ ===============
             + Default Pattern
@@ -117,7 +119,10 @@
             + ================
             + -->
         <Console name="${a.console}" target="SYSTEM_OUT">
-            <PatternLayout pattern="${p.default}" />
+<!--             <PatternLayout pattern="${p.default}" /> -->
+ 			<JsonLayout eventEOL="true" compact="true" stacktraceAsString="true" properties="true">
+                <KeyValuePair key="timestamp" value="$${date:yyyy-MM-dd'T'HH:mm:ss.SSSZ}"/>
+            </JsonLayout>
 
             <Policies> <!-- amimitt2: Specifying multiple policies internally binds to CompositeTriggeringPolicy -->
                 <!-- <OnStartupTriggeringPolicy /> --> <!-- amimitt2: Keep disabled, unless you really want a new log file on every restart. -->
