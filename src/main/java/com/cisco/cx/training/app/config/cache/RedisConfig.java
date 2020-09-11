@@ -33,7 +33,7 @@ public class RedisConfig {
     @Autowired
     CacheConfigProperty cacheConfigProperty;
 
-    /*@Bean
+    @Bean
     public RedisConnectionFactory getRedisConnectionFactory()  {
 
     	LOGGER.info("Connecting to Redis Host :: " + cacheConfigProperty.getCxppRedisHost() + " at Port :: "
@@ -58,16 +58,6 @@ public class RedisConfig {
 		factory.isUseSsl();
 
 		return factory;
-    }*/
-    
-    @Bean
-    public RedisConnectionFactory getRedisConnectionFactory() {
-    	LOGGER.info("---------------Connecting to Redis Host :: ");
-        JedisConnectionFactory jedisConFactory
-          = new JedisConnectionFactory();
-        jedisConFactory.setHostName("localhost");
-        jedisConFactory.setPort(6379);
-        return jedisConFactory;
     }
 
 
