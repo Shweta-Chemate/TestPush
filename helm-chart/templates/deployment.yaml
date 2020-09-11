@@ -72,16 +72,6 @@ spec:
                 secretKeyRef:
                   name: cxpp-common
                   key: cxpp_elasticsearch_password
-            - name: cxpp_redis_hostname
-              valueFrom:
-                secretKeyRef:
-                  name: cxpp-common
-                  key: cxpp_redis_hostname
-            - name: cxpp_redis_password
-              valueFrom:
-                secretKeyRef:
-                  name: cxpp-redis
-                  key: auth_token
             - name: cxpp_es_hostname
               valueFrom:
                 secretKeyRef:
