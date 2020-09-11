@@ -25,7 +25,7 @@ import com.cisco.cx.training.models.SuccessTalkResponseSchema;
 
 import redis.clients.jedis.JedisPoolConfig;
 
-@Configuration
+//@Configuration
 public class RedisConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RedisConfig.class );
