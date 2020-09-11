@@ -121,7 +121,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: cxpp-redis
-                  key: cxpp_redis_password
+                  key: auth_token
             - name: cxpp_learning_bookmark_table
               valueFrom:
                 secretKeyRef:
