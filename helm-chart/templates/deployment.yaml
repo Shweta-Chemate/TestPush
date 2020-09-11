@@ -112,6 +112,16 @@ spec:
                 secretKeyRef:
                   name: cxpp-common
                   key: cxpp_aws_generic_access_secret
+            - name: cxpp_redis_hostname
+              valueFrom:
+                secretKeyRef:
+                  name: cxpp-common
+                  key: cxpp_redis_hostname
+            - name: cxpp_redis_password
+              valueFrom:
+                secretKeyRef:
+                  name: cxpp-redis
+                  key: auth_token
             - name: cxpp_learning_bookmark_table
               valueFrom:
                 secretKeyRef:
@@ -127,16 +137,6 @@ spec:
                 secretKeyRef:
                   name: cxcp-common-high
                   key: cxcp_basicauth_password
-            - name: cxpp_redis_hostname
-              valueFrom:
-                secretKeyRef:
-                  name: cxpp-common
-                  key: cxpp_redis_hostname
-            - name: cxpp_redis_password
-              valueFrom:
-                secretKeyRef:
-                  name: cxpp-redis
-                  key: auth_token
           envFrom:
           {{- if .Values.appDynamics.enabled}}
           - configMapRef:
