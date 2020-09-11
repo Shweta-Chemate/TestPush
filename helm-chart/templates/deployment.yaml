@@ -136,7 +136,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: cxpp-redis
-                  key: cxpp_redis_password
+                  key: auth_token
           envFrom:
           {{- if .Values.appDynamics.enabled}}
           - configMapRef:
