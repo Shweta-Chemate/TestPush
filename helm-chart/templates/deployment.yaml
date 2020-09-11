@@ -112,16 +112,6 @@ spec:
                 secretKeyRef:
                   name: cxpp-common
                   key: cxpp_aws_generic_access_secret
-            - name: cxpp_mysql_jdbc_url_test
-              valueFrom:
-                secretKeyRef:
-                  name: cxpp-common
-                  key: cxpp_mysql_jdbc_url
-            - name: cxpp_mysql_jdbc_url_test2
-              valueFrom:
-                secretKeyRef:
-                  name: cxpp-common
-                  key: cxpp_mysql_jdbc_url
             - name: cxpp_learning_bookmark_table
               valueFrom:
                 secretKeyRef:
