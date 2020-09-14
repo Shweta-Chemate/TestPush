@@ -65,18 +65,18 @@ spec:
             - name: cxpp_elasticsearch_username
               valueFrom:
                 secretKeyRef:
-                  name: cxpp-common
-                  key: cxpp_elasticsearch_username
+                  name: cxpp-elasticsearch
+                  key: es_master_user
             - name: cxpp_elasticsearch_password
               valueFrom:
                 secretKeyRef:
-                  name: cxpp-common
-                  key: cxpp_elasticsearch_password
+                  name: cxpp-elasticsearch
+                  key: es_master_password
             - name: cxpp_es_hostname
               valueFrom:
                 secretKeyRef:
-                  name: cxpp-common
-                  key: cxpp_es_hostname
+                  name: cxpp-elasticsearch
+                  key: domain_endpoint
             - name: cxpp_te_successtalk_registration_sheet
               valueFrom:
                 secretKeyRef:
@@ -90,28 +90,18 @@ spec:
             - name: cxpp_mysql_username
               valueFrom:
                 secretKeyRef:
-                  name: cxpp-common
-                  key: cxpp_mysql_username
+                  name: cxpp-aurora
+                  key: username
             - name: cxpp_mysql_password
               valueFrom:
                 secretKeyRef:
-                  name: cxpp-common
-                  key: cxpp_mysql_password
+                  name: cxpp-aurora
+                  key: password
             - name: cxpp_mysql_jdbc_url
               valueFrom:
                 secretKeyRef:
                   name: cxpp-common
-                  key: cxpp_mysql_jdbc_url      
-            - name: cxpp_aws_generic_access_id
-              valueFrom:
-                secretKeyRef:
-                  name: cxpp-common
-                  key: cxpp_aws_generic_access_id
-            - name: cxpp_aws_generic_access_secret
-              valueFrom:
-                secretKeyRef:
-                  name: cxpp-common
-                  key: cxpp_aws_generic_access_secret
+                  key: cxpp_mysql_jdbc_url
             - name: cxpp_learning_bookmark_table
               valueFrom:
                 secretKeyRef:
@@ -120,12 +110,12 @@ spec:
             - name: cxp_basicauth_username
               valueFrom:
                 secretKeyRef:
-                  name: cxcp-common-high
+                  name: cxpp-common
                   key: cxcp_basicauth_username
             - name: cxp_basicauth_password
               valueFrom:
                 secretKeyRef:
-                  name: cxcp-common-high
+                  name: cxpp-common
                   key: cxcp_basicauth_password
           envFrom:
           {{- if .Values.appDynamics.enabled}}
@@ -163,6 +153,15 @@ spec:
              failureThreshold: 3
           resources:
 {{ toYaml .Values.resources | indent 12 }}
+          volumeMounts:
+            {{- if .Values.appDynamics.enabled}}
+            - mountPath: {{ .Values.appDynamics.appd_mount_dir }}
+              name: appdagent
+            {{- end }}
+            - mountPath: /myapp/environment.properties
+              name: {{ template "cxpp-training-enablement.fullname" . }}-environment
+              subPath: environment.properties
+              			
     {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
@@ -175,15 +174,7 @@ spec:
       tolerations:
 {{ toYaml . | indent 8 }}
     {{- end }}
-          volumeMounts:
-            {{- if .Values.appDynamics.enabled}}
-            - mountPath: {{ .Values.appDynamics.appd_mount_dir }}
-              name: appdagent
-            {{- end }}
-            - mountPath: /myapp/environment.properties
-              name: {{ template "cxpp-training-enablement.fullname" . }}-environment
-              subPath: environment.properties
-
+          
       volumes:
       {{- if .Values.appDynamics.enabled}}
       - name: appdagent
