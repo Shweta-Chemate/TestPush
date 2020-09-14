@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -48,7 +49,7 @@ public class PartnerProfileServiceImpl implements PartnerProfileService {
 		headers.set("Authorization", "Basic " + config.createCxpBasicAuthToken());
 		HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
 		ResponseEntity<String> result = restTemplate.exchange(entitlementUrl + "/" + userId, HttpMethod.GET, requestEntity, String.class);
-		LOGGER.info("Entitlement url response : " + result.getBody());
+		LOGGER.info("Entitlement url response = {}",  result.getStatusCode().value()!= HttpStatus.OK.value()?result.getBody():"call completed.");
 		UserDetails userDetails = null;
 		try {
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);

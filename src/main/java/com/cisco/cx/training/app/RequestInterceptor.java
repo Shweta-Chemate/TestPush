@@ -24,6 +24,8 @@ public class RequestInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 		String masheryHeader = request.getHeader(Constants.MASHERY_HANDSHAKE_HEADER_NAME);
+		
+		LoggerConstants.setMdc();    
 		try {
 			if (!StringUtils.isEmpty(masheryHeader)) {
 				String userId = MasheryUser.getInstance(masheryHeader).getCcoId();
@@ -44,8 +46,7 @@ public class RequestInterceptor implements HandlerInterceptor {
 		
 
 		/* logger starts */
-		LoggerConstants.setMdc();     
-		
+				
         // set the request URI
         MDC.put(LoggerConstants.REQUEST_URI, request.getRequestURI());
         
