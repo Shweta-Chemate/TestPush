@@ -36,6 +36,7 @@ public class LoggerConstants {
 	public static final String X_ORIGINAL_FORWARDED_FOR = "x-original-forwarded-for";
 	public static final String X_APIGW_REQUEST_ID = "x-apigw-request-id";
 	
+	public static final String AUTHORIZATION = "authorization";
 
 	/**
 	 * other : "policyName"; //privilege level
