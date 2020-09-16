@@ -141,6 +141,7 @@
                     <IfLastModified age="${t.delete-after}" />
                 </Delete>
             </DefaultRolloverStrategy>
+            <BurstFilter level="INFO" rate="16" maxBurst="100"/>
         </Console>
     </Appenders>
 
