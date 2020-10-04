@@ -42,6 +42,7 @@ import com.cisco.cx.training.models.SuccessAcademyFilter;
 import com.cisco.cx.training.models.SuccessAcademyLearning;
 import com.cisco.cx.training.models.SuccessTalkResponseSchema;
 import com.cisco.cx.training.models.SuccesstalkUserRegEsSchema;
+import com.cisco.cx.training.models.UserDetails;
 
 @RestController
 @Validated
@@ -95,7 +96,10 @@ public class TrainingAndEnablementController {
 	public ResponseEntity<List<SuccessAcademyLearning>> getAllLearnings(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake)
 			throws Exception {
+		LOG.info("Entering the getAllLearnings");
+		long requestStartTime = System.currentTimeMillis();		
 		List<SuccessAcademyLearning> sucessAcademyList = trainingAndEnablementService.getAllSuccessAcademyLearnings(xMasheryHandshake);
+		LOG.info("Received learnings in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<List<SuccessAcademyLearning>>(sucessAcademyList, HttpStatus.OK);
 	}
 

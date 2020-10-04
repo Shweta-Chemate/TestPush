@@ -90,12 +90,20 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	
 	@Override
 	public List<SuccessAcademyLearning> getAllSuccessAcademyLearnings(String xMasheryHandshake) {		
+		LOG.info("Entering the getAllSuccessAcademyLearnings");
+		long requestStartTime = System.currentTimeMillis();
 		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
+		LOG.info("Received user details in {} ", (System.currentTimeMillis() - requestStartTime));
+		requestStartTime = System.currentTimeMillis();
 		List<SuccessAcademyLearningEntity> entities = successAcademyDAO.findAll();
+		LOG.info("Fetched all learning in {} ", (System.currentTimeMillis() - requestStartTime));
+		requestStartTime = System.currentTimeMillis();
 		Set<String> userBookmarks = null;
 		if(null != userDetails){
 			userBookmarks = learningDAO.getBookmarks(userDetails.getEmail());
 		}
+		LOG.info("Fetched user bookmarks in {} ", (System.currentTimeMillis() - requestStartTime));
+		requestStartTime = System.currentTimeMillis();
 		List<SuccessAcademyLearning> learnings = new ArrayList<>();
 		for(SuccessAcademyLearningEntity entity : entities){
 			SuccessAcademyLearning learning = SuccessAcademyMapper.getLearningsFromEntity(entity);
@@ -105,6 +113,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 			}
 			learnings.add(learning);
 		}
+		LOG.info("Sending reponse in {} ", (System.currentTimeMillis() - requestStartTime));
 		return learnings;
 	}
 
@@ -214,19 +223,26 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	
 	@Override
 	public CountResponseSchema getIndexCounts() {
+		LOG.info("Entering the getIndexCounts");
+		long requestStartTime = System.currentTimeMillis();		
 		List<CountSchema> indexCounts = new ArrayList<>();
 		CountResponseSchema countResponse = new CountResponseSchema();
 		try {
 
 			CountSchema communityCount= getCommunityCount();
+			LOG.info("Received Community count in {} ", (System.currentTimeMillis() - requestStartTime));
 			indexCounts.add(communityCount);
 
+			requestStartTime = System.currentTimeMillis();	
 			CountSchema successTalkCount = getSuccessTalkCount();
+			LOG.info("Received Success talks count in {} ", (System.currentTimeMillis() - requestStartTime));
 			indexCounts.add(successTalkCount);
 			
 			CountSchema successAcamedyCount = new CountSchema();
-			successAcamedyCount.setLabel("CX Learning");			
+			successAcamedyCount.setLabel("CX Learning");	
+			requestStartTime = System.currentTimeMillis();	
 			successAcamedyCount.setCount(successAcademyDAO.count());
+			LOG.info("Received Success Academy count in {} ", (System.currentTimeMillis() - requestStartTime));
 
 			indexCounts.add(successAcamedyCount);
 
@@ -276,10 +292,16 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 
 	@Override
 	public List<SuccessAcademyFilter> getSuccessAcademyFilters() {
+		LOG.info("Entering the getSuccessAcademyFilters");
+		long requestStartTime = System.currentTimeMillis();	
 		Map<String, List<String>> mapData = new HashMap<String, List<String>>();
 		List<SuccessAcademyFilter> filters = new ArrayList<SuccessAcademyFilter>();
 		List<Object[]> filterData = successAcademyDAO.getLearningFilters();
+		LOG.info("Received filtered data in {} ", (System.currentTimeMillis() - requestStartTime));
+		requestStartTime = System.currentTimeMillis();	
 		List<PartnerPortalLookUpEntity> tabLocationEntities = partnerPortalLookupDAO.getTabLocations();	
+		LOG.info("Received lookup entity data in {} ", (System.currentTimeMillis() - requestStartTime));
+		requestStartTime = System.currentTimeMillis();
 		Map<String, String> lookupValues = getLookUpMapFromEntity(tabLocationEntities);
 		for(Object[] objectData : filterData){
 			List<String> subFilters = new ArrayList<String>();
@@ -296,6 +318,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 			filter.setTabLocationOnUI(lookupValues.get(key.toLowerCase().replaceAll(" ", "")));
 			filters.add(filter);
 		}
+		LOG.info("Sending final response in {} ", (System.currentTimeMillis() - requestStartTime));
 		return filters;
 	}
 
@@ -303,7 +326,10 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	public BookmarkResponseSchema bookmarkLearningForUser(
 			BookmarkRequestSchema bookmarkRequestSchema,
 			String xMasheryHandshake) {
+		LOG.info("Entering the getSuccessAcademyFilters");
+		long requestStartTime = System.currentTimeMillis();	
 		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
+		LOG.info("Fetched user data in {} ", (System.currentTimeMillis() - requestStartTime));
 		if(null == userDetails){
 			throw new BadRequestException("Error from Entitlement System");
 		}else{
@@ -311,7 +337,9 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 			bookmarkResponseSchema.setEmail(userDetails.getEmail());
 			bookmarkResponseSchema.setLearningid(bookmarkRequestSchema.getLearningid());
 			bookmarkResponseSchema.setBookmark(bookmarkRequestSchema.isBookmark());
-			learningDAO.createOrUpdate(bookmarkResponseSchema);		
+			requestStartTime = System.currentTimeMillis();
+			learningDAO.createOrUpdate(bookmarkResponseSchema);	
+			LOG.info("Updated bookmark in {} ", (System.currentTimeMillis() - requestStartTime));
 			return bookmarkResponseSchema;
 		}
 	}
