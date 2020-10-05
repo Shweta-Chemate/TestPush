@@ -27,10 +27,6 @@ public class ElasticSearchConfig {
     @Bean(destroyMethod = "close")
     public RestHighLevelClient client() {
 
-        logger.info("ES Url connecting to " + config.getElasticsearchHost());
-        logger.info("ES UserName" + config.getElasticsearchUsername()+".");
-        logger.info("ES Pwd" + config.getElasticsearchPassword()+".");
-
         final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
         credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(config.getElasticsearchUsername(), config.getElasticsearchPassword()));
 

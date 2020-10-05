@@ -64,6 +64,8 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 	@Override
 	public BookmarkResponseSchema createOrUpdate(
 			BookmarkResponseSchema bookmarkResponseSchema) {
+		LOG.info("Entering the createOrUpdate");
+		long requestStartTime = System.currentTimeMillis();	
 		Map<String, AttributeValue> itemValue = new HashMap<String, AttributeValue>();
 		Set<String> currentBookMarks = getBookmarks(bookmarkResponseSchema.getEmail());
 		if(bookmarkResponseSchema.isBookmark()){
@@ -80,8 +82,11 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 	    itemValue.put("userid", AttributeValue.builder().s(bookmarkResponseSchema.getEmail().concat(USERID_SUFFIX)).build());
 	    itemValue.put("bookmarks", AttributeValue.builder().ss(currentBookMarks).build());
 	    Builder putItemReq = PutItemRequest.builder();
+	    LOG.info("Preprocessing done in {} ", (System.currentTimeMillis() - requestStartTime));
+	    requestStartTime = System.currentTimeMillis();	
 	    putItemReq.tableName(propertyConfig.getBookmarkTableName()).item(itemValue);
 	    PutItemResponse response = dbClient.putItem(putItemReq.build());
+	    LOG.info("response received in {} ", (System.currentTimeMillis() - requestStartTime));
 	    if(response.sdkHttpResponse().isSuccessful()){
 	    	BookmarkResponseSchema responseSchema = new BookmarkResponseSchema();
 	    	responseSchema.setId(bookmarkResponseSchema.getId());
@@ -93,6 +98,8 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 
 	@Override
 	public Set<String> getBookmarks(String email){
+		LOG.info("Entering the createOrUpdate");
+		long requestStartTime = System.currentTimeMillis();	
 		Set<String> userBookMarks = null;
 		Map<String,String> expressionAttributesNames = new HashMap<>();
 	    expressionAttributesNames.put("#userid","userid");
@@ -106,7 +113,11 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 	        .keyConditionExpression("#userid = :useridValue")
 	        .expressionAttributeNames(expressionAttributesNames)
 	        .expressionAttributeValues(expressionAttributeValues).build();
+	    LOG.info("Preprocessing done in {} ", (System.currentTimeMillis() - requestStartTime));
+	    requestStartTime = System.currentTimeMillis();	
 	    QueryResponse queryResult = dbClient.query(queryRequest);
+	    LOG.info("response received in {} ", (System.currentTimeMillis() - requestStartTime));
+	    requestStartTime = System.currentTimeMillis();	
 	    List<Map<String,AttributeValue>> attributeValues = queryResult.items();	    
 	    if(attributeValues.size()>0) {
 	    	Map<String,AttributeValue> userBookmarks = attributeValues.get(0);
@@ -114,6 +125,7 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 	    	userBookMarks = new HashSet<String>(bookMarkSet.ss());	
 	    	
 	    }	    
+	    LOG.info("final response in {} ", (System.currentTimeMillis() - requestStartTime));
 	    return userBookMarks;
 	}
 
