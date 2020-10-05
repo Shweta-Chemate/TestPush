@@ -69,6 +69,7 @@ public class RequestInterceptor implements HandlerInterceptor {
         while (headerNames.hasMoreElements()) {
             String key = (String) headerNames.nextElement();
             if(key.trim().equalsIgnoreCase(LoggerConstants.AUTHORIZATION)) continue;
+            if(key.trim().equalsIgnoreCase(LoggerConstants.X_REQUEST_ID)) continue;
             requestHeaderKeys.add(key);
             MDC.put(key, request.getHeader(key));
         }
