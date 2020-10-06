@@ -82,7 +82,7 @@ public class RequestInterceptor implements HandlerInterceptor {
         if(request.getHeader(LoggerConstants.X_ORIGINAL_FORWARDED_FOR) != null){
             MDC.put(LoggerConstants.CLIENT_IP, request.getHeader(LoggerConstants.X_ORIGINAL_FORWARDED_FOR));
         }
-       response.setHeader(LoggerConstants.X_REQUEST_ID, MDC.get(LoggerConstants.X_REQUEST_ID));
+       response.setHeader(LoggerConstants.X_REQUEST_ID, MDC.get(LoggerConstants.REF_ID));
        
        LOG.info("START_REQUEST method={} path={}", request.getMethod(), MDC.get(LoggerConstants.REQUEST_URI));
        requestHeaderKeys.forEach(MDC::remove);       
