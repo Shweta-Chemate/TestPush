@@ -24,7 +24,7 @@ public class LoggerConstants {
 	public static final String USER_TYPE_PERSON = "Person";
 	public static final String PUID_DEFAULT = "no-puid"; // 	
 	
-	public static final String CLIENT_IP = "ClientIp";	
+	public static final String CLIENT_IP = "clientIp";	
 	public static final String TIME_TAKEN = "timeTaken";
 	public static final String RESPONSE_STATUS = "responseStatus";
 	

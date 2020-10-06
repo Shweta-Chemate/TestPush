@@ -17,6 +17,7 @@ import com.cisco.cx.training.models.MasheryUser;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.UUID;
 
 public class RequestInterceptor implements HandlerInterceptor {
 	private final Logger LOG = LoggerFactory.getLogger(RequestInterceptor.class);
@@ -58,6 +59,10 @@ public class RequestInterceptor implements HandlerInterceptor {
             // refId is X-Request-ID for M2M calls
             MDC.put(LoggerConstants.REF_ID, request.getHeader(LoggerConstants.X_REQUEST_ID));
         } 
+        else
+        {
+        	MDC.put(LoggerConstants.REF_ID, UUID.randomUUID().toString());
+        }
         
         String puid= request.getHeader(LoggerConstants.PUID)+"";        
         if(!StringUtils.isEmpty(puid))MDC.put(LoggerConstants.PUID,puid);
@@ -75,18 +80,12 @@ public class RequestInterceptor implements HandlerInterceptor {
         }
 
         if(request.getHeader(LoggerConstants.X_ORIGINAL_FORWARDED_FOR) != null){
-            MDC.put(LoggerConstants.X_ORIGINAL_FORWARDED_FOR, request.getHeader(LoggerConstants.X_ORIGINAL_FORWARDED_FOR));
+            MDC.put(LoggerConstants.CLIENT_IP, request.getHeader(LoggerConstants.X_ORIGINAL_FORWARDED_FOR));
         }
-
-        if(request.getHeader(LoggerConstants.X_REQUEST_ID) != null){
-            MDC.put(LoggerConstants.X_REQUEST_ID, request.getHeader(LoggerConstants.X_REQUEST_ID));
-            // set the request_id in the response header
-            response.setHeader(LoggerConstants.X_REQUEST_ID, MDC.get(LoggerConstants.X_REQUEST_ID));
-        }
-
-        LOG.info("START_REQUEST method={} path={}", request.getMethod(), MDC.get(LoggerConstants.REQUEST_URI));
-
-        requestHeaderKeys.forEach(MDC::remove);       
+       response.setHeader(LoggerConstants.X_REQUEST_ID, MDC.get(LoggerConstants.X_REQUEST_ID));
+       
+       LOG.info("START_REQUEST method={} path={}", request.getMethod(), MDC.get(LoggerConstants.REQUEST_URI));
+       requestHeaderKeys.forEach(MDC::remove);       
         
         /* logger ends */
 

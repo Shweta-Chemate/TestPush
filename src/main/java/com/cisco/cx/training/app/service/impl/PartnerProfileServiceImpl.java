@@ -76,8 +76,8 @@ public class PartnerProfileServiceImpl implements PartnerProfileService {
 	private void addHeaders(HttpHeaders requestHeaders)
 	{
 		//1.
-		String xRequestId = MDC.get(LoggerConstants.X_REQUEST_ID);
-		LOGGER.info("header...{}",xRequestId);
+		String xRequestId = MDC.get(LoggerConstants.REF_ID);
+		LOGGER.info("PPS header...{}",xRequestId);
 		if(xRequestId!=null)
 		{			
 			requestHeaders.add(LoggerConstants.X_REQUEST_ID, xRequestId);		
