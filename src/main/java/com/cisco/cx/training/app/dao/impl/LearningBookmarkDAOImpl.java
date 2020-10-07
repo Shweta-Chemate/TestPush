@@ -1,5 +1,6 @@
 package com.cisco.cx.training.app.dao.impl;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.http.SdkHttpClient;
+import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClientBuilder;
@@ -54,9 +57,14 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 
 	@PostConstruct
 	public void init() {
-		LOG.info("Initializing LearningBookmarkDAOImpl for table :: " + propertyConfig.getBookmarkTableName());
+		LOG.info("Initializing LearningBookmarkDAOImpl for table :: {}", propertyConfig.getBookmarkTableName());
+		SdkHttpClient httpClient = ApacheHttpClient.builder().
+                connectionTimeout(Duration.ofSeconds(100))
+                .socketTimeout(Duration.ofSeconds(100))
+                .build();
+		
 		Region region = Region.of(propertyConfig.getAwsRegion());
-		DynamoDbClientBuilder dDbClientBuilder = DynamoDbClient.builder();
+		DynamoDbClientBuilder dDbClientBuilder = DynamoDbClient.builder().httpClient(httpClient);
 		dDbClientBuilder.region(region);
 		dbClient = dDbClientBuilder.build();
 	}	
