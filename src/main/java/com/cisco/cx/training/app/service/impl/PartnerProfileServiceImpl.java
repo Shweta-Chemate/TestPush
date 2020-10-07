@@ -48,7 +48,7 @@ public class PartnerProfileServiceImpl implements PartnerProfileService {
 		headers.set("Authorization", "Basic " + config.createCxpBasicAuthToken());
 		HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
 		ResponseEntity<String> result = restTemplate.exchange(entitlementUrl + "/" + userId, HttpMethod.GET, requestEntity, String.class);
-		LOGGER.info("Entitlement url response : " + result.getBody());
+		LOGGER.info("Entitlement url response : {}", result.getBody());
 		UserDetails userDetails = null;
 		try {
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
