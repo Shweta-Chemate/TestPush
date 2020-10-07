@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 replicaCount: 2
 image:
-  repository: ${LOCATION_PREFIX_DOCKER_REGISTRY}/${LOCATION_DISTRIBUTION_NAME}/cxpp-training-enablement
+  repository: 539909726087.dkr.ecr.us-east-2.amazonaws.com/cxpp/cxpp-training-enablement
   tag: ${CI_COMMIT_SHA}
   pullPolicy: Always
 service:
@@ -15,20 +15,19 @@ service:
 
 ingress:
   enabled: false
-  domain: cxpp-training-enablement.${CLUSTER_NAME_FULL}
-  externalDNS:
-    enabled: true
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: cxpp-training-enablement.${CLUSTER_NAME_FULL}
-    ingress.kubernetes.io/force-ssl-redirect: "true"
-    kubernetes.io/ingress.class: nginx
-  path: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, OPTIONS, HEAD, DELETE"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-credentials: "false"
+  http:
+    - paths: ['/cxpp-training-enablement/(.*)']
   servicePort: 8080
   tls:
-    enabled: true
-    secretName: wildcard-production-tls
-
-
+    enabled: false
+    
 resources:
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
@@ -43,9 +42,21 @@ resources:
 
 nodeSelector: {}
 
-tolerations: []
+tolerations:
+  - effect: NoSchedule
+    key: cxpp
+    operator: Equal
+    value: "true"
 
-affinity: {}
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+            - key: cxpp
+              operator: In
+              values:
+                - "true"
 
 # Config for HPA - horizontal pod scaling
 autoscaling:
@@ -65,9 +76,7 @@ appDynamics:
 
 files:
   environment.properties:
-    cisco.ldap.external.url: ${cisco_ldap_external_url}
-    cisco.oauth.token.url: ${cisco_oauth_token_url}
-    cxp.emailapi.context.url: https://cpp-api.${CLUSTER_NAME_FULL}/email/
-    cxp.emailapi.readiness.url: https://cpp-api.${CLUSTER_NAME_FULL}/email/v1/ready
-    entitlement.user.party.affiliation.url: https://cpp-api.${CLUSTER_NAME_FULL}/entitlement/v1/user/party/affiliation/{partyId}
+    elasticsearch.host: ${cxpp_es_hostname}
+    cxpp.aws.region: us-west-2
+    cxpp.user.management.auth.url : "http://cxpp-user-management:8080/cxpp-user-management/v2/user/authorize"
 

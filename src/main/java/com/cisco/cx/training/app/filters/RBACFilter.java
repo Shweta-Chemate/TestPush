@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -24,6 +25,7 @@ import com.cisco.cx.training.app.exception.ErrorResponse;
 import com.cisco.cx.training.app.exception.NotAllowedException;
 import com.cisco.cx.training.app.exception.RestResponseStatusExceptionResolver;
 import com.cisco.cx.training.constants.Constants;
+import com.cisco.cx.training.constants.LoggerConstants;
 import com.cisco.cx.training.models.MasheryObject;
 import com.cisco.cx.training.util.AuthorizationUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -69,18 +71,18 @@ public class RBACFilter implements Filter {
 		if (StringUtils.isBlank(xMasheryToken)) {
 			throw new BadRequestException("Mashery handshake is missing");
 		} else {
-			String puidHeader = request.getHeader(Constants.PUID);
-			String puidReqParam = request.getParameter(Constants.PUID);
-			if (puidHeader == null && puidReqParam == null) {
+			String puId = request.getHeader(Constants.PUID);
+			if (StringUtils.isBlank(puId)) {
 				throw new BadRequestException("PUID is missing in input request");
 			}
-			String puId = puidReqParam == null ? puidHeader : puidReqParam;
 			logger.debug("puId: " + puId);
 			String userId = MasheryObject.getInstance(xMasheryToken).getCcoId();
 			try {
+				
+				long apiStartTime = System.currentTimeMillis();
 				String authResult = AuthorizationUtil.invokeAuthAPI(userId, puId, xMasheryToken, propertyConfiguration,
 						restTemplate);
-
+				logger.info("TIME TAKEN | USER AUTHORIZE API RESPONSE = {}" , (System.currentTimeMillis() - apiStartTime));
 				if (authResult != null) {
 
 					logger.debug("Response from auth api : " + authResult);
@@ -92,6 +94,10 @@ public class RBACFilter implements Filter {
 
 						String roleId = JsonPath.using(conf).parse(authResult).read("$.roleId");
 						request.getServletContext().setAttribute(Constants.ROLE_ID, roleId);
+						
+						MDC.put(LoggerConstants.USER_ROLE_ID,roleId);
+						logger.info("User {} with role {} is performing the request {} on {}" ,userId,roleId, request.getMethod(), path);
+
 					} else {
 						logger.error("AUTH API Returned invalid response for >> " + request.getRequestURI());
 						throw new NotAllowedException("Not Authorized ");

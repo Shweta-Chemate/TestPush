@@ -4,11 +4,13 @@ import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -17,6 +19,7 @@ import org.springframework.web.client.RestTemplate;
 import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.exception.GenericException;
 import com.cisco.cx.training.app.service.PartnerProfileService;
+import com.cisco.cx.training.constants.LoggerConstants;
 import com.cisco.cx.training.models.MasheryObject;
 import com.cisco.cx.training.models.UserDetails;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -46,9 +49,10 @@ public class PartnerProfileServiceImpl implements PartnerProfileService {
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
 		headers.set("Authorization", "Basic " + config.createCxpBasicAuthToken());
+		addHeaders(headers);
 		HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
 		ResponseEntity<String> result = restTemplate.exchange(entitlementUrl + "/" + userId, HttpMethod.GET, requestEntity, String.class);
-		LOGGER.info("Entitlement url response : {}", result.getBody());
+		LOGGER.info("Entitlement url response = {}",  result.getStatusCode().value()!= HttpStatus.OK.value()?result.getBody():"call completed.");
 		UserDetails userDetails = null;
 		try {
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -67,5 +71,16 @@ public class PartnerProfileServiceImpl implements PartnerProfileService {
 	@Override
 	public void setEntitlementUrl(String entitlementUrl) {
 		this.entitlementUrl = entitlementUrl;
+	}
+	
+	private void addHeaders(HttpHeaders requestHeaders)
+	{
+		//1.
+		String xRequestId = MDC.get(LoggerConstants.REF_ID);
+		LOGGER.info("PPS header...{}",xRequestId);
+		if(xRequestId!=null)
+		{			
+			requestHeaders.add(LoggerConstants.X_REQUEST_ID, xRequestId);		
+		}			
 	}
 }
