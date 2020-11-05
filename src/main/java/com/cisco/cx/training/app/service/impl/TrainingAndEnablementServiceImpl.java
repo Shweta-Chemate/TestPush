@@ -66,7 +66,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 
 	@Autowired
 	private SuccessAcademyDAO successAcademyDAO;
-
+	
 	@Autowired
 	private PartnerPortalLookupDAO partnerPortalLookupDAO;
 
@@ -76,23 +76,23 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 
 	@Autowired
 	private BookmarkDAO bookmarkDAO;
-
+	
 	@Autowired
 	private ElasticSearchDAO elasticSearchDAO;
-
+	
 	@Autowired
 	private PropertyConfiguration config;
 
 	@Autowired
 	private PartnerProfileService partnerProfileService;
-
+	
 	@Autowired
 	private LearningBookmarkDAO learningDAO;
-
+	
 	private static final String CXPP_UI_TAB_PREFIX = "CXPP_UI_TAB_";
-
+	
 	@Override
-	public List<SuccessAcademyLearning> getAllSuccessAcademyLearnings(String xMasheryHandshake) {
+	public List<SuccessAcademyLearning> getAllSuccessAcademyLearnings(String xMasheryHandshake) {		
 		LOG.info("Entering the getAllSuccessAcademyLearnings");
 		long requestStartTime = System.currentTimeMillis();
 		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
@@ -102,16 +102,16 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		LOG.info("Fetched all learning in {} ", (System.currentTimeMillis() - requestStartTime));
 		requestStartTime = System.currentTimeMillis();
 		Set<String> userBookmarks = null;
-		if (null != userDetails) {
+		if(null != userDetails){
 			userBookmarks = learningDAO.getBookmarks(userDetails.getEmail());
 		}
 		LOG.info("Fetched user bookmarks in {} ", (System.currentTimeMillis() - requestStartTime));
 		requestStartTime = System.currentTimeMillis();
 		List<SuccessAcademyLearning> learnings = new ArrayList<>();
-		for (SuccessAcademyLearningEntity entity : entities) {
+		for(SuccessAcademyLearningEntity entity : entities){
 			SuccessAcademyLearning learning = SuccessAcademyMapper.getLearningsFromEntity(entity);
-			if (null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
-					&& userBookmarks.contains(entity.getRowId())) {
+			if(null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
+					&& userBookmarks.contains(entity.getRowId())){
 				learning.setIsBookMarked(true);
 			}
 			learnings.add(learning);
@@ -199,8 +199,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	}
 
 	@Override
-	public SuccesstalkUserRegEsSchema fetchSuccessTalkRegistrationDetails(SuccesstalkUserRegEsSchema registration,
-			UserProfile userDetails) throws NotFoundException, NotAllowedException {
+	public SuccesstalkUserRegEsSchema fetchSuccessTalkRegistrationDetails(SuccesstalkUserRegEsSchema registration, UserProfile userDetails) throws NotFoundException, NotAllowedException {
 		SuccessTalk successTalk = null;
 
 		try {
@@ -246,27 +245,27 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 
 		return bookmarkResponseSchema;
 	}
-
+	
 	@Override
 	public CountResponseSchema getIndexCounts() {
 		LOG.info("Entering the getIndexCounts");
-		long requestStartTime = System.currentTimeMillis();
+		long requestStartTime = System.currentTimeMillis();		
 		List<CountSchema> indexCounts = new ArrayList<>();
 		CountResponseSchema countResponse = new CountResponseSchema();
 		try {
 
-			CountSchema communityCount = getCommunityCount();
+			CountSchema communityCount= getCommunityCount();
 			LOG.info("Received Community count in {} ", (System.currentTimeMillis() - requestStartTime));
 			indexCounts.add(communityCount);
 
-			requestStartTime = System.currentTimeMillis();
+			requestStartTime = System.currentTimeMillis();	
 			CountSchema successTalkCount = getSuccessTalkCount();
 			LOG.info("Received Success talks count in {} ", (System.currentTimeMillis() - requestStartTime));
 			indexCounts.add(successTalkCount);
-
+			
 			CountSchema successAcamedyCount = new CountSchema();
-			successAcamedyCount.setLabel("CX Learning");
-			requestStartTime = System.currentTimeMillis();
+			successAcamedyCount.setLabel("CX Learning");	
+			requestStartTime = System.currentTimeMillis();	
 			successAcamedyCount.setCount(successAcademyDAO.count());
 			LOG.info("Received Success Academy count in {} ", (System.currentTimeMillis() - requestStartTime));
 
@@ -282,7 +281,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 
 		return countResponse;
 	}
-
+	
 	@Override
 	public CountSchema getCommunityCount() {
 
@@ -292,7 +291,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		communityCount.setCount(1L);
 		return communityCount;
 	}
-
+	
 	@Override
 	public CountSchema getSuccessTalkCount() {
 
@@ -319,28 +318,28 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	@Override
 	public List<SuccessAcademyFilter> getSuccessAcademyFilters() {
 		LOG.info("Entering the getSuccessAcademyFilters");
-		long requestStartTime = System.currentTimeMillis();
+		long requestStartTime = System.currentTimeMillis();	
 		Map<String, List<String>> mapData = new HashMap<String, List<String>>();
 		List<SuccessAcademyFilter> filters = new ArrayList<SuccessAcademyFilter>();
 		List<Object[]> filterData = successAcademyDAO.getLearningFilters();
 		LOG.info("Received filtered data in {} ", (System.currentTimeMillis() - requestStartTime));
-		requestStartTime = System.currentTimeMillis();
-		List<PartnerPortalLookUpEntity> tabLocationEntities = partnerPortalLookupDAO.getTabLocations();
+		requestStartTime = System.currentTimeMillis();	
+		List<PartnerPortalLookUpEntity> tabLocationEntities = partnerPortalLookupDAO.getTabLocations();	
 		LOG.info("Received lookup entity data in {} ", (System.currentTimeMillis() - requestStartTime));
 		requestStartTime = System.currentTimeMillis();
 		Map<String, String> lookupValues = getLookUpMapFromEntity(tabLocationEntities);
-		for (Object[] objectData : filterData) {
+		for(Object[] objectData : filterData){
 			List<String> subFilters = new ArrayList<String>();
-			if (null != mapData.get(objectData[0])) {
+			if(null != mapData.get(objectData[0])){	
 				subFilters = mapData.get(objectData[0]);
 			}
 			subFilters.add((objectData[1]).toString());
 			mapData.put((objectData[0]).toString(), subFilters);
 		}
-		for (String key : mapData.keySet()) {
-			SuccessAcademyFilter filter = new SuccessAcademyFilter();
+		for(String key : mapData.keySet()){			
+			SuccessAcademyFilter filter = new SuccessAcademyFilter();					
 			filter.setName(key);
-			filter.setFilters(mapData.get(key));
+			filter.setFilters(mapData.get(key));					
 			filter.setTabLocationOnUI(lookupValues.get(key.toLowerCase().replaceAll(" ", "")));
 			filters.add(filter);
 		}
@@ -349,32 +348,34 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	}
 
 	@Override
-	public BookmarkResponseSchema bookmarkLearningForUser(BookmarkRequestSchema bookmarkRequestSchema,
+	public BookmarkResponseSchema bookmarkLearningForUser(
+			BookmarkRequestSchema bookmarkRequestSchema,
 			String xMasheryHandshake) {
 		LOG.info("Entering the getSuccessAcademyFilters");
-		long requestStartTime = System.currentTimeMillis();
+		long requestStartTime = System.currentTimeMillis();	
 		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
 		LOG.info("Fetched user data in {} ", (System.currentTimeMillis() - requestStartTime));
-		if (null == userDetails) {
+		if(null == userDetails){
 			throw new BadRequestException("Error from Entitlement System");
-		} else {
+		}else{
 			BookmarkResponseSchema bookmarkResponseSchema = new BookmarkResponseSchema();
 			bookmarkResponseSchema.setEmail(userDetails.getEmail());
 			bookmarkResponseSchema.setLearningid(bookmarkRequestSchema.getLearningid());
 			bookmarkResponseSchema.setBookmark(bookmarkRequestSchema.isBookmark());
 			requestStartTime = System.currentTimeMillis();
-			learningDAO.createOrUpdate(bookmarkResponseSchema);
+			learningDAO.createOrUpdate(bookmarkResponseSchema);	
 			LOG.info("Updated bookmark in {} ", (System.currentTimeMillis() - requestStartTime));
 			return bookmarkResponseSchema;
 		}
 	}
-
-	private Map<String, String> getLookUpMapFromEntity(List<PartnerPortalLookUpEntity> entityList) {
+	
+	
+	private Map<String,String> getLookUpMapFromEntity(List<PartnerPortalLookUpEntity> entityList){
 		HashMap<String, String> lookUpValues = new HashMap<String, String>();
-		for (PartnerPortalLookUpEntity entity : entityList) {
+		for(PartnerPortalLookUpEntity entity : entityList){
 			String key = entity.getPartnerPortalKey().replaceAll(CXPP_UI_TAB_PREFIX, "");
 			lookUpValues.put(key.toLowerCase(), entity.getPartnerPortalKeyValue());
-		}
+		}		
 		return lookUpValues;
 	}
 }
