@@ -4,6 +4,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Arrays;
 
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Test;
@@ -22,10 +23,12 @@ import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
 import com.cisco.cx.training.app.config.PropertyConfiguration;
-import com.cisco.cx.training.app.exception.GenericException;
 import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.app.service.impl.PartnerProfileServiceImpl;
+import com.cisco.cx.training.models.Company;
 import com.cisco.cx.training.models.UserDetails;
+import com.cisco.cx.training.models.UserDetailsWithCompanyList;
+import com.cisco.cx.training.models.UserProfile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -62,6 +65,22 @@ public class PartnerProfileServiceTest {
 		partnerProfileService.getEntitlementUrl();
 	}
 	
+	@Test
+	public void fetchUserDetailsWithCompanyList() throws IOException {
+		partnerProfileService.setEntitlementUrl("");
+		when(config.createCxpBasicAuthToken()).thenReturn("");
+		HttpHeaders headers = new HttpHeaders();
+		String xMasheryHandshake = new String(Base64.encodeBase64(loadFromFile("mock/auth-mashery-user1.json").getBytes()));
+		headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
+		headers.set("Authorization", "Basic " + "");
+		HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
+		
+		ResponseEntity<String> result = new ResponseEntity<>(getUserDetailsWithCompanyList(), HttpStatus.OK);
+		when(restTemplate.exchange(config.getPartnerUserDetails(), HttpMethod.GET, requestEntity, String.class)).thenReturn(result);
+		partnerProfileService.fetchUserDetailsWithCompanyList(xMasheryHandshake);
+		partnerProfileService.getEntitlementUrl();
+	}
+
 	@Test
 	public void fetchUserDetailsJsonMappingError() throws IOException {
 		partnerProfileService.setEntitlementUrl("");
@@ -114,6 +133,22 @@ public class PartnerProfileServiceTest {
 		userDetails.setStreet("street");
 		userDetails.setTitle("title");
 		userDetails.setZipcode("zipcode");
+
+		return mapper.writeValueAsString(userDetails);
+	}
+	
+	private String getUserDetailsWithCompanyList() throws JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+		UserDetailsWithCompanyList userDetails = new UserDetailsWithCompanyList();
+		UserProfile ciscoUserProfileSchema = new UserProfile();
+		ciscoUserProfileSchema.setEmailId("test");
+		Company company = new Company();
+		company.setDemoAccount(false);
+		company.setPuid("123");
+		userDetails.setCiscoUserProfileSchema(ciscoUserProfileSchema);
+		userDetails.setCompanyList(Arrays.asList(company));
 
 		return mapper.writeValueAsString(userDetails);
 	}

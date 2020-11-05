@@ -61,8 +61,19 @@ public class PropertyConfiguration {
 
 	private SealedObject rbacIncludedEndPoints;
 
-    public SealedObject authUrl;
+	public SealedObject authUrl;
 
+	private SealedObject partnerUserDetails;
+
+	public String getPartnerUserDetails() {
+		return cryptoAccess.unseal(partnerUserDetails);
+	}
+
+	@Value("${cxpp.partner.user.details}")
+	public void setPartnerUserDetails(String partnerUserDetails) {
+		this.partnerUserDetails = cryptoAccess.seal(partnerUserDetails);
+	}
+	
 	public String getCxpBasicAuthUserName() {
 		if (StringUtils.isBlank(cryptoAccess.unseal(cxpBasicAuthUserName))) {
 			throw new IllegalStateException("CXP Basic Auth Username not present in ENV. Please set cxp_basicauth_username");

@@ -40,6 +40,7 @@ import com.cisco.cx.training.app.service.TrainingAndEnablementService;
 import com.cisco.cx.training.models.BookmarkRequestSchema;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.cisco.cx.training.models.Community;
+import com.cisco.cx.training.models.Company;
 import com.cisco.cx.training.models.CountResponseSchema;
 import com.cisco.cx.training.models.CountSchema;
 import com.cisco.cx.training.models.SuccessAcademyFilter;
@@ -49,6 +50,8 @@ import com.cisco.cx.training.models.SuccessTalkResponseSchema;
 import com.cisco.cx.training.models.SuccessTalkSession;
 import com.cisco.cx.training.models.SuccesstalkUserRegEsSchema;
 import com.cisco.cx.training.models.UserDetails;
+import com.cisco.cx.training.models.UserDetailsWithCompanyList;
+import com.cisco.cx.training.models.UserProfile;
 import com.cisco.cx.training.util.SuccessAcademyMapper;
 
 @Service
@@ -63,7 +66,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 
 	@Autowired
 	private SuccessAcademyDAO successAcademyDAO;
-	
+
 	@Autowired
 	private PartnerPortalLookupDAO partnerPortalLookupDAO;
 
@@ -73,23 +76,23 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 
 	@Autowired
 	private BookmarkDAO bookmarkDAO;
-	
+
 	@Autowired
 	private ElasticSearchDAO elasticSearchDAO;
-	
+
 	@Autowired
 	private PropertyConfiguration config;
 
 	@Autowired
 	private PartnerProfileService partnerProfileService;
-	
+
 	@Autowired
 	private LearningBookmarkDAO learningDAO;
-	
+
 	private static final String CXPP_UI_TAB_PREFIX = "CXPP_UI_TAB_";
-	
+
 	@Override
-	public List<SuccessAcademyLearning> getAllSuccessAcademyLearnings(String xMasheryHandshake) {		
+	public List<SuccessAcademyLearning> getAllSuccessAcademyLearnings(String xMasheryHandshake) {
 		LOG.info("Entering the getAllSuccessAcademyLearnings");
 		long requestStartTime = System.currentTimeMillis();
 		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
@@ -99,16 +102,16 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		LOG.info("Fetched all learning in {} ", (System.currentTimeMillis() - requestStartTime));
 		requestStartTime = System.currentTimeMillis();
 		Set<String> userBookmarks = null;
-		if(null != userDetails){
+		if (null != userDetails) {
 			userBookmarks = learningDAO.getBookmarks(userDetails.getEmail());
 		}
 		LOG.info("Fetched user bookmarks in {} ", (System.currentTimeMillis() - requestStartTime));
 		requestStartTime = System.currentTimeMillis();
 		List<SuccessAcademyLearning> learnings = new ArrayList<>();
-		for(SuccessAcademyLearningEntity entity : entities){
+		for (SuccessAcademyLearningEntity entity : entities) {
 			SuccessAcademyLearning learning = SuccessAcademyMapper.getLearningsFromEntity(entity);
-			if(null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
-					&& userBookmarks.contains(entity.getRowId())){
+			if (null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
+					&& userBookmarks.contains(entity.getRowId())) {
 				learning.setIsBookMarked(true);
 			}
 			learnings.add(learning);
@@ -142,15 +145,25 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 
 	@Override
 	public SuccesstalkUserRegEsSchema cancelUserSuccessTalkRegistration(String title, Long eventStartDate,
-			String xMasheryHandshake) throws IOException {
-		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
+			String xMasheryHandshake, String puid) throws IOException {
+		UserDetailsWithCompanyList userDetails = partnerProfileService.fetchUserDetailsWithCompanyList(xMasheryHandshake);
+
+		List<Company> companies = userDetails.getCompanyList();
+		Optional<Company> matchingObject = companies.stream()
+				.filter(c -> (c.getPuid().equals(puid) && c.isDemoAccount())).findFirst();
+		Company company = matchingObject.isPresent() ? matchingObject.get() : null;
+		if (company != null)
+			throw new NotAllowedException("Not Allowed for DemoAccount");
+
 		// form a schema object for the input (set transaction type to Canceled)
 		SuccesstalkUserRegEsSchema cancelledRegistration = new SuccesstalkUserRegEsSchema(title, eventStartDate,
-				userDetails.getEmail(), SuccesstalkUserRegEsSchema.RegistrationStatusEnum.CANCELLED);
+				userDetails.getCiscoUserProfileSchema().getEmailId(),
+				SuccesstalkUserRegEsSchema.RegistrationStatusEnum.CANCELLED);
+
 		try {
 			// find and mark registration as Canceled in the Smartsheet
-			//commenting out for now till workflow is finalized
-			//smartsheetDAO.cancelUserSuccessTalkRegistration(cancelledRegistration);
+			// commenting out for now till workflow is finalized
+			// smartsheetDAO.cancelUserSuccessTalkRegistration(cancelledRegistration);
 			return successTalkDAO.saveSuccessTalkRegistration(cancelledRegistration);
 		} catch (Exception se) {
 			// log error if smartsheet throws exception and mark it Cancel_Failed for the ES
@@ -160,21 +173,34 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 			successTalkDAO.saveSuccessTalkRegistration(cancelledRegistration);
 			throw new GenericException("Error while cancelling Success Talk Registration: " + se.getMessage(), se);
 		}
+
 	}
 
 	@Override
-	public SuccesstalkUserRegEsSchema registerUserToSuccessTalkRegistration(String title, Long eventStartDate, String xMasheryHandshake) throws Exception {
-		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
+	public SuccesstalkUserRegEsSchema registerUserToSuccessTalkRegistration(String title, Long eventStartDate,
+			String xMasheryHandshake, String puid) throws Exception {
+		UserDetailsWithCompanyList userDetails = partnerProfileService.fetchUserDetailsWithCompanyList(xMasheryHandshake);
+
+		List<Company> companies = userDetails.getCompanyList();
+		Optional<Company> matchingObject = companies.stream()
+				.filter(c -> (c.getPuid().equals(puid) && c.isDemoAccount())).findFirst();
+		Company company = matchingObject.isPresent() ? matchingObject.get() : null;
+		if (company != null)
+			throw new NotAllowedException("Not Allowed for DemoAccount");
+
 		// form a schema object for the input (set transaction type to Pending)
-		SuccesstalkUserRegEsSchema registration = new SuccesstalkUserRegEsSchema(title, eventStartDate, userDetails.getEmail(), SuccesstalkUserRegEsSchema.RegistrationStatusEnum.REGISTERED);
+		SuccesstalkUserRegEsSchema registration = new SuccesstalkUserRegEsSchema(title, eventStartDate,
+				userDetails.getCiscoUserProfileSchema().getEmailId(),
+				SuccesstalkUserRegEsSchema.RegistrationStatusEnum.REGISTERED);
 
 		// validate the registration details
-		registration = this.fetchSuccessTalkRegistrationDetails(registration, userDetails);
+		registration = this.fetchSuccessTalkRegistrationDetails(registration, userDetails.getCiscoUserProfileSchema());
 		return successTalkDAO.saveSuccessTalkRegistration(registration);
 	}
 
 	@Override
-	public SuccesstalkUserRegEsSchema fetchSuccessTalkRegistrationDetails(SuccesstalkUserRegEsSchema registration, UserDetails userDetails) throws NotFoundException, NotAllowedException {
+	public SuccesstalkUserRegEsSchema fetchSuccessTalkRegistrationDetails(SuccesstalkUserRegEsSchema registration,
+			UserProfile userDetails) throws NotFoundException, NotAllowedException {
 		SuccessTalk successTalk = null;
 
 		try {
@@ -190,11 +216,11 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 				registration.setTitle(successTalk.getTitle());
 				SuccessTalkSession successTalkSession = optionalSession.get();
 				registration.setEventStartDate(successTalkSession.getSessionStartDate());
-				registration.setEmail(userDetails.getEmail());
+				registration.setEmail(userDetails.getEmailId());
 				registration.setFirstName(userDetails.getFirstName());
 				registration.setLastName(userDetails.getLastName());
-				registration.setUserTitle(userDetails.getTitle());
-				registration.setPhone(userDetails.getPhone());
+				registration.setUserTitle(userDetails.getUserTitle());
+				registration.setPhone(userDetails.getTelephone());
 				registration.setCompany(userDetails.getCompany());
 				registration.setCountry(userDetails.getCountry());
 				registration.setRegistrationDate(new Date().getTime());
@@ -220,27 +246,27 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 
 		return bookmarkResponseSchema;
 	}
-	
+
 	@Override
 	public CountResponseSchema getIndexCounts() {
 		LOG.info("Entering the getIndexCounts");
-		long requestStartTime = System.currentTimeMillis();		
+		long requestStartTime = System.currentTimeMillis();
 		List<CountSchema> indexCounts = new ArrayList<>();
 		CountResponseSchema countResponse = new CountResponseSchema();
 		try {
 
-			CountSchema communityCount= getCommunityCount();
+			CountSchema communityCount = getCommunityCount();
 			LOG.info("Received Community count in {} ", (System.currentTimeMillis() - requestStartTime));
 			indexCounts.add(communityCount);
 
-			requestStartTime = System.currentTimeMillis();	
+			requestStartTime = System.currentTimeMillis();
 			CountSchema successTalkCount = getSuccessTalkCount();
 			LOG.info("Received Success talks count in {} ", (System.currentTimeMillis() - requestStartTime));
 			indexCounts.add(successTalkCount);
-			
+
 			CountSchema successAcamedyCount = new CountSchema();
-			successAcamedyCount.setLabel("CX Learning");	
-			requestStartTime = System.currentTimeMillis();	
+			successAcamedyCount.setLabel("CX Learning");
+			requestStartTime = System.currentTimeMillis();
 			successAcamedyCount.setCount(successAcademyDAO.count());
 			LOG.info("Received Success Academy count in {} ", (System.currentTimeMillis() - requestStartTime));
 
@@ -256,7 +282,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 
 		return countResponse;
 	}
-	
+
 	@Override
 	public CountSchema getCommunityCount() {
 
@@ -266,7 +292,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		communityCount.setCount(1L);
 		return communityCount;
 	}
-	
+
 	@Override
 	public CountSchema getSuccessTalkCount() {
 
@@ -293,28 +319,28 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	@Override
 	public List<SuccessAcademyFilter> getSuccessAcademyFilters() {
 		LOG.info("Entering the getSuccessAcademyFilters");
-		long requestStartTime = System.currentTimeMillis();	
+		long requestStartTime = System.currentTimeMillis();
 		Map<String, List<String>> mapData = new HashMap<String, List<String>>();
 		List<SuccessAcademyFilter> filters = new ArrayList<SuccessAcademyFilter>();
 		List<Object[]> filterData = successAcademyDAO.getLearningFilters();
 		LOG.info("Received filtered data in {} ", (System.currentTimeMillis() - requestStartTime));
-		requestStartTime = System.currentTimeMillis();	
-		List<PartnerPortalLookUpEntity> tabLocationEntities = partnerPortalLookupDAO.getTabLocations();	
+		requestStartTime = System.currentTimeMillis();
+		List<PartnerPortalLookUpEntity> tabLocationEntities = partnerPortalLookupDAO.getTabLocations();
 		LOG.info("Received lookup entity data in {} ", (System.currentTimeMillis() - requestStartTime));
 		requestStartTime = System.currentTimeMillis();
 		Map<String, String> lookupValues = getLookUpMapFromEntity(tabLocationEntities);
-		for(Object[] objectData : filterData){
+		for (Object[] objectData : filterData) {
 			List<String> subFilters = new ArrayList<String>();
-			if(null != mapData.get(objectData[0])){	
+			if (null != mapData.get(objectData[0])) {
 				subFilters = mapData.get(objectData[0]);
 			}
 			subFilters.add((objectData[1]).toString());
 			mapData.put((objectData[0]).toString(), subFilters);
 		}
-		for(String key : mapData.keySet()){			
-			SuccessAcademyFilter filter = new SuccessAcademyFilter();					
+		for (String key : mapData.keySet()) {
+			SuccessAcademyFilter filter = new SuccessAcademyFilter();
 			filter.setName(key);
-			filter.setFilters(mapData.get(key));					
+			filter.setFilters(mapData.get(key));
 			filter.setTabLocationOnUI(lookupValues.get(key.toLowerCase().replaceAll(" ", "")));
 			filters.add(filter);
 		}
@@ -323,34 +349,32 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	}
 
 	@Override
-	public BookmarkResponseSchema bookmarkLearningForUser(
-			BookmarkRequestSchema bookmarkRequestSchema,
+	public BookmarkResponseSchema bookmarkLearningForUser(BookmarkRequestSchema bookmarkRequestSchema,
 			String xMasheryHandshake) {
 		LOG.info("Entering the getSuccessAcademyFilters");
-		long requestStartTime = System.currentTimeMillis();	
+		long requestStartTime = System.currentTimeMillis();
 		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
 		LOG.info("Fetched user data in {} ", (System.currentTimeMillis() - requestStartTime));
-		if(null == userDetails){
+		if (null == userDetails) {
 			throw new BadRequestException("Error from Entitlement System");
-		}else{
+		} else {
 			BookmarkResponseSchema bookmarkResponseSchema = new BookmarkResponseSchema();
 			bookmarkResponseSchema.setEmail(userDetails.getEmail());
 			bookmarkResponseSchema.setLearningid(bookmarkRequestSchema.getLearningid());
 			bookmarkResponseSchema.setBookmark(bookmarkRequestSchema.isBookmark());
 			requestStartTime = System.currentTimeMillis();
-			learningDAO.createOrUpdate(bookmarkResponseSchema);	
+			learningDAO.createOrUpdate(bookmarkResponseSchema);
 			LOG.info("Updated bookmark in {} ", (System.currentTimeMillis() - requestStartTime));
 			return bookmarkResponseSchema;
 		}
 	}
-	
-	
-	private Map<String,String> getLookUpMapFromEntity(List<PartnerPortalLookUpEntity> entityList){
+
+	private Map<String, String> getLookUpMapFromEntity(List<PartnerPortalLookUpEntity> entityList) {
 		HashMap<String, String> lookUpValues = new HashMap<String, String>();
-		for(PartnerPortalLookUpEntity entity : entityList){
+		for (PartnerPortalLookUpEntity entity : entityList) {
 			String key = entity.getPartnerPortalKey().replaceAll(CXPP_UI_TAB_PREFIX, "");
 			lookUpValues.put(key.toLowerCase(), entity.getPartnerPortalKeyValue());
-		}		
+		}
 		return lookUpValues;
 	}
 }

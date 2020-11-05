@@ -1,6 +1,5 @@
 package com.cisco.cx.training.test;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -38,6 +37,7 @@ import com.cisco.cx.training.app.entities.PartnerPortalLookUpEntity;
 import com.cisco.cx.training.app.entities.SuccessAcademyLearningEntity;
 import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.exception.GenericException;
+import com.cisco.cx.training.app.exception.NotAllowedException;
 import com.cisco.cx.training.app.exception.NotFoundException;
 import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
@@ -45,6 +45,7 @@ import com.cisco.cx.training.app.service.impl.TrainingAndEnablementServiceImpl;
 import com.cisco.cx.training.models.BookmarkRequestSchema;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.cisco.cx.training.models.Community;
+import com.cisco.cx.training.models.Company;
 import com.cisco.cx.training.models.ElasticSearchResults;
 import com.cisco.cx.training.models.SuccessAcademyFilter;
 import com.cisco.cx.training.models.SuccessAcademyLearning;
@@ -52,6 +53,8 @@ import com.cisco.cx.training.models.SuccessTalk;
 import com.cisco.cx.training.models.SuccessTalkSession;
 import com.cisco.cx.training.models.SuccesstalkUserRegEsSchema;
 import com.cisco.cx.training.models.UserDetails;
+import com.cisco.cx.training.models.UserDetailsWithCompanyList;
+import com.cisco.cx.training.models.UserProfile;
 
 @RunWith(SpringRunner.class)
 public class TrainingAndEnablementServiceTest {
@@ -129,7 +132,6 @@ public class TrainingAndEnablementServiceTest {
 		Assert.assertEquals(learnings.get(1).getIsBookMarked(),false);
 	}
 	
-
 	@Test
 	public void getAllCommunitiesTest() {
 		Community community = getCommunity();
@@ -167,8 +169,7 @@ public class TrainingAndEnablementServiceTest {
         when(elasticSearchDAO.query(config.getSuccessTalkUserRegistrationsIndex(), sourceBuilder, SuccesstalkUserRegEsSchema.class)).thenReturn(results);
         trainingAndEnablementService.getUserSuccessTalks(email);
 	}
-	
-	
+		
 	@Test
 	public void createOrUpdateBookmark() {
 		UserDetails userDetails = new UserDetails();
@@ -185,90 +186,128 @@ public class TrainingAndEnablementServiceTest {
 	
 	@Test
 	public void cancelUserSuccessTalkRegistration() throws Exception {
+		UserDetailsWithCompanyList userDetails=getUserDetailsWithCompanyList();
 		String email = "email";
 		String title = "title";
 		Long eventStartDate = 1L;
-		UserDetails userDetails = new UserDetails();
-		userDetails.setEmail("email");
-		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(userDetails);
-		trainingAndEnablementService.cancelUserSuccessTalkRegistration(title, eventStartDate, email);
+		String puid="123";
+		when(partnerProfileService.fetchUserDetailsWithCompanyList(Mockito.anyString())).thenReturn(userDetails);
+		trainingAndEnablementService.cancelUserSuccessTalkRegistration(title, eventStartDate, email,puid);
 	}
 	
+	private UserDetailsWithCompanyList getUserDetailsWithCompanyList() {
+		UserDetailsWithCompanyList userDetails=new UserDetailsWithCompanyList();
+		UserProfile ciscoUserProfileSchema=new UserProfile();
+		ciscoUserProfileSchema.setEmailId("test");
+		Company company=new Company();
+		company.setDemoAccount(false);
+		company.setPuid("123");
+		userDetails.setCiscoUserProfileSchema(ciscoUserProfileSchema);
+		userDetails.setCompanyList(Arrays.asList(company));
+		
+		return userDetails;
+	}
+
+
 	@Test(expected = IOException.class)
 	public void cancelUserSuccessTalkRegistrationError() throws Exception {
+		UserDetailsWithCompanyList userDetails=getUserDetailsWithCompanyList();
 		String email = "email";
 		String title = "title";
 		Long eventStartDate = 1L;
-		UserDetails userDetails = new UserDetails();
-		userDetails.setEmail("email");
-		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(userDetails);
-		SuccesstalkUserRegEsSchema cancelledRegistration = new SuccesstalkUserRegEsSchema(title, eventStartDate, userDetails.getEmail(), SuccesstalkUserRegEsSchema.RegistrationStatusEnum.CANCELLED);
+		String puid="123";
+		when(partnerProfileService.fetchUserDetailsWithCompanyList(Mockito.anyString())).thenReturn(userDetails);
+		SuccesstalkUserRegEsSchema cancelledRegistration = new SuccesstalkUserRegEsSchema(title, eventStartDate, userDetails.getCiscoUserProfileSchema().getEmailId(), SuccesstalkUserRegEsSchema.RegistrationStatusEnum.CANCELLED);
 		doThrow(IOException.class).when(successTalkDAO).saveSuccessTalkRegistration(cancelledRegistration);
-		trainingAndEnablementService.cancelUserSuccessTalkRegistration(title, eventStartDate, email);
+		trainingAndEnablementService.cancelUserSuccessTalkRegistration(title, eventStartDate, email,puid);
+	}
+	
+	@Test(expected = NotAllowedException.class)
+	public void cancelUserSuccessTalkRegistrationBlockDemoaccount() throws Exception {
+		UserDetailsWithCompanyList userDetails=getUserDetailsWithCompanyList();
+		List<Company> companies=userDetails.getCompanyList();
+		Company company=companies.get(0);
+		company.setDemoAccount(true);
+		String email = "email";
+		String title = "title";
+		Long eventStartDate = 1L;
+		String puid="123";
+		when(partnerProfileService.fetchUserDetailsWithCompanyList(Mockito.anyString())).thenReturn(userDetails);
+		trainingAndEnablementService.cancelUserSuccessTalkRegistration(title, eventStartDate, email,puid);
 	}
 	
 	@Test
 	public void registerUserToSuccessTalkRegistration() throws Exception {
+		UserDetailsWithCompanyList userDetails=getUserDetailsWithCompanyList();
 		String email = "email";
 		String title = "title";
 		Long eventStartDate = 1L;
-		UserDetails userDetails = new UserDetails();
-		userDetails.setEmail("email");
-		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(userDetails);
-		SuccesstalkUserRegEsSchema registration = new SuccesstalkUserRegEsSchema(title, eventStartDate, userDetails.getEmail(), SuccesstalkUserRegEsSchema.RegistrationStatusEnum.REGISTERED);
+		String puid="123";
+		when(partnerProfileService.fetchUserDetailsWithCompanyList(Mockito.anyString())).thenReturn(userDetails);
+		SuccesstalkUserRegEsSchema registration = new SuccesstalkUserRegEsSchema(title, eventStartDate, userDetails.getCiscoUserProfileSchema().getEmailId(), SuccesstalkUserRegEsSchema.RegistrationStatusEnum.REGISTERED);
 		when(successTalkDAO.findSuccessTalk(registration.getTitle(), registration.getEventStartDate())).thenReturn(getSuccessTalk());
-		trainingAndEnablementService.registerUserToSuccessTalkRegistration(title, eventStartDate, email);
+		trainingAndEnablementService.registerUserToSuccessTalkRegistration(title, eventStartDate, email,puid);
 	}
 	
 	@Test(expected = NotFoundException.class)
 	public void registerUserToSuccessTalkRegistrationError() throws Exception {
+		UserDetailsWithCompanyList userDetails=getUserDetailsWithCompanyList();
 		String email = "email";
 		String title = "title";
 		Long eventStartDate = 1L;
-		UserDetails userDetails = new UserDetails();
-		userDetails.setEmail("email");
-		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(userDetails);
-		trainingAndEnablementService.registerUserToSuccessTalkRegistration(title, eventStartDate, email);
+		String puid="123";
+		when(partnerProfileService.fetchUserDetailsWithCompanyList(Mockito.anyString())).thenReturn(userDetails);
+		trainingAndEnablementService.registerUserToSuccessTalkRegistration(title, eventStartDate, email,puid);
+	}
+	
+	@Test(expected = NotAllowedException.class)
+	public void registerUserToSuccessTalkRegistrationBlockDemoaccount() throws Exception {
+		UserDetailsWithCompanyList userDetails=getUserDetailsWithCompanyList();
+		List<Company> companies=userDetails.getCompanyList();
+		Company company=companies.get(0);
+		company.setDemoAccount(true);
+		String email = "email";
+		String title = "title";
+		Long eventStartDate = 1L;
+		String puid="123";
+		when(partnerProfileService.fetchUserDetailsWithCompanyList(Mockito.anyString())).thenReturn(userDetails);
+		trainingAndEnablementService.registerUserToSuccessTalkRegistration(title, eventStartDate, email,puid);
 	}
 	
 	@Test(expected = IOException.class)
 	public void registerUserToSuccessTalkRegistrationSmartsheetError() throws Exception {
+		UserDetailsWithCompanyList userDetails=getUserDetailsWithCompanyList();
 		String email = "email";
 		String title = "title";
 		Long eventStartDate = 1L;
-		UserDetails userDetails = new UserDetails();
-		userDetails.setEmail("email");
-		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(userDetails);
-		SuccesstalkUserRegEsSchema registration = new SuccesstalkUserRegEsSchema(title, eventStartDate, userDetails.getEmail(), SuccesstalkUserRegEsSchema.RegistrationStatusEnum.PENDING);
-		doThrow(IOException.class).when(successTalkDAO).saveSuccessTalkRegistration(any(SuccesstalkUserRegEsSchema.class));
+		String puid="123";
+		when(partnerProfileService.fetchUserDetailsWithCompanyList(Mockito.anyString())).thenReturn(userDetails);
+		SuccesstalkUserRegEsSchema registration = new SuccesstalkUserRegEsSchema(title, eventStartDate, userDetails.getCiscoUserProfileSchema().getEmailId(), SuccesstalkUserRegEsSchema.RegistrationStatusEnum.PENDING);
+		doThrow(IOException.class).when(successTalkDAO).saveSuccessTalkRegistration(Mockito.any(SuccesstalkUserRegEsSchema.class));
 		when(successTalkDAO.findSuccessTalk(registration.getTitle(), registration.getEventStartDate())).thenReturn(getSuccessTalk());
-		trainingAndEnablementService.registerUserToSuccessTalkRegistration(title, eventStartDate, email);
+		trainingAndEnablementService.registerUserToSuccessTalkRegistration(title, eventStartDate, email,puid);
 	}
 	
 
 	@Test
 	public void fetchSuccessTalkRegistrationDetails() throws Exception {
-		String email = "email";
+		UserDetailsWithCompanyList userDetails=getUserDetailsWithCompanyList();
 		String title = "title";
 		Long eventStartDate = 1L;
-		UserDetails userDetails = new UserDetails();
-		userDetails.setEmail(email);
-		SuccesstalkUserRegEsSchema registration = new SuccesstalkUserRegEsSchema(title, eventStartDate, userDetails.getEmail(), SuccesstalkUserRegEsSchema.RegistrationStatusEnum.REGISTERED);
+		SuccesstalkUserRegEsSchema registration = new SuccesstalkUserRegEsSchema(title, eventStartDate, userDetails.getCiscoUserProfileSchema().getEmailId(), SuccesstalkUserRegEsSchema.RegistrationStatusEnum.REGISTERED);
 		SuccessTalk successTalk = getSuccessTalk();
 		when(successTalkDAO.findSuccessTalk(registration.getTitle(), registration.getEventStartDate())).thenReturn(successTalk);
-		trainingAndEnablementService.fetchSuccessTalkRegistrationDetails(registration, userDetails);
+		trainingAndEnablementService.fetchSuccessTalkRegistrationDetails(registration, userDetails.getCiscoUserProfileSchema());
 	}
 	
 	@Test(expected = GenericException.class)
 	public void fetchSuccessTalkRegistrationDetailsError() throws Exception {
-		String email = "email";
+		UserDetailsWithCompanyList userDetails=getUserDetailsWithCompanyList();
 		String title = "title";
 		Long eventStartDate = 1L;
-		UserDetails userDetails = new UserDetails();
-		userDetails.setEmail(email);
-		SuccesstalkUserRegEsSchema registration = new SuccesstalkUserRegEsSchema(title, eventStartDate, userDetails.getEmail(), SuccesstalkUserRegEsSchema.RegistrationStatusEnum.REGISTERED);
+		SuccesstalkUserRegEsSchema registration = new SuccesstalkUserRegEsSchema(title, eventStartDate, userDetails.getCiscoUserProfileSchema().getEmailId(), SuccesstalkUserRegEsSchema.RegistrationStatusEnum.REGISTERED);
 		when(successTalkDAO.findSuccessTalk(registration.getTitle(), registration.getEventStartDate())).thenThrow(IOException.class);
-		trainingAndEnablementService.fetchSuccessTalkRegistrationDetails(registration, userDetails);
+		trainingAndEnablementService.fetchSuccessTalkRegistrationDetails(registration, userDetails.getCiscoUserProfileSchema());
 	}
 	
 	@Test

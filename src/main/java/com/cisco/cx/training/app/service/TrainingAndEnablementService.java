@@ -4,7 +4,16 @@ import java.util.List;
 
 import com.cisco.cx.training.app.exception.NotAllowedException;
 import com.cisco.cx.training.app.exception.NotFoundException;
-import com.cisco.cx.training.models.*;
+import com.cisco.cx.training.models.BookmarkRequestSchema;
+import com.cisco.cx.training.models.BookmarkResponseSchema;
+import com.cisco.cx.training.models.Community;
+import com.cisco.cx.training.models.CountResponseSchema;
+import com.cisco.cx.training.models.CountSchema;
+import com.cisco.cx.training.models.SuccessAcademyFilter;
+import com.cisco.cx.training.models.SuccessAcademyLearning;
+import com.cisco.cx.training.models.SuccessTalkResponseSchema;
+import com.cisco.cx.training.models.SuccesstalkUserRegEsSchema;
+import com.cisco.cx.training.models.UserProfile;
 
 public interface TrainingAndEnablementService {
 
@@ -16,11 +25,11 @@ public interface TrainingAndEnablementService {
 
 	SuccessTalkResponseSchema getUserSuccessTalks(String xMasheryHandshake);
 
-	SuccesstalkUserRegEsSchema cancelUserSuccessTalkRegistration(String title, Long eventStartDate, String xMasheryHandshake) throws Exception;
+	SuccesstalkUserRegEsSchema cancelUserSuccessTalkRegistration(String title, Long eventStartDate, String xMasheryHandshake, String puid) throws Exception;
 
-	SuccesstalkUserRegEsSchema registerUserToSuccessTalkRegistration(String title, Long eventStartDate, String xMasheryHandshake) throws Exception;
+	SuccesstalkUserRegEsSchema registerUserToSuccessTalkRegistration(String title, Long eventStartDate, String xMasheryHandshake, String puid) throws Exception;
 
-	SuccesstalkUserRegEsSchema fetchSuccessTalkRegistrationDetails(SuccesstalkUserRegEsSchema registration, UserDetails userDetails) throws NotFoundException, NotAllowedException;
+	SuccesstalkUserRegEsSchema fetchSuccessTalkRegistrationDetails(SuccesstalkUserRegEsSchema registration, UserProfile userDetails) throws NotFoundException, NotAllowedException;
 
 	BookmarkResponseSchema createOrUpdateBookmark(BookmarkRequestSchema bookmarkRequestSchema , String xMasheryHandshake);
 

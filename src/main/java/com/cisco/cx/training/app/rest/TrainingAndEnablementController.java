@@ -1,11 +1,5 @@
 package com.cisco.cx.training.app.rest;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +36,12 @@ import com.cisco.cx.training.models.SuccessAcademyFilter;
 import com.cisco.cx.training.models.SuccessAcademyLearning;
 import com.cisco.cx.training.models.SuccessTalkResponseSchema;
 import com.cisco.cx.training.models.SuccesstalkUserRegEsSchema;
-import com.cisco.cx.training.models.UserDetails;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 @RestController
 @Validated
@@ -130,13 +129,18 @@ public class TrainingAndEnablementController {
             @ApiResponse(code = 500, message = "Internal server error occured", response = ErrorResponse.class)})
     public SuccesstalkUserRegEsSchema cancelUserAtxRegistration(
             @ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
+            @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
             @ApiParam(value = "Event Name of selected session", required = true) @RequestParam(value = "title", required = true) @NotBlank @Size(max =1000) String title,
             @ApiParam(value = "Event Date of selected session", required = true) @RequestParam(value = "eventStartDate") @NotNull Long eventStartDate) throws Exception {
 
+    	if (puid == null) {
+			throw new BadRequestException("PUID is missing in the header");
+    	}
+			
         if (StringUtils.isBlank(xMasheryHandshake)) {
             throw new BadRequestException("X-Mashery-Handshake header missing in request");
         }
-    	return trainingAndEnablementService.cancelUserSuccessTalkRegistration(title, eventStartDate, xMasheryHandshake);
+    	return trainingAndEnablementService.cancelUserSuccessTalkRegistration(title, eventStartDate, xMasheryHandshake,puid);
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalk/registration")
@@ -146,14 +150,20 @@ public class TrainingAndEnablementController {
             @ApiResponse(code = 400, message = "Bad Request", response = ErrorResponse.class),
             @ApiResponse(code = 403, message = "Operation forbidden due to business policies", response = ErrorResponse.class),
             @ApiResponse(code = 500, message = "Error during registration", response = ErrorResponse.class)})
-    public SuccesstalkUserRegEsSchema registerToAtx(@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
+    public SuccesstalkUserRegEsSchema registerToAtx(
+    		@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
+            @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
     		@ApiParam(value = "Event Name of selected session", required = true) @RequestParam(value = "title") @NotBlank @Size(max =1000) String title,
             @ApiParam(value = "Event Date of selected session", required = true) @RequestParam(value = "eventStartDate") @NotNull Long eventStartDate) throws Exception {
 
+    	if (puid == null) {
+			throw new BadRequestException("PUID is missing in the header");
+    	}
+    	
         if (StringUtils.isBlank(xMasheryHandshake)) {
             throw new BadRequestException("X-Mashery-Handshake header missing in request");
         }
-        return trainingAndEnablementService.registerUserToSuccessTalkRegistration(title, eventStartDate, xMasheryHandshake);
+        return trainingAndEnablementService.registerUserToSuccessTalkRegistration(title, eventStartDate, xMasheryHandshake,puid);
     }
     
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalk/bookmarks")
