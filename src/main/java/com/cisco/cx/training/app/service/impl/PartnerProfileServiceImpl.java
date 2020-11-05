@@ -17,6 +17,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.cisco.cx.training.app.config.PropertyConfiguration;
+import com.cisco.cx.training.app.exception.GenericException;
 import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.constants.LoggerConstants;
 import com.cisco.cx.training.models.MasheryObject;
@@ -72,11 +73,13 @@ public class PartnerProfileServiceImpl implements PartnerProfileService {
 		HttpEntity<String> requestEntity = new HttpEntity<String>(null, requestHeaders);
 		ResponseEntity<String> result = restTemplate.exchange(config.getPartnerUserDetails(), HttpMethod.GET,requestEntity, String.class);
 		LOGGER.info("Prtner user details URL response = {}",result.getStatusCode().value() != HttpStatus.OK.value() ? result.getBody() : "call completed.");
+		if(result==null)
+			throw new GenericException("user details api failed");
 		try {
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			userDetails = mapper.readValue(result.getBody(), UserDetailsWithCompanyList.class);
 		} catch (IOException | HttpClientErrorException e) {
-			LOGGER.error("Error while invoking the entitlement API", e);
+			LOGGER.error("Error while invoking the user details  API", e);
 		}
 		return userDetails;
 	}
