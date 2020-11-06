@@ -1,3 +1,4 @@
+
 package com.cisco.cx.training.app.rest;
 
 import java.util.HashMap;
@@ -133,10 +134,6 @@ public class TrainingAndEnablementController {
             @ApiParam(value = "Event Name of selected session", required = true) @RequestParam(value = "title", required = true) @NotBlank @Size(max =1000) String title,
             @ApiParam(value = "Event Date of selected session", required = true) @RequestParam(value = "eventStartDate") @NotNull Long eventStartDate) throws Exception {
 
-    	if (puid == null) {
-			throw new BadRequestException("PUID is missing in the header");
-    	}
-			
         if (StringUtils.isBlank(xMasheryHandshake)) {
             throw new BadRequestException("X-Mashery-Handshake header missing in request");
         }
@@ -156,10 +153,6 @@ public class TrainingAndEnablementController {
     		@ApiParam(value = "Event Name of selected session", required = true) @RequestParam(value = "title") @NotBlank @Size(max =1000) String title,
             @ApiParam(value = "Event Date of selected session", required = true) @RequestParam(value = "eventStartDate") @NotNull Long eventStartDate) throws Exception {
 
-    	if (puid == null) {
-			throw new BadRequestException("PUID is missing in the header");
-    	}
-    	
         if (StringUtils.isBlank(xMasheryHandshake)) {
             throw new BadRequestException("X-Mashery-Handshake header missing in request");
         }
