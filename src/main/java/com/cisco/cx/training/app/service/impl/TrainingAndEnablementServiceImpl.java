@@ -40,6 +40,7 @@ import com.cisco.cx.training.app.service.TrainingAndEnablementService;
 import com.cisco.cx.training.models.BookmarkRequestSchema;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.cisco.cx.training.models.Community;
+import com.cisco.cx.training.models.Company;
 import com.cisco.cx.training.models.CountResponseSchema;
 import com.cisco.cx.training.models.CountSchema;
 import com.cisco.cx.training.models.SuccessAcademyFilter;
@@ -49,6 +50,8 @@ import com.cisco.cx.training.models.SuccessTalkResponseSchema;
 import com.cisco.cx.training.models.SuccessTalkSession;
 import com.cisco.cx.training.models.SuccesstalkUserRegEsSchema;
 import com.cisco.cx.training.models.UserDetails;
+import com.cisco.cx.training.models.UserDetailsWithCompanyList;
+import com.cisco.cx.training.models.UserProfile;
 import com.cisco.cx.training.util.SuccessAcademyMapper;
 
 @Service
@@ -142,15 +145,25 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 
 	@Override
 	public SuccesstalkUserRegEsSchema cancelUserSuccessTalkRegistration(String title, Long eventStartDate,
-			String xMasheryHandshake) throws IOException {
-		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
+			String xMasheryHandshake, String puid) throws IOException {
+		UserDetailsWithCompanyList userDetails = partnerProfileService.fetchUserDetailsWithCompanyList(xMasheryHandshake);
+
+		List<Company> companies = userDetails.getCompanyList();
+		Optional<Company> matchingObject = companies.stream()
+				.filter(c -> (c.getPuid().equals(puid) && c.isDemoAccount())).findFirst();
+		Company company = matchingObject.isPresent() ? matchingObject.get() : null;
+		if (company != null)
+			throw new NotAllowedException("Not Allowed for DemoAccount");
+
 		// form a schema object for the input (set transaction type to Canceled)
 		SuccesstalkUserRegEsSchema cancelledRegistration = new SuccesstalkUserRegEsSchema(title, eventStartDate,
-				userDetails.getEmail(), SuccesstalkUserRegEsSchema.RegistrationStatusEnum.CANCELLED);
+				userDetails.getCiscoUserProfileSchema().getEmailId(),
+				SuccesstalkUserRegEsSchema.RegistrationStatusEnum.CANCELLED);
+
 		try {
 			// find and mark registration as Canceled in the Smartsheet
-			//commenting out for now till workflow is finalized
-			//smartsheetDAO.cancelUserSuccessTalkRegistration(cancelledRegistration);
+			// commenting out for now till workflow is finalized
+			// smartsheetDAO.cancelUserSuccessTalkRegistration(cancelledRegistration);
 			return successTalkDAO.saveSuccessTalkRegistration(cancelledRegistration);
 		} catch (Exception se) {
 			// log error if smartsheet throws exception and mark it Cancel_Failed for the ES
@@ -160,21 +173,33 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 			successTalkDAO.saveSuccessTalkRegistration(cancelledRegistration);
 			throw new GenericException("Error while cancelling Success Talk Registration: " + se.getMessage(), se);
 		}
+
 	}
 
 	@Override
-	public SuccesstalkUserRegEsSchema registerUserToSuccessTalkRegistration(String title, Long eventStartDate, String xMasheryHandshake) throws Exception {
-		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
+	public SuccesstalkUserRegEsSchema registerUserToSuccessTalkRegistration(String title, Long eventStartDate,
+			String xMasheryHandshake, String puid) throws Exception {
+		UserDetailsWithCompanyList userDetails = partnerProfileService.fetchUserDetailsWithCompanyList(xMasheryHandshake);
+
+		List<Company> companies = userDetails.getCompanyList();
+		Optional<Company> matchingObject = companies.stream()
+				.filter(c -> (c.getPuid().equals(puid) && c.isDemoAccount())).findFirst();
+		Company company = matchingObject.isPresent() ? matchingObject.get() : null;
+		if (company != null)
+			throw new NotAllowedException("Not Allowed for DemoAccount");
+
 		// form a schema object for the input (set transaction type to Pending)
-		SuccesstalkUserRegEsSchema registration = new SuccesstalkUserRegEsSchema(title, eventStartDate, userDetails.getEmail(), SuccesstalkUserRegEsSchema.RegistrationStatusEnum.REGISTERED);
+		SuccesstalkUserRegEsSchema registration = new SuccesstalkUserRegEsSchema(title, eventStartDate,
+				userDetails.getCiscoUserProfileSchema().getEmailId(),
+				SuccesstalkUserRegEsSchema.RegistrationStatusEnum.REGISTERED);
 
 		// validate the registration details
-		registration = this.fetchSuccessTalkRegistrationDetails(registration, userDetails);
+		registration = this.fetchSuccessTalkRegistrationDetails(registration, userDetails.getCiscoUserProfileSchema());
 		return successTalkDAO.saveSuccessTalkRegistration(registration);
 	}
 
 	@Override
-	public SuccesstalkUserRegEsSchema fetchSuccessTalkRegistrationDetails(SuccesstalkUserRegEsSchema registration, UserDetails userDetails) throws NotFoundException, NotAllowedException {
+	public SuccesstalkUserRegEsSchema fetchSuccessTalkRegistrationDetails(SuccesstalkUserRegEsSchema registration, UserProfile userDetails) throws NotFoundException, NotAllowedException {
 		SuccessTalk successTalk = null;
 
 		try {
@@ -190,11 +215,11 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 				registration.setTitle(successTalk.getTitle());
 				SuccessTalkSession successTalkSession = optionalSession.get();
 				registration.setEventStartDate(successTalkSession.getSessionStartDate());
-				registration.setEmail(userDetails.getEmail());
+				registration.setEmail(userDetails.getEmailId());
 				registration.setFirstName(userDetails.getFirstName());
 				registration.setLastName(userDetails.getLastName());
-				registration.setUserTitle(userDetails.getTitle());
-				registration.setPhone(userDetails.getPhone());
+				registration.setUserTitle(userDetails.getUserTitle());
+				registration.setPhone(userDetails.getTelephone());
 				registration.setCompany(userDetails.getCompany());
 				registration.setCountry(userDetails.getCountry());
 				registration.setRegistrationDate(new Date().getTime());

@@ -79,4 +79,4 @@ files:
     elasticsearch.host: ${cxpp_es_hostname}
     cxpp.aws.region: us-west-2
     cxpp.user.management.auth.url : "http://cxpp-user-management:8080/cxpp-user-management/v2/user/authorize"
-
+    cxpp.partner.user.details : http://cxpp-user-management:8080/cxpp-user-management/v2/user/details
