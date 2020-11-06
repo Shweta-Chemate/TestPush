@@ -5,12 +5,16 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.cisco.cx.training.app.filters.LogFilter;
 import com.cisco.cx.training.app.filters.AuthFilter;
 import com.cisco.cx.training.app.filters.RBACFilter;
 import com.cisco.cx.training.constants.Constants;
 
 @Configuration
 public class FilterConfig {
+	
+	@Autowired
+	private LogFilter logFilter;
 
     @Autowired
     private RBACFilter rbacFilter;
@@ -20,6 +24,16 @@ public class FilterConfig {
     
     @Autowired
     private PropertyConfiguration config;
+    
+    @Bean
+    public FilterRegistrationBean<LogFilter> logPatternFilter() {
+        FilterRegistrationBean<LogFilter> registrationBean = new FilterRegistrationBean<>();
+        registrationBean.setFilter(logFilter);
+        String[] includeUrlPatterns = config.getRbacIncludedEndPoints().trim().split(Constants.COMMA);
+        registrationBean.addUrlPatterns(includeUrlPatterns);
+        return registrationBean;
+    }
+    
     @Bean
     public FilterRegistrationBean<RBACFilter> rbacFilter() {
         FilterRegistrationBean<RBACFilter> registrationBean = new FilterRegistrationBean<>();
