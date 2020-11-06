@@ -239,7 +239,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 
 		BeanUtils.copyProperties(bookmarkRequestSchema, bookmarkResponseSchema);
 
-		bookmarkResponseSchema.setEmail(userDetails.getEmail());
+		bookmarkResponseSchema.setEmail(userDetails.getCecId());
 
 		bookmarkResponseSchema = bookmarkDAO.createOrUpdate(bookmarkResponseSchema);
 
@@ -359,7 +359,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 			throw new BadRequestException("Error from Entitlement System");
 		}else{
 			BookmarkResponseSchema bookmarkResponseSchema = new BookmarkResponseSchema();
-			bookmarkResponseSchema.setEmail(userDetails.getEmail());
+			bookmarkResponseSchema.setEmail(userDetails.getCecId());
 			bookmarkResponseSchema.setLearningid(bookmarkRequestSchema.getLearningid());
 			bookmarkResponseSchema.setBookmark(bookmarkRequestSchema.isBookmark());
 			requestStartTime = System.currentTimeMillis();
