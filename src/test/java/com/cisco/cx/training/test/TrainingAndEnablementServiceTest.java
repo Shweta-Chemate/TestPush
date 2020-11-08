@@ -92,7 +92,7 @@ public class TrainingAndEnablementServiceTest {
 	@Test
 	public void testGetSuccessAcademy() {
 		UserDetails userDetails = new UserDetails();
-		userDetails.setEmail("email");
+		userDetails.setCecId("email");
 		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(userDetails);
 		SuccessAcademyLearningEntity entity1 = new SuccessAcademyLearningEntity();
 		entity1.setRowId("1");
@@ -172,7 +172,7 @@ public class TrainingAndEnablementServiceTest {
 	@Test
 	public void createOrUpdateBookmark() {
 		UserDetails userDetails = new UserDetails();
-		userDetails.setEmail("email");
+		userDetails.setCecId("email");
 		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(userDetails);
 		String email = "email";
 		BookmarkRequestSchema bookmarkRequestSchema = new BookmarkResponseSchema(); 
@@ -381,7 +381,7 @@ public class TrainingAndEnablementServiceTest {
 	
 	public void testBookmarkLearningForUser(){
 		UserDetails userDetails = new UserDetails();
-		userDetails.setEmail("email");
+		userDetails.setCecId("email");
 		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(userDetails);	
 		BookmarkRequestSchema request = new BookmarkRequestSchema();
 		request.setLearningid("1");
@@ -390,7 +390,7 @@ public class TrainingAndEnablementServiceTest {
 		BookmarkResponseSchema response = trainingAndEnablementService.bookmarkLearningForUser(null, "");
 		
 		Assert.assertEquals(response.getLearningid(),"1");
-		Assert.assertEquals(response.getEmail(),"email");		
+		Assert.assertEquals(response.getCreated(),"email");		
 	}
 		
 	@Test(expected = BadRequestException.class)
