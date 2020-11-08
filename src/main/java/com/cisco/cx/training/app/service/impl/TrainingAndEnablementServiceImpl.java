@@ -103,7 +103,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		requestStartTime = System.currentTimeMillis();
 		Set<String> userBookmarks = null;
 		if(null != userDetails){
-			userBookmarks = learningDAO.getBookmarks(userDetails.getEmail());
+			userBookmarks = learningDAO.getBookmarks(userDetails.getCecId());
 		}
 		LOG.info("Fetched user bookmarks in {} ", (System.currentTimeMillis() - requestStartTime));
 		requestStartTime = System.currentTimeMillis();
