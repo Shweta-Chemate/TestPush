@@ -390,7 +390,7 @@ public class TrainingAndEnablementServiceTest {
 		BookmarkResponseSchema response = trainingAndEnablementService.bookmarkLearningForUser(null, "");
 		
 		Assert.assertEquals(response.getLearningid(),"1");
-		Assert.assertEquals(response.getCreated(),"email");		
+		Assert.assertEquals(response.getEmail(),"email");		
 	}
 		
 	@Test(expected = BadRequestException.class)
