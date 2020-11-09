@@ -185,7 +185,7 @@ public class SuccessTalkDAOTest {
 		bookmark.setBookmarkRequestId("bookmarkRequestId");
 		bookmark.setCreated(1L);
 		bookmark.setDocId("docid");
-		bookmark.setEmail("email");
+		bookmark.setCcoid("ccoid");
 		bookmark.setId("id");
 		bookmark.setTitle("title");
 		bookmark.setUpdated(1L);
@@ -227,7 +227,7 @@ public class SuccessTalkDAOTest {
 		bookmark.setBookmarkRequestId("bookmarkRequestId");
 		bookmark.setCreated(eventTime);
 		bookmark.setDocId("docid");
-		bookmark.setEmail("email");
+		bookmark.setCcoid("ccoid");
 		bookmark.setId("id");
 		bookmark.setTitle("title");
 		bookmark.setUpdated(eventTime);
@@ -239,12 +239,12 @@ public class SuccessTalkDAOTest {
 	
 	@Test
 	public void getRegisteredSuccessTalks() throws IOException {
-		String email = "email";
+		String ccoid = "ccoid";
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
         BoolQueryBuilder boolQuery = new BoolQueryBuilder();
-        QueryBuilder emailQuery = QueryBuilders.matchPhraseQuery("email.keyword", email);
+        QueryBuilder ccoidQuery = QueryBuilders.matchPhraseQuery("ccoid.keyword", ccoid);
         QueryBuilder transactionType = QueryBuilders.matchPhraseQuery("registrationStatus.keyword", SuccesstalkUserRegEsSchema.RegistrationStatusEnum.REGISTERED);
-        boolQuery.must(emailQuery).must(transactionType);
+        boolQuery.must(ccoidQuery).must(transactionType);
 
         sourceBuilder.query(boolQuery);
         sourceBuilder.size(1000);
@@ -253,17 +253,17 @@ public class SuccessTalkDAOTest {
         SuccesstalkUserRegEsSchema successtalkUserRegEsSchema = new SuccesstalkUserRegEsSchema();
         results.addDocument(successtalkUserRegEsSchema);
         when(elasticSearchDAO.query(config.getSuccessTalkUserRegistrationsIndex(), sourceBuilder, SuccesstalkUserRegEsSchema.class)).thenReturn(results);
-        successTalkDAO.getRegisteredSuccessTalks(email);
+        successTalkDAO.getRegisteredSuccessTalks(ccoid);
 	}
 	
 	@Test(expected = GenericException.class)
 	public void getRegisteredSuccessTalksError() throws IOException {
-		String email = "email";
+		String ccoid = "ccoid";
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
         BoolQueryBuilder boolQuery = new BoolQueryBuilder();
-        QueryBuilder emailQuery = QueryBuilders.matchPhraseQuery("email.keyword", email);
+        QueryBuilder ccoidQuery = QueryBuilders.matchPhraseQuery("ccoid.keyword", ccoid);
         QueryBuilder transactionType = QueryBuilders.matchPhraseQuery("registrationStatus.keyword", SuccesstalkUserRegEsSchema.RegistrationStatusEnum.REGISTERED);
-        boolQuery.must(emailQuery).must(transactionType);
+        boolQuery.must(ccoidQuery).must(transactionType);
 
         sourceBuilder.query(boolQuery);
         sourceBuilder.size(1000);
@@ -272,7 +272,7 @@ public class SuccessTalkDAOTest {
         SuccesstalkUserRegEsSchema successtalkUserRegEsSchema = new SuccesstalkUserRegEsSchema();
         results.addDocument(successtalkUserRegEsSchema);
         when(elasticSearchDAO.query(config.getSuccessTalkUserRegistrationsIndex(), sourceBuilder, SuccesstalkUserRegEsSchema.class)).thenThrow(IOException.class);
-        successTalkDAO.getRegisteredSuccessTalks(email);
+        successTalkDAO.getRegisteredSuccessTalks(ccoid);
 	}
 	
 
@@ -303,22 +303,16 @@ public class SuccessTalkDAOTest {
 	
 	private SuccesstalkUserRegEsSchema getRegistration() {
 		SuccesstalkUserRegEsSchema registration = new SuccesstalkUserRegEsSchema();
-		registration.setEmail("email");
-		registration.setFirstName("name");
-		registration.setLastName("");
-		registration.setCompany("");
-		registration.setCountry("");
+		registration.setCcoid("ccoid");
 		registration.setDocId("");
 		registration.setAttendedStatus(SuccesstalkUserRegEsSchema.AttendedStatusEnum.NO);
 		registration.setEventStartDate(eventTime);
 		registration.setEventStartDateFormatted("");
-		registration.setPhone("");
 		registration.setRegistrationDate(eventTime);
 		registration.setRegistrationDateFormatted("");
 		registration.setRegistrationStatus(SuccesstalkUserRegEsSchema.RegistrationStatusEnum.PENDING);
 		registration.setTitle("title");
 		registration.setUpdated(eventTime);
-		registration.setUserTitle("");
 		return registration;
 	}
 }

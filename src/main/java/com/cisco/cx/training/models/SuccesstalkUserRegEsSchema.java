@@ -15,8 +15,8 @@ public class SuccesstalkUserRegEsSchema implements HasId {
     private final static Logger LOG = LoggerFactory.getLogger(SuccesstalkUserRegEsSchema.class);
     private final static String SMARTSHEET_DATE_FORMAT = "MM-dd-yy";
 
-    @JsonAlias("Email")
-    private String email;
+    @JsonAlias("Ccoid")
+    private String ccoid;
 
     @JsonAlias("Attended")
     private AttendedStatusEnum attendedStatus;
@@ -38,23 +38,6 @@ public class SuccesstalkUserRegEsSchema implements HasId {
 
     @JsonAlias("Registered")
     private RegistrationStatusEnum registrationStatus=RegistrationStatusEnum.PENDING;
-    
-	@JsonAlias("First Name")
-	private String firstName;
-
-	@JsonAlias("Last Name")
-	private String lastName;
-	@JsonAlias("Title")
-	private String userTitle;
-
-	@JsonAlias("Phone")
-	private String phone;
-
-	@JsonAlias("Company")
-	private String company;
-
-	@JsonAlias("Country/Region")
-	private String country;
 	
     private Long created = System.currentTimeMillis();
 
@@ -63,8 +46,8 @@ public class SuccesstalkUserRegEsSchema implements HasId {
 
     public SuccesstalkUserRegEsSchema() { }
 
-    public SuccesstalkUserRegEsSchema(String title, Long eventStartDate, String email, RegistrationStatusEnum registrationStatus) {
-        this.email = email;
+    public SuccesstalkUserRegEsSchema(String title, Long eventStartDate, String ccoid, RegistrationStatusEnum registrationStatus) {
+        this.ccoid = ccoid;
         this.eventStartDate = eventStartDate;
         this.title = title;
         this.registrationStatus = registrationStatus;
@@ -79,13 +62,12 @@ public class SuccesstalkUserRegEsSchema implements HasId {
         this.attendedStatus = attendedStatus;
     }
 
-
-    public String getEmail() {
-		return email;
+	public String getCcoid() {
+		return ccoid;
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
+	public void setCcoid(String ccoid) {
+		this.ccoid = ccoid;
 	}
 
 	public String getTitle() {
@@ -117,12 +99,12 @@ public class SuccesstalkUserRegEsSchema implements HasId {
         if (o == null || getClass() != o.getClass()) return false;
 
         SuccesstalkUserRegEsSchema that = (SuccesstalkUserRegEsSchema) o;
-        return getEmail().equals(that.getEmail()) && getTitle().equals(that.getTitle()) && getEventStartDate().equals(that.eventStartDate);
+        return getCcoid().equals(that.getCcoid()) && getTitle().equals(that.getTitle()) && getEventStartDate().equals(that.eventStartDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getEmail(), getTitle(),getEventStartDate());
+        return Objects.hash(getCcoid(), getTitle(),getEventStartDate());
     }
 
     @Override
@@ -238,53 +220,5 @@ public class SuccesstalkUserRegEsSchema implements HasId {
 			LOG.warn("Could not parse pattern {} from date value {}", SMARTSHEET_DATE_FORMAT,
 					registrationDateFormatted);
 		}
-	}
-
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-	public String getUserTitle() {
-		return userTitle;
-	}
-
-	public void setUserTitle(String userTitle) {
-		this.userTitle = userTitle;
-	}
-
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
-	public String getCompany() {
-		return company;
-	}
-
-	public void setCompany(String company) {
-		this.company = company;
-	}
-
-	public String getCountry() {
-		return country;
-	}
-
-	public void setCountry(String country) {
-		this.country = country;
 	}
 }

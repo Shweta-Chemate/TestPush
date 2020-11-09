@@ -139,7 +139,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		long timeElapsed = System.currentTimeMillis() - startTime;
 		LOG.info("Partner Profile Service Time Elapsed: " + timeElapsed);
 		SuccessTalkResponseSchema successTalkResponseSchema = new SuccessTalkResponseSchema();
-		successTalkResponseSchema.setItems(successTalkDAO.getUserSuccessTalks(userDetails.getEmail()));
+		successTalkResponseSchema.setItems(successTalkDAO.getUserSuccessTalks(userDetails.getCecId()));
 		return successTalkResponseSchema;
 	}
 
@@ -157,7 +157,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 
 		// form a schema object for the input (set transaction type to Canceled)
 		SuccesstalkUserRegEsSchema cancelledRegistration = new SuccesstalkUserRegEsSchema(title, eventStartDate,
-				userDetails.getCiscoUserProfileSchema().getEmailId(),
+				userDetails.getCiscoUserProfileSchema().getUserId(),
 				SuccesstalkUserRegEsSchema.RegistrationStatusEnum.CANCELLED);
 
 		try {
@@ -190,7 +190,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 
 		// form a schema object for the input (set transaction type to Pending)
 		SuccesstalkUserRegEsSchema registration = new SuccesstalkUserRegEsSchema(title, eventStartDate,
-				userDetails.getCiscoUserProfileSchema().getEmailId(),
+				userDetails.getCiscoUserProfileSchema().getUserId(),
 				SuccesstalkUserRegEsSchema.RegistrationStatusEnum.REGISTERED);
 
 		// validate the registration details
@@ -215,13 +215,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 				registration.setTitle(successTalk.getTitle());
 				SuccessTalkSession successTalkSession = optionalSession.get();
 				registration.setEventStartDate(successTalkSession.getSessionStartDate());
-				registration.setEmail(userDetails.getEmailId());
-				registration.setFirstName(userDetails.getFirstName());
-				registration.setLastName(userDetails.getLastName());
-				registration.setUserTitle(userDetails.getUserTitle());
-				registration.setPhone(userDetails.getTelephone());
-				registration.setCompany(userDetails.getCompany());
-				registration.setCountry(userDetails.getCountry());
+				registration.setCcoid(userDetails.getUserId());
 				registration.setRegistrationDate(new Date().getTime());
 			}
 		} else {
@@ -239,7 +233,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 
 		BeanUtils.copyProperties(bookmarkRequestSchema, bookmarkResponseSchema);
 
-		bookmarkResponseSchema.setEmail(userDetails.getCecId());
+		bookmarkResponseSchema.setCcoid(userDetails.getCecId());
 
 		bookmarkResponseSchema = bookmarkDAO.createOrUpdate(bookmarkResponseSchema);
 
@@ -359,7 +353,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 			throw new BadRequestException("Error from Entitlement System");
 		}else{
 			BookmarkResponseSchema bookmarkResponseSchema = new BookmarkResponseSchema();
-			bookmarkResponseSchema.setEmail(userDetails.getCecId());
+			bookmarkResponseSchema.setCcoid(userDetails.getCecId());
 			bookmarkResponseSchema.setLearningid(bookmarkRequestSchema.getLearningid());
 			bookmarkResponseSchema.setBookmark(bookmarkRequestSchema.isBookmark());
 			requestStartTime = System.currentTimeMillis();

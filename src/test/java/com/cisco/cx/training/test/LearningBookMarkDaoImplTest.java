@@ -67,7 +67,7 @@ public class LearningBookMarkDaoImplTest {
 	@Test
 	public void testCreateOrUpdateNull() {
 		BookmarkResponseSchema responseSchema = new BookmarkResponseSchema();
-		responseSchema.setEmail("email");
+		responseSchema.setCcoid("ccoid");
 		responseSchema.setBookmark(true);
 		Map<String,AttributeValue> userBookmarks = new HashMap<String, AttributeValue>();
 		Set<String> bookMar = new HashSet<String>();
@@ -89,7 +89,7 @@ public class LearningBookMarkDaoImplTest {
 	public void testCreateOrUpdateEmpty() {
 		BookmarkResponseSchema responseSchema = new BookmarkResponseSchema();
 		responseSchema.setLearningid("1");
-		responseSchema.setEmail("email");
+		responseSchema.setCcoid("ccoid");
 		responseSchema.setBookmark(false);
 		Map<String,AttributeValue> userBookmarks = new HashMap<String, AttributeValue>();
 		Set<String> bookMar = new HashSet<String>();
@@ -112,7 +112,7 @@ public class LearningBookMarkDaoImplTest {
 	@Test
 	public void testCreateOrUpdate(){
 		BookmarkResponseSchema responseSchema = new BookmarkResponseSchema();
-		responseSchema.setEmail("email");
+		responseSchema.setCcoid("ccoid");
 		Map<String,AttributeValue> userBookmarks = new HashMap<String, AttributeValue>();
 		Set<String> bookMar = new HashSet<String>();
 		bookMar.add("1");

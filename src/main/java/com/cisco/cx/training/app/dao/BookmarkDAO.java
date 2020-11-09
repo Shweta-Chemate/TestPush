@@ -8,6 +8,6 @@ public interface BookmarkDAO {
 
 	BookmarkResponseSchema createOrUpdate(BookmarkResponseSchema bookmarkResponseSchema);
 
-	List<BookmarkResponseSchema> getBookmarks(String email, String entityId);
+	List<BookmarkResponseSchema> getBookmarks(String ccoid, String entityId);
 
 }

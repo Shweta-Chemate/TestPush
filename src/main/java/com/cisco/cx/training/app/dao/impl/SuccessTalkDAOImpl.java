@@ -163,13 +163,13 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
     }
 
 	@Override
-    public List<SuccesstalkUserRegEsSchema> getRegisteredSuccessTalks(String email) {
+    public List<SuccesstalkUserRegEsSchema> getRegisteredSuccessTalks(String ccoid) {
         List<SuccesstalkUserRegEsSchema> scheduledRegs = new ArrayList<>();
 
         try {
             SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
             BoolQueryBuilder boolQuery = new BoolQueryBuilder();
-            QueryBuilder emailQuery = QueryBuilders.matchPhraseQuery("email.keyword", email);
+            QueryBuilder emailQuery = QueryBuilders.matchPhraseQuery("ccoid.keyword", ccoid);
             QueryBuilder transactionType = QueryBuilders.matchPhraseQuery("registrationStatus.keyword", SuccesstalkUserRegEsSchema.RegistrationStatusEnum.REGISTERED);
             boolQuery.must(emailQuery).must(transactionType);
 
@@ -193,7 +193,7 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
     }
 	
 	@Override
-	public List<SuccessTalk> getUserSuccessTalks(String email) {
+	public List<SuccessTalk> getUserSuccessTalks(String ccoid) {
 		List<SuccessTalk> successTalkES = new ArrayList<>();
         
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
@@ -205,8 +205,8 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
 		try {
 			ElasticSearchResults<SuccessTalk> results = elasticSearchDAO.query(config.getSuccessTalkIndex(), sourceBuilder, SuccessTalk.class);
 
-            List<BookmarkResponseSchema> bookmarksList = bookmarkDAO.getBookmarks(email,null);
-			List<SuccesstalkUserRegEsSchema> registeredSuccessTalkList = getRegisteredSuccessTalks(email);
+            List<BookmarkResponseSchema> bookmarksList = bookmarkDAO.getBookmarks(ccoid,null);
+			List<SuccesstalkUserRegEsSchema> registeredSuccessTalkList = getRegisteredSuccessTalks(ccoid);
 			
 			results.getDocuments().forEach(successTalk -> {
 
