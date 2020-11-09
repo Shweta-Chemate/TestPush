@@ -432,9 +432,9 @@ public class TrainingAndEnablementServiceTest {
 		Assert.assertEquals(response.getCcoid(),"ccoid");		
 	}
 		
-	/*@Test(expected = BadRequestException.class)
+	@Test(expected = BadRequestException.class)
 	public void testFailureBookmarkLearningForUser(){		
 		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(null);			
 		trainingAndEnablementService.bookmarkLearningForUser(null, "");
-	}*/
+	}
 }
