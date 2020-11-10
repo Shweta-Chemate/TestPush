@@ -179,7 +179,7 @@ public class TrainingAndEnablementServiceTest {
 		BookmarkRequestSchema bookmarkRequestSchema = new BookmarkResponseSchema(); 
 		BookmarkResponseSchema bookmarkResponseSchema = new BookmarkResponseSchema();
 		BeanUtils.copyProperties(bookmarkRequestSchema, bookmarkResponseSchema);
-		bookmarkResponseSchema.setEmail(email );
+		bookmarkResponseSchema.setCcoid("ccoid");
 		when(bookmarkDAO.createOrUpdate(bookmarkResponseSchema)).thenReturn(bookmarkResponseSchema);
 		trainingAndEnablementService.createOrUpdateBookmark(bookmarkRequestSchema, email);
 	}
@@ -198,7 +198,7 @@ public class TrainingAndEnablementServiceTest {
 	private UserDetailsWithCompanyList getUserDetailsWithCompanyList() {
 		UserDetailsWithCompanyList userDetails=new UserDetailsWithCompanyList();
 		UserProfile ciscoUserProfileSchema=new UserProfile();
-		ciscoUserProfileSchema.setEmailId("test");
+		ciscoUserProfileSchema.setUserId("ccoid");
 		Company company=new Company();
 		company.setDemoAccount(false);
 		company.setPuid("123");
@@ -212,14 +212,14 @@ public class TrainingAndEnablementServiceTest {
 	@Test(expected = IOException.class)
 	public void cancelUserSuccessTalkRegistrationError() throws Exception {
 		UserDetailsWithCompanyList userDetails=getUserDetailsWithCompanyList();
-		String email = "email";
+		String ccoid = "ccoid";
 		String title = "title";
 		Long eventStartDate = 1L;
 		String puid="123";
 		when(partnerProfileService.fetchUserDetailsWithCompanyList(Mockito.anyString())).thenReturn(userDetails);
-		SuccesstalkUserRegEsSchema cancelledRegistration = new SuccesstalkUserRegEsSchema(title, eventStartDate, userDetails.getCiscoUserProfileSchema().getEmailId(), SuccesstalkUserRegEsSchema.RegistrationStatusEnum.CANCELLED);
+		SuccesstalkUserRegEsSchema cancelledRegistration = new SuccesstalkUserRegEsSchema(title, eventStartDate, userDetails.getCiscoUserProfileSchema().getUserId(), SuccesstalkUserRegEsSchema.RegistrationStatusEnum.CANCELLED);
 		doThrow(IOException.class).when(successTalkDAO).saveSuccessTalkRegistration(cancelledRegistration);
-		trainingAndEnablementService.cancelUserSuccessTalkRegistration(title, eventStartDate, email,puid);
+		trainingAndEnablementService.cancelUserSuccessTalkRegistration(title, eventStartDate, ccoid,puid);
 	}
 	
 	@Test(expected = NotAllowedException.class)
@@ -228,12 +228,12 @@ public class TrainingAndEnablementServiceTest {
 		List<Company> companies=userDetails.getCompanyList();
 		Company company=companies.get(0);
 		company.setDemoAccount(true);
-		String email = "email";
+		String ccoid = "ccoid";
 		String title = "title";
 		Long eventStartDate = 1L;
 		String puid="123";
 		when(partnerProfileService.fetchUserDetailsWithCompanyList(Mockito.anyString())).thenReturn(userDetails);
-		trainingAndEnablementService.cancelUserSuccessTalkRegistration(title, eventStartDate, email,puid);
+		trainingAndEnablementService.cancelUserSuccessTalkRegistration(title, eventStartDate, ccoid,puid);
 	}
 	
 	@Test
@@ -429,7 +429,7 @@ public class TrainingAndEnablementServiceTest {
 		BookmarkResponseSchema response = trainingAndEnablementService.bookmarkLearningForUser(null, "");
 		
 		Assert.assertEquals(response.getLearningid(),"1");
-		Assert.assertEquals(response.getEmail(),"email");		
+		Assert.assertEquals(response.getCcoid(),"ccoid");		
 	}
 		
 	@Test(expected = BadRequestException.class)

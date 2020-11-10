@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.annotation.Generated;
+
+import java.util.Objects;
 import java.util.UUID;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -22,7 +24,7 @@ public class BookmarkResponseSchema extends BookmarkRequestSchema implements Has
     @ApiModelProperty(notes = "Updated Timestamp Epoch", example = "1500000000000")
     private Long updated = System.currentTimeMillis();
     
-    private String email;
+    private String ccoid;
 
     public String getBookmarkRequestId() {
         return bookmarkRequestId;
@@ -48,18 +50,23 @@ public class BookmarkResponseSchema extends BookmarkRequestSchema implements Has
         this.updated = updated;
     }
 
-    public String getEmail() {
-		return email;
+	public String getCcoid() {
+		return ccoid;
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
+	public void setCcoid(String ccoid) {
+		this.ccoid = ccoid;
 	}
+	
+	@Override
+    public int hashCode() {
+        return Objects.hash(getTitle(), getCcoid());
+    }
 
 	@Override
     @JsonIgnore
     public String getDocId() {
-        return this.bookmarkRequestId;
+        return String.valueOf(this.hashCode());
     }
 
     @Override

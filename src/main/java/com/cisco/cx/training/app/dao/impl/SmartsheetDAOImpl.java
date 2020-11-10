@@ -35,14 +35,8 @@ public class SmartsheetDAOImpl implements SmartsheetDAO {
     private static Map<String, String> successTalkRegColTitleToSchemaKeyMap = Stream.of(new Object[][] {
             { "Event Name", "title" },
             { "Email", "email" },
-            { "FirstName", "firstName" },
-            { "LastName", "lastName" },
             { "Registered", "registrationStatus" },
             { "Attended", "attendedStatus" },
-            { "Title", "userTitle"},
-            { "Phone", "phone"},
-            { "Company", "company"},
-            { "Country/Region", "country"},
             { "Registration Date/Time", "registrationDateFormatted"},
             { "Event Start Date", "eventStartDateFormatted"}
     }).collect(Collectors.toMap(data -> (String) data[0], data -> (String) data[1]));
@@ -95,11 +89,11 @@ public class SmartsheetDAOImpl implements SmartsheetDAO {
 
         if (existingSuccessTalkRegistration == null) {
             // if there is no existingSuccessTalkRegistration available, return error because this record is not found in the smartsheet
-            LOG.error("Could not find this registration in Smartsheet - title: {},email: {}",
-                                cancelledRegistration.getTitle(), cancelledRegistration.getEmail());
+            LOG.error("Could not find this registration in Smartsheet - title: {},ccoid: {}",
+                                cancelledRegistration.getTitle(), cancelledRegistration.getCcoid());
 
             throw new NotFoundException("Could not find an active registration in Smartsheet for title: " + cancelledRegistration.getTitle()
-                                        + ", email: " + cancelledRegistration.getEmail());
+                                        + ", ccoid: " + cancelledRegistration.getCcoid());
         }
     }
 
@@ -133,8 +127,8 @@ public class SmartsheetDAOImpl implements SmartsheetDAO {
                             cell.setValue(cancelledRegistration.getRegistrationStatus());
                             cell.setDisplayValue(cancelledRegistration.getRegistrationStatus().toString());
                         } else if (StringUtils.equalsIgnoreCase(columnIdToTitleMap.get(cell.getColumnId()), "Email")) {
-                            cell.setValue(cancelledRegistration.getEmail());
-                            cell.setDisplayValue(cancelledRegistration.getEmail());
+                            cell.setValue(cancelledRegistration.getCcoid());
+                            cell.setDisplayValue(cancelledRegistration.getCcoid());
                         } else if (StringUtils.equalsIgnoreCase(columnIdToTitleMap.get(cell.getColumnId()), "Event Name")) {
                             cell.setValue(cancelledRegistration.getTitle());
                             cell.setDisplayValue(cancelledRegistration.getTitle());
@@ -166,7 +160,7 @@ public class SmartsheetDAOImpl implements SmartsheetDAO {
                     if (StringUtils.equalsIgnoreCase(columnIdToTitleMap.get(currentCell.getColumnId()), "Event Name")) {
                         isCellQualified = isCellQualified && (Objects.equals(registration.getTitle(), currentCell.getValue()));
                     } else if (StringUtils.equalsIgnoreCase(columnIdToTitleMap.get(currentCell.getColumnId()), "Email")) {
-                        isCellQualified = isCellQualified && (Objects.equals(registration.getEmail(), currentCell.getValue()));
+                        isCellQualified = isCellQualified && (Objects.equals(registration.getCcoid(), currentCell.getValue()));
                     } else if (StringUtils.equalsIgnoreCase(columnIdToTitleMap.get(currentCell.getColumnId()), "Registered")) {
                         isCellQualified = isCellQualified && (status == null || status.isEmpty() || status.contains(currentCell.getValue()));
                     }

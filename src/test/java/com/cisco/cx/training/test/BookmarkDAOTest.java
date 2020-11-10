@@ -37,10 +37,10 @@ public class BookmarkDAOTest {
 	@Test
 	public void getBookmarks() throws IOException {
 		String entityId = "entityId";
-		String email = "email";
+		String ccoid = "ccoid";
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 		BoolQueryBuilder boolQuery = new BoolQueryBuilder();
-		QueryBuilder ccoIdQuery = QueryBuilders.matchPhraseQuery("email.keyword", email);
+		QueryBuilder ccoIdQuery = QueryBuilders.matchPhraseQuery("ccoid.keyword", ccoid);
 		QueryBuilder entityIdQuery;
 		boolQuery.must(ccoIdQuery);
 		entityIdQuery = QueryBuilders.matchPhraseQuery("id.keyword", entityId);
@@ -51,16 +51,16 @@ public class BookmarkDAOTest {
 		ElasticSearchResults<BookmarkResponseSchema> results = new ElasticSearchResults<>();
 		results.addDocument(getBookmarkResponseSchema());
 		when(elasticSearchDAO.query(config.getBookmarksIndex(), sourceBuilder, BookmarkResponseSchema.class)).thenReturn(results);
-		bookmarkDAO.getBookmarks(email, entityId);
+		bookmarkDAO.getBookmarks(ccoid, entityId);
 	}
 	
 	@Test(expected = GenericException.class)
 	public void getBookmarksError() throws IOException {
 		String entityId = "entityId";
-		String email = "email";		
+		String ccoid = "ccoid";		
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 		BoolQueryBuilder boolQuery = new BoolQueryBuilder();
-		QueryBuilder ccoIdQuery = QueryBuilders.matchPhraseQuery("email.keyword", email);
+		QueryBuilder ccoIdQuery = QueryBuilders.matchPhraseQuery("ccoid.keyword", ccoid);
 		QueryBuilder entityIdQuery;
 		boolQuery.must(ccoIdQuery);
 		entityIdQuery = QueryBuilders.matchPhraseQuery("id.keyword", entityId);
@@ -71,7 +71,7 @@ public class BookmarkDAOTest {
 		ElasticSearchResults<BookmarkResponseSchema> results = new ElasticSearchResults<>();
 		results.addDocument(getBookmarkResponseSchema());
 		when(elasticSearchDAO.query(config.getBookmarksIndex(), sourceBuilder, BookmarkResponseSchema.class)).thenThrow(IOException.class);
-		bookmarkDAO.getBookmarks(email, entityId);
+		bookmarkDAO.getBookmarks(ccoid, entityId);
 
 	}
 
@@ -101,7 +101,7 @@ public class BookmarkDAOTest {
 		bookmark.setBookmarkRequestId("bookmarkRequestId");
 		bookmark.setCreated(1L);
 		bookmark.setDocId("docid");
-		bookmark.setEmail("email");
+		bookmark.setCcoid("ccoid");
 		bookmark.setId("id");
 		bookmark.setTitle("title");
 		bookmark.setUpdated(1L);
@@ -138,7 +138,7 @@ public class BookmarkDAOTest {
 		bookmark.setBookmarkRequestId("bookmarkRequestId");
 		bookmark.setCreated(1L);
 		bookmark.setDocId("docid");
-		bookmark.setEmail("email");
+		bookmark.setCcoid("ccoid");
 		bookmark.setId("id");
 		bookmark.setTitle("title");
 		bookmark.setUpdated(1L);
@@ -155,7 +155,7 @@ public class BookmarkDAOTest {
 		schema.setBookmarkRequestId("bookmarkRequestId");
 		schema.setCreated(1L);
 		schema.setDocId("docid");
-		schema.setEmail("email");
+		schema.setCcoid("ccoid");
 		schema.setId("id");
 		schema.setTitle("title");
 		schema.setUpdated(1L);

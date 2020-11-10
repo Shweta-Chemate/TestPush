@@ -12,7 +12,7 @@ public interface SuccessTalkDAO {
 
 	public List<SuccessTalk> getAllSuccessTalks();
 
-	public List<SuccessTalk> getUserSuccessTalks(String email);
+	public List<SuccessTalk> getUserSuccessTalks(String ccoid);
 
 	public String registerUser(String successTalkSessionId, String successTalkId);
 
@@ -22,5 +22,5 @@ public interface SuccessTalkDAO {
 	
 	public SuccessTalk findSuccessTalk(String title, Long eventStartDate) throws IOException;
 	
-	public List<SuccesstalkUserRegEsSchema> getRegisteredSuccessTalks(String email);
+	public List<SuccesstalkUserRegEsSchema> getRegisteredSuccessTalks(String ccoid);
 }

@@ -37,7 +37,7 @@ public class BookmarkDAOImpl implements BookmarkDAO {
 	public BookmarkResponseSchema createOrUpdate(BookmarkResponseSchema bookmarkResponseSchema) {
 		BookmarkResponseSchema savedBookMark;
 
-		List<BookmarkResponseSchema> bookmarks = getBookmarks(bookmarkResponseSchema.getEmail(), bookmarkResponseSchema.getId());
+		List<BookmarkResponseSchema> bookmarks = getBookmarks(bookmarkResponseSchema.getCcoid(), bookmarkResponseSchema.getId());
 
 		try {
 			// Check if document already exists. If yes update else create
@@ -61,13 +61,13 @@ public class BookmarkDAOImpl implements BookmarkDAO {
 	}
 
 	@Override
-	public List<BookmarkResponseSchema> getBookmarks(String email, String entityId) {
+	public List<BookmarkResponseSchema> getBookmarks(String ccoid, String entityId) {
 		List<BookmarkResponseSchema> searchHits = new ArrayList<>();
 
 		try {
 			SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 			BoolQueryBuilder boolQuery = new BoolQueryBuilder();
-			QueryBuilder ccoIdQuery = QueryBuilders.matchPhraseQuery("email.keyword", email);
+			QueryBuilder ccoIdQuery = QueryBuilders.matchPhraseQuery("ccoid.keyword", ccoid);
 			QueryBuilder entityIdQuery;
 			boolQuery.must(ccoIdQuery);
 

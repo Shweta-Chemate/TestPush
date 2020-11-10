@@ -75,7 +75,7 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 		LOG.info("Entering the createOrUpdate");
 		long requestStartTime = System.currentTimeMillis();	
 		Map<String, AttributeValue> itemValue = new HashMap<String, AttributeValue>();
-		Set<String> currentBookMarks = getBookmarks(bookmarkResponseSchema.getEmail());
+		Set<String> currentBookMarks = getBookmarks(bookmarkResponseSchema.getCcoid());
 		if(bookmarkResponseSchema.isBookmark()){
 			if(null == currentBookMarks){
 				currentBookMarks = new HashSet<String>();								
@@ -87,7 +87,7 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 				currentBookMarks.add("");
 			}
 		}		
-	    itemValue.put("userid", AttributeValue.builder().s(bookmarkResponseSchema.getEmail().concat(USERID_SUFFIX)).build());
+	    itemValue.put("userid", AttributeValue.builder().s(bookmarkResponseSchema.getCcoid().concat(USERID_SUFFIX)).build());
 	    itemValue.put("bookmarks", AttributeValue.builder().ss(currentBookMarks).build());
 	    Builder putItemReq = PutItemRequest.builder();
 	    LOG.info("Preprocessing done in {} ", (System.currentTimeMillis() - requestStartTime));
