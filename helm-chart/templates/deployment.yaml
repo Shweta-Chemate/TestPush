@@ -62,6 +62,31 @@ spec:
             - name: APPDYNAMICS_CONTROLLER_HOST_NAME
               value: {{ .Values.appDynamics.appdynamics_controller_host_name }}
           {{- end}}
+            - name: HTTPS_PROXY
+              valueFrom:
+                secretKeyRef:
+                  name: squid
+                  key: host
+            - name: HTTPS_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: squid
+                  key: port
+            - name: HTTP_PROXY
+              valueFrom:
+                secretKeyRef:
+                  name: squid
+                  key: host
+            - name: HTTP_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: squid
+                  key: port
+            - name: NON_PROXY
+              valueFrom:
+                secretKeyRef:
+                  name: squid
+                  key: non_proxy
             - name: cxpp_elasticsearch_username
               valueFrom:
                 secretKeyRef:
