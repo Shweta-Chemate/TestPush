@@ -74,7 +74,7 @@ jobs:
       - run:
           name: read version
           command: |  
-            if [  "${CIRCLE_BRANCH}" == "LA-hotfix" ];  
+            if [  "${CIRCLE_BRANCH}" == "master" ];  
             then  
               docker create -v /cfg --name configs ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/image-versioning:latest /bin/true
               if [ -f "/home/circleci/project/version_file.txt" ]; 
@@ -96,7 +96,7 @@ jobs:
               echo "file exists"
               export IMAGE_TAG=$( cat /home/circleci/project/version_file.txt )
             fi       
-            if [  "${CIRCLE_BRANCH}" == "LA-hotfix" ];
+            if [  "${CIRCLE_BRANCH}" == "master" ];
             then
               export IMAGE_TAG=$( cat /home/circleci/project/version_file.txt )
               docker build -t ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${CIRCLE_PROJECT_REPONAME}:${IMAGE_TAG} .        
@@ -114,7 +114,7 @@ jobs:
               echo "file exists"
               export IMAGE_TAG=$( cat /home/circleci/project/version_file.txt )
             fi
-            if [  "${CIRCLE_BRANCH}" == "LA-hotfix" ];
+            if [  "${CIRCLE_BRANCH}" == "master" ];
             then
               export IMAGE_TAG=$( cat /home/circleci/project/version_file.txt )
               docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${CIRCLE_PROJECT_REPONAME}:${IMAGE_TAG}
@@ -165,7 +165,7 @@ jobs:
                 docker cp /home/circleci/project/helm/version_file.txt configs:/cfg
               fi  
               docker run --rm -e IMAGE_VERSION=${IMAGE_VERSION} --volumes-from configs ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/image-versioning:latest
-              if [[ "${CIRCLE_BRANCH}" == *"LA-hotfix"* ]];
+              if [[ "${CIRCLE_BRANCH}" == *"master"* ]];
               then               
                 docker cp configs:/cfg/version_file.txt  /home/circleci/project/helm/version_file.txt 
               fi  
@@ -218,8 +218,9 @@ workflows:
           filters:
             branches:
               only: 
-                - LA-hotfix
+                - master
                 - /^pull.*/ 
+                - LA-hotfix
           context: aws-devops-context
 
       - Push_To_ECR:
@@ -228,8 +229,9 @@ workflows:
           filters:
             branches:
               only: 
-                - LA-hotfix
+                - master
                 - /^pull.*/
+                - LA-hotfix
           context: aws-devops-context
       - Push_Helm_Chart:
           requires:
@@ -237,6 +239,7 @@ workflows:
           filters:
             branches:
               only:
-                - LA-hotfix
+                - master
                 - /^pull.*/  
+                - LA-hotfix
           context: aws-devops-context    
