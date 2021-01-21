@@ -135,8 +135,8 @@ spec:
             - name: cxp_basicauth_username
               valueFrom:
                 secretKeyRef:
-                  name: cxpp-common
-                  key: cxcp_basicauth_username
+                  name: cxpp-aurora
+                  key: username
             - name: cxp_basicauth_password
               valueFrom:
                 secretKeyRef:
