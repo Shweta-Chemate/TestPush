@@ -70,11 +70,11 @@ jobs:
       - run:
           name: Log into Amazon ECR
           command: $(aws ecr get-login --no-include-email --region ${AWS_DEFAULT_REGION} )
-## This steps does the symentic versioning of the docker image,every merge to LA-hotfix increment the patch version by(X.Y.Z++) ##          
+## This steps does the symentic versioning of the docker image,every merge to master increment the patch version by(X.Y.Z++) ##          
       - run:
           name: read version
           command: |  
-            if [  "${CIRCLE_BRANCH}" == "LA-hotfix" ];  
+            if [  "${CIRCLE_BRANCH}" == "master" ];  
             then  
               docker create -v /cfg --name configs ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/image-versioning:latest /bin/true
               if [ -f "/home/circleci/project/version_file.txt" ]; 
@@ -96,7 +96,7 @@ jobs:
               echo "file exists"
               export IMAGE_TAG=$( cat /home/circleci/project/version_file.txt )
             fi       
-            if [  "${CIRCLE_BRANCH}" == "LA-hotfix" ];
+            if [  "${CIRCLE_BRANCH}" == "master" ];
             then
               export IMAGE_TAG=$( cat /home/circleci/project/version_file.txt )
               docker build -t ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${CIRCLE_PROJECT_REPONAME}:${IMAGE_TAG} .        
@@ -114,7 +114,7 @@ jobs:
               echo "file exists"
               export IMAGE_TAG=$( cat /home/circleci/project/version_file.txt )
             fi
-            if [  "${CIRCLE_BRANCH}" == "LA-hotfix" ];
+            if [  "${CIRCLE_BRANCH}" == "master" ];
             then
               export IMAGE_TAG=$( cat /home/circleci/project/version_file.txt )
               docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${CIRCLE_PROJECT_REPONAME}:${IMAGE_TAG}
@@ -123,7 +123,7 @@ jobs:
               echo $SHORT_GIT_SHA
               docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${CIRCLE_PROJECT_REPONAME}:${IMAGE_VERSION}-${SHORT_GIT_SHA}
             fi    
-  #### This step saves the updated version for any merge to LA-hotfix ####            
+  #### This step saves the updated version for any merge to master ####            
       - save_cache: 
           key: my-cache-v3-{{ arch }}-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
           paths:
@@ -165,7 +165,7 @@ jobs:
                 docker cp /home/circleci/project/helm/version_file.txt configs:/cfg
               fi  
               docker run --rm -e IMAGE_VERSION=${IMAGE_VERSION} --volumes-from configs ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/image-versioning:latest
-              if [[ "${CIRCLE_BRANCH}" == *"LA-hotfix"* ]];
+              if [[ "${CIRCLE_BRANCH}" == *"master"* ]];
               then               
                 docker cp configs:/cfg/version_file.txt  /home/circleci/project/helm/version_file.txt 
               fi  
@@ -218,6 +218,7 @@ workflows:
           filters:
             branches:
               only: 
+                - master
                 - LA-hotfix
                 - /^pull.*/ 
           context: aws-devops-context
@@ -228,6 +229,7 @@ workflows:
           filters:
             branches:
               only: 
+                - master
                 - LA-hotfix
                 - /^pull.*/
           context: aws-devops-context
@@ -237,6 +239,7 @@ workflows:
           filters:
             branches:
               only:
+                - master
                 - LA-hotfix
                 - /^pull.*/  
           context: aws-devops-context    

@@ -72,7 +72,6 @@ public class BookmarkDAOTest {
 		results.addDocument(getBookmarkResponseSchema());
 		when(elasticSearchDAO.query(config.getBookmarksIndex(), sourceBuilder, BookmarkResponseSchema.class)).thenThrow(IOException.class);
 		bookmarkDAO.getBookmarks(ccoid, entityId);
-
 	}
 
 	@Test(expected = GenericException.class)

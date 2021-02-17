@@ -1,3 +1,0 @@
-appDynamics:
-  enabled: true
-  appdynamics_controller_host_name: cisco-cx.saas.appdynamics.com

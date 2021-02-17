@@ -1,5 +1,0 @@
-appDynamics:
-  enabled: true
-  init_repo: 252442997537.dkr.ecr.us-west-2.amazonaws.com/cxpp-appd-agent
-  init_tag: 20.4
-
