@@ -3,7 +3,6 @@ package com.cisco.cx.training.test;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 import java.io.IOException;
-
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
