@@ -164,7 +164,7 @@ spec:
              httpGet:
                path: /cxpp-training-enablement/training/v1/partner/training/live
                port: 8080
-             initialDelaySeconds: 61
+             initialDelaySeconds: 60
              periodSeconds: 30
              timeoutSeconds: 2
              failureThreshold: 3
@@ -172,7 +172,7 @@ spec:
              httpGet:
                path: /cxpp-training-enablement/training/v1/partner/training/ready
                port: 8080
-             initialDelaySeconds: 61
+             initialDelaySeconds: 60
              periodSeconds: 30
              timeoutSeconds: 5
              failureThreshold: 3
