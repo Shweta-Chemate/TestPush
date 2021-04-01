@@ -43,6 +43,8 @@ import com.cisco.cx.training.models.Community;
 import com.cisco.cx.training.models.Company;
 import com.cisco.cx.training.models.CountResponseSchema;
 import com.cisco.cx.training.models.CountSchema;
+import com.cisco.cx.training.models.GenericLearningModel;
+import com.cisco.cx.training.models.LearningRecordsAndFiltersModel;
 import com.cisco.cx.training.models.SuccessAcademyFilter;
 import com.cisco.cx.training.models.SuccessAcademyLearning;
 import com.cisco.cx.training.models.SuccessTalk;
@@ -371,5 +373,106 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 			lookUpValues.put(key.toLowerCase(), entity.getPartnerPortalKeyValue());
 		}		
 		return lookUpValues;
+	}
+
+	@Override
+	public LearningRecordsAndFiltersModel getAllLearningsAndFilters(String xMasheryHandshake) {
+		LearningRecordsAndFiltersModel responseModel = new LearningRecordsAndFiltersModel();
+		List<GenericLearningModel> learningCards = new ArrayList<>();
+		GenericLearningModel learningCard = new GenericLearningModel();
+		learningCard.setRowId("IBNCampus_DeviceOn0");
+		learningCard.setCreatedTimeStamp("1616580269819");
+		learningCard.setDescription("This guide provides information on DNA deployment it includes workflow, about Cisco DNA Center and Software-Defined Access and cable connections. It also discusses required subnets, additional IP addresses, SD-access ports and more.");
+		learningCard.setDuration("30");
+		learningCard.setIsBookMarked(true);
+		learningCard.setLink("https://www.cisco.com/c/en/us/td/docs/cloud-systems-management/network-automation-and-management/dna-center/1-3-3-0/install_guide/2ndGen/b_cisco_dna_center_install_guide_1_3_3_0_2ndGen/b_cisco_dna_center_install_guide_1_3_2_0_M5_chapter_01.html");
+		learningCard.setTitle("Plan the Cisco DNA Center Appliance Deployment");
+		learningCard.setType("webpage");
+		learningCards.add(learningCard);
+		
+		GenericLearningModel learningCard1 = new GenericLearningModel();
+		learningCard1.setRowId("IBNCampus_DeviceOn0");
+		learningCard1.setCreatedTimeStamp("1616580269819");
+		learningCard1.setDescription("This guide provides information on DNA deployment it includes workflow, about Cisco DNA Center and Software-Defined Access and cable connections. It also discusses required subnets, additional IP addresses, SD-access ports and more.");
+		learningCard1.setDuration("30");
+		learningCard1.setIsBookMarked(true);
+		learningCard1.setLink("https://www.cisco.com/c/en/us/td/docs/cloud-systems-management/network-automation-and-management/dna-center/1-3-3-0/install_guide/2ndGen/b_cisco_dna_center_install_guide_1_3_3_0_2ndGen/b_cisco_dna_center_install_guide_1_3_2_0_M5_chapter_01.html");
+		learningCard1.setTitle("Plan the Cisco DNA Center Appliance Deployment");
+		learningCard1.setType("webpage");
+		learningCards.add(learningCard1);
+		
+		GenericLearningModel learningCard2 = new GenericLearningModel();
+		learningCard2.setRowId("IBNCampus_DeviceOn0");
+		learningCard2.setCreatedTimeStamp("1616580269819");
+		learningCard2.setDescription("This guide provides information on DNA deployment it includes workflow, about Cisco DNA Center and Software-Defined Access and cable connections. It also discusses required subnets, additional IP addresses, SD-access ports and more.");
+		learningCard2.setDuration("30");
+		learningCard2.setIsBookMarked(false);
+		learningCard2.setLink("https://www.cisco.com/c/en/us/td/docs/cloud-systems-management/network-automation-and-management/dna-center/1-3-3-0/install_guide/2ndGen/b_cisco_dna_center_install_guide_1_3_3_0_2ndGen/b_cisco_dna_center_install_guide_1_3_2_0_M5_chapter_01.html");
+		learningCard2.setTitle("Plan the Cisco DNA Center Appliance Deployment");
+		learningCard2.setType("webpage");
+		learningCards.add(learningCard2);
+		
+		GenericLearningModel learningCard3 = new GenericLearningModel();
+		learningCard3.setRowId("IBNCampus_DeviceOn0");
+		learningCard3.setCreatedTimeStamp("1616580269819");
+		learningCard3.setDescription("This guide provides information on DNA deployment it includes workflow, about Cisco DNA Center and Software-Defined Access and cable connections. It also discusses required subnets, additional IP addresses, SD-access ports and more.");
+		learningCard3.setDuration("30");
+		learningCard3.setIsBookMarked(true);
+		learningCard3.setLink("https://www.cisco.com/c/en/us/td/docs/cloud-systems-management/network-automation-and-management/dna-center/1-3-3-0/install_guide/2ndGen/b_cisco_dna_center_install_guide_1_3_3_0_2ndGen/b_cisco_dna_center_install_guide_1_3_2_0_M5_chapter_01.html");
+		learningCard3.setTitle("Plan the Cisco DNA Center Appliance Deployment");
+		learningCard3.setType("webpage");
+		learningCards.add(learningCard3);
+		
+		
+		HashMap<String, Object> filters = new HashMap<>();
+		HashMap<String, String> technologyFilter = new HashMap<>();
+		technologyFilter.put("Enterprise Networks", "5");
+		technologyFilter.put("Security", "15");
+		technologyFilter.put("Data Center", "25");
+		technologyFilter.put("Collaboration", "5");
+		technologyFilter.put("Mobiltity", "5");
+		technologyFilter.put("ABC", "5");
+		technologyFilter.put("XYZ", "5");
+		filters.put("Technology", technologyFilter);
+		
+		HashMap<String, Object> successTrackFilter = new HashMap<>();
+		HashMap<String, String> campusFilter = new HashMap<>();
+		campusFilter.put("C S I M", "5");
+		campusFilter.put("Onboard", "15");
+		campusFilter.put("Implement", "25");
+		campusFilter.put("Use", "5");
+		campusFilter.put("Mobiltity", "5");
+		campusFilter.put("ABC", "5");
+		campusFilter.put("XYZ", "5");
+		successTrackFilter.put("Campus Network", campusFilter);
+		
+		HashMap<String, String> securityFilter = new HashMap<>();
+		securityFilter.put("Firewall", "5");
+		securityFilter.put("Anti-Virus", "15");
+		securityFilter.put("Umbrella", "25");
+		securityFilter.put("ABC", "5");
+		securityFilter.put("XYZ", "5");
+		successTrackFilter.put("Security", securityFilter);
+		
+		HashMap<String, String> datacenterFilter = new HashMap<>();
+		datacenterFilter.put("data1", "5");
+		datacenterFilter.put("Data2", "15");		
+		successTrackFilter.put("Data Center", datacenterFilter);
+		filters.put("Success Tracks", successTrackFilter);
+		
+		HashMap<String, String> contentTypeFilter = new HashMap<>();
+		contentTypeFilter.put("Live Webinar", "5");
+		contentTypeFilter.put("Learning Map", "15");
+		contentTypeFilter.put("PDF", "25");
+		contentTypeFilter.put("PPT", "5");
+		contentTypeFilter.put("Video On-Demand", "5");
+		contentTypeFilter.put("Webpage", "5");
+		contentTypeFilter.put("XYZ", "5");
+		filters.put("Content Type", contentTypeFilter);
+		
+		responseModel.setFilters(filters);
+		responseModel.setLearningData(learningCards);
+		
+		return responseModel;
 	}
 }

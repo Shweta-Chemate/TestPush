@@ -9,6 +9,7 @@ import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.cisco.cx.training.models.Community;
 import com.cisco.cx.training.models.CountResponseSchema;
 import com.cisco.cx.training.models.CountSchema;
+import com.cisco.cx.training.models.LearningRecordsAndFiltersModel;
 import com.cisco.cx.training.models.SuccessAcademyFilter;
 import com.cisco.cx.training.models.SuccessAcademyLearning;
 import com.cisco.cx.training.models.SuccessTalkResponseSchema;
@@ -42,4 +43,6 @@ public interface TrainingAndEnablementService {
 	List<SuccessAcademyFilter> getSuccessAcademyFilters();
 	
 	BookmarkResponseSchema bookmarkLearningForUser(BookmarkRequestSchema bookmarkRequestSchema , String xMasheryHandshake);
+	
+	LearningRecordsAndFiltersModel getAllLearningsAndFilters(String xMasheryHandshake);
 }
