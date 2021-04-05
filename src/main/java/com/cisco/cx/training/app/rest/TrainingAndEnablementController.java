@@ -241,17 +241,29 @@ public class TrainingAndEnablementController {
     }
 	
 	
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/getAllLearningAndFilters")
-	@ApiOperation(value = "Fetch All Learnings and Filters", response = String.class, nickname = "fetchalllearningsandfilters")
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/getAllLearningInfo")
+	@ApiOperation(value = "Fetch All Learnings Information", response = String.class, nickname = "fetchalllearningsInfo")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
-	public ResponseEntity<LearningRecordsAndFiltersModel> getAllLearningAndFilters(
+	public ResponseEntity<LearningRecordsAndFiltersModel> getAllLearningsInfo(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake)
 			throws Exception {
-		LearningRecordsAndFiltersModel learningCardsAndFilters = trainingAndEnablementService.getAllLearningsAndFilters(xMasheryHandshake);
+		LearningRecordsAndFiltersModel learningCardsAndFilters = trainingAndEnablementService.getAllLearningInfo(xMasheryHandshake);
 		return new ResponseEntity<LearningRecordsAndFiltersModel>(learningCardsAndFilters, HttpStatus.OK);
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/getAllLearningFilters")
+	@ApiOperation(value = "Fetch All Learnings Filters", response = String.class, nickname = "fetchalllearningsFilters")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
+			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
+			@ApiResponse(code = 404, message = "Entity Not Found"),
+			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
+	public ResponseEntity<HashMap<String, Object>> getAllLearningsFilters()
+			throws Exception {
+		HashMap<String, Object> learningFilters = trainingAndEnablementService.getAllLearningFilters();
+		return new ResponseEntity<HashMap<String, Object>>(learningFilters, HttpStatus.OK);
 	}
 	
 }

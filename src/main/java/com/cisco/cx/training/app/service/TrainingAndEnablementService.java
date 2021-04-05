@@ -1,5 +1,6 @@
 package com.cisco.cx.training.app.service;
 
+import java.util.HashMap;
 import java.util.List;
 
 import com.cisco.cx.training.app.exception.NotAllowedException;
@@ -44,5 +45,7 @@ public interface TrainingAndEnablementService {
 	
 	BookmarkResponseSchema bookmarkLearningForUser(BookmarkRequestSchema bookmarkRequestSchema , String xMasheryHandshake);
 	
-	LearningRecordsAndFiltersModel getAllLearningsAndFilters(String xMasheryHandshake);
+	LearningRecordsAndFiltersModel getAllLearningInfo(String xMasheryHandshake);
+	
+	HashMap<String, Object> getAllLearningFilters();
 }

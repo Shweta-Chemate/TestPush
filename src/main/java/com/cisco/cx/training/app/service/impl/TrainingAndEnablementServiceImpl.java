@@ -376,7 +376,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	}
 
 	@Override
-	public LearningRecordsAndFiltersModel getAllLearningsAndFilters(String xMasheryHandshake) {
+	public LearningRecordsAndFiltersModel getAllLearningInfo(String xMasheryHandshake) {
 		LearningRecordsAndFiltersModel responseModel = new LearningRecordsAndFiltersModel();
 		List<GenericLearningModel> learningCards = new ArrayList<>();
 		GenericLearningModel learningCard = new GenericLearningModel();
@@ -421,9 +421,15 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		learningCard3.setLink("https://www.cisco.com/c/en/us/td/docs/cloud-systems-management/network-automation-and-management/dna-center/1-3-3-0/install_guide/2ndGen/b_cisco_dna_center_install_guide_1_3_3_0_2ndGen/b_cisco_dna_center_install_guide_1_3_2_0_M5_chapter_01.html");
 		learningCard3.setTitle("Plan the Cisco DNA Center Appliance Deployment");
 		learningCard3.setType("webpage");
-		learningCards.add(learningCard3);
+		learningCards.add(learningCard3);		
 		
+		responseModel.setLearningData(learningCards);
 		
+		return responseModel;
+	}
+	
+	@Override
+	public HashMap<String, Object> getAllLearningFilters(){
 		HashMap<String, Object> filters = new HashMap<>();
 		HashMap<String, String> technologyFilter = new HashMap<>();
 		technologyFilter.put("Enterprise Networks", "5");
@@ -470,9 +476,6 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		contentTypeFilter.put("XYZ", "5");
 		filters.put("Content Type", contentTypeFilter);
 		
-		responseModel.setFilters(filters);
-		responseModel.setLearningData(learningCards);
-		
-		return responseModel;
+		return filters;
 	}
 }
