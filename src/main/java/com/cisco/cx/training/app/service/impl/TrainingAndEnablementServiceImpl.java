@@ -388,6 +388,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		learningCard.setLink("https://www.cisco.com/c/en/us/td/docs/cloud-systems-management/network-automation-and-management/dna-center/1-3-3-0/install_guide/2ndGen/b_cisco_dna_center_install_guide_1_3_3_0_2ndGen/b_cisco_dna_center_install_guide_1_3_2_0_M5_chapter_01.html");
 		learningCard.setTitle("Plan the Cisco DNA Center Appliance Deployment");
 		learningCard.setType("webpage");
+		learningCard.setPresenterName("Adrian Prodzyki");
 		learningCards.add(learningCard);
 		
 		GenericLearningModel learningCard1 = new GenericLearningModel();
@@ -399,6 +400,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		learningCard1.setLink("https://www.cisco.com/c/en/us/td/docs/cloud-systems-management/network-automation-and-management/dna-center/1-3-3-0/install_guide/2ndGen/b_cisco_dna_center_install_guide_1_3_3_0_2ndGen/b_cisco_dna_center_install_guide_1_3_2_0_M5_chapter_01.html");
 		learningCard1.setTitle("Plan the Cisco DNA Center Appliance Deployment");
 		learningCard1.setType("webpage");
+		learningCard1.setPresenterName("Adrian Prodzyki");
 		learningCards.add(learningCard1);
 		
 		GenericLearningModel learningCard2 = new GenericLearningModel();
@@ -410,6 +412,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		learningCard2.setLink("https://www.cisco.com/c/en/us/td/docs/cloud-systems-management/network-automation-and-management/dna-center/1-3-3-0/install_guide/2ndGen/b_cisco_dna_center_install_guide_1_3_3_0_2ndGen/b_cisco_dna_center_install_guide_1_3_2_0_M5_chapter_01.html");
 		learningCard2.setTitle("Plan the Cisco DNA Center Appliance Deployment");
 		learningCard2.setType("webpage");
+		learningCard2.setPresenterName("Adrian Prodzyki");
 		learningCards.add(learningCard2);
 		
 		GenericLearningModel learningCard3 = new GenericLearningModel();
@@ -421,6 +424,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		learningCard3.setLink("https://www.cisco.com/c/en/us/td/docs/cloud-systems-management/network-automation-and-management/dna-center/1-3-3-0/install_guide/2ndGen/b_cisco_dna_center_install_guide_1_3_3_0_2ndGen/b_cisco_dna_center_install_guide_1_3_2_0_M5_chapter_01.html");
 		learningCard3.setTitle("Plan the Cisco DNA Center Appliance Deployment");
 		learningCard3.setType("webpage");
+		learningCard3.setPresenterName("Adrian Prodzyki");
 		learningCards.add(learningCard3);		
 		
 		responseModel.setLearningData(learningCards);

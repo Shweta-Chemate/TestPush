@@ -27,6 +27,9 @@ public class GenericLearningModel {
 	
 	@JsonProperty("isBookMarked")
 	private Boolean isBookMarked = false;
+	
+	@JsonProperty("presenterName")
+	private String presenterName;
 
 	public String getRowId() {
 		return rowId;
@@ -91,7 +94,16 @@ public class GenericLearningModel {
 	public void setIsBookMarked(Boolean isBookMarked) {
 		this.isBookMarked = isBookMarked;
 	}
-	
+
+	public String getPresenterName() {
+		return presenterName;
+	}
+
+	public void setPresenterName(String presenterName) {
+		this.presenterName = presenterName;
+	}
 	
 
 }
+
+
