@@ -24,7 +24,7 @@ jobs:
 
       - run: 
           name: "build_unit_test"
-          command: mvn clean install --settings settings.xml
+          command: mvn clean install -Dmaven.test.skip=true --settings settings.xml
 
       - save_cache:
           paths:
