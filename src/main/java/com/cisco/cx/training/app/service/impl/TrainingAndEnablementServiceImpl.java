@@ -476,6 +476,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		contentTypeFilter.put("XYZ", "5");
 		filters.put("Content Type", contentTypeFilter);
 		
+		
 		return filters;
 	}
 }
