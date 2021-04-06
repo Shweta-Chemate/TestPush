@@ -384,10 +384,9 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	@Override
 	public LearningRecordsAndFiltersModel getAllLearningInfo(String xMasheryHandshake) {
 		
-		UserDetails userDetails = null;//partnerProfileService.fetchUserDetails(xMasheryHandshake);
+		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
 		Set<String> userBookmarks = null;
-		if(null != userDetails){userBookmarks = learningDAO.getBookmarks(userDetails.getCecId());}
-		//userDetails.getRole();//role based contents //TODO
+		if(null != userDetails){userBookmarks = learningDAO.getBookmarks(userDetails.getCecId());}		
 		LearningRecordsAndFiltersModel responseModel = new LearningRecordsAndFiltersModel();
 		List<GenericLearningModel> learningCards = new ArrayList<>();
 		responseModel.setLearningData(learningCards);
