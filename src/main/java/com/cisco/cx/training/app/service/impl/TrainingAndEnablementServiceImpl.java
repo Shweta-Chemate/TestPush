@@ -2,6 +2,7 @@ package com.cisco.cx.training.app.service.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -26,9 +27,11 @@ import com.cisco.cx.training.app.dao.CommunityDAO;
 import com.cisco.cx.training.app.dao.ElasticSearchDAO;
 import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
 import com.cisco.cx.training.app.dao.PartnerPortalLookupDAO;
+import com.cisco.cx.training.app.dao.ProductDocumentationDAO;
 import com.cisco.cx.training.app.dao.SmartsheetDAO;
 import com.cisco.cx.training.app.dao.SuccessAcademyDAO;
 import com.cisco.cx.training.app.dao.SuccessTalkDAO;
+import com.cisco.cx.training.app.entities.LearningItemEntity;
 import com.cisco.cx.training.app.entities.PartnerPortalLookUpEntity;
 import com.cisco.cx.training.app.entities.SuccessAcademyLearningEntity;
 import com.cisco.cx.training.app.exception.BadRequestException;
@@ -90,6 +93,9 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	
 	@Autowired
 	private LearningBookmarkDAO learningDAO;
+	
+	@Autowired
+	private ProductDocumentationDAO productDocumentationDAO;
 	
 	private static final String CXPP_UI_TAB_PREFIX = "CXPP_UI_TAB_";
 	
@@ -377,110 +383,143 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 
 	@Override
 	public LearningRecordsAndFiltersModel getAllLearningInfo(String xMasheryHandshake) {
+		
+		UserDetails userDetails = null;//partnerProfileService.fetchUserDetails(xMasheryHandshake);
+		Set<String> userBookmarks = null;
+		if(null != userDetails){userBookmarks = learningDAO.getBookmarks(userDetails.getCecId());}
+		//userDetails.getRole();//role based contents //TODO
 		LearningRecordsAndFiltersModel responseModel = new LearningRecordsAndFiltersModel();
 		List<GenericLearningModel> learningCards = new ArrayList<>();
-		GenericLearningModel learningCard = new GenericLearningModel();
-		learningCard.setRowId("IBNCampus_DeviceOn0");
-		learningCard.setCreatedTimeStamp("1616580269819");
-		learningCard.setDescription("This guide provides information on DNA deployment it includes workflow, about Cisco DNA Center and Software-Defined Access and cable connections. It also discusses required subnets, additional IP addresses, SD-access ports and more.");
-		learningCard.setDuration("30");
-		learningCard.setIsBookMarked(true);
-		learningCard.setLink("https://www.cisco.com/c/en/us/td/docs/cloud-systems-management/network-automation-and-management/dna-center/1-3-3-0/install_guide/2ndGen/b_cisco_dna_center_install_guide_1_3_3_0_2ndGen/b_cisco_dna_center_install_guide_1_3_2_0_M5_chapter_01.html");
-		learningCard.setTitle("Plan the Cisco DNA Center Appliance Deployment");
-		learningCard.setType("webpage");
-		learningCard.setPresenterName("Adrian Prodzyki");
-		learningCards.add(learningCard);
-		
-		GenericLearningModel learningCard1 = new GenericLearningModel();
-		learningCard1.setRowId("IBNCampus_DeviceOn0");
-		learningCard1.setCreatedTimeStamp("1616580269819");
-		learningCard1.setDescription("This guide provides information on DNA deployment it includes workflow, about Cisco DNA Center and Software-Defined Access and cable connections. It also discusses required subnets, additional IP addresses, SD-access ports and more.");
-		learningCard1.setDuration("30");
-		learningCard1.setIsBookMarked(true);
-		learningCard1.setLink("https://www.cisco.com/c/en/us/td/docs/cloud-systems-management/network-automation-and-management/dna-center/1-3-3-0/install_guide/2ndGen/b_cisco_dna_center_install_guide_1_3_3_0_2ndGen/b_cisco_dna_center_install_guide_1_3_2_0_M5_chapter_01.html");
-		learningCard1.setTitle("Plan the Cisco DNA Center Appliance Deployment");
-		learningCard1.setType("webpage");
-		learningCard1.setPresenterName("Adrian Prodzyki");
-		learningCards.add(learningCard1);
-		
-		GenericLearningModel learningCard2 = new GenericLearningModel();
-		learningCard2.setRowId("IBNCampus_DeviceOn0");
-		learningCard2.setCreatedTimeStamp("1616580269819");
-		learningCard2.setDescription("This guide provides information on DNA deployment it includes workflow, about Cisco DNA Center and Software-Defined Access and cable connections. It also discusses required subnets, additional IP addresses, SD-access ports and more.");
-		learningCard2.setDuration("30");
-		learningCard2.setIsBookMarked(false);
-		learningCard2.setLink("https://www.cisco.com/c/en/us/td/docs/cloud-systems-management/network-automation-and-management/dna-center/1-3-3-0/install_guide/2ndGen/b_cisco_dna_center_install_guide_1_3_3_0_2ndGen/b_cisco_dna_center_install_guide_1_3_2_0_M5_chapter_01.html");
-		learningCard2.setTitle("Plan the Cisco DNA Center Appliance Deployment");
-		learningCard2.setType("webpage");
-		learningCard2.setPresenterName("Adrian Prodzyki");
-		learningCards.add(learningCard2);
-		
-		GenericLearningModel learningCard3 = new GenericLearningModel();
-		learningCard3.setRowId("IBNCampus_DeviceOn0");
-		learningCard3.setCreatedTimeStamp("1616580269819");
-		learningCard3.setDescription("This guide provides information on DNA deployment it includes workflow, about Cisco DNA Center and Software-Defined Access and cable connections. It also discusses required subnets, additional IP addresses, SD-access ports and more.");
-		learningCard3.setDuration("30");
-		learningCard3.setIsBookMarked(true);
-		learningCard3.setLink("https://www.cisco.com/c/en/us/td/docs/cloud-systems-management/network-automation-and-management/dna-center/1-3-3-0/install_guide/2ndGen/b_cisco_dna_center_install_guide_1_3_3_0_2ndGen/b_cisco_dna_center_install_guide_1_3_2_0_M5_chapter_01.html");
-		learningCard3.setTitle("Plan the Cisco DNA Center Appliance Deployment");
-		learningCard3.setType("webpage");
-		learningCard3.setPresenterName("Adrian Prodzyki");
-		learningCards.add(learningCard3);		
-		
 		responseModel.setLearningData(learningCards);
+				
+		List<LearningItemEntity> dbCards = productDocumentationDAO.getAllLearningCards();//getAllLearningCardsWithLink();//();
+		LOG.info("dbCards={}",dbCards);
+		learningCards.addAll(mapLearningEntityToCards(dbCards, userBookmarks));
+		
 		
 		return responseModel;
+	}
+	
+	
+	//"createdTimeStamp": "2021-04-05 17:10:50.0",card.setCreatedTimeStamp(learning.getUpdated_timestamp().toString());//yyyy-mm-dd hh:mm:ss.fffffffff
+	private List<GenericLearningModel>  mapLearningEntityToCards(List<LearningItemEntity> dbList, Set<String> userBookmarks)
+	{
+		List<GenericLearningModel>  cards = new ArrayList<GenericLearningModel>();
+		if(dbList==null || dbList.size()==0) return cards;
+		dbList.forEach(learning -> {
+			
+			GenericLearningModel card =  new GenericLearningModel();	
+			
+			card.setCreatedTimeStamp(learning.getPublished_date());//(String.valueOf(learning.getUpdated_timestamp().getTime()));			
+			card.setDescription(learning.getDescription());
+			card.setDuration(learning.getDuration());
+			
+			if(null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)	
+					&& userBookmarks.contains(learning.getLearning_item_id())) 
+			card.setIsBookMarked(true);
+		
+			card.setLink(learning.getRegistrationUrl());//learning.getLink()
+			card.setStatus(learning.getStatus());
+			card.setPresenterName(learning.getPresenterName());
+			card.setRowId(learning.getLearning_item_id());
+			card.setTitle(learning.getTitle());
+			card.setType(learning.getLearning_type());
+					
+			cards.add(card);
+		});
+		return cards;
 	}
 	
 	@Override
 	public HashMap<String, Object> getAllLearningFilters(){
 		HashMap<String, Object> filters = new HashMap<>();
-		HashMap<String, String> technologyFilter = new HashMap<>();
-		technologyFilter.put("Enterprise Networks", "5");
-		technologyFilter.put("Security", "15");
-		technologyFilter.put("Data Center", "25");
-		technologyFilter.put("Collaboration", "5");
-		technologyFilter.put("Mobiltity", "5");
-		technologyFilter.put("ABC", "5");
-		technologyFilter.put("XYZ", "5");
+		
+		HashMap<String, String> technologyFilter = new HashMap<>();		
+		Arrays.asList(TECHNOLOGY_KEYS).forEach(type -> technologyFilter.put(type, "0"));
+		List<Map<String,Object>> dbListTech = productDocumentationDAO.getAllTechnologyWithCount();
+		technologyFilter.putAll(listToMap(dbListTech, TECHNOLOGY_KEYS));
 		filters.put("Technology", technologyFilter);
 		
-		HashMap<String, Object> successTrackFilter = new HashMap<>();
-		HashMap<String, String> campusFilter = new HashMap<>();
-		campusFilter.put("C S I M", "5");
-		campusFilter.put("Onboard", "15");
-		campusFilter.put("Implement", "25");
-		campusFilter.put("Use", "5");
-		campusFilter.put("Mobiltity", "5");
-		campusFilter.put("ABC", "5");
-		campusFilter.put("XYZ", "5");
-		successTrackFilter.put("Campus Network", campusFilter);
 		
-		HashMap<String, String> securityFilter = new HashMap<>();
-		securityFilter.put("Firewall", "5");
-		securityFilter.put("Anti-Virus", "15");
-		securityFilter.put("Umbrella", "25");
-		securityFilter.put("ABC", "5");
-		securityFilter.put("XYZ", "5");
-		successTrackFilter.put("Security", securityFilter);
-		
-		HashMap<String, String> datacenterFilter = new HashMap<>();
-		datacenterFilter.put("data1", "5");
-		datacenterFilter.put("Data2", "15");		
-		successTrackFilter.put("Data Center", datacenterFilter);
+		HashMap<String, HashMap<String, String>> successTrackFilter = new HashMap<String,HashMap<String, String>>();		
+		for(int arr=0;arr<SUCCESSTRACK_KEYS.length;arr++)
+		{
+			HashMap<String, String> usecaseFilter = new HashMap<>();
+			String[] arrVals = USECASE_KEYS[arr];
+			Arrays.asList(arrVals).forEach(uc -> usecaseFilter.put(uc, "0"));			
+			successTrackFilter.put(SUCCESSTRACK_KEYS[arr], usecaseFilter);
+		}
 		filters.put("Success Tracks", successTrackFilter);
 		
-		HashMap<String, String> contentTypeFilter = new HashMap<>();
-		contentTypeFilter.put("Live Webinar", "5");
-		contentTypeFilter.put("Learning Map", "15");
-		contentTypeFilter.put("PDF", "25");
-		contentTypeFilter.put("PPT", "5");
-		contentTypeFilter.put("Video On-Demand", "5");
-		contentTypeFilter.put("Webpage", "5");
-		contentTypeFilter.put("XYZ", "5");
+		List<String> distinctST = productDocumentationDAO.getAllSuccesstrack();
+		LOG.info("distinctST={}",distinctST);
+		
+		List<Map<String, String>> stWithUc = productDocumentationDAO.getAllSuccesstrackWithUsecase();
+		LOG.info("stWithUc={}",stWithUc);
+		
+		distinctST.forEach(st ->
+		{
+			if(Arrays.asList(SUCCESSTRACK_KEYS).contains(st)) 
+			{
+				
+				HashMap<String, String> ucFilter = successTrackFilter.get(st);
+				
+				stWithUc.forEach( map ->
+						{
+							String stValue = map.get("dbkey");
+							if(st.equals(stValue))
+							{
+								String ucValue = map.get("dbValue");
+								if(ucFilter.keySet().contains(ucValue))
+								ucFilter.put(ucValue, String.valueOf(Integer.valueOf(ucFilter.get(ucValue))+1));		
+							}										
+						});
+			}			
+							
+		} );
+
+		
+		HashMap<String, String> contentTypeFilter = new HashMap<>();		
+		Arrays.asList(CONTENT_TYPE_KEYS).forEach(type -> contentTypeFilter.put(type, "0"));
+		
+		List<Map<String,Object>> dbList = productDocumentationDAO.getAllContentTypeWithCount();
+		contentTypeFilter.putAll(listToMap(dbList,CONTENT_TYPE_KEYS));
+		
 		filters.put("Content Type", contentTypeFilter);
 		
 		
 		return filters;
 	}
+	
+	private Map<String,String> listToMap(List<Map<String,Object>> dbList, String[] fixVals)
+	{
+		Map<String,String> countMap = new HashMap<String,String>();
+		for(Map<String,Object> dbMap : dbList)
+		{
+			if(Arrays.asList(fixVals).contains(String.valueOf(dbMap.get("dbkey"))))
+			countMap.put(String.valueOf(dbMap.get("dbkey")), String.valueOf(dbMap.get("dbvalue")));
+		}
+		return countMap;
+	}
+	
+	private static final String[] SUCCESSTRACK_KEYS  = new String[] {"Campus Network","Security","Data Center","ABC"	};
+	
+	private static final String[][] USECASE_KEYS  = new String[][] 
+			{ 
+				{"Campus Software Image Management", "Onboard", "Implement", "Use", "Mobiltity","ABC","XYZ"},
+				{"Firewall","Anti-Virus","Umbrella","ABC","XYZ"},
+				{"Data1", "Data2"},
+				{}
+			};
+	
+	private static final String[] TECHNOLOGY_KEYS  = new String[] {"Enterprise Networks","Security","Data Center",
+			"Collaboration", "Mobility", "IoT", "Cloud", "Analytics"};
+			
+	
+	private static final String[] CONTENT_TYPE_KEYS  = new String[] {"Live Webinar","Video On-Demand","Learning Map","PDF","PPT",
+			"Webpage","XYZ"};
+	
 }
+
+
+

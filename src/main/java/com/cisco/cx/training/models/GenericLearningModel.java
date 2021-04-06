@@ -30,6 +30,9 @@ public class GenericLearningModel {
 	
 	@JsonProperty("presenterName")
 	private String presenterName;
+	
+	@JsonProperty("status")
+	private String status;
 
 	public String getRowId() {
 		return rowId;
@@ -101,6 +104,14 @@ public class GenericLearningModel {
 
 	public void setPresenterName(String presenterName) {
 		this.presenterName = presenterName;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 	
 
