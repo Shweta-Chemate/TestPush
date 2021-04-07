@@ -3,6 +3,7 @@ package com.cisco.cx.training.app.service;
 import java.util.HashMap;
 import java.util.List;
 
+import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.app.exception.NotAllowedException;
 import com.cisco.cx.training.app.exception.NotFoundException;
 import com.cisco.cx.training.models.BookmarkRequestSchema;
@@ -48,4 +49,6 @@ public interface TrainingAndEnablementService {
 	LearningRecordsAndFiltersModel getAllLearningInfo(String xMasheryHandshake);
 	
 	HashMap<String, Object> getAllLearningFilters();
+	
+	List<NewLearningContentEntity> fetchNewLearningContent();
 }
