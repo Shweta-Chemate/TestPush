@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.exception.ErrorResponse;
 import com.cisco.cx.training.app.exception.HealthCheckException;
@@ -102,6 +103,22 @@ public class TrainingAndEnablementController {
 		List<SuccessAcademyLearning> sucessAcademyList = trainingAndEnablementService.getAllSuccessAcademyLearnings(xMasheryHandshake);
 		LOG.info("Received learnings in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<List<SuccessAcademyLearning>>(sucessAcademyList, HttpStatus.OK);
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/learnings/new")
+	@ApiOperation(value = "Fetch New Learning Content", response = String.class, nickname = "fetchlearningcontent")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
+			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
+			@ApiResponse(code = 404, message = "Entity Not Found"),
+			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
+	public ResponseEntity<List<NewLearningContentEntity>> getNewLearningContent(
+			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake)
+			throws Exception {
+		LOG.info("Entering the fetchlearningcontent method");
+		long requestStartTime = System.currentTimeMillis();		
+		List<NewLearningContentEntity> newLearningContentList = trainingAndEnablementService.fetchNewLearningContent();
+		LOG.info("Received new learning content in {} ", (System.currentTimeMillis() - requestStartTime));
+		return new ResponseEntity<List<NewLearningContentEntity>>(newLearningContentList, HttpStatus.OK);
 	}
 
 	

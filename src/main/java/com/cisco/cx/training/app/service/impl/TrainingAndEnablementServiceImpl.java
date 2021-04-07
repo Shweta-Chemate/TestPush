@@ -25,10 +25,12 @@ import com.cisco.cx.training.app.dao.BookmarkDAO;
 import com.cisco.cx.training.app.dao.CommunityDAO;
 import com.cisco.cx.training.app.dao.ElasticSearchDAO;
 import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
+import com.cisco.cx.training.app.dao.NewLearningContentDAO;
 import com.cisco.cx.training.app.dao.PartnerPortalLookupDAO;
 import com.cisco.cx.training.app.dao.SmartsheetDAO;
 import com.cisco.cx.training.app.dao.SuccessAcademyDAO;
 import com.cisco.cx.training.app.dao.SuccessTalkDAO;
+import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.app.entities.PartnerPortalLookUpEntity;
 import com.cisco.cx.training.app.entities.SuccessAcademyLearningEntity;
 import com.cisco.cx.training.app.exception.BadRequestException;
@@ -90,6 +92,9 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	
 	@Autowired
 	private LearningBookmarkDAO learningDAO;
+	
+	@Autowired
+	private NewLearningContentDAO learningContentDAO;
 	
 	private static final String CXPP_UI_TAB_PREFIX = "CXPP_UI_TAB_";
 	
@@ -482,5 +487,10 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		
 		
 		return filters;
+	}
+	
+	@Override
+	public List<NewLearningContentEntity> fetchNewLearningContent() {
+		return learningContentDAO.fetchNewLearningContent();
 	}
 }
