@@ -30,7 +30,7 @@ public class NewLearningContentEntity {
 	private String description;
 	
 	@Column(name = "sessionStartDate")
-	private Timestamp sessionStartDate;
+	private Timestamp date;
 	
 	@Column(name = "status")
 	private String status;
@@ -48,7 +48,7 @@ public class NewLearningContentEntity {
 	private String duration;
 	
 	@Column(name = "piw_region")
-	private String piw_region;
+	private String region;
 	
 	@Column(name = "piw_architecture")
 	private String piw_architecture;
@@ -127,14 +127,6 @@ public class NewLearningContentEntity {
 		this.description = description;
 	}
 
-	public Timestamp getSessionStartDate() {
-		return sessionStartDate;
-	}
-
-	public void setSessionStartDate(Timestamp sessionStartDate) {
-		this.sessionStartDate = sessionStartDate;
-	}
-
 	public String getStatus() {
 		return status;
 	}
@@ -173,14 +165,6 @@ public class NewLearningContentEntity {
 
 	public void setDuration(String duration) {
 		this.duration = duration;
-	}
-
-	public String getPiw_region() {
-		return piw_region;
-	}
-
-	public void setPiw_region(String piw_region) {
-		this.piw_region = piw_region;
 	}
 
 	public String getPiw_architecture() {
@@ -301,5 +285,21 @@ public class NewLearningContentEntity {
 
 	public void setLink(String link) {
 		this.link = link;
+	}
+
+	public Timestamp getDate() {
+		return date;
+	}
+
+	public void setDate(Timestamp date) {
+		this.date = date;
+	}
+
+	public String getRegion() {
+		return region;
+	}
+
+	public void setRegion(String region) {
+		this.region = region;
 	}
 }

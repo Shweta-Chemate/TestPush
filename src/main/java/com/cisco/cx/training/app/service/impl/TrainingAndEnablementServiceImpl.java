@@ -42,6 +42,7 @@ import com.cisco.cx.training.app.exception.NotFoundException;
 import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.app.service.ProductDocumentationService;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
+import com.cisco.cx.training.constants.Constants;
 import com.cisco.cx.training.models.BookmarkRequestSchema;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.cisco.cx.training.models.Community;
@@ -398,7 +399,16 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 
 	@Override
 	public List<NewLearningContentEntity> fetchNewLearningContent() {
-		return learningContentDAO.fetchNewLearningContent();
+		List<NewLearningContentEntity> learningContentList = new ArrayList<>();
+		learningContentList = learningContentDAO.fetchNewLearningContent();
+		learningContentList.stream().filter(
+				learning -> learning.getLearning_type().equals(Constants.SUCCESSTALK))
+				.forEach( learning ->
+						{
+							learning.setDuration(Constants.DURATION_SUCCESSTALK);
+							learning.setRegion(Constants.REGION_SUCCESSTALK);
+						});
+		return learningContentList;
 	}
 }
 
