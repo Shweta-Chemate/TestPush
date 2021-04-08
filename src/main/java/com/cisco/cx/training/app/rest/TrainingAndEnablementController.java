@@ -266,7 +266,7 @@ public class TrainingAndEnablementController {
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
 	public ResponseEntity<LearningRecordsAndFiltersModel> getAllLearningsInfo(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = true) String xMasheryHandshake,
-			@ApiParam(value = "Search - tiltle, description, author") @RequestParam(value = "search", required = false) String searchToken,
+			@ApiParam(value = "Search - tiltle, description, author") @RequestParam(value = "searchToken", required = false) String searchToken,
 			@ApiParam(value = "Filter - multiple, multiple types e.g filter=CT-LW,PDF,WP,PPT,XYZ,VOD,LM") @RequestParam(value = "filter", required = false) String filters
 			)
 			throws Exception {
@@ -281,7 +281,7 @@ public class TrainingAndEnablementController {
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
 	public ResponseEntity<HashMap<String, Object>> getAllLearningsFilters(
-			@ApiParam(value = "Search - tiltle, description, author") @RequestParam(value = "search", required = false) String searchToken,
+			@ApiParam(value = "Search - tiltle, description, author") @RequestParam(value = "searchToken", required = false) String searchToken,
 			@ApiParam(value = "Filter - multiple, multiple types e.g filter=CT-LW,PDF,WP,PPT,XYZ,VOD,LM") @RequestParam(value = "filter", required = false) String filters
 			)
 			throws Exception {
