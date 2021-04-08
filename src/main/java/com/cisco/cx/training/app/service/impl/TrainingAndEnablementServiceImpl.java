@@ -97,9 +97,9 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	private LearningBookmarkDAO learningDAO;
 	
 	@Autowired
-
 	private ProductDocumentationService productDocumentationService;
 
+	@Autowired
 	private NewLearningContentDAO learningContentDAO;
 
 	
