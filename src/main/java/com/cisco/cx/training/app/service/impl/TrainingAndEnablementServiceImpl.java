@@ -388,8 +388,10 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	}
 
 	@Override
-	public LearningRecordsAndFiltersModel getAllLearningInfo(String xMasheryHandshake,String searchToken,String filters) {
-			return productDocumentationService.getAllLearningInfo(xMasheryHandshake,searchToken,filters);
+	public LearningRecordsAndFiltersModel getAllLearningInfo(String xMasheryHandshake,String searchToken,String filters,
+			String sortBy, String sortOrder) 
+	{
+			return productDocumentationService.getAllLearningInfo(xMasheryHandshake,searchToken,filters,sortBy, sortOrder);
 	}
 	
 	@Override

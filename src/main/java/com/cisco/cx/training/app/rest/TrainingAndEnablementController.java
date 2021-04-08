@@ -266,11 +266,13 @@ public class TrainingAndEnablementController {
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
 	public ResponseEntity<LearningRecordsAndFiltersModel> getAllLearningsInfo(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = true) String xMasheryHandshake,
-			@ApiParam(value = "Search - tiltle, description, author") @RequestParam(value = "searchToken", required = false) String searchToken,
-			@ApiParam(value = "Filter - multiple, multiple types e.g filter=CT-LW,PDF,WP,PPT,XYZ,VOD,LM") @RequestParam(value = "filter", required = false) String filters
+			@ApiParam(value = "Search - tiltle, description, author") @RequestParam(value = "searchToken", required = false) String search,
+			@ApiParam(value = "Filter - multiple, multiple types e.g filter=CT-LW,PDF,WP,PPT,XYZ,VOD,LM") @RequestParam(value = "filter", required = false) String filters,
+			@ApiParam(value = "sortBy - date, title ") @RequestParam(value = "sortBy", required = false) String sortBy,
+			@ApiParam(value = "sortOrder - asc, desc") @RequestParam(value = "sortOrder", required = false) String sortOrder
 			)
 			throws Exception {
-		LearningRecordsAndFiltersModel learningCardsAndFilters = trainingAndEnablementService.getAllLearningInfo(xMasheryHandshake,searchToken,filters);
+		LearningRecordsAndFiltersModel learningCardsAndFilters = trainingAndEnablementService.getAllLearningInfo(xMasheryHandshake,search,filters,sortBy,sortOrder);
 		return new ResponseEntity<LearningRecordsAndFiltersModel>(learningCardsAndFilters, HttpStatus.OK);
 	}
 	
