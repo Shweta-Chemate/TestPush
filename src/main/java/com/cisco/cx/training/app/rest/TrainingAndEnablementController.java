@@ -248,9 +248,12 @@ public class TrainingAndEnablementController {
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
 	public ResponseEntity<LearningRecordsAndFiltersModel> getAllLearningsInfo(
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake)
+			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = true) String xMasheryHandshake,
+			@ApiParam(value = "Search - tiltle, description, author") @RequestParam(value = "search", required = false) String searchToken,
+			@ApiParam(value = "Filter - multiple, multiple types e.g filter=CT-LW,PDF,WP,PPT,XYZ,VOD,LM") @RequestParam(value = "filter", required = false) String filters
+			)
 			throws Exception {
-		LearningRecordsAndFiltersModel learningCardsAndFilters = trainingAndEnablementService.getAllLearningInfo(xMasheryHandshake);
+		LearningRecordsAndFiltersModel learningCardsAndFilters = trainingAndEnablementService.getAllLearningInfo(xMasheryHandshake,searchToken,filters);
 		return new ResponseEntity<LearningRecordsAndFiltersModel>(learningCardsAndFilters, HttpStatus.OK);
 	}
 	
@@ -260,10 +263,15 @@ public class TrainingAndEnablementController {
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
-	public ResponseEntity<HashMap<String, Object>> getAllLearningsFilters()
+	public ResponseEntity<HashMap<String, Object>> getAllLearningsFilters(
+			@ApiParam(value = "Search - tiltle, description, author") @RequestParam(value = "search", required = false) String searchToken,
+			@ApiParam(value = "Filter - multiple, multiple types e.g filter=CT-LW,PDF,WP,PPT,XYZ,VOD,LM") @RequestParam(value = "filter", required = false) String filters
+			)
 			throws Exception {
-		HashMap<String, Object> learningFilters = trainingAndEnablementService.getAllLearningFilters();
+		HashMap<String, Object> learningFilters = trainingAndEnablementService.getAllLearningFilters(searchToken,filters);
 		return new ResponseEntity<HashMap<String, Object>>(learningFilters, HttpStatus.OK);
 	}
 	
 }
+
+

@@ -45,7 +45,7 @@ public interface TrainingAndEnablementService {
 	
 	BookmarkResponseSchema bookmarkLearningForUser(BookmarkRequestSchema bookmarkRequestSchema , String xMasheryHandshake);
 	
-	LearningRecordsAndFiltersModel getAllLearningInfo(String xMasheryHandshake);
+	LearningRecordsAndFiltersModel getAllLearningInfo(String xMasheryHandshake, String searchToken, String filters);
 	
-	HashMap<String, Object> getAllLearningFilters();
+	HashMap<String, Object> getAllLearningFilters(String searchToken, String filters);
 }
