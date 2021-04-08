@@ -27,7 +27,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		LocalDateTime localDateTimeEnd = LocalDateTime.now();
 		ZonedDateTime zdtEnd = ZonedDateTime.of(localDateTimeEnd, ZoneId.systemDefault());
 
-		return learningContentRepo.findAllByDateBetweenOrderByDateDesc(new Timestamp(zdtStart.toInstant().toEpochMilli()), new Timestamp(zdtEnd.toInstant().toEpochMilli()));
+		return learningContentRepo.findAllBySortByDateBetweenOrderBySortByDateDesc(new Timestamp(zdtStart.toInstant().toEpochMilli()), new Timestamp(zdtEnd.toInstant().toEpochMilli()));
 	}
 
 }

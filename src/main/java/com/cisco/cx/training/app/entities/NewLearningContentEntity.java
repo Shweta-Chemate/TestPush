@@ -30,7 +30,10 @@ public class NewLearningContentEntity {
 	private String description;
 	
 	@Column(name = "sessionStartDate")
-	private Timestamp date;
+	private Timestamp sessionStartDate;
+	
+	@Column(name = "sort_by_date")
+	private Timestamp sortByDate;
 	
 	@Column(name = "status")
 	private String status;
@@ -76,6 +79,12 @@ public class NewLearningContentEntity {
 	
 	@Column(name = "published_date")
 	private Timestamp published_date;
+	
+	@Column(name = "created_date")
+	private Timestamp created_date;
+
+	@Column(name = "updated_date")
+	private Timestamp updated_date;
 	
 	@Column(name = "modulecount")
 	private String modulecount;
@@ -287,12 +296,36 @@ public class NewLearningContentEntity {
 		this.link = link;
 	}
 
-	public Timestamp getDate() {
-		return date;
+	public Timestamp getSessionStartDate() {
+		return sessionStartDate;
 	}
 
-	public void setDate(Timestamp date) {
-		this.date = date;
+	public void setSessionStartDate(Timestamp sessionStartDate) {
+		this.sessionStartDate = sessionStartDate;
+	}
+
+	public Timestamp getSortByDate() {
+		return sortByDate;
+	}
+
+	public void setSortByDate(Timestamp sortByDate) {
+		this.sortByDate = sortByDate;
+	}
+
+	public Timestamp getCreated_date() {
+		return created_date;
+	}
+
+	public void setCreated_date(Timestamp created_date) {
+		this.created_date = created_date;
+	}
+
+	public Timestamp getUpdated_date() {
+		return updated_date;
+	}
+
+	public void setUpdated_date(Timestamp updated_date) {
+		this.updated_date = updated_date;
 	}
 
 	public String getRegion() {

@@ -405,7 +405,6 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 				learning -> learning.getLearning_type().equals(Constants.SUCCESSTALK))
 				.forEach( learning ->
 						{
-							learning.setDuration(Constants.DURATION_SUCCESSTALK);
 							learning.setRegion(Constants.REGION_SUCCESSTALK);
 						});
 		return learningContentList;
