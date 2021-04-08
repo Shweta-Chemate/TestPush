@@ -16,7 +16,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(name = "cxpp_learning_item")
-@SQLDelete(sql="UPDATE cxpp_learning_item SET deleted=true where learning_type='PIW' AND learning_item_id=?")
+//@SQLDelete(sql="UPDATE cxpp_learning_item SET deleted=true where learning_type='PIW' AND learning_item_id=?")
 public class LearningItemEntity {
 	
 	@Id
@@ -78,8 +78,8 @@ public class LearningItemEntity {
 	@Column(name = "piw_ppt_url")
 	private String piw_ppt_url;
 	
-	@Column(name = "published_date")
-	private String published_date;
+	@Column(name = "sort_by_date")
+	private String sortByDate;
 	
 	@Column(name = "deleted")
 	private boolean deleted;
@@ -244,13 +244,12 @@ public class LearningItemEntity {
 		this.piw_ppt_url = piw_ppt_url;
 	}
 
-	public String getPublished_date() {
-		return published_date;
+	public String getSortByDate() {
+		return sortByDate;
 	}
 
-	public void setPublished_date(String published_date) {
-		this.published_date = published_date;
+	public void setSortByDate(String sortByDate) {
+		this.sortByDate = sortByDate;
 	}
-
 
 }

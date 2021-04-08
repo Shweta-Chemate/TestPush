@@ -11,6 +11,10 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
@@ -35,22 +39,30 @@ public class ProductDocumentationService{
 	private ProductDocumentationDAO productDocumentationDAO;
 	
 	
-	public LearningRecordsAndFiltersModel getAllLearningInfo(String xMasheryHandshake,String searchToken, String applyFilters) {
+	public LearningRecordsAndFiltersModel getAllLearningInfo(String xMasheryHandshake,String searchToken, String applyFilters, 
+			String sortBy, String sortOrder) 
+	{
+		String sort = DEFAULT_SORT_FIELD ; 
+		Direction order = DEFAULT_SORT_ORDER ; 		
+		if(sortBy!=null  && !sortBy.equalsIgnoreCase("date")) sort = sortBy;
+		if(sortOrder!=null && sortOrder.equalsIgnoreCase("asc")) order = Sort.Direction.ASC;		
+		LOG.info("sort={} {}",sort, order);
 		
 		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
 		Set<String> userBookmarks = null;
 		if(null != userDetails){userBookmarks = learningDAO.getBookmarks(userDetails.getCecId());}
+		
 		LearningRecordsAndFiltersModel responseModel = new LearningRecordsAndFiltersModel();
 		List<GenericLearningModel> learningCards = new ArrayList<>();
 		responseModel.setLearningData(learningCards);
 				
 		List<LearningItemEntity> dbCards = null;
 		if(searchToken!=null && !searchToken.trim().isEmpty())
-			dbCards = productDocumentationDAO.getAllLearningCardsBySearch("%"+searchToken+"%");
+			dbCards = productDocumentationDAO.getAllLearningCardsBySearch("%"+searchToken+"%",Sort.by(order, sort));
 		else if(applyFilters!=null && !applyFilters.isEmpty())
-			dbCards = productDocumentationDAO.getAllLearningCardsByFilter(filterCards(applyFilters)); 
+			dbCards = productDocumentationDAO.getAllLearningCardsByFilter(filterCards(applyFilters),Sort.by(order, sort)); 
 		else 
-			dbCards=productDocumentationDAO.getAllLearningCards();
+			dbCards=productDocumentationDAO.getAllLearningCards(Sort.by(order, sort));
 		
 		LOG.info("dbCards={}",dbCards);
 		learningCards.addAll(mapLearningEntityToCards(dbCards, userBookmarks));
@@ -88,7 +100,7 @@ public class ProductDocumentationService{
 			
 			GenericLearningModel card =  new GenericLearningModel();	
 			
-			card.setCreatedTimeStamp(learning.getPublished_date());//(String.valueOf(learning.getUpdated_timestamp().getTime()));			
+			card.setCreatedTimeStamp(learning.getSortByDate());  //same as created date
 			card.setDescription(learning.getDescription());
 			card.setDuration(learning.getDuration());
 			
@@ -132,16 +144,12 @@ public class ProductDocumentationService{
 
 		/** end all filters with 0 count **/
 
-		List<LearningItemEntity> dbCards = null;
+		Set<String> cardIds = null;
 		if(searchToken!=null && !searchToken.trim().isEmpty())
-			dbCards=productDocumentationDAO.getAllLearningCardsBySearch("%"+searchToken+"%");
+			cardIds = productDocumentationDAO.getAllLearningCardIdsBySearch("%"+searchToken+"%");
 
-		if(dbCards!=null && dbCards.size()>0)
+		if(cardIds!=null && cardIds.size()>0)
 		{
-
-			Set<String> cardIds = new HashSet<String>();
-			dbCards.forEach( card -> cardIds.add(card.getLearning_item_id()));	
-
 			List<Map<String,Object>> dbListTech = productDocumentationDAO.getAllTechnologyWithCountByCards(cardIds);
 			technologyFilter.putAll(listToMap(dbListTech, Arrays.asList(TECHNOLOGY_KEYS)));
 
@@ -373,6 +381,11 @@ public class ProductDocumentationService{
 		CONTENT_TYPE_MAP.put("WP","Webpage");
 		CONTENT_TYPE_MAP.put("XYZ", "XYZ");
 	};
+	
+	/** sort **/
+	
+	private static final String DEFAULT_SORT_FIELD = "sort_by_date";
+	private static final Direction DEFAULT_SORT_ORDER = Sort.Direction.DESC;
 	
 }
 

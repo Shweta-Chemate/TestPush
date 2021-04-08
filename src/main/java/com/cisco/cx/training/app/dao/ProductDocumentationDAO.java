@@ -4,27 +4,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.cisco.cx.training.app.entities.LearningItemEntity;
 
 public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntity,String>{
 	
 	
-	public static final String GET_PD_LEARNING_CARDS = "select * from cxpp_db.cxpp_learning_item cl "
-			+ "  order by cl.published_date desc ";
+	public static final String GET_PD_LEARNING_CARDS = "select * from cxpp_db.cxpp_learning_item "
+			+ "  \n-- #sort\n";
 	
 	@Query(value=GET_PD_LEARNING_CARDS , nativeQuery=true)
-	List<LearningItemEntity> getAllLearningCards();
-	
-	public static final String GET_PD_LEARNING_CARDS_WITH_LINKS = "select cl.*, il.link from cxpp_db.cxpp_learning_item cl "
-			+ " left join cxpp_db.cxpp_item_link il "
-			+ " on il.learning_item_id = cl.learning_item_id "
-			+ "  order by cl.published_date desc ";
-	
-	@Query(value=GET_PD_LEARNING_CARDS_WITH_LINKS , nativeQuery=true)
-	List<LearningItemEntity> getAllLearningCardsWithLinks();
+	List<LearningItemEntity> getAllLearningCards(Sort sort);
 	
 	public static final String GET_PD_CONTENT_TYPE_WITH_COUNT = "select asset_type as dbkey, count(*) as dbvalue "
 			+ " from cxpp_db.cxpp_item_link group by asset_type;";
@@ -60,11 +55,17 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 	public static final String GET_PD_LEARNING_CARDS_SEARCH = " select * from cxpp_db.cxpp_learning_item cl "
 			+ " where lower(cl.title) like :likeToken or lower(cl.description) like :likeToken  "
 			+ " or lower(cl.presentername) like :likeToken "
-			+ "  order by cl.published_date desc ";
+			+ "  \n-- #sort\n";
 	
 	@Query(value=GET_PD_LEARNING_CARDS_SEARCH , nativeQuery=true)
-	List<LearningItemEntity> getAllLearningCardsBySearch(String likeToken);
+	List<LearningItemEntity> getAllLearningCardsBySearch(String likeToken, Sort sort);
 
+	public static final String GET_PD_LEARNING_CARD_IDS_SEARCH = " select lerning_item_id from cxpp_db.cxpp_learning_item cl "
+			+ " where lower(cl.title) like :likeToken or lower(cl.description) like :likeToken  "
+			+ " or lower(cl.presentername) like :likeToken " ;			
+	
+	@Query(value=GET_PD_LEARNING_CARD_IDS_SEARCH , nativeQuery=true)
+	Set<String> getAllLearningCardIdsBySearch(String likeToken);
 	
 	public static final String GET_PD_TECHNOLOGY_WITH_COUNT_SEARCH = "select technology as dbkey, count(*) as dbvalue "
 			+ " from cxpp_db.cxpp_learning_technology "
@@ -113,10 +114,10 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 	
 	public static final String GET_PD_LEARNING_CARDS_BY_FILTER = "select * from cxpp_db.cxpp_learning_item cl "
 			+ " where learning_item_id in (:filterCards) "
-			+ "  order by cl.published_date desc ";
+			+ "  \n-- #sort\n";
 	
 	@Query(value=GET_PD_LEARNING_CARDS_BY_FILTER , nativeQuery=true)
-	List<LearningItemEntity> getAllLearningCardsByFilter(Set<String> filterCards);
+	List<LearningItemEntity> getAllLearningCardsByFilter(Set<String> filterCards, Sort sort);
 	
 		
 }
