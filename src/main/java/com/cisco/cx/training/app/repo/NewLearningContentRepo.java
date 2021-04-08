@@ -11,6 +11,6 @@ import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 @Repository
 public interface NewLearningContentRepo extends JpaRepository<NewLearningContentEntity, String>{
 
-	 List<NewLearningContentEntity> findAllByDateBetweenOrderByDateDesc(Timestamp timeStart,Timestamp timeEnd);
+	 List<NewLearningContentEntity> findAllBySortByDateBetweenOrderBySortByDateDesc(Timestamp timeStart,Timestamp timeEnd);
 
 }

@@ -24,6 +24,5 @@ public final class Constants {
 	public static final String SQUARE_CLOSE_BRACKET= "]";
 	public static final String CUID= "cuid";
 	public static final String SUCCESSTALK= "successtalk";
-	public static final String DURATION_SUCCESSTALK= "1h 30min";
 	public static final String REGION_SUCCESSTALK= "AMER";
 }
