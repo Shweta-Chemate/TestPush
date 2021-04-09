@@ -112,17 +112,17 @@ public class TrainingAndEnablementController {
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
 	public ResponseEntity<List<NewLearningContentEntity>> getNewLearningContent(
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake)
+			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
+			@ApiParam(value = "Filters", required = false) @RequestParam(value = "filter", required = false) String filter)
 			throws Exception {
 		LOG.info("Entering the fetchlearningcontent method");
 		long requestStartTime = System.currentTimeMillis();		
-		List<NewLearningContentEntity> newLearningContentList = trainingAndEnablementService.fetchNewLearningContent();
+		List<NewLearningContentEntity> newLearningContentList = trainingAndEnablementService.fetchNewLearningContent(filter);
 		LOG.info("Received new learning content in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<List<NewLearningContentEntity>>(newLearningContentList, HttpStatus.OK);
 	}
 
 	
-
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalks")
 	@ApiOperation(value = "Fetch SuccessTalks For User", response = SuccessTalkResponseSchema.class, nickname = "fetchUserSuccessTalks")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),

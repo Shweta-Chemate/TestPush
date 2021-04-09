@@ -51,6 +51,6 @@ public interface TrainingAndEnablementService {
 
 	HashMap<String, Object> getAllLearningFilters(String searchToken, String filters);
 
-	List<NewLearningContentEntity> fetchNewLearningContent();
+	List<NewLearningContentEntity> fetchNewLearningContent(String filter);
 
 }
