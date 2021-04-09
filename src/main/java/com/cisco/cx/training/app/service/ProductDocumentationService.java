@@ -84,7 +84,20 @@ public class ProductDocumentationService{
 		
 		Set<String> mappedContentTypes = new HashSet<String>();
 		Arrays.asList(contentTypes).forEach(ct -> {
-			if(CONTENT_TYPE_MAP.keySet().contains(ct.trim())) mappedContentTypes.add(CONTENT_TYPE_MAP.get(ct.trim()));			
+			if(CONTENT_TYPE_MAP.keySet().contains(ct.trim()))
+			{
+				String typeUI = CONTENT_TYPE_MAP.get(ct.trim());
+				mappedContentTypes.add(typeUI);
+				
+				if(CONTENT_TYPE_MULTIPLE.values().contains(typeUI))
+				{
+					CONTENT_TYPE_MULTIPLE.forEach((k,v) -> {
+						if(v.equals(typeUI))
+							mappedContentTypes.add(k);
+					});
+				}				
+			}				
+		
 		});
 				
 		LOG.info("mapped = {} ",mappedContentTypes);				
@@ -208,21 +221,8 @@ public class ProductDocumentationService{
 	 */
 	public HashMap<String, Object> getAllLearningFiltersByApply(String applyFilters){
 		
-		String types = applyFilters.substring(0,applyFilters.indexOf("-"));
-		String[] contentTypes = applyFilters.substring(applyFilters.indexOf("-")+1).split(",");
-		LOG.info("types={}{}...{}",types,contentTypes.length,contentTypes);
-		
-		Set<String> mappedContentTypes = new HashSet<String>();
-		Arrays.asList(contentTypes).forEach(ct -> {
-			if(CONTENT_TYPE_MAP.keySet().contains(ct.trim())) mappedContentTypes.add(CONTENT_TYPE_MAP.get(ct.trim()));			
-		});
-				
-		LOG.info("mapped = {} ",mappedContentTypes);				
-		  
-		
-		Set<String> cardIds = productDocumentationDAO.getLearningsByContentType(mappedContentTypes);
-		LOG.info("mapped = {} ",cardIds);	
-		
+		Set<String> cardIds = filterCards(applyFilters);
+		LOG.info("mapped = {} ",cardIds);		
 		
 		/** start all filters with 0 count **/		
 		HashMap<String, Object> filters = new HashMap<>();
@@ -281,8 +281,8 @@ public class ProductDocumentationService{
 
 		} );
 		
-		List<Map<String,Object>> dbList = productDocumentationDAO.getAllContentTypeWithCount();
-		contentTypeFilter.putAll(listToMap(dbList,mappedContentTypes,null));//not CONTENT_TYPE_MAP.values()));
+		List<Map<String,Object>> dbList = productDocumentationDAO.getAllContentTypeWithCountByCards(cardIds);
+		contentTypeFilter.putAll(listToMap(dbList,CONTENT_TYPE_MAP.values(), CONTENT_TYPE_MULTIPLE));//listToMap(dbList,mappedContentTypes,null)
 		
 		return filters;		
 	}
@@ -384,6 +384,7 @@ public class ProductDocumentationService{
 	private static final Map<String,String> CONTENT_TYPE_MULTIPLE = new HashMap<String,String>();
 	static {
 		
+		//for ui
 		CONTENT_TYPE_MAP.put("LW","Live Webinar");
 		CONTENT_TYPE_MAP.put("VOD","Video On-Demand");
 		CONTENT_TYPE_MAP.put("LM","Learning Map");
@@ -392,6 +393,7 @@ public class ProductDocumentationService{
 		CONTENT_TYPE_MAP.put("WP","Webpage");
 		CONTENT_TYPE_MAP.put("XYZ", "XYZ");
 		
+		//for db
 		CONTENT_TYPE_MULTIPLE.put("web page","Webpage");
 		CONTENT_TYPE_MULTIPLE.put("video","Video On-Demand");
 		CONTENT_TYPE_MULTIPLE.put("vod","Video On-Demand");
