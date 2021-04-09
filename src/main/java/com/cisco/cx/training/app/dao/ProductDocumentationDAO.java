@@ -130,6 +130,16 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 	@Query(value=GET_PD_LEARNING_CARDS_FILTERED_SEARCH , nativeQuery=true)
 	List<LearningItemEntity> getAllLearningCardsByFilterSearch(Set<String> filteredCards, String likeToken, Sort sort);
 	
+	
+	public static final String GET_PD_LEARNING_CARD_IDS_FILTERED_SEARCH = " select cl.learning_item_id from cxpp_db.cxpp_learning_item cl "
+			+ " where cl.learning_item_id in (:filteredCards) and "
+			+ " ( lower(cl.title) like :likeToken or lower(cl.description) like :likeToken  "
+			+ " or lower(cl.presentername) like :likeToken ) " ;
+			
+	
+	@Query(value=GET_PD_LEARNING_CARD_IDS_FILTERED_SEARCH , nativeQuery=true)
+	Set<String> getAllLearningCardIdsByFilterSearch(Set<String> filteredCards, String likeToken);
+	
 		
 }
 

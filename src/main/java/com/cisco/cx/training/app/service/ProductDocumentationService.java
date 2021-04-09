@@ -11,8 +11,6 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
@@ -78,31 +76,13 @@ public class ProductDocumentationService{
 	}
 	
 	private Set<String> filterCards(String applyFilters)
-	{		String types = applyFilters.substring(0,applyFilters.indexOf("-"));
+	{		
+		String types = applyFilters.substring(0,applyFilters.indexOf("-"));
 		String[] contentTypes = applyFilters.substring(applyFilters.indexOf("-")+1).split(",");
 		LOG.info("types={}{}...{}",types,contentTypes.length,contentTypes);
 		
 		Set<String> mappedContentTypes = new HashSet<String>();
-		Arrays.asList(contentTypes).forEach(ct -> {
-			if(CONTENT_TYPE_MAP.keySet().contains(ct.trim()))
-			{
-				String typeUI = CONTENT_TYPE_MAP.get(ct.trim());
-				mappedContentTypes.add(typeUI);
-				
-				if(CONTENT_TYPE_MULTIPLE.values().contains(typeUI))
-				{
-					CONTENT_TYPE_MULTIPLE.forEach((k,v) -> {
-						if(v.equals(typeUI))
-							mappedContentTypes.add(k);
-					});
-				}				
-			}				
-		
-		});
-				
-		LOG.info("mapped = {} ",mappedContentTypes);				
-		  
-		
+		Arrays.asList(contentTypes).forEach(ct -> {mappedContentTypes.add(ct);});		
 		Set<String> cardIds = productDocumentationDAO.getLearningsByContentType(mappedContentTypes);
 		LOG.info("mapped = {} ",cardIds);	
 		
@@ -141,71 +121,17 @@ public class ProductDocumentationService{
 	
 	public HashMap<String, Object> getAllLearningFiltersBySearch(String searchToken)
 	{
-		/** start all filters with 0 count **/
 		HashMap<String, Object> filters = new HashMap<>();
-		HashMap<String, String> technologyFilter = new HashMap<>();		
-		Arrays.asList(TECHNOLOGY_KEYS).forEach(type -> technologyFilter.put(type, "0"));
-		filters.put("Technology", technologyFilter);	
-
-		HashMap<String, HashMap<String, String>> successTrackFilter = new HashMap<String,HashMap<String, String>>();		
-		for(int arr=0;arr<SUCCESSTRACK_KEYS.length;arr++)
-		{
-			HashMap<String, String> usecaseFilter = new HashMap<>();
-			String[] arrVals = USECASE_KEYS[arr];
-			Arrays.asList(arrVals).forEach(uc -> usecaseFilter.put(uc, "0"));			
-			successTrackFilter.put(SUCCESSTRACK_KEYS[arr], usecaseFilter);
-		}
-		filters.put("Success Tracks", successTrackFilter);
-
-		HashMap<String, String> contentTypeFilter = new HashMap<>();		
-		CONTENT_TYPE_MAP.values().forEach(type -> contentTypeFilter.put(type, "0"));
+		HashMap<String, String> contentTypeFilter = new HashMap<>();
 		filters.put("Content Type", contentTypeFilter);
-
-		/** end all filters with 0 count **/
-
 		Set<String> cardIds = null;
 		if(searchToken!=null && !searchToken.trim().isEmpty())
 			cardIds = productDocumentationDAO.getAllLearningCardIdsBySearch("%"+searchToken+"%");
 
 		if(cardIds!=null && cardIds.size()>0)
 		{
-			List<Map<String,Object>> dbListTech = productDocumentationDAO.getAllTechnologyWithCountByCards(cardIds);
-			technologyFilter.putAll(listToMap(dbListTech, Arrays.asList(TECHNOLOGY_KEYS), null));
-
-			List<Map<String,Object>> cardsST = productDocumentationDAO.getAllSuccesstrackByCards(cardIds);
-			LOG.info("cardsST={}",cardsST);		
-			
-			Set<String> distinctST = new HashSet<String>();
-			Set<String> stIds = new HashSet<String>();
-			cardsST.forEach(map -> {distinctST.add(String.valueOf(map.get("dbvalue")));stIds.add(String.valueOf(map.get("dbkey")));});
-			LOG.info("distinctST={} {}",distinctST, stIds);	
-
-			List<Map<String, String>> stWithUc = productDocumentationDAO.getAllSuccesstrackWithUsecaseBySts(stIds);
-			LOG.info("stWithUc={}",stWithUc);
-
-			distinctST.forEach(st ->
-			{
-				if(Arrays.asList(SUCCESSTRACK_KEYS).contains(st)) 
-				{
-
-					HashMap<String, String> ucFilter = successTrackFilter.get(st);
-
-					stWithUc.forEach( map ->
-					{
-						String stValue = map.get("dbkey");
-						if(st.equals(stValue))
-						{
-							String ucValue = map.get("dbValue");
-							if(ucFilter.keySet().contains(ucValue))
-								ucFilter.put(ucValue, String.valueOf(Integer.valueOf(ucFilter.get(ucValue))+1));		
-						}										
-					});
-				}			
-
-			} );
-
 			List<Map<String,Object>> dbList = productDocumentationDAO.getAllContentTypeWithCountByCards(cardIds);
-			contentTypeFilter.putAll(listToMap(dbList,CONTENT_TYPE_MAP.values(),CONTENT_TYPE_MULTIPLE));
+			contentTypeFilter.putAll(listToMap(dbList));
 		}
 
 		return filters;
@@ -222,127 +148,38 @@ public class ProductDocumentationService{
 	public HashMap<String, Object> getAllLearningFiltersByApply(String applyFilters){
 		
 		Set<String> cardIds = filterCards(applyFilters);
-		LOG.info("mapped = {} ",cardIds);		
-		
-		/** start all filters with 0 count **/		
-		HashMap<String, Object> filters = new HashMap<>();
-		HashMap<String, String> technologyFilter = new HashMap<>();		
-		Arrays.asList(TECHNOLOGY_KEYS).forEach(type -> technologyFilter.put(type, "0"));
-		filters.put("Technology", technologyFilter);	
-
-		HashMap<String, HashMap<String, String>> successTrackFilter = new HashMap<String,HashMap<String, String>>();		
-		for(int arr=0;arr<SUCCESSTRACK_KEYS.length;arr++)
-		{
-			HashMap<String, String> usecaseFilter = new HashMap<>();
-			String[] arrVals = USECASE_KEYS[arr];
-			Arrays.asList(arrVals).forEach(uc -> usecaseFilter.put(uc, "0"));			
-			successTrackFilter.put(SUCCESSTRACK_KEYS[arr], usecaseFilter);
-		}
-		filters.put("Success Tracks", successTrackFilter);
-
-		HashMap<String, String> contentTypeFilter = new HashMap<>();		
-		CONTENT_TYPE_MAP.values().forEach(type -> contentTypeFilter.put(type, "0"));
+		LOG.info("mapped = {} ",cardIds);	
+		HashMap<String, Object> filters = new HashMap<>();		
+		HashMap<String, String> contentTypeFilter = new HashMap<>();
 		filters.put("Content Type", contentTypeFilter);
-
-		/** end all filters with 0 count **/
-		
-		List<Map<String,Object>> dbListTech = productDocumentationDAO.getAllTechnologyWithCountByCards(cardIds);
-		technologyFilter.putAll(listToMap(dbListTech, Arrays.asList(TECHNOLOGY_KEYS), null));
-		filters.put("Technology", technologyFilter);	
-		List<Map<String,Object>> cardsST = productDocumentationDAO.getAllSuccesstrackByCards(cardIds);
-		LOG.info("cardsST={}",cardsST);		
-		
-		Set<String> distinctST = new HashSet<String>();
-		Set<String> stIds = new HashSet<String>();
-		cardsST.forEach(map -> {distinctST.add(String.valueOf(map.get("dbvalue")));stIds.add(String.valueOf(map.get("dbkey")));});
-		LOG.info("distinctST={} {}",distinctST, stIds);	
-
-		List<Map<String, String>> stWithUc = productDocumentationDAO.getAllSuccesstrackWithUsecaseBySts(stIds);
-		LOG.info("stWithUc={}",stWithUc);
-
-		distinctST.forEach(st ->
-		{
-			if(Arrays.asList(SUCCESSTRACK_KEYS).contains(st)) 
-			{
-
-				HashMap<String, String> ucFilter = successTrackFilter.get(st);
-
-				stWithUc.forEach( map ->
-				{
-					String stValue = map.get("dbkey");
-					if(st.equals(stValue))
-					{
-						String ucValue = map.get("dbValue");
-						if(ucFilter.keySet().contains(ucValue))
-							ucFilter.put(ucValue, String.valueOf(Integer.valueOf(ucFilter.get(ucValue))+1));		
-					}										
-				});
-			}			
-
-		} );
-		
 		List<Map<String,Object>> dbList = productDocumentationDAO.getAllContentTypeWithCountByCards(cardIds);
-		contentTypeFilter.putAll(listToMap(dbList,CONTENT_TYPE_MAP.values(), CONTENT_TYPE_MULTIPLE));//listToMap(dbList,mappedContentTypes,null)
+		contentTypeFilter.putAll(listToMap(dbList));
 		
 		return filters;		
 	}
 	
 	public HashMap<String, Object> getAllLearningFilters(String searchToken,String applyFilters){
 		
-		if(searchToken!=null && !searchToken.trim().isEmpty()) return getAllLearningFiltersBySearch(searchToken);
-		if(applyFilters!=null && !applyFilters.trim().isEmpty()) return getAllLearningFiltersByApply(applyFilters);
+		if( searchToken!=null && !searchToken.trim().isEmpty() &&
+				applyFilters!=null && !applyFilters.isEmpty()	)
+		{
+			Set<String> filteredCards = filterCards(applyFilters);
+			Set<String> filteredSearchedCards = productDocumentationDAO.getAllLearningCardIdsByFilterSearch(filteredCards,"%"+searchToken+"%");
+			List<Map<String,Object>> dbList = productDocumentationDAO.getAllContentTypeWithCountByCards(filteredSearchedCards);
+			HashMap<String, Object> filters = new HashMap<>();		
+			HashMap<String, String> contentTypeFilter = new HashMap<>();
+			filters.put("Content Type", contentTypeFilter);
+			contentTypeFilter.putAll(listToMap(dbList));
+			return filters;
+		}		
+		else if(searchToken!=null && !searchToken.trim().isEmpty()) return getAllLearningFiltersBySearch(searchToken);
+		else if(applyFilters!=null && !applyFilters.trim().isEmpty()) return getAllLearningFiltersByApply(applyFilters);
 		
 		HashMap<String, Object> filters = new HashMap<>();
-		
-		HashMap<String, String> technologyFilter = new HashMap<>();		
-		Arrays.asList(TECHNOLOGY_KEYS).forEach(type -> technologyFilter.put(type, "0"));
-		List<Map<String,Object>> dbListTech = productDocumentationDAO.getAllTechnologyWithCount();
-		technologyFilter.putAll(listToMap(dbListTech, Arrays.asList(TECHNOLOGY_KEYS),null));
-		filters.put("Technology", technologyFilter);		
-		
-		HashMap<String, HashMap<String, String>> successTrackFilter = new HashMap<String,HashMap<String, String>>();		
-		for(int arr=0;arr<SUCCESSTRACK_KEYS.length;arr++)
-		{
-			HashMap<String, String> usecaseFilter = new HashMap<>();
-			String[] arrVals = USECASE_KEYS[arr];
-			Arrays.asList(arrVals).forEach(uc -> usecaseFilter.put(uc, "0"));			
-			successTrackFilter.put(SUCCESSTRACK_KEYS[arr], usecaseFilter);
-		}
-		filters.put("Success Tracks", successTrackFilter);
-		
-		List<String> distinctST = productDocumentationDAO.getAllSuccesstrack();
-		LOG.info("distinctST={}",distinctST);
-		
-		List<Map<String, String>> stWithUc = productDocumentationDAO.getAllSuccesstrackWithUsecase();
-		LOG.info("stWithUc={}",stWithUc);
-		
-		distinctST.forEach(st ->
-		{
-			if(Arrays.asList(SUCCESSTRACK_KEYS).contains(st)) 
-			{
-				
-				HashMap<String, String> ucFilter = successTrackFilter.get(st);
-				
-				stWithUc.forEach( map ->
-						{
-							String stValue = map.get("dbkey");
-							if(st.equals(stValue))
-							{
-								String ucValue = map.get("dbValue");
-								if(ucFilter.keySet().contains(ucValue))
-								ucFilter.put(ucValue, String.valueOf(Integer.valueOf(ucFilter.get(ucValue))+1));		
-							}										
-						});
-			}			
-							
-		} );
-
-		
 		HashMap<String, String> contentTypeFilter = new HashMap<>();		
-		CONTENT_TYPE_MAP.values().forEach(type -> contentTypeFilter.put(type, "0"));
-		
+				
 		List<Map<String,Object>> dbList = productDocumentationDAO.getAllContentTypeWithCount();
-		contentTypeFilter.putAll(listToMap(dbList,CONTENT_TYPE_MAP.values(),CONTENT_TYPE_MULTIPLE));
+		contentTypeFilter.putAll(listToMap(dbList));
 		
 		filters.put("Content Type", contentTypeFilter);
 		
@@ -350,55 +187,17 @@ public class ProductDocumentationService{
 		return filters;
 	}
 	
-	private Map<String,String> listToMap(List<Map<String,Object>> dbList, Collection<String> collection, Map<String,String> multiValue)
+	private Map<String,String> listToMap(List<Map<String,Object>> dbList)
 	{
 		Map<String,String> countMap = new HashMap<String,String>();
 		for(Map<String,Object> dbMap : dbList)
 		{
 			String dbKey = String.valueOf(dbMap.get("dbkey"));
 			String dbValue = String.valueOf(dbMap.get("dbvalue"));			
-			if(collection.contains(dbKey))	
-				countMap.put(dbKey,dbValue);
-			if(multiValue!=null && multiValue.keySet().contains(dbKey.toLowerCase())) 
-				countMap.put(multiValue.get(dbKey.toLowerCase()), dbValue);
+			countMap.put(dbKey,dbValue);		
 		}
 		return countMap;
 	}
-	
-	private static final String[] SUCCESSTRACK_KEYS  = new String[] {"Campus Network","Security","Data Center","ABC"	};
-	
-	private static final String[][] USECASE_KEYS  = new String[][] 
-			{ 
-				{"Campus Software Image Management", "Onboard", "Implement", "Use", "Mobiltity","ABC","XYZ"},
-				{"Firewall","Anti-Virus","Umbrella","ABC","XYZ"},
-				{"Data1", "Data2"},
-				{}
-			};
-	
-	private static final String[] TECHNOLOGY_KEYS  = new String[] {"Enterprise Networks","Security","Data Center",
-			"Collaboration", "Mobility", "IoT", "Cloud", "Analytics"};
-			
-	//private static final String[] CONTENT_TYPE_KEYS  = new String[] {"Live Webinar","Video On-Demand","Learning Map","PDF","PPT",	"Webpage","XYZ"};
-		
-	private static final Map<String,String> CONTENT_TYPE_MAP = new HashMap<String,String>();
-	private static final Map<String,String> CONTENT_TYPE_MULTIPLE = new HashMap<String,String>();
-	static {
-		
-		//for ui
-		CONTENT_TYPE_MAP.put("LW","Live Webinar");
-		CONTENT_TYPE_MAP.put("VOD","Video On-Demand");
-		CONTENT_TYPE_MAP.put("LM","Learning Map");
-		CONTENT_TYPE_MAP.put("PDF", "PDF");
-		CONTENT_TYPE_MAP.put("PPT", "PPT");
-		CONTENT_TYPE_MAP.put("WP","Webpage");
-		CONTENT_TYPE_MAP.put("XYZ", "XYZ");
-		
-		//for db
-		CONTENT_TYPE_MULTIPLE.put("web page","Webpage");
-		CONTENT_TYPE_MULTIPLE.put("video","Video On-Demand");
-		CONTENT_TYPE_MULTIPLE.put("vod","Video On-Demand");
-		
-	};
 	
 	/** sort **/
 	
