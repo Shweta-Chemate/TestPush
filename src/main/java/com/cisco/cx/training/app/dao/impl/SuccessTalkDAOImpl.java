@@ -217,7 +217,7 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
                 }
 		        for (SuccesstalkUserRegEsSchema transaction : registeredSuccessTalkList) {
 		            if (transaction.getTitle().equalsIgnoreCase(successTalk.getTitle())) {
-		            	successTalk.setStatus(SuccessTalk.SuccessTalkStatusEnum.REGISTERED);
+		            	successTalk.setStatus(SuccessTalk.SuccessTalkStatusEnum.REGISTERED.toString());
 		            	successTalk.getSessions().forEach(
 		                        session -> {
 									if (session.getSessionStartDate().equals(transaction.getEventStartDate())) {
@@ -225,7 +225,7 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
 										// if the Attended field in smartsheet is set to Yes, mark it complete.
 										if (transaction.getAttendedStatus() != null && transaction.getAttendedStatus()
 												.equals(SuccesstalkUserRegEsSchema.AttendedStatusEnum.YES)) {
-											successTalk.setStatus(SuccessTalk.SuccessTalkStatusEnum.ATTENDED);
+											successTalk.setStatus(SuccessTalk.SuccessTalkStatusEnum.ATTENDED.toString());
 										}
 									}
 		                        }

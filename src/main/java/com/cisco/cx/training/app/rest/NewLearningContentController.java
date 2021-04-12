@@ -45,13 +45,26 @@ public class NewLearningContentController {
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during retrieve", response = ErrorResponse.class) })
 	public ResponseEntity<SuccessTalkResponseSchema> getUserSuccessTalks(
+			@RequestParam(value = "sortField", required = false) String sortField,
+			@RequestParam(value = "sortType", required = false) String sortType,
+			@RequestParam(value = "filter", required = false) String filter,
+			@RequestParam(value = "search", required = false) String search,
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake)
 					throws Exception {
 
 		if (StringUtils.isBlank(xMasheryHandshake)) {
 			throw new BadRequestException("X-Mashery-Handshake header missing in request");
 		}
-		SuccessTalkResponseSchema successTalkResponseSchema = learningContentService.fetchSuccesstalks();
+		// Providing default sorting
+		if (sortField == null) {
+			sortField = "title";
+		}
+		// Providing default sort-type
+		if (sortType == null) {
+			sortType = "asc";
+		}
+		
+		SuccessTalkResponseSchema successTalkResponseSchema = learningContentService.fetchSuccesstalks(sortField, sortType, filter, search);
 		return new ResponseEntity<SuccessTalkResponseSchema>(successTalkResponseSchema, HttpStatus.OK);
 	}
 

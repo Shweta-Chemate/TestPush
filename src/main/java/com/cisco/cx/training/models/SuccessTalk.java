@@ -22,7 +22,7 @@ public class SuccessTalk implements HasId, Comparable<SuccessTalk> {
 	@ApiModelProperty(notes = "URL of the image to be displayed")
 	private String imageUrl;
 	@ApiModelProperty(notes = "Status of the SuccessTalk", example = "Recommended")
-	private SuccessTalkStatusEnum status = SuccessTalkStatusEnum.RECOMMENDED;
+	private String status;
 	@ApiModelProperty(notes = "Pitstop", example = "Onboard")
 	private String recordingUrl;
 	@ApiModelProperty(notes = "Duration of the session in seconds", example = "3600")
@@ -109,11 +109,11 @@ public class SuccessTalk implements HasId, Comparable<SuccessTalk> {
 		this.description = description;
 	}
 
-	public SuccessTalkStatusEnum getStatus() {
+	public String getStatus() {
 		return status;
 	}
 
-	public void setStatus(SuccessTalkStatusEnum status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
 

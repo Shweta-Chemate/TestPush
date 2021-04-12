@@ -295,7 +295,7 @@ public class SuccessTalkDAOTest {
 		session.setSessionStartDate(eventTime);
 		successTalk.setSessions(Arrays.asList(session));
 		successTalk.setQuarter("");
-		successTalk.setStatus(SuccessTalk.SuccessTalkStatusEnum.CONFIRMED);
+		successTalk.setStatus(SuccessTalk.SuccessTalkStatusEnum.CONFIRMED.toString());
 		successTalk.setTechnicalSession(false);
 		successTalk.setSuccessTalkId("");
 		return successTalk;

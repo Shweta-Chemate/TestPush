@@ -35,5 +35,13 @@ public class CustomSpecifications {
 	public static <T> Specification<T> filterPIWsWithStatus(String columnName, String withValue) {
 		return (piw, cq, cb) -> cb.notEqual(piw.get(columnName), withValue);
 	}
+	
+	public static <T> Specification<T> hasSuccesstalks(String columnName, String withValue) {
+		return (successtalk, cq, cb) -> cb.equal(successtalk.get(columnName), withValue);
+	}
+	
+	public static <T> Specification<T> searchSuccesstalksWithCriteria(String columnName, String withValue) {
+		return (successtalk, cq, cb) -> cb.like(cb.lower(successtalk.get(columnName)).as(String.class), "%" + withValue + "%");
+	}
 
 }
