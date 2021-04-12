@@ -76,10 +76,9 @@ public class ProductDocumentationService{
 	}
 	
 	private Set<String> filterCards(String applyFilters)
-	{		
-		String types = applyFilters.substring(0,applyFilters.indexOf("-"));
-		String[] contentTypes = applyFilters.substring(applyFilters.indexOf("-")+1).split(",");
-		LOG.info("types={}{}...{}",types,contentTypes.length,contentTypes);
+	{	
+		String[] contentTypes = applyFilters.split(",");
+		LOG.info("types={}{}...{}",contentTypes.length,contentTypes);
 		
 		Set<String> mappedContentTypes = new HashSet<String>();
 		Arrays.asList(contentTypes).forEach(ct -> {mappedContentTypes.add(ct);});		
