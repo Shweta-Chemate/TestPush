@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 import com.cisco.cx.training.app.builders.SpecificationBuilder;
+import com.cisco.cx.training.app.builders.SpecificationBuilderPIW;
 import com.cisco.cx.training.app.dao.NewLearningContentDAO;
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.app.repo.NewLearningContentRepo;
@@ -44,6 +45,14 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	@Override
 	public List<NewLearningContentEntity> fetchSuccesstalks() {
 		return learningContentRepo.findAllByLearningType("successtalk");
+	}
+
+	@Override
+	public List<NewLearningContentEntity> listPIWs(String region, String sortField, String sortType,
+			Map<String, String> filterParams, String search) {
+		Specification<NewLearningContentEntity> specification = Specification.where(null);
+		specification = specification.and(new SpecificationBuilderPIW().filter(filterParams, search, region));
+		return learningContentRepo.findAll(specification,Sort.by(Sort.Direction.fromString(sortType),sortField));
 	}
 
 }
