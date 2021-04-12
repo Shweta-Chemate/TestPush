@@ -35,15 +35,35 @@ public class LearningContentServiceImpl implements LearningContentService {
 	private SuccessAcademyDAO successAcademyDAO;
 	
 	@Override
-	public SuccessTalkResponseSchema fetchSuccesstalks() {
-		List<NewLearningContentEntity> successTalkEntityList = new ArrayList<NewLearningContentEntity>();
-		successTalkEntityList = learningContentDAO.fetchSuccesstalks();
-		List<SuccessTalk> successtalkList = new ArrayList<>();
-		successtalkList = successTalkEntityList.stream()
-				.map(successtalkEntity -> mapLearningEntityToSuccesstalk(successtalkEntity))
-				.collect(Collectors.toList());
+	public SuccessTalkResponseSchema fetchSuccesstalks(String sortField, String sortType,
+			String filter, String search) {
 		SuccessTalkResponseSchema successTalkResponseSchema = new SuccessTalkResponseSchema();
-		successTalkResponseSchema.setItems(successtalkList);
+		try
+		{
+			Map<String, String> query_map = new LinkedHashMap<String, String>();
+			if (!StringUtils.isBlank(filter)) {
+				filter = filter.replaceAll("%3B", ";");
+				filter = filter.replaceAll("%3A", ":");
+				String[] columnFilter = filter.split(";");
+				for (int colFilterIndex = 0; colFilterIndex < columnFilter.length; colFilterIndex++) {
+					String[] valueFilter = columnFilter[colFilterIndex].split(":");
+					String fieldName = valueFilter[0];
+					String fieldValue = valueFilter[1];
+					query_map.put(fieldName, fieldValue);
+				}
+			}
+			List<NewLearningContentEntity> successTalkEntityList = new ArrayList<NewLearningContentEntity>();
+			successTalkEntityList = learningContentDAO.fetchSuccesstalks(sortField, sortType, query_map, search);
+			List<SuccessTalk> successtalkList = new ArrayList<>();
+			successtalkList = successTalkEntityList.stream()
+					.map(successtalkEntity -> mapLearningEntityToSuccesstalk(successtalkEntity))
+					.collect(Collectors.toList());
+			successTalkResponseSchema.setItems(successtalkList);	
+		}
+		catch (Exception e) {
+			LOG.error("fetchSuccesstalks failed: {} ", e);
+			throw new GenericException("There was a problem in fetching Successtalks.");
+		}
 		return successTalkResponseSchema;
 	}
 
@@ -54,6 +74,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 		successtalk.setDocId(learningEntity.getId());
 		successtalk.setTitle(learningEntity.getTitle());
 		successtalk.setDescription(learningEntity.getDescription());
+		successtalk.setStatus(learningEntity.getStatus());
 		//Adding Session Details
 		successtalkSession.setPresenterName(learningEntity.getPresenterName());
 		successtalkSession.setRegion(learningEntity.getRegion());

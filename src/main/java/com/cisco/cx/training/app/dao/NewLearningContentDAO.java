@@ -8,7 +8,8 @@ public interface NewLearningContentDAO {
   
 	List<NewLearningContentEntity> fetchNewLearningContent(Map<String, List<String>> filterParams);
 	
-	List<NewLearningContentEntity> fetchSuccesstalks();
+	List<NewLearningContentEntity> fetchSuccesstalks(String sortField, String sortType,
+			Map<String, String> filterParams, String search);
 
 	List<NewLearningContentEntity> listPIWs(String region, String sortField, String sortType,
 			Map<String, String> query_map, String search);
