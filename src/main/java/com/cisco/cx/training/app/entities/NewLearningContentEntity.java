@@ -21,7 +21,7 @@ public class NewLearningContentEntity {
 	private String id;
 	
 	@Column(name = "learning_type")
-	private String learning_type;
+	private String learningType;
 	
 	@Column(name = "title")
 	private String title;
@@ -112,12 +112,12 @@ public class NewLearningContentEntity {
 		this.id = id;
 	}
 
-	public String getLearning_type() {
-		return learning_type;
+	public String getLearningType() {
+		return learningType;
 	}
 
-	public void setLearning_type(String learning_type) {
-		this.learning_type = learning_type;
+	public void setLearningType(String learningType) {
+		this.learningType = learningType;
 	}
 
 	public String getTitle() {
