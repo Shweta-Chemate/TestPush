@@ -33,6 +33,9 @@ public class GenericLearningModel {
 	
 	@JsonProperty("status")
 	private String status;
+	
+	@JsonProperty("rating")
+	private Integer rating;
 
 	public String getRowId() {
 		return rowId;
@@ -112,6 +115,14 @@ public class GenericLearningModel {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public Integer getRating() {
+		return rating;
+	}
+
+	public void setRating(Integer rating) {
+		this.rating = rating;
 	}
 	
 

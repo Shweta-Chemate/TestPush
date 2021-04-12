@@ -112,17 +112,17 @@ public class ProductDocumentationService{
 			card.setRowId(learning.getLearning_item_id());
 			card.setTitle(learning.getTitle());
 			card.setType(learning.getLearning_type());
+			card.setRating(learning.getPiw_score());
 					
 			cards.add(card);
 		});
 		return cards;
 	}
 	
-	public HashMap<String, Object> getAllLearningFiltersBySearch(String searchToken)
+	public HashMap<String, Object> getAllLearningFiltersBySearch(String searchToken, final HashMap<String, Object> filters)
 	{
-		HashMap<String, Object> filters = new HashMap<>();
-		HashMap<String, String> contentTypeFilter = new HashMap<>();
-		filters.put("Content Type", contentTypeFilter);
+		HashMap<String, String> contentTypeFilter = (HashMap<String, String>)filters.get("Content Type");
+		
 		Set<String> cardIds = null;
 		if(searchToken!=null && !searchToken.trim().isEmpty())
 			cardIds = productDocumentationDAO.getAllLearningCardIdsBySearch("%"+searchToken+"%");
@@ -144,44 +144,37 @@ public class ProductDocumentationService{
 	 * @param applyFilters
 	 * @return
 	 */
-	public HashMap<String, Object> getAllLearningFiltersByApply(String applyFilters){
+	public HashMap<String, Object> getAllLearningFiltersByApply(String applyFilters, final HashMap<String, Object> filters){
 		
 		Set<String> cardIds = filterCards(applyFilters);
-		LOG.info("mapped = {} ",cardIds);	
-		HashMap<String, Object> filters = new HashMap<>();		
-		HashMap<String, String> contentTypeFilter = new HashMap<>();
-		filters.put("Content Type", contentTypeFilter);
+		LOG.info("mapped = {} ",cardIds);			
+		HashMap<String, String> contentTypeFilter = (HashMap<String, String>)filters.get("Content Type");		
 		List<Map<String,Object>> dbList = productDocumentationDAO.getAllContentTypeWithCountByCards(cardIds);
 		contentTypeFilter.putAll(listToMap(dbList));
-		
 		return filters;		
 	}
 	
 	public HashMap<String, Object> getAllLearningFilters(String searchToken,String applyFilters){
+		
+		HashMap<String, Object> filters = new HashMap<>();		
+		
+		HashMap<String, String> contentTypeFilter = new HashMap<>();
+		filters.put("Content Type", contentTypeFilter);
+		List<Map<String,Object>> dbList = productDocumentationDAO.getAllContentTypeWithCount();
+		Map<String,String> allContents = listToMap(dbList);
+		allContents.keySet().forEach(k -> contentTypeFilter.put(k, "0"));
 		
 		if( searchToken!=null && !searchToken.trim().isEmpty() &&
 				applyFilters!=null && !applyFilters.isEmpty()	)
 		{
 			Set<String> filteredCards = filterCards(applyFilters);
 			Set<String> filteredSearchedCards = productDocumentationDAO.getAllLearningCardIdsByFilterSearch(filteredCards,"%"+searchToken+"%");
-			List<Map<String,Object>> dbList = productDocumentationDAO.getAllContentTypeWithCountByCards(filteredSearchedCards);
-			HashMap<String, Object> filters = new HashMap<>();		
-			HashMap<String, String> contentTypeFilter = new HashMap<>();
-			filters.put("Content Type", contentTypeFilter);
-			contentTypeFilter.putAll(listToMap(dbList));
-			return filters;
+			List<Map<String,Object>> dbListFiltered = productDocumentationDAO.getAllContentTypeWithCountByCards(filteredSearchedCards);		
+			contentTypeFilter.putAll(listToMap(dbListFiltered));			
 		}		
-		else if(searchToken!=null && !searchToken.trim().isEmpty()) return getAllLearningFiltersBySearch(searchToken);
-		else if(applyFilters!=null && !applyFilters.trim().isEmpty()) return getAllLearningFiltersByApply(applyFilters);
-		
-		HashMap<String, Object> filters = new HashMap<>();
-		HashMap<String, String> contentTypeFilter = new HashMap<>();		
-				
-		List<Map<String,Object>> dbList = productDocumentationDAO.getAllContentTypeWithCount();
-		contentTypeFilter.putAll(listToMap(dbList));
-		
-		filters.put("Content Type", contentTypeFilter);
-		
+		else if(searchToken!=null && !searchToken.trim().isEmpty())  getAllLearningFiltersBySearch(searchToken,filters);
+		else if(applyFilters!=null && !applyFilters.trim().isEmpty()) getAllLearningFiltersByApply(applyFilters,filters);
+		else contentTypeFilter.putAll(allContents);
 		
 		return filters;
 	}
