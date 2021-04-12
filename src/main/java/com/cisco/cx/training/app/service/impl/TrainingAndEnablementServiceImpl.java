@@ -402,7 +402,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		List<NewLearningContentEntity> learningContentList = new ArrayList<>();
 		learningContentList = learningContentDAO.fetchNewLearningContent();
 		learningContentList.stream().filter(
-				learning -> learning.getLearning_type().equals(Constants.SUCCESSTALK))
+				learning -> learning.getLearningType().equals(Constants.SUCCESSTALK))
 				.forEach( learning ->
 						{
 							learning.setRegion(Constants.REGION_SUCCESSTALK);

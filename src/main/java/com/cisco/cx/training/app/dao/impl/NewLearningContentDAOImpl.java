@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import com.cisco.cx.training.app.dao.NewLearningContentDAO;
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.app.repo.NewLearningContentRepo;
+import com.cisco.cx.training.models.SuccessTalk;
 
 @Repository
 public class NewLearningContentDAOImpl implements NewLearningContentDAO{
@@ -28,6 +29,11 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		ZonedDateTime zdtEnd = ZonedDateTime.of(localDateTimeEnd, ZoneId.systemDefault());
 
 		return learningContentRepo.findAllBySortByDateBetweenOrderBySortByDateDesc(new Timestamp(zdtStart.toInstant().toEpochMilli()), new Timestamp(zdtEnd.toInstant().toEpochMilli()));
+	}
+	
+	@Override
+	public List<NewLearningContentEntity> fetchSuccesstalks() {
+		return learningContentRepo.findAllByLearningType("successtalk");
 	}
 
 }

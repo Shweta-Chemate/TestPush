@@ -13,4 +13,5 @@ public interface NewLearningContentRepo extends JpaRepository<NewLearningContent
 
 	 List<NewLearningContentEntity> findAllBySortByDateBetweenOrderBySortByDateDesc(Timestamp timeStart,Timestamp timeEnd);
 
+	 List<NewLearningContentEntity> findAllByLearningType(String learning_type);
 }

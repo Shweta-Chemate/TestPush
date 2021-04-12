@@ -358,7 +358,7 @@ public class TrainingAndEnablementServiceTest {
 		successTalk.setBookmark(true);
 		successTalk.setDescription("");
 		successTalk.setDocId("id");
-		successTalk.setDuration(10L);
+		successTalk.setDuration("1h 30min");
 		successTalk.setImageUrl("");
 		successTalk.setRecordingUrl("");
 		List<SuccessTalkSession> sessions = new ArrayList<>();
