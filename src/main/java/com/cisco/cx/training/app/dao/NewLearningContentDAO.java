@@ -12,5 +12,7 @@ public interface NewLearningContentDAO {
 
 	List<NewLearningContentEntity> listPIWs(String region, String sortField, String sortType,
 			Map<String, String> query_map, String search);
+	
+	Integer getSuccessTalkCount();
 
 }

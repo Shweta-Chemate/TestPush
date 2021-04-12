@@ -44,7 +44,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	
 	@Override
 	public List<NewLearningContentEntity> fetchSuccesstalks() {
-		return learningContentRepo.findAllByLearningType("successtalk");
+		return learningContentRepo.findAllByLearningType(Constants.SUCCESSTALK);
 	}
 
 	@Override
@@ -55,4 +55,8 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		return learningContentRepo.findAll(specification,Sort.by(Sort.Direction.fromString(sortType),sortField));
 	}
 
+	@Override
+	public Integer getSuccessTalkCount() {
+		return learningContentRepo.countByLearningTypeAndStatusNot(Constants.SUCCESSTALK, SuccessTalk.SuccessTalkStatusEnum.CANCELLED.toString());
+	}
 }
