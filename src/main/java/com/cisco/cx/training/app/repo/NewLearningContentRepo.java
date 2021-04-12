@@ -8,4 +8,5 @@ import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 @Repository
 public interface NewLearningContentRepo extends JpaRepository<NewLearningContentEntity, String>,JpaSpecificationExecutor<NewLearningContentEntity>{
 
+	 List<NewLearningContentEntity> findAllByLearningType(String learning_type);
 }

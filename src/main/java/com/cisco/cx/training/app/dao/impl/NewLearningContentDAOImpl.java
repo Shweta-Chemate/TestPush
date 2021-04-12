@@ -14,6 +14,7 @@ import com.cisco.cx.training.app.builders.SpecificationBuilder;
 import com.cisco.cx.training.app.dao.NewLearningContentDAO;
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.app.repo.NewLearningContentRepo;
+import com.cisco.cx.training.models.SuccessTalk;
 import com.cisco.cx.training.constants.Constants;
 import com.cisco.cx.training.models.CustomSpecifications;
 
@@ -38,6 +39,11 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		ZonedDateTime zdtEnd = ZonedDateTime.of(localDateTimeEnd, ZoneId.systemDefault());
 		specification= specification.and(CustomSpecifications.hasDateBetweenCriteria(Constants.SORTDATE,new Timestamp(zdtStart.toInstant().toEpochMilli()),new Timestamp(zdtEnd.toInstant().toEpochMilli())));
 		return specification;
+	}
+	
+	@Override
+	public List<NewLearningContentEntity> fetchSuccesstalks() {
+		return learningContentRepo.findAllByLearningType("successtalk");
 	}
 
 }

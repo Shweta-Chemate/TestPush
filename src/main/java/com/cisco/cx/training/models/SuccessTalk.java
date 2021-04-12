@@ -26,7 +26,7 @@ public class SuccessTalk implements HasId, Comparable<SuccessTalk> {
 	@ApiModelProperty(notes = "Pitstop", example = "Onboard")
 	private String recordingUrl;
 	@ApiModelProperty(notes = "Duration of the session in seconds", example = "3600")
-	private Long duration;
+	private String duration;
 	@ApiModelProperty(notes = "Is bookmark", example = "true")
 	private boolean bookmark;
 	@ApiModelProperty(notes = "Boolean to identify if this is a technical session")
@@ -117,11 +117,11 @@ public class SuccessTalk implements HasId, Comparable<SuccessTalk> {
 		this.status = status;
 	}
 
-	public Long getDuration() {
+	public String getDuration() {
 		return duration;
 	}
 
-	public void setDuration(Long duration) {
+	public void setDuration(String duration) {
 		this.duration = duration;
 	}
 
