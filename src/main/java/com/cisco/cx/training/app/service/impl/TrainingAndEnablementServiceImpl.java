@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -388,8 +389,10 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	}
 
 	@Override
-	public LearningRecordsAndFiltersModel getAllLearningInfo(String xMasheryHandshake,String searchToken,String filters) {
-			return productDocumentationService.getAllLearningInfo(xMasheryHandshake,searchToken,filters);
+	public LearningRecordsAndFiltersModel getAllLearningInfo(String xMasheryHandshake,String searchToken,String filters,
+			String sortBy, String sortOrder) 
+	{
+			return productDocumentationService.getAllLearningInfo(xMasheryHandshake,searchToken,filters,sortBy, sortOrder);
 	}
 	
 	@Override
@@ -398,15 +401,22 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	}
 
 	@Override
-	public List<NewLearningContentEntity> fetchNewLearningContent() {
+	public List<NewLearningContentEntity> fetchNewLearningContent(String filter) {
 		List<NewLearningContentEntity> learningContentList = new ArrayList<>();
-		learningContentList = learningContentDAO.fetchNewLearningContent();
-		learningContentList.stream().filter(
-				learning -> learning.getLearningType().equals(Constants.SUCCESSTALK))
-				.forEach( learning ->
-						{
-							learning.setRegion(Constants.REGION_SUCCESSTALK);
-						});
+		Map<String, List<String>> query_map = new LinkedHashMap<>();
+		if (!StringUtils.isBlank(filter)) {
+			filter = filter.replaceAll("%3B", ";");
+			filter = filter.replaceAll("%3A", ":");
+			filter = filter.replaceAll("%2C", ",");
+			String[] columnFilter = filter.split(";");
+			for (int colFilterIndex = 0; colFilterIndex < columnFilter.length; colFilterIndex++) {
+				String[] valueFilter = columnFilter[colFilterIndex].split(":");
+				String fieldName = valueFilter[0];
+				String[] fieldValues = valueFilter[1].split(",");
+				query_map.put(fieldName, Arrays.asList(fieldValues));
+			}
+		}
+		learningContentList = learningContentDAO.fetchNewLearningContent(query_map);
 		return learningContentList;
 	}
 }

@@ -9,6 +9,7 @@ package com.cisco.cx.training.constants;
 public final class Constants {
 	public static final String MASHERY_HANDSHAKE_HEADER_NAME = "X-Mashery-Handshake";
 	public static String PUID="puid";
+	public static String SORTDATE="sortByDate";
 	public static final String USER_ID = "userId";
 	public static final String ROLES_LIST = "roles";
 	public static final String USER_PROFILE = "userProfile";
@@ -24,5 +25,7 @@ public final class Constants {
 	public static final String SQUARE_CLOSE_BRACKET= "]";
 	public static final String CUID= "cuid";
 	public static final String SUCCESSTALK= "successtalk";
-	public static final String REGION_SUCCESSTALK= "AMER";
+	public static final String PIW = "piw";
+	public static final String DESC = "Desc";
+
 }

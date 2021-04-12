@@ -66,7 +66,7 @@ public class NewLearningContentEntity {
 	private Integer piw_score;
 	
 	@Column(name = "piw_language")
-	private String piw_language;
+	private String language;
 	
 	@Column(name = "piw_timezone")
 	private String piw_timezone;
@@ -99,7 +99,7 @@ public class NewLearningContentEntity {
 	private String technology;
 	
 	@Column(name = "asset_type")
-	private String asset_type;
+	private String contentType;
 	
 	@Column(name = "link")
 	private String link;
@@ -208,12 +208,12 @@ public class NewLearningContentEntity {
 		this.piw_score = piw_score;
 	}
 
-	public String getPiw_language() {
-		return piw_language;
+	public String getLanguage() {
+		return language;
 	}
 
-	public void setPiw_language(String piw_language) {
-		this.piw_language = piw_language;
+	public void setLanguage(String language) {
+		this.language = language;
 	}
 
 	public String getPiw_timezone() {
@@ -280,12 +280,12 @@ public class NewLearningContentEntity {
 		this.technology = technology;
 	}
 
-	public String getAsset_type() {
-		return asset_type;
+	public String getContentType() {
+		return contentType;
 	}
 
-	public void setAsset_type(String asset_type) {
-		this.asset_type = asset_type;
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
 	}
 
 	public String getLink() {
