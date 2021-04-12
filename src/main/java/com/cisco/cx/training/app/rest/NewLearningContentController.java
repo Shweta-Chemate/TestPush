@@ -8,7 +8,7 @@ import io.swagger.annotations.Api;
 
 @RestController
 @Validated
-@RequestMapping("/v1/partner/new/learning")
+@RequestMapping("/v1/partner/learning")
 @Api(value = "New Learning Content APIs")
 public class NewLearningContentController {
 
