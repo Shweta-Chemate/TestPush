@@ -1,11 +1,11 @@
 package com.cisco.cx.training.app.service;
 
-import com.cisco.cx.training.models.CountResponseSchema;
-import com.cisco.cx.training.models.SuccessTalkResponseSchema;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
+import com.cisco.cx.training.models.CountResponseSchema;
+import com.cisco.cx.training.models.SuccessTalkResponseSchema;
 
 public interface LearningContentService {
 
@@ -15,5 +15,7 @@ public interface LearningContentService {
 			String search);
 
 	CountResponseSchema getIndexCounts();
+	
+	HashMap<String, Object> getViewMoreFiltersWithCount(String filter);
 
 }

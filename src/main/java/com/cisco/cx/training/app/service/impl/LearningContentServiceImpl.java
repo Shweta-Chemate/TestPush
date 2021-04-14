@@ -1,6 +1,7 @@
 package com.cisco.cx.training.app.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -168,6 +169,23 @@ public class LearningContentServiceImpl implements LearningContentService {
 		// Success Talks count - Adding filter to exculde cancelled SuccessTalks
 		successTalkCount.setCount(new Long(learningContentDAO.getSuccessTalkCount()));
 		return successTalkCount;
+	}
+	
+	@Override
+	public HashMap<String, Object> getViewMoreFiltersWithCount(String filter) {
+		Map<String, String> query_map = new LinkedHashMap<String, String>();
+		if (!StringUtils.isBlank(filter)) {
+			filter = filter.replaceAll("%3B", ";");
+			filter = filter.replaceAll("%3A", ":");
+			String[] columnFilter = filter.split(";");
+			for (int colFilterIndex = 0; colFilterIndex < columnFilter.length; colFilterIndex++) {
+				String[] valueFilter = columnFilter[colFilterIndex].split(":");
+				String fieldName = valueFilter[0];
+				String fieldValue = valueFilter[1];
+				query_map.put(fieldName, fieldValue);
+			}
+		}
+		return learningContentDAO.getViewMoreFiltersWithCount(query_map);
 	}
 
 }

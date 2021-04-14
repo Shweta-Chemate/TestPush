@@ -1,5 +1,9 @@
 package com.cisco.cx.training.app.rest;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,24 +11,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.exception.ErrorResponse;
 import com.cisco.cx.training.app.service.LearningContentService;
+import com.cisco.cx.training.models.CountResponseSchema;
+import com.cisco.cx.training.models.PIW;
 import com.cisco.cx.training.models.SuccessTalkResponseSchema;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.web.bind.annotation.RequestParam;
-import com.cisco.cx.training.app.entities.NewLearningContentEntity;
-import com.cisco.cx.training.models.CountResponseSchema;
-import com.cisco.cx.training.models.PIW;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
@@ -112,6 +116,19 @@ public class NewLearningContentController {
         }
 		CountResponseSchema countResponseSchema = learningContentService.getIndexCounts();
 		return new ResponseEntity<CountResponseSchema>(countResponseSchema, HttpStatus.OK);
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/viewmore/new/filters")
+	@ApiOperation(value = "Fetch All Learnings Filters", response = String.class, nickname = "fetchallViewMoreFilters")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
+			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
+			@ApiResponse(code = 404, message = "Entity Not Found"),
+			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
+	public ResponseEntity<HashMap<String, Object>> getAllLearningsFilters(
+			@ApiParam(value = "Filter - multiple, multiple types e.g filter=contentType:PDF,Video") @RequestParam(value = "filter", required = false) String filter)
+			throws Exception {
+		HashMap<String, Object> learningFilters = learningContentService.getViewMoreFiltersWithCount(filter);
+		return new ResponseEntity<HashMap<String, Object>>(learningFilters, HttpStatus.OK);
 	}
 
 }
