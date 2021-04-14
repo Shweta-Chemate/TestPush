@@ -1,5 +1,6 @@
 package com.cisco.cx.training.app.builders;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -37,5 +38,17 @@ public class SpecificationBuilder {
 		}
 		return specification;
 	}
+	
+	public <T> Specification<T> buildFilterSpecificationForViewMoreFilters(Map<String, String> filterParams) {
+		Specification<T> specification = Specification.where(null);
+		for (Map.Entry<String, String> filterParam : filterParams.entrySet()) {
+			String key = filterParam.getKey();
+			String value = filterParam.getValue();
+			List<String> values = Arrays.asList(value.split(","));
+			specification = specification.and(CustomSpecifications.hasValueIn(key, values));
+		}
+		return specification;
+	}
+
 
 }

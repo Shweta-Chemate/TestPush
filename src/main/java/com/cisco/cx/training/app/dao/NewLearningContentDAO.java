@@ -1,7 +1,9 @@
 package com.cisco.cx.training.app.dao;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 
 public interface NewLearningContentDAO {
@@ -16,4 +18,5 @@ public interface NewLearningContentDAO {
 	
 	Integer getSuccessTalkCount();
 
+	HashMap<String, Object> getViewMoreFiltersWithCount(Map<String, String> filter);
 }
