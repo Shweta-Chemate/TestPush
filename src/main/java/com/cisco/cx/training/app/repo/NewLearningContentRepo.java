@@ -17,7 +17,7 @@ public interface NewLearningContentRepo
 
 	List<NewLearningContentEntity> findAllByLearningType(String learning_type);
 
-	Integer countByLearningTypeAndStatusNot(String learning_type, String status);
+	Integer countByLearningType(String learning_type);
 
 	public static final String GET_CONTENT_TYPE_WITH_COUNT = "select asset_type as label, count(asset_type) as count"
 			+ " from cxpp_db.cxpp_item_link where asset_type IS NOT NULL AND asset_type!='' group by asset_type;";
