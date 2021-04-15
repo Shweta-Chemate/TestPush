@@ -170,7 +170,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 	private CountSchema getWebinarCount() {
 
 		CountSchema webinarCount = new CountSchema();
-		webinarCount.setLabel("Webinar");
+		webinarCount.setLabel("Webinars");
 		webinarCount.setCount(new Long(learningContentDAO.getPIWCount()+learningContentDAO.getSuccessTalkCount()));
 		return webinarCount;
 
