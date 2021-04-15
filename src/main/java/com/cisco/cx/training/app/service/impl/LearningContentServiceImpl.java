@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -15,14 +16,21 @@ import org.springframework.stereotype.Service;
 
 import com.cisco.cx.training.app.dao.NewLearningContentDAO;
 import com.cisco.cx.training.app.dao.SuccessAcademyDAO;
+import com.cisco.cx.training.app.entities.LearningStatusEntity;
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.app.exception.GenericException;
+import com.cisco.cx.training.app.exception.NotAllowedException;
+import com.cisco.cx.training.app.repo.LearningStatusRepo;
 import com.cisco.cx.training.app.service.LearningContentService;
+import com.cisco.cx.training.app.service.PartnerProfileService;
+import com.cisco.cx.training.models.Company;
 import com.cisco.cx.training.models.CountResponseSchema;
 import com.cisco.cx.training.models.CountSchema;
+import com.cisco.cx.training.models.LearningStatusSchema;
 import com.cisco.cx.training.models.SuccessTalk;
 import com.cisco.cx.training.models.SuccessTalkResponseSchema;
 import com.cisco.cx.training.models.SuccessTalkSession;
+import com.cisco.cx.training.models.UserDetailsWithCompanyList;
 
 @Service
 public class LearningContentServiceImpl implements LearningContentService {
@@ -35,6 +43,12 @@ public class LearningContentServiceImpl implements LearningContentService {
 	@Autowired
 	private SuccessAcademyDAO successAcademyDAO;
 	
+	@Autowired
+	private PartnerProfileService partnerProfileService;
+
+	@Autowired
+	private LearningStatusRepo learningStatusRepo;
+
 	@Override
 	public SuccessTalkResponseSchema fetchSuccesstalks(String sortField, String sortType,
 			String filter, String search) {
@@ -186,6 +200,52 @@ public class LearningContentServiceImpl implements LearningContentService {
 			}
 		}
 		return learningContentDAO.getViewMoreFiltersWithCount(query_map);
+	}
+
+	@Override
+	public LearningStatusEntity updateUserStatus(String userId, String puid, LearningStatusSchema learningStatusSchema,
+			String xMasheryHandshake) {
+		UserDetailsWithCompanyList userDetails = partnerProfileService.fetchUserDetailsWithCompanyList(xMasheryHandshake);
+		List<Company> companies = userDetails.getCompanyList();
+		Optional<Company> matchingObject = companies.stream()
+				.filter(c -> (c.getPuid().equals(puid) && c.isDemoAccount())).findFirst();
+		Company company = matchingObject.isPresent() ? matchingObject.get() : null;
+		if (company != null)
+			throw new NotAllowedException("Not Allowed for DemoAccount");
+
+		try {
+			LearningStatusEntity learning_status_existing = learningStatusRepo.findByLearningItemIdAndUserIdAndPuid(learningStatusSchema.getLearningItemId(), userId, puid);
+			// record already exists in the table
+			if (learning_status_existing != null) {
+				if(learningStatusSchema.getRegStatus()!=null){
+					learning_status_existing.setRegStatus(learningStatusSchema.getRegStatus().toString());
+					learning_status_existing.setRegUpdatedTimestamp(java.time.LocalDateTime.now());
+				}
+				if(learningStatusSchema.isViewed()){
+					learning_status_existing.setViewedTimestamp(java.time.LocalDateTime.now());
+				}
+				learningStatusRepo.save(learning_status_existing);
+				return learning_status_existing;
+			}
+			// new record
+			else {
+				LearningStatusEntity learning_status_new = new LearningStatusEntity();
+				learning_status_new.setUserId(userId);
+				learning_status_new.setPuid(puid);
+				learning_status_new.setLearningItemId(learningStatusSchema.getLearningItemId());
+				if(learningStatusSchema.getRegStatus()!=null){
+					learning_status_new.setRegStatus(learningStatusSchema.getRegStatus().toString());
+					learning_status_new.setRegUpdatedTimestamp(java.time.LocalDateTime.now());
+				}
+				if(learningStatusSchema.isViewed()){
+					learning_status_new.setViewedTimestamp(java.time.LocalDateTime.now());
+				}
+				return learningStatusRepo.save(learning_status_new);
+			}
+
+		} catch (Exception e) {
+			throw new GenericException("There was a problem in registering user to the PIW");
+		}
 	}
 
 }
