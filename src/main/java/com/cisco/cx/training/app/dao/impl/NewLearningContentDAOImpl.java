@@ -68,7 +68,17 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 
 	@Override
 	public Integer getSuccessTalkCount() {
-		return learningContentRepo.countByLearningTypeAndStatusNot(Constants.SUCCESSTALK, SuccessTalk.SuccessTalkStatusEnum.CANCELLED.toString());
+		return learningContentRepo.countByLearningType(Constants.SUCCESSTALK);
+	}
+
+	@Override
+	public Integer getPIWCount() {
+		return learningContentRepo.countByLearningType(Constants.PIW);
+	}
+
+	@Override
+	public Integer getDocumentationCount() {
+		return learningContentRepo.countByLearningType(Constants.DOCUMENTATION);
 	}
 	
 	@Override
@@ -140,4 +150,5 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		}
 		return countMap;
 	}
+
 }

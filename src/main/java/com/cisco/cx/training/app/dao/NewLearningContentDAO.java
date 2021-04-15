@@ -19,4 +19,8 @@ public interface NewLearningContentDAO {
 	Integer getSuccessTalkCount();
 
 	HashMap<String, Object> getViewMoreFiltersWithCount(Map<String, String> filter);
+
+	Integer getPIWCount();
+
+	Integer getDocumentationCount();
 }

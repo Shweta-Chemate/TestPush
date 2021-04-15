@@ -139,22 +139,22 @@ public class LearningContentServiceImpl implements LearningContentService {
 		CountResponseSchema countResponse = new CountResponseSchema();
 		try {
 
-			CountSchema communityCount= getCommunityCount();
-			LOG.info("Received Community count in {} ", (System.currentTimeMillis() - requestStartTime));
-			indexCounts.add(communityCount);
-
 			requestStartTime = System.currentTimeMillis();	
-			CountSchema successTalkCount = getSuccessTalkCount();
-			LOG.info("Received Success talks count in {} ", (System.currentTimeMillis() - requestStartTime));
-			indexCounts.add(successTalkCount);
-			
+			CountSchema webinarCount = getWebinarCount();
+			LOG.info("Received webinar count in {} ", (System.currentTimeMillis() - requestStartTime));
+			indexCounts.add(webinarCount);
+
 			CountSchema successAcamedyCount = new CountSchema();
-			successAcamedyCount.setLabel("CX Learning");	
+			successAcamedyCount.setLabel("Learning");
 			requestStartTime = System.currentTimeMillis();	
 			successAcamedyCount.setCount(successAcademyDAO.count());
 			LOG.info("Received Success Academy count in {} ", (System.currentTimeMillis() - requestStartTime));
-
 			indexCounts.add(successAcamedyCount);
+
+			requestStartTime = System.currentTimeMillis();	
+			CountSchema documentationCount = getDocumentationCount();
+			LOG.info("Received documentation count in {} ", (System.currentTimeMillis() - requestStartTime));
+			indexCounts.add(documentationCount);
 
 			countResponse.setLearningStatus(indexCounts);
 
@@ -166,25 +166,26 @@ public class LearningContentServiceImpl implements LearningContentService {
 
 		return countResponse;
 	}
-	
-	public CountSchema getCommunityCount() {
 
-		CountSchema communityCount = new CountSchema();
-		communityCount.setLabel("Cisco Community");
-		// Community Count is currently hardcoded to 1
-		communityCount.setCount(1L);
-		return communityCount;
-	}
-	
-	public CountSchema getSuccessTalkCount() {
+	private CountSchema getWebinarCount() {
 
-		CountSchema successTalkCount = new CountSchema();
-		successTalkCount.setLabel("Success Talks");
-		// Success Talks count - Adding filter to exculde cancelled SuccessTalks
-		successTalkCount.setCount(new Long(learningContentDAO.getSuccessTalkCount()));
-		return successTalkCount;
+		CountSchema webinarCount = new CountSchema();
+		webinarCount.setLabel("Webinar");
+		webinarCount.setCount(new Long(learningContentDAO.getPIWCount()+learningContentDAO.getSuccessTalkCount()));
+		return webinarCount;
+
 	}
-	
+
+	private CountSchema getDocumentationCount() {
+
+		CountSchema documentationCount = new CountSchema();
+		documentationCount.setLabel("Documentation");
+		documentationCount.setCount(new Long(learningContentDAO.getDocumentationCount()));
+		return documentationCount;
+
+	}
+
+
 	@Override
 	public HashMap<String, Object> getViewMoreFiltersWithCount(String filter) {
 		Map<String, String> query_map = new LinkedHashMap<String, String>();
