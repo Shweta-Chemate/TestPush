@@ -20,7 +20,7 @@ public interface LearningContentService {
 
 	CountResponseSchema getIndexCounts();
 	
-	HashMap<String, Object> getViewMoreFiltersWithCount(String filter);
+	HashMap<String, HashMap<String,String>> getViewMoreFiltersWithCount(String filter, HashMap<String, HashMap<String,String>> filterCounts);
 
 	LearningStatusEntity updateUserStatus(String userId, String puid, LearningStatusSchema learningStatusSchema, String xMasheryHandshake);
 

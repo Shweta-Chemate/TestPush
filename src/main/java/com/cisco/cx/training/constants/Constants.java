@@ -38,5 +38,8 @@ public final class Constants {
 	public static final String SPEAKERS = "presenterName";
 	public static final String LEARNING_TYPE = "learningType";
 	public static final String DOCUMENTATION = "product_documentation";
+	public static final Object CONTENT_TYPE = "Content Type";
+	public static final Object LIVE_EVENTS = "Live Events";
+	public static final Object LANGUAGE = "Language";
 
 }

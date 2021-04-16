@@ -130,11 +130,12 @@ public class NewLearningContentController {
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
-	public ResponseEntity<HashMap<String, Object>> getAllLearningsFilters(
-			@ApiParam(value = "Filter - multiple, multiple types e.g filter=contentType:PDF,Video") @RequestParam(value = "filter", required = false) String filter)
+	public ResponseEntity<HashMap<String, HashMap<String,String>>> getAllLearningsFilters(
+			@ApiParam(value = "Filter - multiple, multiple types e.g filter=contentType:PDF,Video") @RequestParam(value = "filter", required = false) String filter,
+			@ApiParam(value = "JSON Body to update filters", required = false) @RequestBody(required=false) HashMap<String, HashMap<String,String>> filterCounts)
 			throws Exception {
-		HashMap<String, Object> learningFilters = learningContentService.getViewMoreFiltersWithCount(filter);
-		return new ResponseEntity<HashMap<String, Object>>(learningFilters, HttpStatus.OK);
+		HashMap<String, HashMap<String,String>> learningFilters = learningContentService.getViewMoreFiltersWithCount(filter, filterCounts);
+		return new ResponseEntity<HashMap<String, HashMap<String,String>>>(learningFilters, HttpStatus.OK);
 	}
 
 	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/user/status")
