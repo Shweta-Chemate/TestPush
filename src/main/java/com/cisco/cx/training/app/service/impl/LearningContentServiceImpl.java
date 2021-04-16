@@ -1,6 +1,7 @@
 package com.cisco.cx.training.app.service.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -247,6 +248,26 @@ public class LearningContentServiceImpl implements LearningContentService {
 		} catch (Exception e) {
 			throw new GenericException("There was a problem in registering user to the PIW");
 		}
+	}
+
+	@Override
+	public List<NewLearningContentEntity> fetchRecentlyViewedContent(String puid, String userId, String filter) {
+		List<NewLearningContentEntity> learningContentList = new ArrayList<>();
+		Map<String, List<String>> query_map = new LinkedHashMap<>();
+		if (!StringUtils.isBlank(filter)) {
+			filter = filter.replaceAll("%3B", ";");
+			filter = filter.replaceAll("%3A", ":");
+			filter = filter.replaceAll("%2C", ",");
+			String[] columnFilter = filter.split(";");
+			for (int colFilterIndex = 0; colFilterIndex < columnFilter.length; colFilterIndex++) {
+				String[] valueFilter = columnFilter[colFilterIndex].split(":");
+				String fieldName = valueFilter[0];
+				String[] fieldValues = valueFilter[1].split(",");
+				query_map.put(fieldName, Arrays.asList(fieldValues));
+			}
+		}
+		learningContentList=learningContentDAO.fetchRecentlyViewedContent(puid, userId, query_map);
+		return learningContentList;
 	}
 
 }

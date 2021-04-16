@@ -151,4 +151,16 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		return countMap;
 	}
 
+	@Override
+	public List<NewLearningContentEntity> fetchRecentlyViewedContent(String puid, String userId, Map<String, List<String>> filterParams) {
+		List<NewLearningContentEntity> filteredList = new ArrayList<>();
+		Set<String> learningItemIdsList = new HashSet<String>();
+		Specification<NewLearningContentEntity> specification = Specification.where(null);
+		specification = specification.and(new SpecificationBuilder().filter(filterParams));
+		filteredList = learningContentRepo.findAll(specification);
+		learningItemIdsList = filteredList.stream().map(learningItem -> learningItem.getId())
+				.collect(Collectors.toSet());
+		return learningContentRepo.getRecentlyViewedContent(puid, userId, learningItemIdsList);
+	}
+
 }
