@@ -419,5 +419,17 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		learningContentList = learningContentDAO.fetchNewLearningContent(query_map);
 		return learningContentList;
 	}
+
+	@Override
+	public LearningRecordsAndFiltersModel getAllLearningInfoPost(String xMasheryHandshake, String searchToken,
+			HashMap<String, Object> filters, String sortBy, String sortOrder) {
+		
+		return productDocumentationService.getAllLearningInfo(xMasheryHandshake,searchToken,filters,sortBy, sortOrder);
+	}
+
+	@Override
+	public HashMap<String, Object> getAllLearningFiltersPost(String searchToken, HashMap<String, Object> filters) {
+		return productDocumentationService.getAllLearningFilters(searchToken,filters);
+	}
 }
 
