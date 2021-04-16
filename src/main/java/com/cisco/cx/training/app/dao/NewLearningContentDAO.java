@@ -8,7 +8,7 @@ import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 
 public interface NewLearningContentDAO {
   
-	List<NewLearningContentEntity> fetchNewLearningContent(Map<String, List<String>> filterParams);
+	List<NewLearningContentEntity> fetchNewLearningContent(Map<String, String> filterParams);
 	
 	List<NewLearningContentEntity> fetchSuccesstalks(String sortField, String sortType,
 			Map<String, String> filterParams, String search);
@@ -24,5 +24,8 @@ public interface NewLearningContentDAO {
 
 	Integer getDocumentationCount();
 
-	List<NewLearningContentEntity> fetchRecentlyViewedContent(String puid, String userId,  Map<String, List<String>> filterParams);
+	List<NewLearningContentEntity> fetchRecentlyViewedContent(String puid, String userId,  Map<String, String> query_map);
+
+	HashMap<String, HashMap<String, String>> getRecentlyViewedFiltersWithCount(String puid, String userId, Map<String, String> query_map,
+			HashMap<String, HashMap<String, String>> filterCounts);
 }

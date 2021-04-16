@@ -403,17 +403,16 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	@Override
 	public List<NewLearningContentEntity> fetchNewLearningContent(String filter) {
 		List<NewLearningContentEntity> learningContentList = new ArrayList<>();
-		Map<String, List<String>> query_map = new LinkedHashMap<>();
+		Map<String, String> query_map = new LinkedHashMap<>();
 		if (!StringUtils.isBlank(filter)) {
 			filter = filter.replaceAll("%3B", ";");
 			filter = filter.replaceAll("%3A", ":");
-			filter = filter.replaceAll("%2C", ",");
 			String[] columnFilter = filter.split(";");
 			for (int colFilterIndex = 0; colFilterIndex < columnFilter.length; colFilterIndex++) {
 				String[] valueFilter = columnFilter[colFilterIndex].split(":");
 				String fieldName = valueFilter[0];
-				String[] fieldValues = valueFilter[1].split(",");
-				query_map.put(fieldName, Arrays.asList(fieldValues));
+				String fieldValue = valueFilter[1];
+				query_map.put(fieldName, fieldValue);
 			}
 		}
 		learningContentList = learningContentDAO.fetchNewLearningContent(query_map);
