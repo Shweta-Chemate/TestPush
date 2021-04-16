@@ -19,24 +19,6 @@ public interface NewLearningContentRepo
 
 	Integer countByLearningType(String learning_type);
 
-	public static final String GET_CONTENT_TYPE_WITH_COUNT = "select asset_type as label, count(asset_type) as count"
-			+ " from cxpp_db.cxpp_item_link where asset_type IS NOT NULL AND asset_type!='' group by asset_type;";
-
-	@Query(value = GET_CONTENT_TYPE_WITH_COUNT, nativeQuery = true)
-	List<Map<String, Object>> getAllContentTypeWithCount();
-
-	public static final String GET_REGION_WITH_COUNT = "select piw_region as label, count(piw_region) as count "
-			+ "from cxpp_db.cxpp_learning_content where piw_region IS NOT NULL group by piw_region;";
-
-	@Query(value = GET_REGION_WITH_COUNT, nativeQuery = true)
-	List<Map<String, Object>> getAllRegionsTypeWithCount();
-
-	public static final String GET_LANGUAGE_WITH_COUNT = "select piw_language as label, count(piw_language) as count"
-			+ " from cxpp_db.cxpp_learning_content where piw_language IS NOT NULL group by piw_language;";
-
-	@Query(value = GET_LANGUAGE_WITH_COUNT, nativeQuery = true)
-	List<Map<String, Object>> getAllLanguagesTypeWithCount();
-
 	public static final String GET_CONTENT_TYPE_WITH_COUNT_BY_CARD = "select asset_type as label, count(*) as count "
 			+ " from cxpp_db.cxpp_learning_content " + " where asset_type IS NOT NULL and id in (:learningItemIds) "
 			+ " group by asset_type;";

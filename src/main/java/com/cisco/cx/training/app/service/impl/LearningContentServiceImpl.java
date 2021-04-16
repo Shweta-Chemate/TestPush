@@ -188,7 +188,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 
 
 	@Override
-	public HashMap<String, Object> getViewMoreFiltersWithCount(String filter) {
+	public HashMap<String, HashMap<String,String>> getViewMoreFiltersWithCount(String filter, HashMap<String, HashMap<String,String>> filterCounts) {
 		Map<String, String> query_map = new LinkedHashMap<String, String>();
 		if (!StringUtils.isBlank(filter)) {
 			filter = filter.replaceAll("%3B", ";");
@@ -201,7 +201,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 				query_map.put(fieldName, fieldValue);
 			}
 		}
-		return learningContentDAO.getViewMoreFiltersWithCount(query_map);
+		return learningContentDAO.getViewMoreFiltersWithCount(query_map, filterCounts);
 	}
 
 	@Override
