@@ -160,4 +160,26 @@ public class NewLearningContentController {
 		}
 	}
 
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/recentlyviewed")
+	@ApiOperation(value = "Fetch recently viewed Learning Content", response = String.class, nickname = "fetchrecentlyviewedlearningcontent")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
+			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
+			@ApiResponse(code = 404, message = "Entity Not Found"),
+			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
+	public ResponseEntity<List<NewLearningContentEntity>> getRecentlyViewedContent(
+			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
+            @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
+			@ApiParam(value = "Filters", required = false) @RequestParam(value = "filter", required = false) String filter)
+					throws Exception {
+		LOG.info("Entering the getRecentlyViewedContent method");
+		long requestStartTime = System.currentTimeMillis();
+		if (StringUtils.isBlank(xMasheryHandshake)) {
+			throw new BadRequestException("X-Mashery-Handshake header missing in request");
+		}
+		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
+		List<NewLearningContentEntity> learningContentList = learningContentService.fetchRecentlyViewedContent(puid, userId, filter);
+		LOG.info("Received recently viewed learning content in {} ", (System.currentTimeMillis() - requestStartTime));
+		return new ResponseEntity<List<NewLearningContentEntity>>(learningContentList, HttpStatus.OK);
+	}
+
 }

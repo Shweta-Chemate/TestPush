@@ -23,4 +23,6 @@ public interface NewLearningContentDAO {
 	Integer getPIWCount();
 
 	Integer getDocumentationCount();
+
+	List<NewLearningContentEntity> fetchRecentlyViewedContent(String puid, String userId,  Map<String, List<String>> filterParams);
 }

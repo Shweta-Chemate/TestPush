@@ -58,4 +58,11 @@ public interface NewLearningContentRepo
 	@Query(value = GET_LANGUAGE_WITH_COUNT_BY_CARD, nativeQuery = true)
 	List<Map<String, Object>> getAllLanguagesWithCountByCards(Set<String> learningItemIds);
 
+	public static final String GET_RECENTLY_VIEWED_CONTENT = "select content.* from cxpp_db.cxpp_learning_content content,cxpp_db.cxpp_learning_status status"
+			+ " where status.puid=:puid and status.user_id=:userId  and content.id=status.learning_item_id and content.id in (:learningItemIds) "
+			+ " order by status.viewed_timestamp desc limit 25;";
+
+	@Query(value = GET_RECENTLY_VIEWED_CONTENT, nativeQuery = true)
+	List<NewLearningContentEntity> getRecentlyViewedContent(String puid, String userId, Set<String> learningItemIds);
+
 }

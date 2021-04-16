@@ -24,4 +24,6 @@ public interface LearningContentService {
 
 	LearningStatusEntity updateUserStatus(String userId, String puid, LearningStatusSchema learningStatusSchema, String xMasheryHandshake);
 
+	List<NewLearningContentEntity> fetchRecentlyViewedContent(String puid, String userId, String filter);
+
 }
