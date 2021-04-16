@@ -34,7 +34,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	private NewLearningContentRepo learningContentRepo;
 
 	@Override
-	public List<NewLearningContentEntity> fetchNewLearningContent(Map<String,List<String>> filterParams) {
+	public List<NewLearningContentEntity> fetchNewLearningContent(Map<String, String> filterParams) {
 		Specification<NewLearningContentEntity> specification = addTimeRangeSpecification();
 		specification = specification.and(new SpecificationBuilder().filter(filterParams));
 		return learningContentRepo.findAll(specification,Sort.by(Sort.Direction.fromString(Constants.DESC),Constants.SORTDATE));
@@ -98,7 +98,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		}
 
 		Specification<NewLearningContentEntity> specification = addTimeRangeSpecification();
-		specification = specification.and(new SpecificationBuilder().buildFilterSpecificationForViewMoreFilters(filter));
+		specification = specification.and(new SpecificationBuilder().filter(filter));
 		filteredList = learningContentRepo.findAll(specification);
 		learningItemIdsList = filteredList.stream().map(learningItem -> learningItem.getId())
 				.collect(Collectors.toSet());
@@ -145,7 +145,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	}
 
 	@Override
-	public List<NewLearningContentEntity> fetchRecentlyViewedContent(String puid, String userId, Map<String, List<String>> filterParams) {
+	public List<NewLearningContentEntity> fetchRecentlyViewedContent(String puid, String userId, Map<String, String> filterParams) {
 		List<NewLearningContentEntity> filteredList = new ArrayList<>();
 		Set<String> learningItemIdsList = new HashSet<String>();
 		Specification<NewLearningContentEntity> specification = Specification.where(null);
@@ -154,6 +154,56 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		learningItemIdsList = filteredList.stream().map(learningItem -> learningItem.getId())
 				.collect(Collectors.toSet());
 		return learningContentRepo.getRecentlyViewedContent(puid, userId, learningItemIdsList);
+	}
+
+	@Override
+	public HashMap<String, HashMap<String, String>> getRecentlyViewedFiltersWithCount(String puid, String userId, Map<String, String> filter,
+			HashMap<String, HashMap<String, String>> filterCounts) {
+		List<NewLearningContentEntity> filteredList = new ArrayList<>();
+		Set<String> learningItemIdsList = new HashSet<String>();
+
+		if(filterCounts==null)
+		{
+			filterCounts=new HashMap<>();
+		}
+		else
+		{
+			filterCounts.values().forEach(filterGroup -> {
+				filterGroup.keySet().forEach(key -> filterGroup.put(key, "0"));
+			});
+		}
+
+		Specification<NewLearningContentEntity> specification = Specification.where(null);
+		specification = specification.and(new SpecificationBuilder().filter(filter));
+		filteredList = learningContentRepo.findAll(specification);
+		learningItemIdsList = filteredList.stream().map(learningItem -> learningItem.getId())
+				.collect(Collectors.toSet());
+
+		// Content Type Filter
+		HashMap<String, String> contentTypeFilter = filterCounts.containsKey(Constants.CONTENT_TYPE) ? filterCounts.get(Constants.CONTENT_TYPE) : new HashMap<>();
+		filterCounts.put("Content Type", contentTypeFilter);
+		List<Map<String, Object>> contentTypeFiltersWithCount = learningContentRepo
+				.getContentTypeFilteredForRecentlyViewed(puid, userId, learningItemIdsList);
+		Map<String, String>  allContents = listToMap(contentTypeFiltersWithCount);
+		contentTypeFilter.putAll(allContents);
+
+		// Live Events Filter
+		HashMap<String, String> regionFilter = filterCounts.containsKey(Constants.LIVE_EVENTS) ? filterCounts.get(Constants.LIVE_EVENTS) : new HashMap<>();
+		filterCounts.put("Live Events", regionFilter);
+		List<Map<String, Object>> regionFilterWithCount = learningContentRepo
+				.getRegionFilteredForRecentlyViewed(puid, userId, learningItemIdsList);
+		Map<String, String> allRegions = listToMap(regionFilterWithCount);
+		regionFilter.putAll(allRegions);
+
+		// Language Filter
+		HashMap<String, String> languageFilter = filterCounts.containsKey(Constants.LANGUAGE) ? filterCounts.get(Constants.LANGUAGE) : new HashMap<>();
+		filterCounts.put("Language", languageFilter);
+		List<Map<String, Object>> languageFiltered = learningContentRepo
+				.getLanguageFilteredForRecentlyViewed(puid, userId, learningItemIdsList);
+		Map<String, String> allLanguages = listToMap(languageFiltered);
+		languageFilter.putAll(allLanguages);
+
+		return filterCounts;
 	}
 
 }

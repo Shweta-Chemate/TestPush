@@ -14,7 +14,7 @@ public class SpecificationBuilder {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SpecificationBuilder.class);
 
 
-	public <T> Specification<T> filter(Map<String, List<String>> queryFilters) {
+	public <T> Specification<T> filter(Map<String, String> queryFilters) {
 		Specification<T> specification = Specification
 				.where(null);
 		if (queryFilters != null) {
@@ -23,23 +23,8 @@ public class SpecificationBuilder {
 		}
 		return specification;
 	}
-
-	private <T> Specification<T> buildFilterSpecification(Map<String, List<String>> filterParams) {
-		Specification<T> specification = Specification.where(null);
-		for (Map.Entry<String, List<String>> filterParam : filterParams.entrySet()) {
-			String key = filterParam.getKey();
-			List<String> values = filterParam.getValue();
-			Specification<T> innerSpecification = Specification.where(null);
-			for(String value:values)
-			{
-				innerSpecification = innerSpecification.or(CustomSpecifications.hasValue(key,value));
-			}
-			specification = specification.and(innerSpecification);
-		}
-		return specification;
-	}
 	
-	public <T> Specification<T> buildFilterSpecificationForViewMoreFilters(Map<String, String> filterParams) {
+	public <T> Specification<T> buildFilterSpecification(Map<String, String> filterParams) {
 		Specification<T> specification = Specification.where(null);
 		for (Map.Entry<String, String> filterParam : filterParams.entrySet()) {
 			String key = filterParam.getKey();

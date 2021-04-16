@@ -186,9 +186,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 
 	}
 
-
-	@Override
-	public HashMap<String, HashMap<String,String>> getViewMoreFiltersWithCount(String filter, HashMap<String, HashMap<String,String>> filterCounts) {
+	private Map<String, String>  filterStringtoMap(String filter){
 		Map<String, String> query_map = new LinkedHashMap<String, String>();
 		if (!StringUtils.isBlank(filter)) {
 			filter = filter.replaceAll("%3B", ";");
@@ -201,6 +199,12 @@ public class LearningContentServiceImpl implements LearningContentService {
 				query_map.put(fieldName, fieldValue);
 			}
 		}
+		return query_map;
+	}
+
+	@Override
+	public HashMap<String, HashMap<String,String>> getViewMoreFiltersWithCount(String filter, HashMap<String, HashMap<String,String>> filterCounts) {
+		Map<String, String> query_map = filterStringtoMap(filter);
 		return learningContentDAO.getViewMoreFiltersWithCount(query_map, filterCounts);
 	}
 
@@ -253,21 +257,27 @@ public class LearningContentServiceImpl implements LearningContentService {
 	@Override
 	public List<NewLearningContentEntity> fetchRecentlyViewedContent(String puid, String userId, String filter) {
 		List<NewLearningContentEntity> learningContentList = new ArrayList<>();
-		Map<String, List<String>> query_map = new LinkedHashMap<>();
+		Map<String, String> query_map = new LinkedHashMap<String, String>();
 		if (!StringUtils.isBlank(filter)) {
 			filter = filter.replaceAll("%3B", ";");
 			filter = filter.replaceAll("%3A", ":");
-			filter = filter.replaceAll("%2C", ",");
 			String[] columnFilter = filter.split(";");
 			for (int colFilterIndex = 0; colFilterIndex < columnFilter.length; colFilterIndex++) {
 				String[] valueFilter = columnFilter[colFilterIndex].split(":");
 				String fieldName = valueFilter[0];
-				String[] fieldValues = valueFilter[1].split(",");
-				query_map.put(fieldName, Arrays.asList(fieldValues));
+				String fieldValue = valueFilter[1];
+				query_map.put(fieldName, fieldValue);
 			}
 		}
 		learningContentList=learningContentDAO.fetchRecentlyViewedContent(puid, userId, query_map);
 		return learningContentList;
+	}
+
+	@Override
+	public HashMap<String, HashMap<String, String>> getRecentlyViewedFiltersWithCount(String puid,String userId, String filter,
+			HashMap<String, HashMap<String, String>> filterCounts) {
+		Map<String, String> query_map = filterStringtoMap(filter);
+		return learningContentDAO.getRecentlyViewedFiltersWithCount(puid, userId, query_map, filterCounts);
 	}
 
 }
