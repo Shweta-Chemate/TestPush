@@ -21,6 +21,8 @@ import com.cisco.cx.training.app.entities.LearningItemEntity;
 import com.cisco.cx.training.models.GenericLearningModel;
 import com.cisco.cx.training.models.LearningRecordsAndFiltersModel;
 import com.cisco.cx.training.models.UserDetails;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 @Service
@@ -262,6 +264,50 @@ public class ProductDocumentationService{
 		return countMap;
 	}
 	
+	private Map<String,Object> listToSTMap(List<Map<String,Object>> dbList, final Map<String,Object> stFilter)
+	{
+		Map<String,Object> stAllKeysMap = new HashMap<String,Object>();
+		Map<String,Object> stCountMap = new HashMap<String,Object>();
+		
+		Map<String,Object> stMap = new HashMap<String,Object>();//new HashMap<String,Map<String,Map<String,String>>>();
+		
+		Set<String> distinctST = new HashSet<String>();
+		Map<String,List<String>> distinctUCForST = new HashMap<String,List<String>>();
+		Map<String,List<String>> distinctPSForUC = new HashMap<String,List<String>>();
+		
+		
+		for(Map<String,Object> dbMap : dbList)
+		{
+			String st = String.valueOf(dbMap.get("successtrack"));
+			String uc = String.valueOf(dbMap.get("usecase"));
+			String ps = String.valueOf(dbMap.get("pitstop"));
+			
+			String dbValue = String.valueOf(dbMap.get("dbvalue"));	
+			
+			distinctST.add(st);
+			if(!distinctUCForST.keySet().contains(st)) distinctUCForST.put(st, new ArrayList<String>());
+			distinctUCForST.get(st).add(uc);
+			if(!distinctPSForUC.keySet().contains(uc)) distinctPSForUC.put(uc, new ArrayList<String>());
+			distinctPSForUC.get(uc).add(ps);
+			
+			if(!stMap.keySet().contains(st)) stMap.put(st, new HashMap<String,Map<String,String>>()) ;
+			if(!((Map)stMap.get(st)).keySet().contains(uc)) ((Map)stMap.get(st)).put(uc, new HashMap<String,String>());
+			if(!((Map)((Map)stMap.get(st)).get(uc)).keySet().contains(ps)) ((Map)((Map)stMap.get(st)).get(uc)).put(ps, dbValue);
+			
+			if(stFilter!=null)
+			{
+				if(!stAllKeysMap.keySet().contains(st)) stAllKeysMap.put(st, new HashMap<String,Map<String,String>>()) ;
+				if(!((Map)stAllKeysMap.get(st)).keySet().contains(uc)) ((Map)stAllKeysMap.get(st)).put(uc, new HashMap<String,String>());
+				if(!((Map)((Map)stAllKeysMap.get(st)).get(uc)).keySet().contains(ps)) ((Map)((Map)stAllKeysMap.get(st)).get(uc)).put(ps, "0");
+			}					
+		}		
+		stCountMap.putAll(stMap);if(stFilter!=null)stFilter.putAll(stAllKeysMap);		
+		
+		LOG.info("stCountMap {} , stFilter={}",stCountMap, stFilter);
+		
+		return stCountMap;
+	}
+	
 	/** sort **/
 	
 	private static final String DEFAULT_SORT_FIELD = "sort_by_date";
@@ -311,6 +357,10 @@ public class ProductDocumentationService{
 		allContentsLE.keySet().forEach(k -> regionFilter.put(k, "0"));
 		
 		//TODO ST
+		HashMap<String, Object> stFilter = new HashMap<>();
+		filters.put(SUCCESS_TRACKS_FILTER, stFilter);
+		List<Map<String,Object>> dbListST = productDocumentationDAO.getAllStUcPsWithCount();
+		Map<String,Object> allContentsST = listToSTMap(dbListST,stFilter);countFilters.put(SUCCESS_TRACKS_FILTER, allContentsST);
 	}
 
 	
@@ -332,9 +382,17 @@ public class ProductDocumentationService{
 		((Map<String,String>)filters.get(LIVE_EVENTS_FILTER)).putAll(listToMap(dbListLE));	
 		
 		//TODO ST
-		
+		List<Map<String,Object>> dbListST = productDocumentationDAO.getAllStUcPsWithCountByCards(cardIds);		
+		((Map<String,Object>)filters.get(SUCCESS_TRACKS_FILTER)).putAll(listToSTMap(dbListST,null));	
 	}
 
+	/**
+	 * {"Success Tracks":{"Security":{"ABC":["Umbrella"],"Security1":["Anti-Virus","Firewall"]},"Campus Network":{"XYZ":["Use"],"Campus Software Image Management":["Use","Implement"]}}}
+	 * {"Language":["English","Japanese"],"Content Type":["PDF","Video"],"Success Tracks":{"Security":{"ABC":["Umbrella"],"Security1":["Anti-Virus","Firewall"]},"Campus Network":{"XYZ":["Use"],"CSIM":["Onboard","Implement"]}}}
+	 * @param searchToken
+	 * @param applyFilters
+	 * @return
+	 */
 	public HashMap<String, Object> getAllLearningFilters(String searchToken, HashMap<String, Object> applyFilters) 
 	{
 		HashMap<String, Object> filters = new HashMap<>();	
