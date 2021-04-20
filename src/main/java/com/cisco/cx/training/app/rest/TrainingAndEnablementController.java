@@ -115,12 +115,13 @@ public class TrainingAndEnablementController {
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
 	public ResponseEntity<List<LearningContentItem>> getNewLearningContent(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
+			@ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
 			@ApiParam(value = "Filters", required = false) @RequestParam(value = "filter", required = false) String filter)
 			throws Exception {
 		LOG.info("Entering the fetchlearningcontent method");
 		long requestStartTime = System.currentTimeMillis();
 		String ccoId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
-		List<LearningContentItem> newLearningContentList = trainingAndEnablementService.fetchNewLearningContent(ccoId, filter);
+		List<LearningContentItem> newLearningContentList = trainingAndEnablementService.fetchNewLearningContent(ccoId, filter, puid);
 		LOG.info("Received new learning content in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<List<LearningContentItem>>(newLearningContentList, HttpStatus.OK);
 	}
