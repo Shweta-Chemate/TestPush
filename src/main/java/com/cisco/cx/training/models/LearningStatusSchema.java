@@ -42,8 +42,8 @@ public class LearningStatusSchema {
 	}
 	
 	public enum Registration {
-		   REGISTERED,
-		   CANCELLED
+		   REGISTERED_T,
+		   CANCELLEDI_T
 		}
 
 }

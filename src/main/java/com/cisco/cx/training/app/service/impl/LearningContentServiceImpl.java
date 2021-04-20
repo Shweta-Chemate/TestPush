@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -14,11 +15,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
 import com.cisco.cx.training.app.dao.NewLearningContentDAO;
 import com.cisco.cx.training.app.dao.SuccessAcademyDAO;
 import com.cisco.cx.training.app.entities.LearningStatusEntity;
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
+import com.cisco.cx.training.app.entities.SuccessAcademyLearningEntity;
 import com.cisco.cx.training.app.exception.GenericException;
 import com.cisco.cx.training.app.exception.NotAllowedException;
 import com.cisco.cx.training.app.repo.LearningStatusRepo;
@@ -27,11 +31,15 @@ import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.models.Company;
 import com.cisco.cx.training.models.CountResponseSchema;
 import com.cisco.cx.training.models.CountSchema;
+import com.cisco.cx.training.models.LearningContentItem;
 import com.cisco.cx.training.models.LearningStatusSchema;
+import com.cisco.cx.training.models.PIW;
+import com.cisco.cx.training.models.SuccessAcademyLearning;
 import com.cisco.cx.training.models.SuccessTalk;
 import com.cisco.cx.training.models.SuccessTalkResponseSchema;
 import com.cisco.cx.training.models.SuccessTalkSession;
 import com.cisco.cx.training.models.UserDetailsWithCompanyList;
+import com.cisco.cx.training.util.SuccessAcademyMapper;
 
 @Service
 public class LearningContentServiceImpl implements LearningContentService {
@@ -40,6 +48,9 @@ public class LearningContentServiceImpl implements LearningContentService {
 
 	@Autowired
 	private NewLearningContentDAO learningContentDAO;
+	
+	@Autowired
+	private LearningBookmarkDAO learningBookmarkDAO;
 
 	@Autowired
 	private SuccessAcademyDAO successAcademyDAO;
@@ -51,7 +62,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 	private LearningStatusRepo learningStatusRepo;
 
 	@Override
-	public SuccessTalkResponseSchema fetchSuccesstalks(String sortField, String sortType,
+	public SuccessTalkResponseSchema fetchSuccesstalks(String ccoid, String sortField, String sortType,
 			String filter, String search) {
 		SuccessTalkResponseSchema successTalkResponseSchema = new SuccessTalkResponseSchema();
 		try
@@ -71,10 +82,20 @@ public class LearningContentServiceImpl implements LearningContentService {
 			List<NewLearningContentEntity> successTalkEntityList = new ArrayList<NewLearningContentEntity>();
 			successTalkEntityList = learningContentDAO.fetchSuccesstalks(sortField, sortType, query_map, search);
 			List<SuccessTalk> successtalkList = new ArrayList<>();
-			successtalkList = successTalkEntityList.stream()
-					.map(successtalkEntity -> mapLearningEntityToSuccesstalk(successtalkEntity))
-					.collect(Collectors.toList());
 			successTalkResponseSchema.setItems(successtalkList);	
+			//populate bookmark info
+			Set<String> userBookmarks = null;
+			if(null != ccoid){
+				userBookmarks = learningBookmarkDAO.getBookmarks(ccoid);
+			}
+			for(NewLearningContentEntity entity : successTalkEntityList){
+				SuccessTalk learningItem =  mapLearningEntityToSuccesstalk(entity);
+				if(null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
+						&& userBookmarks.contains(learningItem.getSuccessTalkId())){
+					learningItem.setBookmark(true);
+				}
+				successtalkList.add(learningItem);
+			}
 		}
 		catch (Exception e) {
 			LOG.error("fetchSuccesstalks failed: {} ", e);
@@ -106,9 +127,11 @@ public class LearningContentServiceImpl implements LearningContentService {
 		return successtalk;
 	}
 	
-	public List<NewLearningContentEntity> fetchPIWs(String region, String sortField, String sortType, String filter,
+	public List<PIW> fetchPIWs(String ccoid, String region, String sortField, String sortType, String filter,
 			String search) {
 		List<NewLearningContentEntity> result = new ArrayList<>();
+		List<PIW> piwItems = new ArrayList<>();
+
 		try
 		{
 			Map<String, String> query_map = new LinkedHashMap<String, String>();
@@ -124,12 +147,27 @@ public class LearningContentServiceImpl implements LearningContentService {
 				}
 			}
 			result = learningContentDAO.listPIWs(region, sortField, sortType, query_map, search);
+			//populate bookmark info
+			Set<String> userBookmarks = null;
+			if(null != ccoid){
+				userBookmarks = learningBookmarkDAO.getBookmarks(ccoid);
+			}
+			for(NewLearningContentEntity entity : result){
+				PIW learningItem =  new PIW(entity);
+				if(null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
+						&& userBookmarks.contains(learningItem.getPiwId())){
+					learningItem.setBookmark(true);
+				}
+				piwItems.add(learningItem);
+			}
+			
 
 		}catch (Exception e) {
 			LOG.error("listByRegion failed: {} ", e);
 			throw new GenericException("There was a problem in fetching PIWs by Region.");
 		}
-		return result;
+		
+		return piwItems;
 	}
 	
 	@Override
@@ -255,8 +293,9 @@ public class LearningContentServiceImpl implements LearningContentService {
 	}
 
 	@Override
-	public List<NewLearningContentEntity> fetchRecentlyViewedContent(String puid, String userId, String filter) {
+	public List<LearningContentItem> fetchRecentlyViewedContent(String puid, String ccoid, String filter) {
 		List<NewLearningContentEntity> learningContentList = new ArrayList<>();
+		List<LearningContentItem> result = new ArrayList<>();
 		Map<String, String> query_map = new LinkedHashMap<String, String>();
 		if (!StringUtils.isBlank(filter)) {
 			filter = filter.replaceAll("%3B", ";");
@@ -269,8 +308,21 @@ public class LearningContentServiceImpl implements LearningContentService {
 				query_map.put(fieldName, fieldValue);
 			}
 		}
-		learningContentList=learningContentDAO.fetchRecentlyViewedContent(puid, userId, query_map);
-		return learningContentList;
+		learningContentList=learningContentDAO.fetchRecentlyViewedContent(puid, ccoid, query_map);
+		//populate bookmark info
+		Set<String> userBookmarks = null;
+		if(null != ccoid){
+			userBookmarks = learningBookmarkDAO.getBookmarks(ccoid);
+		}
+		for(NewLearningContentEntity entity : learningContentList){
+			LearningContentItem learningItem = new LearningContentItem(entity);
+			if(null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
+					&& userBookmarks.contains(learningItem.getId())){
+				learningItem.setBookmark(true);
+			}
+			result.add(learningItem);
+		}
+		return result;
 	}
 
 	@Override

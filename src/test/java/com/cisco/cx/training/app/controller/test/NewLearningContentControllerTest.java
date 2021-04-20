@@ -104,6 +104,16 @@ public class NewLearningContentControllerTest {
 				.andDo(print()).andExpect(status().isOk());
 	}
 	
+	@Test
+	public void testGetRecentlyViewedContent() throws Exception {
+		this.mockMvc
+				.perform(get("/v1/partner/learning/recentlyviewed").contentType(MediaType.APPLICATION_JSON_VALUE)
+						.header("X-Mashery-Handshake", this.XMasheryHeader)
+						.header("puid", this.puid)
+						.characterEncoding("utf-8"))
+				.andDo(print()).andExpect(status().isOk());
+	}
+	
 	private String loadFromFile(String filePath) throws IOException {
 		return new String(Files.readAllBytes(resourceLoader.getResource("classpath:" + filePath).getFile().toPath()));
 	}
