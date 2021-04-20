@@ -50,6 +50,7 @@ import com.cisco.cx.training.models.Community;
 import com.cisco.cx.training.models.Company;
 import com.cisco.cx.training.models.CountResponseSchema;
 import com.cisco.cx.training.models.CountSchema;
+import com.cisco.cx.training.models.LearningContentItem;
 import com.cisco.cx.training.models.LearningRecordsAndFiltersModel;
 import com.cisco.cx.training.models.SuccessAcademyFilter;
 import com.cisco.cx.training.models.SuccessAcademyLearning;
@@ -102,6 +103,9 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 
 	@Autowired
 	private NewLearningContentDAO learningContentDAO;
+	
+	@Autowired
+	private LearningBookmarkDAO learningBookmarkDAO;
 
 	
 	private static final String CXPP_UI_TAB_PREFIX = "CXPP_UI_TAB_";
@@ -401,8 +405,9 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	}
 
 	@Override
-	public List<NewLearningContentEntity> fetchNewLearningContent(String filter) {
+	public List<LearningContentItem> fetchNewLearningContent(String ccoid, String filter) {
 		List<NewLearningContentEntity> learningContentList = new ArrayList<>();
+		List<LearningContentItem> result = new ArrayList<>();
 		Map<String, String> query_map = new LinkedHashMap<>();
 		if (!StringUtils.isBlank(filter)) {
 			filter = filter.replaceAll("%3B", ";");
@@ -416,7 +421,20 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 			}
 		}
 		learningContentList = learningContentDAO.fetchNewLearningContent(query_map);
-		return learningContentList;
+		//populate bookmark info
+		Set<String> userBookmarks = null;
+		if(null != ccoid){
+			userBookmarks = learningBookmarkDAO.getBookmarks(ccoid);
+		}
+		for(NewLearningContentEntity entity : learningContentList){
+			LearningContentItem learningItem =  new LearningContentItem(entity);
+			if(null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
+					&& userBookmarks.contains(learningItem.getId())){
+				learningItem.setBookmark(true);
+			}
+			result.add(learningItem);
+		}
+		return result;
 	}
 
 	@Override

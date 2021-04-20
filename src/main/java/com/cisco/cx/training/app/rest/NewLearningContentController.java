@@ -27,6 +27,7 @@ import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.exception.ErrorResponse;
 import com.cisco.cx.training.app.service.LearningContentService;
 import com.cisco.cx.training.models.CountResponseSchema;
+import com.cisco.cx.training.models.LearningContentItem;
 import com.cisco.cx.training.models.LearningStatusSchema;
 import com.cisco.cx.training.models.MasheryObject;
 import com.cisco.cx.training.models.PIW;
@@ -59,7 +60,7 @@ public class NewLearningContentController {
 			@RequestParam(value = "sortType", required = false) String sortType,
 			@RequestParam(value = "filter", required = false) String filter,
 			@RequestParam(value = "search", required = false) String search,
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake)
+			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = true) String xMasheryHandshake)
 					throws Exception {
 
 		if (StringUtils.isBlank(xMasheryHandshake)) {
@@ -73,8 +74,8 @@ public class NewLearningContentController {
 		if (sortType == null) {
 			sortType = "asc";
 		}
-		
-		SuccessTalkResponseSchema successTalkResponseSchema = learningContentService.fetchSuccesstalks(sortField, sortType, filter, search);
+		String ccoId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
+		SuccessTalkResponseSchema successTalkResponseSchema = learningContentService.fetchSuccesstalks(ccoId, sortField, sortType, filter, search);
 		return new ResponseEntity<SuccessTalkResponseSchema>(successTalkResponseSchema, HttpStatus.OK);
 	}
 
@@ -89,7 +90,7 @@ public class NewLearningContentController {
 			@RequestParam(value = "sortType", required = false) String sortType,
 			@RequestParam(value = "filter", required = false) String filter,
 			@RequestParam(value = "search", required = false) String search,
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake){
+			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = true) String xMasheryHandshake){
 		LOG.info("PIWs API called");
 		long requestStartTime = System.currentTimeMillis();
 		if (StringUtils.isBlank(xMasheryHandshake)) {
@@ -103,9 +104,10 @@ public class NewLearningContentController {
 		if (sortType == null) {
 			sortType = "asc";
 		}
-		List<NewLearningContentEntity> piw_items = learningContentService.fetchPIWs(region, sortField, sortType, filter, search);
+		String ccoId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
+		List<PIW> piw_items = learningContentService.fetchPIWs(ccoId, region, sortField, sortType, filter, search);
 		LOG.info("Received PIWs content in {} ", (System.currentTimeMillis() - requestStartTime));
-		return piw_items.stream().map(piw_item -> new PIW(piw_item)).collect(Collectors.toList());
+		return piw_items;
 	}
 	
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/indexCounts")
@@ -145,7 +147,7 @@ public class NewLearningContentController {
 			@ApiResponse(code = 403, message = "Operation forbidden due to business policies", response = ErrorResponse.class),
 			@ApiResponse(code = 500, message = "Error during updation", response = ErrorResponse.class) })
 	public ResponseEntity updateStatus(
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
+			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = true) String xMasheryHandshake,
             @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
 			@ApiParam(value = "JSON Body to update user status", required = true) @Valid @RequestBody LearningStatusSchema learningStatusSchema)
 			throws Exception {
@@ -167,8 +169,8 @@ public class NewLearningContentController {
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
-	public ResponseEntity<List<NewLearningContentEntity>> getRecentlyViewedContent(
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
+	public ResponseEntity<List<LearningContentItem>> getRecentlyViewedContent(
+			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = true) String xMasheryHandshake,
             @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
 			@ApiParam(value = "Filters", required = false) @RequestParam(value = "filter", required = false) String filter)
 					throws Exception {
@@ -178,9 +180,9 @@ public class NewLearningContentController {
 			throw new BadRequestException("X-Mashery-Handshake header missing in request");
 		}
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
-		List<NewLearningContentEntity> learningContentList = learningContentService.fetchRecentlyViewedContent(puid, userId, filter);
+		List<LearningContentItem> learningContentList = learningContentService.fetchRecentlyViewedContent(puid, userId, filter);
 		LOG.info("Received recently viewed learning content in {} ", (System.currentTimeMillis() - requestStartTime));
-		return new ResponseEntity<List<NewLearningContentEntity>>(learningContentList, HttpStatus.OK);
+		return new ResponseEntity<List<LearningContentItem>>(learningContentList, HttpStatus.OK);
 	}
 
 	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/viewmore/recentlyviewed/filters")
