@@ -207,5 +207,27 @@ public class NewLearningContentController {
 		LOG.info("Received recently viewed filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<HashMap<String, HashMap<String,String>>>(learningFilters, HttpStatus.OK);
 	}
+	
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/bookmarked")
+	@ApiOperation(value = "Fetch bookmarked Learning Content", response = String.class, nickname = "fetchrecentlyviewedlearningcontent")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
+			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
+			@ApiResponse(code = 404, message = "Entity Not Found"),
+			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
+	public ResponseEntity<List<LearningContentItem>> getBookmarkedContent(
+			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = true) String xMasheryHandshake,
+            @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
+			@ApiParam(value = "Filters", required = false) @RequestParam(value = "filter", required = false) String filter)
+					throws Exception {
+		LOG.info("Entering the getBookmarkedContent method");
+		long requestStartTime = System.currentTimeMillis();
+		if (StringUtils.isBlank(xMasheryHandshake)) {
+			throw new BadRequestException("X-Mashery-Handshake header missing in request");
+		}
+		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
+		List<LearningContentItem> learningContentList = learningContentService.fetchBookMarkedContent(puid, userId, filter);
+		LOG.info("Received recently viewed learning content in {} ", (System.currentTimeMillis() - requestStartTime));
+		return new ResponseEntity<List<LearningContentItem>>(learningContentList, HttpStatus.OK);
+	}
 
 }

@@ -332,4 +332,35 @@ public class LearningContentServiceImpl implements LearningContentService {
 		return learningContentDAO.getRecentlyViewedFiltersWithCount(puid, userId, query_map, filterCounts);
 	}
 
+	@Override
+	public List<LearningContentItem> fetchBookMarkedContent(String puid, String ccoid, String filter) {
+		List<NewLearningContentEntity> learningFilteredList = new ArrayList<>();
+		List<LearningContentItem> result = new ArrayList<>();
+		Map<String, String> query_map = new LinkedHashMap<String, String>();
+		if (!StringUtils.isBlank(filter)) {
+			filter = filter.replaceAll("%3B", ";");
+			filter = filter.replaceAll("%3A", ":");
+			String[] columnFilter = filter.split(";");
+			for (int colFilterIndex = 0; colFilterIndex < columnFilter.length; colFilterIndex++) {
+				String[] valueFilter = columnFilter[colFilterIndex].split(":");
+				String fieldName = valueFilter[0];
+				String fieldValue = valueFilter[1];
+				query_map.put(fieldName, fieldValue);
+			}
+		}
+		learningFilteredList=learningContentDAO.fetchFilteredContent(puid, ccoid, query_map);
+		//populate bookmark info
+		Set<String> userBookmarks = null;
+		userBookmarks = learningBookmarkDAO.getBookmarks(ccoid);
+		for(NewLearningContentEntity entity : learningFilteredList){
+			if(null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
+					&& userBookmarks.contains(entity.getId())){
+				LearningContentItem learningItem = new LearningContentItem(entity);
+				learningItem.setBookmark(true);
+				result.add(learningItem);
+			}
+		}
+		return result;
+	}
+
 }

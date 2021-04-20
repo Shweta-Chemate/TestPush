@@ -31,4 +31,6 @@ public interface LearningContentService {
 	HashMap<String, HashMap<String, String>> getRecentlyViewedFiltersWithCount(String puid,String userId, String filter,
 			HashMap<String, HashMap<String, String>> filterCounts);
 
+	List<LearningContentItem> fetchBookMarkedContent(String puid, String userId, String filter);
+
 }

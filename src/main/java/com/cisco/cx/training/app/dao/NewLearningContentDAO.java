@@ -28,4 +28,6 @@ public interface NewLearningContentDAO {
 
 	HashMap<String, HashMap<String, String>> getRecentlyViewedFiltersWithCount(String puid, String userId, Map<String, String> query_map,
 			HashMap<String, HashMap<String, String>> filterCounts);
+
+	List<NewLearningContentEntity> fetchFilteredContent(String puid, String ccoid, Map<String, String> query_map);
 }
