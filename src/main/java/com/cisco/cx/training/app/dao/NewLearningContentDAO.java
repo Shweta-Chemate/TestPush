@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
+import com.cisco.cx.training.models.LearningContentItem;
 
 public interface NewLearningContentDAO {
   
@@ -28,4 +29,9 @@ public interface NewLearningContentDAO {
 
 	HashMap<String, HashMap<String, String>> getRecentlyViewedFiltersWithCount(String puid, String userId, Map<String, String> query_map,
 			HashMap<String, HashMap<String, String>> filterCounts);
+
+	List<NewLearningContentEntity> fetchFilteredContent(String puid, String ccoid, Map<String, String> query_map);
+	
+	HashMap<String, HashMap<String, String>> getBookmarkedFiltersWithCount(Map<String, String> query_map,
+			HashMap<String, HashMap<String, String>> filterCounts, List<LearningContentItem> bookmarkedList);
 }

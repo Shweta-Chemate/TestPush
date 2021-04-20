@@ -3,10 +3,7 @@ package com.cisco.cx.training.app.service;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.validation.Valid;
-
 import com.cisco.cx.training.app.entities.LearningStatusEntity;
-import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.models.CountResponseSchema;
 import com.cisco.cx.training.models.LearningContentItem;
 import com.cisco.cx.training.models.LearningStatusSchema;
@@ -15,9 +12,9 @@ import com.cisco.cx.training.models.SuccessTalkResponseSchema;
 
 public interface LearningContentService {
 
-	SuccessTalkResponseSchema fetchSuccesstalks(String ccoId, String sortField, String sortType, String filter, String search);
+	SuccessTalkResponseSchema fetchSuccesstalks(String ccoId, String puid, String sortField, String sortType, String filter, String search);
 
-	List<PIW> fetchPIWs(String ccoId, String region, String sortField, String sortType, String filter,
+	List<PIW> fetchPIWs(String ccoId, String puid, String region, String sortField, String sortType, String filter,
 			String search);
 
 	CountResponseSchema getIndexCounts();
@@ -29,6 +26,11 @@ public interface LearningContentService {
 	List<LearningContentItem> fetchRecentlyViewedContent(String puid, String userId, String filter);
 
 	HashMap<String, HashMap<String, String>> getRecentlyViewedFiltersWithCount(String puid,String userId, String filter,
+			HashMap<String, HashMap<String, String>> filterCounts);
+
+	List<LearningContentItem> fetchBookMarkedContent(String puid, String userId, String filter);
+	
+	HashMap<String, HashMap<String, String>> getBookmarkedFiltersWithCount(String puid, String ccoid, String filter,
 			HashMap<String, HashMap<String, String>> filterCounts);
 
 }

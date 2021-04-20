@@ -20,7 +20,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
 import com.cisco.cx.training.app.dao.NewLearningContentDAO;
 import com.cisco.cx.training.app.dao.SuccessAcademyDAO;
+import com.cisco.cx.training.app.entities.LearningStatusEntity;
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
+import com.cisco.cx.training.app.repo.LearningStatusRepo;
 import com.cisco.cx.training.app.service.LearningContentService;
 import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.app.service.impl.LearningContentServiceImpl;
@@ -40,6 +42,9 @@ public class LearningContentServiceTest {
 	@Mock
 	private LearningBookmarkDAO learningBookmarkDAO;
 	
+	@Mock
+	private LearningStatusRepo learningStatusRepo;
+	
 	@InjectMocks
 	private LearningContentService learningContentService=new LearningContentServiceImpl(); 
 	
@@ -49,7 +54,8 @@ public class LearningContentServiceTest {
 		Set<String> userBookmarks=getBookmarks();
 		when(learningContentDAO.listPIWs(Mockito.anyString(),Mockito.anyString(),Mockito.anyString(),Mockito.anyMap(),Mockito.anyString())).thenReturn(result);
 		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(userBookmarks);
-	    assertNotNull(learningContentService.fetchPIWs("test","test","test","test","test:test","test"));
+		when(learningStatusRepo.findByLearningItemIdAndUserIdAndPuid("test", "test", "test")).thenReturn(new LearningStatusEntity());
+	    assertNotNull(learningContentService.fetchPIWs("test","101", "test","test","test","test:test","test"));
 	}
 	
 	@Test
@@ -58,7 +64,8 @@ public class LearningContentServiceTest {
 		Set<String> userBookmarks=getBookmarks();
 		when(learningContentDAO.fetchSuccesstalks(Mockito.anyString(),Mockito.anyString(),Mockito.anyMap(),Mockito.anyString())).thenReturn(result);
 		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(userBookmarks);
-	    assertNotNull(learningContentService.fetchSuccesstalks("test","test","test","test:test","test"));
+		when(learningStatusRepo.findByLearningItemIdAndUserIdAndPuid("test", "test", "test")).thenReturn(new LearningStatusEntity());
+	    assertNotNull(learningContentService.fetchSuccesstalks("test","101", "test","test","test:test","test"));
 	}
 
 	private List<NewLearningContentEntity> getLearningEntities() {
