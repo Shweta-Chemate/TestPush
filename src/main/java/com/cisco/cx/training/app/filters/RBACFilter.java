@@ -91,12 +91,7 @@ public class RBACFilter implements Filter {
 					logger.debug("Is Request valid : " + requestValid);
 
 					if (requestValid) {
-
-						String roleId = JsonPath.using(conf).parse(authResult).read("$.roleId");
-						request.getServletContext().setAttribute(Constants.ROLE_ID, roleId);
-						
-						MDC.put(LoggerConstants.USER_ROLE_ID,roleId);
-						logger.info("User {} with role {} is performing the request {} on {}" ,userId,roleId, request.getMethod(), path);
+						logger.info("User {} is performing the request {} on {}" ,userId, request.getMethod(), path);
 
 					} else {
 						logger.error("AUTH API Returned invalid response for >> " + request.getRequestURI());
