@@ -60,7 +60,8 @@ public class NewLearningContentController {
 			@RequestParam(value = "sortType", required = false) String sortType,
 			@RequestParam(value = "filter", required = false) String filter,
 			@RequestParam(value = "search", required = false) String search,
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = true) String xMasheryHandshake)
+			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = true) String xMasheryHandshake,
+			@ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid)
 					throws Exception {
 
 		if (StringUtils.isBlank(xMasheryHandshake)) {
@@ -75,7 +76,7 @@ public class NewLearningContentController {
 			sortType = "asc";
 		}
 		String ccoId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
-		SuccessTalkResponseSchema successTalkResponseSchema = learningContentService.fetchSuccesstalks(ccoId, sortField, sortType, filter, search);
+		SuccessTalkResponseSchema successTalkResponseSchema = learningContentService.fetchSuccesstalks(ccoId, puid, sortField, sortType, filter, search);
 		return new ResponseEntity<SuccessTalkResponseSchema>(successTalkResponseSchema, HttpStatus.OK);
 	}
 
@@ -90,7 +91,8 @@ public class NewLearningContentController {
 			@RequestParam(value = "sortType", required = false) String sortType,
 			@RequestParam(value = "filter", required = false) String filter,
 			@RequestParam(value = "search", required = false) String search,
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = true) String xMasheryHandshake){
+			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = true) String xMasheryHandshake,
+			@ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid){
 		LOG.info("PIWs API called");
 		long requestStartTime = System.currentTimeMillis();
 		if (StringUtils.isBlank(xMasheryHandshake)) {
@@ -105,7 +107,7 @@ public class NewLearningContentController {
 			sortType = "asc";
 		}
 		String ccoId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
-		List<PIW> piw_items = learningContentService.fetchPIWs(ccoId, region, sortField, sortType, filter, search);
+		List<PIW> piw_items = learningContentService.fetchPIWs(ccoId, puid, region, sortField, sortType, filter, search);
 		LOG.info("Received PIWs content in {} ", (System.currentTimeMillis() - requestStartTime));
 		return piw_items;
 	}
