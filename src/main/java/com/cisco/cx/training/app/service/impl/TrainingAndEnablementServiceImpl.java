@@ -431,20 +431,23 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		if(null != ccoid){
 			userBookmarks = learningBookmarkDAO.getBookmarks(ccoid);
 		}
-		
+		List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserIdAndPuid(ccoid, puid);
 		for(NewLearningContentEntity entity : learningContentList){
 			LearningContentItem learningItem =  new LearningContentItem(entity);
 			if(null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
 					&& userBookmarks.contains(learningItem.getId())){
 				learningItem.setBookmark(true);
 			}
-			LearningStatusEntity userRegistration = learningStatusRepo.findByLearningItemIdAndUserIdAndPuid(learningItem.getId(), ccoid, puid);
-			if(userRegistration != null && userRegistration.getRegStatus()!=null)
-			{
-				learningItem.setStatus(userRegistration.getRegStatus());
-			}
+			LearningStatusEntity userRegistration = userRegistrations.stream()
+					.filter(userRegistrationInStream -> userRegistrationInStream.getLearningItemId().equalsIgnoreCase(learningItem.getId()))
+					.findFirst().orElse(null);
+					if(userRegistration != null && userRegistration.getRegStatus()!=null)
+					{
+						learningItem.setStatus(userRegistration.getRegStatus());
+					}
+
 			result.add(learningItem);
-		}
+			}
 		
 		return result;
 	}
