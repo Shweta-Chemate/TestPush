@@ -209,7 +209,7 @@ public class NewLearningContentController {
 	}
 	
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/bookmarked")
-	@ApiOperation(value = "Fetch bookmarked Learning Content", response = String.class, nickname = "fetchrecentlyviewedlearningcontent")
+	@ApiOperation(value = "Fetch bookmarked Learning Content", response = String.class, nickname = "fetchbookmarkedlearningcontent")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
@@ -228,6 +228,29 @@ public class NewLearningContentController {
 		List<LearningContentItem> learningContentList = learningContentService.fetchBookMarkedContent(puid, userId, filter);
 		LOG.info("Received recently viewed learning content in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<List<LearningContentItem>>(learningContentList, HttpStatus.OK);
+	}
+	
+	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/viewmore/bookmarked/filters")
+	@ApiOperation(value = "Fetch All Learnings Filters for recently viewed section", response = String.class, nickname = "fetchallBookmarkedFilters")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
+			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
+			@ApiResponse(code = 404, message = "Entity Not Found"),
+			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
+	public ResponseEntity<HashMap<String, HashMap<String,String>>> getFiltersForBookmarked(
+			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
+            @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
+			@ApiParam(value = "Filter - multiple, multiple types e.g filter=contentType:PDF,Video") @RequestParam(value = "filter", required = false) String filter,
+			@ApiParam(value = "JSON Body to update filters", required = false) @RequestBody(required=false) HashMap<String, HashMap<String,String>> filterCounts)
+			throws Exception {
+		LOG.info("Entering the getFiltersForRecentlyViewed method");
+		long requestStartTime = System.currentTimeMillis();
+		if (StringUtils.isBlank(xMasheryHandshake)) {
+			throw new BadRequestException("X-Mashery-Handshake header missing in request");
+		}
+		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
+		HashMap<String, HashMap<String,String>> learningFilters = learningContentService.getBookmarkedFiltersWithCount(puid, userId, filter, filterCounts);
+		LOG.info("Received recently viewed filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
+		return new ResponseEntity<HashMap<String, HashMap<String,String>>>(learningFilters, HttpStatus.OK);
 	}
 
 }

@@ -362,5 +362,25 @@ public class LearningContentServiceImpl implements LearningContentService {
 		}
 		return result;
 	}
+	
+	@Override
+	public HashMap<String, HashMap<String, String>> getBookmarkedFiltersWithCount(String puid, String ccoid,
+			String filter, HashMap<String, HashMap<String, String>> filterCounts) {
+		Map<String, String> query_map = new LinkedHashMap<String, String>();
+		List<LearningContentItem> bookmarkedList = new ArrayList<>();
+		if (!StringUtils.isBlank(filter)) {
+			filter = filter.replaceAll("%3B", ";");
+			filter = filter.replaceAll("%3A", ":");
+			String[] columnFilter = filter.split(";");
+			for (int colFilterIndex = 0; colFilterIndex < columnFilter.length; colFilterIndex++) {
+				String[] valueFilter = columnFilter[colFilterIndex].split(":");
+				String fieldName = valueFilter[0];
+				String fieldValue = valueFilter[1];
+				query_map.put(fieldName, fieldValue);
+			}
+		}
+		bookmarkedList = fetchBookMarkedContent(puid, ccoid, filter);
+		return learningContentDAO.getBookmarkedFiltersWithCount(query_map, filterCounts, bookmarkedList);
+	}
 
 }
