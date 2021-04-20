@@ -52,7 +52,7 @@ public interface TrainingAndEnablementService {
 
 	HashMap<String, Object> getAllLearningFilters(String searchToken, String filters);
 
-	List<LearningContentItem> fetchNewLearningContent(String ccoId, String filter);
+	List<LearningContentItem> fetchNewLearningContent(String ccoId, String filter, String puid);
 
 	LearningRecordsAndFiltersModel getAllLearningInfoPost(String xMasheryHandshake, String searchToken, HashMap<String, Object> filters,
 			String sortBy, String sortOrder);
