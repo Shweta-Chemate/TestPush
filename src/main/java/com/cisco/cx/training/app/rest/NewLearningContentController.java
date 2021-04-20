@@ -228,7 +228,7 @@ public class NewLearningContentController {
 		}
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		List<LearningContentItem> learningContentList = learningContentService.fetchBookMarkedContent(puid, userId, filter);
-		LOG.info("Received recently viewed learning content in {} ", (System.currentTimeMillis() - requestStartTime));
+		LOG.info("Received bookmarked learning content in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<List<LearningContentItem>>(learningContentList, HttpStatus.OK);
 	}
 	

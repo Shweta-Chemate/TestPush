@@ -211,11 +211,10 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	public List<NewLearningContentEntity> fetchFilteredContent(String puid, String ccoid,
 			Map<String, String> query_map) {
 		List<NewLearningContentEntity> filteredList = new ArrayList<>();
-		Set<String> learningItemIdsList = new HashSet<String>();
 		Specification<NewLearningContentEntity> specification = Specification.where(null);
 		specification = specification.and(new SpecificationBuilder().filter(query_map));
 		filteredList = learningContentRepo.findAll(specification);
-		return null;
+		return filteredList;
 	}
 	
 	@Override

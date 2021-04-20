@@ -67,18 +67,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 		SuccessTalkResponseSchema successTalkResponseSchema = new SuccessTalkResponseSchema();
 		try
 		{
-			Map<String, String> query_map = new LinkedHashMap<String, String>();
-			if (!StringUtils.isBlank(filter)) {
-				filter = filter.replaceAll("%3B", ";");
-				filter = filter.replaceAll("%3A", ":");
-				String[] columnFilter = filter.split(";");
-				for (int colFilterIndex = 0; colFilterIndex < columnFilter.length; colFilterIndex++) {
-					String[] valueFilter = columnFilter[colFilterIndex].split(":");
-					String fieldName = valueFilter[0];
-					String fieldValue = valueFilter[1];
-					query_map.put(fieldName, fieldValue);
-				}
-			}
+			Map<String, String> query_map = filterStringtoMap(filter);
 			List<NewLearningContentEntity> successTalkEntityList = new ArrayList<NewLearningContentEntity>();
 			successTalkEntityList = learningContentDAO.fetchSuccesstalks(sortField, sortType, query_map, search);
 			List<SuccessTalk> successtalkList = new ArrayList<>();
@@ -139,18 +128,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 
 		try
 		{
-			Map<String, String> query_map = new LinkedHashMap<String, String>();
-			if (!StringUtils.isBlank(filter)) {
-				filter = filter.replaceAll("%3B", ";");
-				filter = filter.replaceAll("%3A", ":");
-				String[] columnFilter = filter.split(";");
-				for (int colFilterIndex = 0; colFilterIndex < columnFilter.length; colFilterIndex++) {
-					String[] valueFilter = columnFilter[colFilterIndex].split(":");
-					String fieldName = valueFilter[0];
-					String fieldValue = valueFilter[1];
-					query_map.put(fieldName, fieldValue);
-				}
-			}
+			Map<String, String> query_map = filterStringtoMap(filter);
 			result = learningContentDAO.listPIWs(region, sortField, sortType, query_map, search);
 			//populate bookmark and registration info
 			Set<String> userBookmarks = null;
@@ -306,18 +284,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 	public List<LearningContentItem> fetchRecentlyViewedContent(String puid, String ccoid, String filter) {
 		List<NewLearningContentEntity> learningContentList = new ArrayList<>();
 		List<LearningContentItem> result = new ArrayList<>();
-		Map<String, String> query_map = new LinkedHashMap<String, String>();
-		if (!StringUtils.isBlank(filter)) {
-			filter = filter.replaceAll("%3B", ";");
-			filter = filter.replaceAll("%3A", ":");
-			String[] columnFilter = filter.split(";");
-			for (int colFilterIndex = 0; colFilterIndex < columnFilter.length; colFilterIndex++) {
-				String[] valueFilter = columnFilter[colFilterIndex].split(":");
-				String fieldName = valueFilter[0];
-				String fieldValue = valueFilter[1];
-				query_map.put(fieldName, fieldValue);
-			}
-		}
+		Map<String, String> query_map = filterStringtoMap(filter);
 		learningContentList=learningContentDAO.fetchRecentlyViewedContent(puid, ccoid, query_map);
 		//populate bookmark info  and registration info
 		Set<String> userBookmarks = null;
@@ -351,18 +318,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 	public List<LearningContentItem> fetchBookMarkedContent(String puid, String ccoid, String filter) {
 		List<NewLearningContentEntity> learningFilteredList = new ArrayList<>();
 		List<LearningContentItem> result = new ArrayList<>();
-		Map<String, String> query_map = new LinkedHashMap<String, String>();
-		if (!StringUtils.isBlank(filter)) {
-			filter = filter.replaceAll("%3B", ";");
-			filter = filter.replaceAll("%3A", ":");
-			String[] columnFilter = filter.split(";");
-			for (int colFilterIndex = 0; colFilterIndex < columnFilter.length; colFilterIndex++) {
-				String[] valueFilter = columnFilter[colFilterIndex].split(":");
-				String fieldName = valueFilter[0];
-				String fieldValue = valueFilter[1];
-				query_map.put(fieldName, fieldValue);
-			}
-		}
+		Map<String, String> query_map = filterStringtoMap(filter);
 		learningFilteredList=learningContentDAO.fetchFilteredContent(puid, ccoid, query_map);
 		//populate bookmark info
 		Set<String> userBookmarks = null;
@@ -386,19 +342,8 @@ public class LearningContentServiceImpl implements LearningContentService {
 	@Override
 	public HashMap<String, HashMap<String, String>> getBookmarkedFiltersWithCount(String puid, String ccoid,
 			String filter, HashMap<String, HashMap<String, String>> filterCounts) {
-		Map<String, String> query_map = new LinkedHashMap<String, String>();
+		Map<String, String> query_map = filterStringtoMap(filter);
 		List<LearningContentItem> bookmarkedList = new ArrayList<>();
-		if (!StringUtils.isBlank(filter)) {
-			filter = filter.replaceAll("%3B", ";");
-			filter = filter.replaceAll("%3A", ":");
-			String[] columnFilter = filter.split(";");
-			for (int colFilterIndex = 0; colFilterIndex < columnFilter.length; colFilterIndex++) {
-				String[] valueFilter = columnFilter[colFilterIndex].split(":");
-				String fieldName = valueFilter[0];
-				String fieldValue = valueFilter[1];
-				query_map.put(fieldName, fieldValue);
-			}
-		}
 		bookmarkedList = fetchBookMarkedContent(puid, ccoid, filter);
 		return learningContentDAO.getBookmarkedFiltersWithCount(query_map, filterCounts, bookmarkedList);
 	}
