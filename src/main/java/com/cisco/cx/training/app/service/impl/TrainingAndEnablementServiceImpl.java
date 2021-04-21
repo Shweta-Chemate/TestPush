@@ -434,6 +434,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserIdAndPuid(ccoid, puid);
 		for (NewLearningContentEntity entity : learningContentList) {
 			LearningContentItem learningItem = new LearningContentItem(entity);
+			learningItem.setBookmark(false);
 			if (null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
 					&& userBookmarks.contains(learningItem.getId())) {
 				learningItem.setBookmark(true);

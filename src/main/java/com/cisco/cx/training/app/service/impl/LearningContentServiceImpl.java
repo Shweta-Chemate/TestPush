@@ -80,6 +80,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 			List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserIdAndPuid(ccoid, puid);
 			for (NewLearningContentEntity entity : successTalkEntityList) {
 				SuccessTalk learningItem = mapLearningEntityToSuccesstalk(entity);
+				learningItem.setBookmark(false);
 				if (null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
 						&& userBookmarks.contains(learningItem.getSuccessTalkId())) {
 					learningItem.setBookmark(true);
@@ -141,6 +142,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 			List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserIdAndPuid(ccoid, puid);
 			for(NewLearningContentEntity entity : result){
 				PIW learningItem =  new PIW(entity);
+				learningItem.setBookmark(false);
 				if(null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
 						&& userBookmarks.contains(learningItem.getPiwId())){
 					learningItem.setBookmark(true);
@@ -300,6 +302,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 		List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserIdAndPuid(ccoid, puid);
 		for(NewLearningContentEntity entity : learningContentList){
 			LearningContentItem learningItem = new LearningContentItem(entity);
+			learningItem.setBookmark(false);
 			if(null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
 					&& userBookmarks.contains(learningItem.getId())){
 				learningItem.setBookmark(true);
@@ -335,6 +338,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 		List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserIdAndPuid(ccoid, puid);
 		for(NewLearningContentEntity entity : learningFilteredList){
 			LearningContentItem learningItem = new LearningContentItem(entity);
+			learningItem.setBookmark(false);
 			if(null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
 					&& userBookmarks.contains(entity.getId())){
 				learningItem.setBookmark(true);
