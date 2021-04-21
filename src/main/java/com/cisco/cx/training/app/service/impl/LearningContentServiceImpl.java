@@ -77,18 +77,21 @@ public class LearningContentServiceImpl implements LearningContentService {
 			if(null != ccoid){
 				userBookmarks = learningBookmarkDAO.getBookmarks(ccoid);
 			}
-			for(NewLearningContentEntity entity : successTalkEntityList){
-				SuccessTalk learningItem =  mapLearningEntityToSuccesstalk(entity);
-				if(null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
-						&& userBookmarks.contains(learningItem.getSuccessTalkId())){
+			List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserIdAndPuid(ccoid, puid);
+			for (NewLearningContentEntity entity : successTalkEntityList) {
+				SuccessTalk learningItem = mapLearningEntityToSuccesstalk(entity);
+				if (null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
+						&& userBookmarks.contains(learningItem.getSuccessTalkId())) {
 					learningItem.setBookmark(true);
 				}
-				successtalkList.add(learningItem);
-				LearningStatusEntity userRegistration = learningStatusRepo.findByLearningItemIdAndUserIdAndPuid(learningItem.getSuccessTalkId(), ccoid, puid);
-				if(userRegistration != null && userRegistration.getRegStatus()!=null)
-				{
+				LearningStatusEntity userRegistration = userRegistrations.stream()
+						.filter(userRegistrationInStream -> userRegistrationInStream.getLearningItemId()
+								.equalsIgnoreCase(learningItem.getSuccessTalkId()))
+						.findFirst().orElse(null);
+				if (userRegistration != null && userRegistration.getRegStatus() != null) {
 					learningItem.setStatus(userRegistration.getRegStatus());
 				}
+				successtalkList.add(learningItem);
 			}
 		}
 		catch (Exception e) {
@@ -135,15 +138,18 @@ public class LearningContentServiceImpl implements LearningContentService {
 			if(null != ccoid){
 				userBookmarks = learningBookmarkDAO.getBookmarks(ccoid);
 			}
+			List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserIdAndPuid(ccoid, puid);
 			for(NewLearningContentEntity entity : result){
 				PIW learningItem =  new PIW(entity);
 				if(null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
 						&& userBookmarks.contains(learningItem.getPiwId())){
 					learningItem.setBookmark(true);
 				}
-				LearningStatusEntity userRegistration = learningStatusRepo.findByLearningItemIdAndUserIdAndPuid(learningItem.getPiwId(), ccoid, puid);
-				if(userRegistration != null && userRegistration.getRegStatus()!=null)
-				{
+				LearningStatusEntity userRegistration = userRegistrations.stream()
+						.filter(userRegistrationInStream -> userRegistrationInStream.getLearningItemId()
+								.equalsIgnoreCase(learningItem.getPiwId()))
+						.findFirst().orElse(null);
+				if (userRegistration != null && userRegistration.getRegStatus() != null) {
 					learningItem.setStatus(userRegistration.getRegStatus());
 				}
 				piwItems.add(learningItem);
@@ -291,15 +297,18 @@ public class LearningContentServiceImpl implements LearningContentService {
 		if(null != ccoid){
 			userBookmarks = learningBookmarkDAO.getBookmarks(ccoid);
 		}
+		List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserIdAndPuid(ccoid, puid);
 		for(NewLearningContentEntity entity : learningContentList){
 			LearningContentItem learningItem = new LearningContentItem(entity);
 			if(null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
 					&& userBookmarks.contains(learningItem.getId())){
 				learningItem.setBookmark(true);
 			}
-			LearningStatusEntity userRegistration = learningStatusRepo.findByLearningItemIdAndUserIdAndPuid(learningItem.getId(), ccoid, puid);
-			if(userRegistration != null && userRegistration.getRegStatus()!=null)
-			{
+			LearningStatusEntity userRegistration = userRegistrations.stream()
+					.filter(userRegistrationInStream -> userRegistrationInStream.getLearningItemId()
+							.equalsIgnoreCase(learningItem.getId()))
+					.findFirst().orElse(null);
+			if (userRegistration != null && userRegistration.getRegStatus() != null) {
 				learningItem.setStatus(userRegistration.getRegStatus());
 			}
 			result.add(learningItem);
@@ -323,18 +332,21 @@ public class LearningContentServiceImpl implements LearningContentService {
 		//populate bookmark info
 		Set<String> userBookmarks = null;
 		userBookmarks = learningBookmarkDAO.getBookmarks(ccoid);
+		List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserIdAndPuid(ccoid, puid);
 		for(NewLearningContentEntity entity : learningFilteredList){
 			LearningContentItem learningItem = new LearningContentItem(entity);
 			if(null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
 					&& userBookmarks.contains(entity.getId())){
 				learningItem.setBookmark(true);
-				result.add(learningItem);
 			}
-			LearningStatusEntity userRegistration = learningStatusRepo.findByLearningItemIdAndUserIdAndPuid(learningItem.getId(), ccoid, puid);
-			if(userRegistration != null && userRegistration.getRegStatus()!=null)
-			{
+			LearningStatusEntity userRegistration = userRegistrations.stream()
+					.filter(userRegistrationInStream -> userRegistrationInStream.getLearningItemId()
+							.equalsIgnoreCase(learningItem.getId()))
+					.findFirst().orElse(null);
+			if (userRegistration != null && userRegistration.getRegStatus() != null) {
 				learningItem.setStatus(userRegistration.getRegStatus());
 			}
+			result.add(learningItem);
 		}
 		return result;
 	}
