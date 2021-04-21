@@ -427,17 +427,18 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		}
 		learningContentList = learningContentDAO.fetchNewLearningContent(query_map);
 		// populate bookmark and registration info
-		/*Set<String> userBookmarks = null;
+		Set<String> userBookmarks = null;
 		if (null != ccoid) {
 			userBookmarks = learningBookmarkDAO.getBookmarks(ccoid);
-		}*/
+		}
 		List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserIdAndPuid(ccoid, puid);
 		for (NewLearningContentEntity entity : learningContentList) {
 			LearningContentItem learningItem = new LearningContentItem(entity);
-			/*if (null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
+			learningItem.setBookmark(false);
+			if (null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
 					&& userBookmarks.contains(learningItem.getId())) {
 				learningItem.setBookmark(true);
-			}*/
+			}
 			LearningStatusEntity userRegistration = userRegistrations.stream()
 					.filter(userRegistrationInStream -> userRegistrationInStream.getLearningItemId()
 							.equalsIgnoreCase(learningItem.getId()))
