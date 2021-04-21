@@ -19,7 +19,7 @@ public interface NewLearningContentDAO {
 	
 	Integer getSuccessTalkCount();
 
-	HashMap<String, HashMap<String,String>> getViewMoreFiltersWithCount(Map<String, String> filter, HashMap<String, HashMap<String,String>> filterCounts);
+	HashMap<String, HashMap<String,String>> getViewMoreNewFiltersWithCount(Map<String, String> filter, HashMap<String, HashMap<String,String>> filterCounts);
 
 	Integer getPIWCount();
 
@@ -34,4 +34,9 @@ public interface NewLearningContentDAO {
 	
 	HashMap<String, HashMap<String, String>> getBookmarkedFiltersWithCount(Map<String, String> query_map,
 			HashMap<String, HashMap<String, String>> filterCounts, List<LearningContentItem> bookmarkedList);
+	
+	List<NewLearningContentEntity> fetchUpcomingContent(Map<String, String> filterParams);
+	
+	HashMap<String, HashMap<String,String>> getUpcomingFiltersWithCount(Map<String, String> filter, HashMap<String, HashMap<String,String>> filterCounts);
+
 }
