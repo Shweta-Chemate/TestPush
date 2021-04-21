@@ -19,7 +19,7 @@ public interface LearningContentService {
 
 	CountResponseSchema getIndexCounts();
 	
-	HashMap<String, HashMap<String,String>> getViewMoreFiltersWithCount(String filter, HashMap<String, HashMap<String,String>> filterCounts);
+	HashMap<String, HashMap<String,String>> getViewMoreNewFiltersWithCount(String filter, HashMap<String, HashMap<String,String>> filterCounts);
 
 	LearningStatusEntity updateUserStatus(String userId, String puid, LearningStatusSchema learningStatusSchema, String xMasheryHandshake);
 
@@ -32,5 +32,9 @@ public interface LearningContentService {
 	
 	HashMap<String, HashMap<String, String>> getBookmarkedFiltersWithCount(String puid, String ccoid, String filter,
 			HashMap<String, HashMap<String, String>> filterCounts);
+	
+	List<LearningContentItem> fetchUpcomingContent(String puid, String ccoid, String filter);
+	
+	HashMap<String, HashMap<String,String>> getUpcomingFiltersWithCount(String filter, HashMap<String, HashMap<String,String>> filterCounts);
 
 }

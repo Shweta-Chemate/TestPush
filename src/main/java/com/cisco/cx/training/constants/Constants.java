@@ -27,6 +27,7 @@ public final class Constants {
 	public static final String SUCCESSTALK= "successtalk";
 	public static final String PIW = "piw";
 	public static final String DESC = "Desc";
+	public static final String ASC = "asc";
 
 	public static final String REGION = "region";
 	public static final String MOST_POPULAR = "mostpopular";
@@ -41,5 +42,7 @@ public final class Constants {
 	public static final Object CONTENT_TYPE = "Content Type";
 	public static final Object LIVE_EVENTS = "Live Events";
 	public static final Object LANGUAGE = "Language";
+	public static final String CONTENT_TYPE_FIELD = "contentType";
+	public static final String LIVE_WEBINAR= "Live Webinar";
 
 }

@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
@@ -26,7 +27,6 @@ import com.cisco.cx.training.app.repo.NewLearningContentRepo;
 import com.cisco.cx.training.constants.Constants;
 import com.cisco.cx.training.models.CustomSpecifications;
 import com.cisco.cx.training.models.LearningContentItem;
-import com.cisco.cx.training.models.SuccessTalk;
 
 @Repository
 public class NewLearningContentDAOImpl implements NewLearningContentDAO{
@@ -38,7 +38,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	public List<NewLearningContentEntity> fetchNewLearningContent(Map<String, String> filterParams) {
 		Specification<NewLearningContentEntity> specification = addTimeRangeSpecification();
 		specification = specification.and(new SpecificationBuilder().filter(filterParams));
-		return learningContentRepo.findAll(specification,Sort.by(Sort.Direction.fromString(Constants.DESC),Constants.SORTDATE));
+		return learningContentRepo.findAll(specification,PageRequest.of( 0, 25, Sort.by(Sort.Direction.fromString(Constants.DESC), Constants.SORTDATE))).getContent();
 	}
 
 	private Specification<NewLearningContentEntity> addTimeRangeSpecification() {
@@ -83,7 +83,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	}
 	
 	@Override
-	public HashMap<String, HashMap<String,String>> getViewMoreFiltersWithCount(Map<String, String> filter, HashMap<String, HashMap<String,String>> filterCounts) {
+	public HashMap<String, HashMap<String,String>> getViewMoreNewFiltersWithCount(Map<String, String> filter, HashMap<String, HashMap<String,String>> filterCounts) {
 		List<NewLearningContentEntity> filteredList = new ArrayList<>();
 		Set<String> learningItemIdsList = new HashSet<String>();
 
@@ -100,33 +100,14 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 
 		Specification<NewLearningContentEntity> specification = addTimeRangeSpecification();
 		specification = specification.and(new SpecificationBuilder().filter(filter));
-		filteredList = learningContentRepo.findAll(specification);
+		int offset=0;
+		int limit = 25;
+		filteredList = learningContentRepo.findAll(specification,PageRequest.of( offset, limit, Sort.by(Sort.Direction.fromString(Constants.DESC), Constants.SORTDATE))).getContent();
 		learningItemIdsList = filteredList.stream().map(learningItem -> learningItem.getId())
 				.collect(Collectors.toSet());
 
-		// Content Type Filter
-		HashMap<String, String> contentTypeFilter = filterCounts.containsKey(Constants.CONTENT_TYPE) ? filterCounts.get(Constants.CONTENT_TYPE) : new HashMap<>();
-		filterCounts.put("Content Type", contentTypeFilter);
-		List<Map<String, Object>> contentTypeFiltersWithCount = learningContentRepo
-				.getAllContentTypeWithCountByCards(learningItemIdsList);
-		Map<String, String>  allContents = listToMap(contentTypeFiltersWithCount);
-		contentTypeFilter.putAll(allContents);
-
-		// Live Events Filter
-		HashMap<String, String> regionFilter = filterCounts.containsKey(Constants.LIVE_EVENTS) ? filterCounts.get(Constants.LIVE_EVENTS) : new HashMap<>();
-		filterCounts.put("Live Events", regionFilter);
-		List<Map<String, Object>> regionFilterWithCount = learningContentRepo
-				.getAllRegionsWithCountByCards(learningItemIdsList);
-		Map<String, String> allRegions = listToMap(regionFilterWithCount);
-		regionFilter.putAll(allRegions);
-
-		// Language Filter
-		HashMap<String, String> languageFilter = filterCounts.containsKey(Constants.LANGUAGE) ? filterCounts.get(Constants.LANGUAGE) : new HashMap<>();
-		filterCounts.put("Language", languageFilter);
-		List<Map<String, Object>> languageFiltered = learningContentRepo
-				.getAllLanguagesWithCountByCards(learningItemIdsList);
-		Map<String, String> allLanguages = listToMap(languageFiltered);
-		languageFilter.putAll(allLanguages);
+		// Calculating counts after filtering
+		getFilteredCounts(filterCounts, learningItemIdsList);
 
 		return filterCounts;
 	}
@@ -182,27 +163,30 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 
 		// Content Type Filter
 		HashMap<String, String> contentTypeFilter = filterCounts.containsKey(Constants.CONTENT_TYPE) ? filterCounts.get(Constants.CONTENT_TYPE) : new HashMap<>();
-		filterCounts.put("Content Type", contentTypeFilter);
 		List<Map<String, Object>> contentTypeFiltersWithCount = learningContentRepo
 				.getContentTypeFilteredForRecentlyViewed(puid, userId, learningItemIdsList);
 		Map<String, String>  allContents = listToMap(contentTypeFiltersWithCount);
 		contentTypeFilter.putAll(allContents);
+		if (!contentTypeFilter.isEmpty())
+			filterCounts.put("Content Type", contentTypeFilter);
 
 		// Live Events Filter
 		HashMap<String, String> regionFilter = filterCounts.containsKey(Constants.LIVE_EVENTS) ? filterCounts.get(Constants.LIVE_EVENTS) : new HashMap<>();
-		filterCounts.put("Live Events", regionFilter);
 		List<Map<String, Object>> regionFilterWithCount = learningContentRepo
 				.getRegionFilteredForRecentlyViewed(puid, userId, learningItemIdsList);
 		Map<String, String> allRegions = listToMap(regionFilterWithCount);
 		regionFilter.putAll(allRegions);
+		if (!regionFilter.isEmpty())
+			filterCounts.put("Live Events", regionFilter);
 
 		// Language Filter
 		HashMap<String, String> languageFilter = filterCounts.containsKey(Constants.LANGUAGE) ? filterCounts.get(Constants.LANGUAGE) : new HashMap<>();
-		filterCounts.put("Language", languageFilter);
 		List<Map<String, Object>> languageFiltered = learningContentRepo
 				.getLanguageFilteredForRecentlyViewed(puid, userId, learningItemIdsList);
 		Map<String, String> allLanguages = listToMap(languageFiltered);
 		languageFilter.putAll(allLanguages);
+		if (!languageFilter.isEmpty())
+			filterCounts.put("Language", languageFilter);
 
 		return filterCounts;
 	}
@@ -233,36 +217,93 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		learningItemIdsList = filteredBookmarkedList.stream().map(learningItem -> learningItem.getId())
 				.collect(Collectors.toSet());
 
+		// Calculating counts after filtering
+		getFilteredCounts(filterCounts, learningItemIdsList);
+
+		return filterCounts;
+	}
+	
+	private Specification<NewLearningContentEntity> addUpcomingSpecifications() {
+		Specification<NewLearningContentEntity> specification = Specification.where(null);
+		LocalDateTime localDateTimeStart = LocalDateTime.now();
+		ZonedDateTime zdtStart = ZonedDateTime.of(localDateTimeStart, ZoneId.systemDefault());
+		specification= specification.and(CustomSpecifications.hasDateGreaterThan(Constants.SORTDATE,new Timestamp(zdtStart.toInstant().toEpochMilli())));
+		specification= specification.and(CustomSpecifications.hasValue(Constants.CONTENT_TYPE_FIELD, Constants.LIVE_WEBINAR));
+		return specification;
+	}
+	
+	@Override
+	public List<NewLearningContentEntity> fetchUpcomingContent(Map<String, String> filterParams) {
+		Specification<NewLearningContentEntity> specification = addUpcomingSpecifications();
+		specification = specification.and(new SpecificationBuilder().filter(filterParams));
+		int offset=0;
+		int limit = 25;
+		return learningContentRepo.findAll(specification,PageRequest.of( offset, limit, Sort.by(Sort.Direction.fromString(Constants.ASC), Constants.SORTDATE))).getContent();
+	}
+	
+	@Override
+	public HashMap<String, HashMap<String, String>> getUpcomingFiltersWithCount(Map<String, String> filter,
+			HashMap<String, HashMap<String, String>> filterCounts) {
+		List<NewLearningContentEntity> filteredList = new ArrayList<>();
+		Set<String> learningItemIdsList = new HashSet<String>();
+
+		if (filterCounts == null) {
+			filterCounts = new HashMap<>();
+		} else {
+			filterCounts.values().forEach(filterGroup -> {
+				filterGroup.keySet().forEach(key -> filterGroup.put(key, "0"));
+			});
+		}
+
+		Specification<NewLearningContentEntity> specification = addUpcomingSpecifications();
+		specification = specification.and(new SpecificationBuilder().filter(filter));
+		int offset=0;
+		int limit = 25;
+		filteredList = learningContentRepo.findAll(specification,PageRequest.of( offset, limit, Sort.by(Sort.Direction.fromString(Constants.ASC), Constants.SORTDATE))).getContent();
+		learningItemIdsList = filteredList.stream().map(learningItem -> learningItem.getId())
+				.collect(Collectors.toSet());
+
+		// Calculating counts after filtering
+		getFilteredCounts(filterCounts, learningItemIdsList);
+
+		return filterCounts;
+	}
+	
+	HashMap<String, HashMap<String, String>> getFilteredCounts(HashMap<String, HashMap<String, String>> filterCounts, Set<String> learningItemIdsList)
+	{
 		// Content Type Filter
 		HashMap<String, String> contentTypeFilter = filterCounts.containsKey(Constants.CONTENT_TYPE)
 				? filterCounts.get(Constants.CONTENT_TYPE)
 				: new HashMap<>();
-		filterCounts.put("Content Type", contentTypeFilter);
 		List<Map<String, Object>> contentTypeFiltersWithCount = learningContentRepo
 				.getAllContentTypeWithCountByCards(learningItemIdsList);
 		Map<String, String> allContents = listToMap(contentTypeFiltersWithCount);
 		contentTypeFilter.putAll(allContents);
+		if (!contentTypeFilter.isEmpty())
+			filterCounts.put("Content Type", contentTypeFilter);
 
 		// Live Events Filter
 		HashMap<String, String> regionFilter = filterCounts.containsKey(Constants.LIVE_EVENTS)
 				? filterCounts.get(Constants.LIVE_EVENTS)
 				: new HashMap<>();
-		filterCounts.put("Live Events", regionFilter);
 		List<Map<String, Object>> regionFilterWithCount = learningContentRepo
 				.getAllRegionsWithCountByCards(learningItemIdsList);
 		Map<String, String> allRegions = listToMap(regionFilterWithCount);
 		regionFilter.putAll(allRegions);
+		if (!regionFilter.isEmpty())
+			filterCounts.put("Live Events", regionFilter);
 
 		// Language Filter
 		HashMap<String, String> languageFilter = filterCounts.containsKey(Constants.LANGUAGE)
 				? filterCounts.get(Constants.LANGUAGE)
 				: new HashMap<>();
-		filterCounts.put("Language", languageFilter);
 		List<Map<String, Object>> languageFiltered = learningContentRepo
 				.getAllLanguagesWithCountByCards(learningItemIdsList);
 		Map<String, String> allLanguages = listToMap(languageFiltered);
 		languageFilter.putAll(allLanguages);
-
+		if (!languageFilter.isEmpty())
+			filterCounts.put("Language", languageFilter);
+		
 		return filterCounts;
 	}
 

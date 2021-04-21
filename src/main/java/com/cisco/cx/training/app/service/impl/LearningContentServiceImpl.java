@@ -235,9 +235,9 @@ public class LearningContentServiceImpl implements LearningContentService {
 	}
 
 	@Override
-	public HashMap<String, HashMap<String,String>> getViewMoreFiltersWithCount(String filter, HashMap<String, HashMap<String,String>> filterCounts) {
+	public HashMap<String, HashMap<String,String>> getViewMoreNewFiltersWithCount(String filter, HashMap<String, HashMap<String,String>> filterCounts) {
 		Map<String, String> query_map = filterStringtoMap(filter);
-		return learningContentDAO.getViewMoreFiltersWithCount(query_map, filterCounts);
+		return learningContentDAO.getViewMoreNewFiltersWithCount(query_map, filterCounts);
 	}
 
 	@Override
@@ -358,6 +358,44 @@ public class LearningContentServiceImpl implements LearningContentService {
 		List<LearningContentItem> bookmarkedList = new ArrayList<>();
 		bookmarkedList = fetchBookMarkedContent(puid, ccoid, filter);
 		return learningContentDAO.getBookmarkedFiltersWithCount(query_map, filterCounts, bookmarkedList);
+	}
+	
+	@Override
+	public List<LearningContentItem> fetchUpcomingContent(String puid, String ccoid, String filter) {
+		List<NewLearningContentEntity> upcomingContentList = new ArrayList<>();
+		List<LearningContentItem> result = new ArrayList<>();
+		Map<String, String> query_map = filterStringtoMap(filter);
+		upcomingContentList = learningContentDAO.fetchUpcomingContent(query_map);
+
+		// populate bookmark and registration info
+		/*Set<String> userBookmarks = null;
+		if (null != ccoid) {
+			userBookmarks = learningBookmarkDAO.getBookmarks(ccoid);
+		}*/
+		List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserIdAndPuid(ccoid, puid);
+		for (NewLearningContentEntity entity : upcomingContentList) {
+			LearningContentItem learningItem = new LearningContentItem(entity);
+			/*if (null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
+					&& userBookmarks.contains(learningItem.getId())) {
+				learningItem.setBookmark(true);
+			}*/
+			LearningStatusEntity userRegistration = userRegistrations.stream()
+					.filter(userRegistrationInStream -> userRegistrationInStream.getLearningItemId()
+							.equalsIgnoreCase(learningItem.getId()))
+					.findFirst().orElse(null);
+			if (userRegistration != null && userRegistration.getRegStatus() != null) {
+				learningItem.setStatus(userRegistration.getRegStatus());
+			}
+			result.add(learningItem);
+		}
+		return result;
+	}
+	
+	@Override
+	public HashMap<String, HashMap<String, String>> getUpcomingFiltersWithCount(String filter,
+			HashMap<String, HashMap<String, String>> filterCounts) {
+		Map<String, String> query_map = filterStringtoMap(filter);
+		return learningContentDAO.getUpcomingFiltersWithCount(query_map, filterCounts);
 	}
 
 }

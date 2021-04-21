@@ -25,6 +25,10 @@ public class CustomSpecifications {
 	public static <T> Specification<T> hasDateBetweenCriteria(String columnName, Timestamp startRange, Timestamp endRange) {
 		return (entity, cq, cb) -> cb.between(entity.get(columnName), startRange, endRange);
 	}
+	
+	public static <T> Specification<T> hasDateGreaterThan(String columnName, Timestamp startRange) {
+		return (entity, cq, cb) -> cb.greaterThan(entity.get(columnName), startRange);
+	}
 
 	public static <T> Specification<T> hasPIWs(String columnName, String withValue) {
 		return (piw, cq, cb) -> cb.equal(piw.get(columnName), withValue);
