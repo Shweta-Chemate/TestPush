@@ -18,6 +18,11 @@ public class SQLConstants {
 
 	public static final String GET_NEW_CONTENT = "select * from (\n" + GET_NEW_CONTENT_BASE + ") base\n" +
 			"where base.id in (:learningItemIds)";
+	
+	public static final String GET_UPCOMING_CONTENT_BASE = "select * from cxpp_db.cxpp_learning_content where asset_type='Live Webinar' and  sort_by_date > current_date() order by sort_by_date asc limit 25;";
+
+	public static final String GET_UPCOMING_CONTENT = "select * from (\n" + GET_NEW_CONTENT_BASE + ") base\n" +
+			"where base.id in (:learningItemIds)";
 
 	public static final String GET_RECENTLY_VIEWED_CONTENT_BASE =  "select content.* from cxpp_db.cxpp_learning_content content,cxpp_db.cxpp_learning_status status"
 			+ " where status.puid=:puid and status.user_id=:userId  and content.id=status.learning_item_id "

@@ -43,5 +43,11 @@ public interface NewLearningContentRepo
 
 	@Query(value = SQLConstants.GET_NEW_CONTENT, nativeQuery = true)
 	List<NewLearningContentEntity> findNewFiltered(Set<String> learningItemIds);
+	
+	@Query(value = SQLConstants.GET_UPCOMING_CONTENT_BASE, nativeQuery = true)
+	List<NewLearningContentEntity> findUpcoming();
+
+	@Query(value = SQLConstants.GET_UPCOMING_CONTENT, nativeQuery = true)
+	List<NewLearningContentEntity> findUpcomingFiltered(Set<String> learningItemIds);
 
 }
