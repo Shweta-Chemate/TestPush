@@ -1,8 +1,6 @@
 package com.cisco.cx.training.app.service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -21,8 +19,6 @@ import com.cisco.cx.training.app.entities.LearningItemEntity;
 import com.cisco.cx.training.models.GenericLearningModel;
 import com.cisco.cx.training.models.LearningRecordsAndFiltersModel;
 import com.cisco.cx.training.models.UserDetails;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 @Service
@@ -37,63 +33,6 @@ public class ProductDocumentationService{
 
 	@Autowired
 	private ProductDocumentationDAO productDocumentationDAO;
-	
-	
-	public LearningRecordsAndFiltersModel getAllLearningInfo(String xMasheryHandshake,String searchToken, String applyFilters, 
-			String sortBy, String sortOrder) 
-	{
-		String sort = DEFAULT_SORT_FIELD ; 
-		Direction order = DEFAULT_SORT_ORDER ; 		
-		if(sortBy!=null  && !sortBy.equalsIgnoreCase("date")) sort = sortBy;
-		if(sortOrder!=null && sortOrder.equalsIgnoreCase("asc")) order = Sort.Direction.ASC;		
-		LOG.info("sort={} {}",sort, order);
-		
-		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
-		Set<String> userBookmarks = null;
-		if(null != userDetails){userBookmarks = learningDAO.getBookmarks(userDetails.getCecId());}
-		
-		LearningRecordsAndFiltersModel responseModel = new LearningRecordsAndFiltersModel();
-		List<GenericLearningModel> learningCards = new ArrayList<>();
-		responseModel.setLearningData(learningCards);
-				
-		List<LearningItemEntity> dbCards = new ArrayList<LearningItemEntity>();
-		if( searchToken!=null && !searchToken.trim().isEmpty() &&
-				applyFilters!=null && !applyFilters.isEmpty()	)
-		{
-			Set<String> filteredCards = filterCards(applyFilters);
-			if(filteredCards!=null && !filteredCards.isEmpty())
-				dbCards = productDocumentationDAO.getAllLearningCardsByFilterSearch(filteredCards,"%"+searchToken+"%",Sort.by(order, sort));			
-		}
-		else if(searchToken!=null && !searchToken.trim().isEmpty())
-			dbCards = productDocumentationDAO.getAllLearningCardsBySearch("%"+searchToken+"%",Sort.by(order, sort));
-		else if(applyFilters!=null && !applyFilters.isEmpty())
-		{
-			Set<String> filteredCards = filterCards(applyFilters);
-			if(filteredCards!=null && !filteredCards.isEmpty())
-				dbCards = productDocumentationDAO.getAllLearningCardsByFilter(filteredCards,Sort.by(order, sort)); 
-		}			
-		else 
-			dbCards=productDocumentationDAO.getAllLearningCards(Sort.by(order, sort));
-		
-		LOG.info("dbCards={}",dbCards);
-		learningCards.addAll(mapLearningEntityToCards(dbCards, userBookmarks));
-		
-		
-		return responseModel;
-	}
-	
-	private Set<String> filterCards(String applyFilters)
-	{	
-		String[] contentTypes = applyFilters.split(",");
-		LOG.info("types={}{}...{}",contentTypes.length,contentTypes);
-		
-		Set<String> mappedContentTypes = new HashSet<String>();
-		Arrays.asList(contentTypes).forEach(ct -> {mappedContentTypes.add(ct);});		
-		Set<String> cardIds = productDocumentationDAO.getLearningsByContentType(mappedContentTypes);
-		LOG.info("mapped = {} ",cardIds);	
-		
-		return cardIds;
-	}
 	
 	private Set<String> filterCards(HashMap<String, Object> applyFilters)
 	{	
@@ -192,66 +131,6 @@ public class ProductDocumentationService{
 		return cards;
 	}
 	
-	public HashMap<String, Object> getAllLearningFiltersBySearch(String searchToken, final HashMap<String, Object> filters)
-	{
-		HashMap<String, String> contentTypeFilter = (HashMap<String, String>)filters.get(CONTENT_TYPE_FILTER);
-		
-		Set<String> cardIds = null;
-		if(searchToken!=null && !searchToken.trim().isEmpty())
-			cardIds = productDocumentationDAO.getAllLearningCardIdsBySearch("%"+searchToken+"%");
-
-		if(cardIds!=null && cardIds.size()>0)
-		{
-			List<Map<String,Object>> dbList = productDocumentationDAO.getAllContentTypeWithCountByCards(cardIds);
-			contentTypeFilter.putAll(listToMap(dbList));
-		}
-
-		return filters;
-
-	}
-	
-
-	
-	/**
-	 * filter=CT-LW,PDF,WP,PPT,XYZ,VOD,LM
-	 * @param applyFilters
-	 * @return
-	 */
-	public HashMap<String, Object> getAllLearningFiltersByApply(String applyFilters, final HashMap<String, Object> filters){
-		
-		Set<String> cardIds = filterCards(applyFilters);
-		LOG.info("mapped = {} ",cardIds);			
-		HashMap<String, String> contentTypeFilter = (HashMap<String, String>)filters.get(CONTENT_TYPE_FILTER);		
-		List<Map<String,Object>> dbList = productDocumentationDAO.getAllContentTypeWithCountByCards(cardIds);
-		contentTypeFilter.putAll(listToMap(dbList));
-		return filters;		
-	}
-	
-	public HashMap<String, Object> getAllLearningFilters(String searchToken,String applyFilters){
-		
-		HashMap<String, Object> filters = new HashMap<>();		
-		
-		HashMap<String, String> contentTypeFilter = new HashMap<>();
-		filters.put(CONTENT_TYPE_FILTER, contentTypeFilter);
-		List<Map<String,Object>> dbList = productDocumentationDAO.getAllContentTypeWithCount();
-		Map<String,String> allContents = listToMap(dbList);
-		allContents.keySet().forEach(k -> contentTypeFilter.put(k, "0"));
-		
-		if( searchToken!=null && !searchToken.trim().isEmpty() &&
-				applyFilters!=null && !applyFilters.isEmpty()	)
-		{
-			Set<String> filteredCards = filterCards(applyFilters);
-			Set<String> filteredSearchedCards = productDocumentationDAO.getAllLearningCardIdsByFilterSearch(filteredCards,"%"+searchToken+"%");
-			List<Map<String,Object>> dbListFiltered = productDocumentationDAO.getAllContentTypeWithCountByCards(filteredSearchedCards);		
-			contentTypeFilter.putAll(listToMap(dbListFiltered));			
-		}		
-		else if(searchToken!=null && !searchToken.trim().isEmpty())  getAllLearningFiltersBySearch(searchToken,filters);
-		else if(applyFilters!=null && !applyFilters.trim().isEmpty()) getAllLearningFiltersByApply(applyFilters,filters);
-		else contentTypeFilter.putAll(allContents);
-		
-		return filters;
-	}
-	
 	private Map<String,String> listToMap(List<Map<String,Object>> dbList)
 	{
 		Map<String,String> countMap = new HashMap<String,String>();
@@ -320,8 +199,10 @@ public class ProductDocumentationService{
 	private static final String DOCUMENTATION_FILTER = "Documentation";
 	private static final String SUCCESS_TRACKS_FILTER = "Success Tracks";
 	private static final String TECHNOLOGY_FILTER = "Technology";
-	private static final String[] FILTER_CATEGORIES = new String[]{CONTENT_TYPE_FILTER, LANGUAGE_FILTER, LIVE_EVENTS_FILTER,
-			DOCUMENTATION_FILTER, SUCCESS_TRACKS_FILTER, TECHNOLOGY_FILTER};
+	private static final String FOR_YOU_FILTER = "For You";
+	private static final String[] FILTER_CATEGORIES = new String[]{ 
+			TECHNOLOGY_FILTER, SUCCESS_TRACKS_FILTER, DOCUMENTATION_FILTER, 
+			LIVE_EVENTS_FILTER, FOR_YOU_FILTER, CONTENT_TYPE_FILTER, LANGUAGE_FILTER};
 	
 	
 	private void initializeFilters(final HashMap<String, Object> filters, final HashMap<String, Object> countFilters)

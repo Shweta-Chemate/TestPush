@@ -398,19 +398,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	}
 
 	@Override
-	public LearningRecordsAndFiltersModel getAllLearningInfo(String xMasheryHandshake,String searchToken,String filters,
-			String sortBy, String sortOrder) 
-	{
-			return productDocumentationService.getAllLearningInfo(xMasheryHandshake,searchToken,filters,sortBy, sortOrder);
-	}
-	
-	@Override
-	public HashMap<String, Object> getAllLearningFilters(String searchToken,String filters){		
-		return productDocumentationService.getAllLearningFilters(searchToken,filters);
-	}
-
-	@Override
-	public List<LearningContentItem> fetchNewLearningContent(String ccoid, String filter, String puid) {
+	public List<NewLearningContentEntity> fetchNewLearningContent() {
 		List<NewLearningContentEntity> learningContentList = new ArrayList<>();
 		List<LearningContentItem> result = new ArrayList<>();
 		Map<String, String> query_map = new LinkedHashMap<>();
