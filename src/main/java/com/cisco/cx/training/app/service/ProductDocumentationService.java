@@ -1,6 +1,7 @@
 package com.cisco.cx.training.app.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -16,6 +17,8 @@ import org.springframework.util.CollectionUtils;
 import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
 import com.cisco.cx.training.app.dao.ProductDocumentationDAO;
 import com.cisco.cx.training.app.entities.LearningItemEntity;
+import com.cisco.cx.training.app.entities.NewLearningContentEntity;
+import com.cisco.cx.training.app.repo.NewLearningContentRepo;
 import com.cisco.cx.training.models.GenericLearningModel;
 import com.cisco.cx.training.models.LearningRecordsAndFiltersModel;
 import com.cisco.cx.training.models.UserDetails;
@@ -33,6 +36,9 @@ public class ProductDocumentationService{
 
 	@Autowired
 	private ProductDocumentationDAO productDocumentationDAO;
+	
+	@Autowired
+	private NewLearningContentRepo learningContentRepo;
 	
 	private Set<String> filterCards(HashMap<String, Object> applyFilters)
 	{	
@@ -54,6 +60,7 @@ public class ProductDocumentationService{
 				case LIVE_EVENTS_FILTER : filteredCards.put(k, productDocumentationDAO.getCardIdsByRegion(new HashSet<String>(list)));break;
 				case CONTENT_TYPE_FILTER : filteredCards.put(k, productDocumentationDAO.getLearningsByContentType(new HashSet<String>(list)));break;
 				case LANGUAGE_FILTER : filteredCards.put(k, productDocumentationDAO.getCardIdsByLanguage(new HashSet<String>(list)));break;
+				case FOR_YOU_FILTER : filteredCards.put(k, getCardIdsByYou(new HashSet<String>(list)));break;
 				default : LOG.info("other {}={}",k,list);
 				};
 			}
@@ -204,6 +211,7 @@ public class ProductDocumentationService{
 			TECHNOLOGY_FILTER, SUCCESS_TRACKS_FILTER, DOCUMENTATION_FILTER, 
 			LIVE_EVENTS_FILTER, FOR_YOU_FILTER, CONTENT_TYPE_FILTER, LANGUAGE_FILTER};
 	
+	private static final String[] FOR_YOU_KEYS = new String[]{"New","Bookmarked"};
 	
 	private void initializeFilters(final HashMap<String, Object> filters, final HashMap<String, Object> countFilters)
 	{	
@@ -242,8 +250,66 @@ public class ProductDocumentationService{
 		filters.put(SUCCESS_TRACKS_FILTER, stFilter);
 		List<Map<String,Object>> dbListST = productDocumentationDAO.getAllStUcPsWithCount();
 		Map<String,Object> allContentsST = listToSTMap(dbListST,stFilter);countFilters.put(SUCCESS_TRACKS_FILTER, allContentsST);
+		
+		HashMap<String, Object> youFilter = new HashMap<>();
+		filters.put(FOR_YOU_FILTER, youFilter);		
+		Map<String,String> allContentsYou = getForYouCounts(null);countFilters.put(FOR_YOU_FILTER, allContentsYou);
+		allContentsYou.keySet().forEach(k -> youFilter.put(k, "0"));
+		
+	}
+	
+	private Set<String> getCardIdsByYou(HashSet<String> youList)
+	{
+		Set<String> cardIds = new HashSet<String>();
+		youList.forEach(youKey ->
+		{
+			if(Arrays.asList(FOR_YOU_KEYS).contains(youKey))
+			{
+				if(youKey.equals(FOR_YOU_KEYS[0])) //New
+				{
+					List<NewLearningContentEntity> result = learningContentRepo.findNew();
+					result.forEach(card -> cardIds.add(card.getId()));
+				}
+				else if(youKey.equals(FOR_YOU_KEYS[1])) //Bookmarked
+				{
+					//TODO  cardIds.add(card.getId());
+				}				
+			}
+			else
+			{
+				LOG.info("other youKey = {}",youKey);
+			}
+		});
+		LOG.info("Yous = {}",cardIds);
+		return cardIds;
 	}
 
+	private Map<String,String>  getForYouCounts(Set<String>cardIds)
+	{
+		Map<String,String> youMap = new HashMap<String,String>();
+		
+		//1. New
+		List<NewLearningContentEntity> result = learningContentRepo.findNew();//1 month as of now
+		if(result == null) youMap.put(FOR_YOU_KEYS[0], "0"); 
+		else 
+		{
+			if(cardIds!=null) // && !cardIds.isEmpty() -- set can be empty here
+			{
+				Set<String> dbSet = new HashSet<String>();
+				result.forEach(card -> dbSet.add(card.getId()));				
+				dbSet.retainAll(cardIds);
+				youMap.put(FOR_YOU_KEYS[0], String.valueOf(dbSet.size()));
+			}
+			else
+			{
+				youMap.put(FOR_YOU_KEYS[0], String.valueOf(result.size()));
+			}				
+		}
+		
+		//2. Bookmarked
+		
+		return youMap;
+	}
 	
 	private void setFilterCounts(Set<String> cardIds, final HashMap<String, Object> filters)
 	{
@@ -264,7 +330,12 @@ public class ProductDocumentationService{
 		
 		//TODO ST
 		List<Map<String,Object>> dbListST = productDocumentationDAO.getAllStUcPsWithCountByCards(cardIds);		
-		((Map<String,Object>)filters.get(SUCCESS_TRACKS_FILTER)).putAll(listToSTMap(dbListST,null));	
+		((Map<String,Object>)filters.get(SUCCESS_TRACKS_FILTER)).putAll(listToSTMap(dbListST,null));
+		
+		
+		Map<String,String> dbMapYou = getForYouCounts(cardIds);		
+		((Map<String,String>)filters.get(FOR_YOU_FILTER)).putAll(dbMapYou);
+		
 	}
 
 	/**
