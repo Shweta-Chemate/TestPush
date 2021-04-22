@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -32,6 +33,7 @@ import com.cisco.cx.training.app.dao.PartnerPortalLookupDAO;
 import com.cisco.cx.training.app.dao.SmartsheetDAO;
 import com.cisco.cx.training.app.dao.SuccessAcademyDAO;
 import com.cisco.cx.training.app.dao.SuccessTalkDAO;
+import com.cisco.cx.training.app.entities.LearningStatusEntity;
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.app.entities.PartnerPortalLookUpEntity;
 import com.cisco.cx.training.app.entities.SuccessAcademyLearningEntity;
@@ -39,6 +41,7 @@ import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.exception.GenericException;
 import com.cisco.cx.training.app.exception.NotAllowedException;
 import com.cisco.cx.training.app.exception.NotFoundException;
+import com.cisco.cx.training.app.repo.LearningStatusRepo;
 import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.app.service.ProductDocumentationService;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
@@ -49,6 +52,7 @@ import com.cisco.cx.training.models.Community;
 import com.cisco.cx.training.models.Company;
 import com.cisco.cx.training.models.CountResponseSchema;
 import com.cisco.cx.training.models.CountSchema;
+import com.cisco.cx.training.models.LearningContentItem;
 import com.cisco.cx.training.models.LearningRecordsAndFiltersModel;
 import com.cisco.cx.training.models.SuccessAcademyFilter;
 import com.cisco.cx.training.models.SuccessAcademyLearning;
@@ -97,10 +101,16 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	private LearningBookmarkDAO learningDAO;
 	
 	@Autowired
-
 	private ProductDocumentationService productDocumentationService;
 
+	@Autowired
 	private NewLearningContentDAO learningContentDAO;
+	
+	@Autowired
+	private LearningBookmarkDAO learningBookmarkDAO;
+	
+	@Autowired
+	private LearningStatusRepo learningStatusRepo;
 
 	
 	private static final String CXPP_UI_TAB_PREFIX = "CXPP_UI_TAB_";
@@ -390,15 +400,44 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	@Override
 	public List<NewLearningContentEntity> fetchNewLearningContent() {
 		List<NewLearningContentEntity> learningContentList = new ArrayList<>();
-		learningContentList = learningContentDAO.fetchNewLearningContent();
-		learningContentList.stream().filter(
-				learning -> learning.getLearning_type().equals(Constants.SUCCESSTALK))
-				.forEach( learning ->
-						{
-							learning.setDuration(Constants.DURATION_SUCCESSTALK);
-							learning.setRegion(Constants.REGION_SUCCESSTALK);
-						});
-		return learningContentList;
+		List<LearningContentItem> result = new ArrayList<>();
+		Map<String, String> query_map = new LinkedHashMap<>();
+		if (!StringUtils.isBlank(filter)) {
+			filter = filter.replaceAll("%3B", ";");
+			filter = filter.replaceAll("%3A", ":");
+			String[] columnFilter = filter.split(";");
+			for (int colFilterIndex = 0; colFilterIndex < columnFilter.length; colFilterIndex++) {
+				String[] valueFilter = columnFilter[colFilterIndex].split(":");
+				String fieldName = valueFilter[0];
+				String fieldValue = valueFilter[1];
+				query_map.put(fieldName, fieldValue);
+			}
+		}
+		learningContentList = learningContentDAO.fetchNewLearningContent(query_map);
+		// populate bookmark and registration info
+		Set<String> userBookmarks = null;
+		if (null != ccoid) {
+			userBookmarks = learningBookmarkDAO.getBookmarks(ccoid);
+		}
+		List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserIdAndPuid(ccoid, puid);
+		for (NewLearningContentEntity entity : learningContentList) {
+			LearningContentItem learningItem = new LearningContentItem(entity);
+			learningItem.setBookmark(false);
+			if (null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
+					&& userBookmarks.contains(learningItem.getId())) {
+				learningItem.setBookmark(true);
+			}
+			LearningStatusEntity userRegistration = userRegistrations.stream()
+					.filter(userRegistrationInStream -> userRegistrationInStream.getLearningItemId()
+							.equalsIgnoreCase(learningItem.getId()))
+					.findFirst().orElse(null);
+			if (userRegistration != null && userRegistration.getRegStatus() != null) {
+				learningItem.setStatus(userRegistration.getRegStatus());
+			}
+			result.add(learningItem);
+		}
+
+		return result;
 	}
 
 	@Override

@@ -1,109 +1,102 @@
-package com.cisco.cx.training.app.entities;
+package com.cisco.cx.training.models;
 
 import java.sql.Timestamp;
+import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-@Entity
-@Table(name = "cxpp_learning_content")
-public class NewLearningContentEntity {
+public class LearningContentItem {
 	
-	@Id
-	@Column(name = "id")
+	public LearningContentItem(NewLearningContentEntity entity) {
+		this.id=entity.getId();
+		this.learningType=entity.getLearningType();
+		this.title=entity.getTitle();
+		this.description=entity.getDescription();
+		this.sortByDate=entity.getSortByDate();
+		this.status=entity.getStatus();
+		this.registrationUrl=entity.getRegistrationUrl();
+		this.presenterName=entity.getPresenterName();
+		this.recordingUrl=entity.getRecordingUrl();
+		this.duration=entity.getDuration();
+		this.region=entity.getRegion();
+		this.piw_architecture=entity.getPiw_architecture();
+		this.piw_technology=entity.getPiw_technology();
+		this.piw_sub_technology=entity.getPiw_sub_technology();
+		this.piw_score=entity.getPiw_score();
+		this.language=entity.getLanguage();
+		this.piw_timezone=entity.getPiw_timezone();
+		this.piw_ppt_url=entity.getPiw_ppt_url();
+		this.sequence=entity.getSequence();
+		this.published_date=entity.getPublished_date();
+		this.created_date=entity.getCreated_date();
+		this.updated_date=entity.getUpdated_date();
+		this.modulecount=entity.getModulecount();
+		this.learning_map=entity.getLearning_map();
+		this.roles=entity.getRoles();
+		this.technology=entity.getTechnology();
+		this.contentType=entity.getContentType();
+		this.link=entity.getLink();
+	}
+
 	private String id;
-	
-	@Column(name = "learning_type")
+
 	private String learningType;
 	
-	@Column(name = "title")
 	private String title;
 	
-	@Column(name = "description")
 	private String description;
 	
-	@Column(name = "sessionStartDate")
 	private Timestamp sessionStartDate;
 	
-	@Column(name = "sort_by_date")
 	private Timestamp sortByDate;
 	
-	@Column(name = "status")
 	private String status;
 	
-	@Column(name = "registrationUrl")
+	private Boolean bookmark;
+	
 	private String registrationUrl;
 	
-	@Column(name = "presenterName")
 	private String presenterName;
 	
-	@Column(name = "recordingUrl")
 	private String recordingUrl;
 	
-	@Column(name = "duration")
 	private String duration;
 	
-	@Column(name = "piw_region")
 	private String region;
 	
-	@Column(name = "piw_architecture")
 	private String piw_architecture;
 	
-	@Column(name = "piw_technology")
 	private String piw_technology;
 	
-	@Column(name = "piw_sub_technology")
 	private String piw_sub_technology;
 	
-	@Column(name = "piw_score")
 	private Integer piw_score;
 	
-	@Column(name = "piw_language")
 	private String language;
 	
-	@Column(name = "piw_timezone")
 	private String piw_timezone;
 	
-	@Column(name = "piw_ppt_url")
 	private String piw_ppt_url;
 	
-	@Column(name = "sequence")
 	private String sequence;
 	
-	@Column(name = "published_date")
 	private Timestamp published_date;
 	
-	@Column(name = "created_date")
 	private Timestamp created_date;
 
-	@Column(name = "updated_date")
 	private Timestamp updated_date;
 	
-	@Column(name = "modulecount")
 	private String modulecount;
 	
-	@Column(name = "learning_map")
 	private String learning_map;
 	
-	@Column(name = "roles")
 	private String roles;
 	
-	@Column(name = "technology")
 	private String technology;
 	
-	@Column(name = "asset_type")
 	private String contentType;
 	
-	@Column(name = "link")
 	private String link;
-
+	
+	
 	public String getId() {
 		return id;
 	}
@@ -136,12 +129,36 @@ public class NewLearningContentEntity {
 		this.description = description;
 	}
 
+	public Timestamp getSessionStartDate() {
+		return sessionStartDate;
+	}
+
+	public void setSessionStartDate(Timestamp sessionStartDate) {
+		this.sessionStartDate = sessionStartDate;
+	}
+
+	public Timestamp getSortByDate() {
+		return sortByDate;
+	}
+
+	public void setSortByDate(Timestamp sortByDate) {
+		this.sortByDate = sortByDate;
+	}
+
 	public String getStatus() {
 		return status;
 	}
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public Boolean getBookmark() {
+		return bookmark;
+	}
+
+	public void setBookmark(Boolean bookmark) {
+		this.bookmark = bookmark;
 	}
 
 	public String getRegistrationUrl() {
@@ -174,6 +191,14 @@ public class NewLearningContentEntity {
 
 	public void setDuration(String duration) {
 		this.duration = duration;
+	}
+
+	public String getRegion() {
+		return region;
+	}
+
+	public void setRegion(String region) {
+		this.region = region;
 	}
 
 	public String getPiw_architecture() {
@@ -248,6 +273,22 @@ public class NewLearningContentEntity {
 		this.published_date = published_date;
 	}
 
+	public Timestamp getCreated_date() {
+		return created_date;
+	}
+
+	public void setCreated_date(Timestamp created_date) {
+		this.created_date = created_date;
+	}
+
+	public Timestamp getUpdated_date() {
+		return updated_date;
+	}
+
+	public void setUpdated_date(Timestamp updated_date) {
+		this.updated_date = updated_date;
+	}
+
 	public String getModulecount() {
 		return modulecount;
 	}
@@ -296,43 +337,4 @@ public class NewLearningContentEntity {
 		this.link = link;
 	}
 
-	public Timestamp getSessionStartDate() {
-		return sessionStartDate;
-	}
-
-	public void setSessionStartDate(Timestamp sessionStartDate) {
-		this.sessionStartDate = sessionStartDate;
-	}
-
-	public Timestamp getSortByDate() {
-		return sortByDate;
-	}
-
-	public void setSortByDate(Timestamp sortByDate) {
-		this.sortByDate = sortByDate;
-	}
-
-	public Timestamp getCreated_date() {
-		return created_date;
-	}
-
-	public void setCreated_date(Timestamp created_date) {
-		this.created_date = created_date;
-	}
-
-	public Timestamp getUpdated_date() {
-		return updated_date;
-	}
-
-	public void setUpdated_date(Timestamp updated_date) {
-		this.updated_date = updated_date;
-	}
-
-	public String getRegion() {
-		return region;
-	}
-
-	public void setRegion(String region) {
-		this.region = region;
-	}
 }
