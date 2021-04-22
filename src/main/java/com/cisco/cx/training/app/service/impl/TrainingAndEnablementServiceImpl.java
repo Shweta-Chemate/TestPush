@@ -398,7 +398,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	}
 
 	@Override
-	public List<NewLearningContentEntity> fetchNewLearningContent() {
+	public List<LearningContentItem> fetchNewLearningContent(String ccoid, String filter, String puid) {
 		List<NewLearningContentEntity> learningContentList = new ArrayList<>();
 		List<LearningContentItem> result = new ArrayList<>();
 		Map<String, String> query_map = new LinkedHashMap<>();
