@@ -45,11 +45,6 @@ public interface TrainingAndEnablementService {
 	List<SuccessAcademyFilter> getSuccessAcademyFilters();
 	
 	BookmarkResponseSchema bookmarkLearningForUser(BookmarkRequestSchema bookmarkRequestSchema , String xMasheryHandshake);
-	
-	LearningRecordsAndFiltersModel getAllLearningInfo(String xMasheryHandshake, String searchToken, String filters, 
-			String sortBy, String sortOrder);	
-
-	HashMap<String, Object> getAllLearningFilters(String searchToken, String filters);
 
 	List<NewLearningContentEntity> fetchNewLearningContent();
 
