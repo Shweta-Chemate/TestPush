@@ -32,19 +32,22 @@ public interface NewLearningContentRepo
 	List<Map<String, Object>> getAllLanguagesWithCountByCards(Set<String> learningItemIds);
 
 
+	@Query(value = SQLConstants.GET_RECENTLY_VIEWED_CONTENT_BASE, nativeQuery = true)
+	List<NewLearningContentEntity> getRecentlyViewedContent(String puid, String userId);
+	
 	@Query(value = SQLConstants.GET_RECENTLY_VIEWED_CONTENT, nativeQuery = true)
-	List<NewLearningContentEntity> getRecentlyViewedContent(String puid, String userId, Set<String> learningItemIds);
+	List<NewLearningContentEntity> getRecentlyViewedContentFiltered(String puid, String userId, Set<String> learningItemIds);
 
+	@Query(value = SQLConstants.GET_NEW_CONTENT_BASE, nativeQuery = true)
+	List<NewLearningContentEntity> findNew();
 
-	@Query(value = SQLConstants.GET_CONTENT_FILTERED_RECENTLY_VIEWED, nativeQuery = true)
-	List<Map<String, Object>> getContentTypeFilteredForRecentlyViewed(String puid, String userId, Set<String> learningItemIds);
+	@Query(value = SQLConstants.GET_NEW_CONTENT, nativeQuery = true)
+	List<NewLearningContentEntity> findNewFiltered(Set<String> learningItemIds);
+	
+	@Query(value = SQLConstants.GET_UPCOMING_CONTENT_BASE, nativeQuery = true)
+	List<NewLearningContentEntity> findUpcoming();
 
-
-	@Query(value = SQLConstants.GET_REGION_FILTERED_RECENTLY_VIEWED, nativeQuery = true)
-	List<Map<String, Object>> getRegionFilteredForRecentlyViewed(String puid, String userId, Set<String> learningItemIds);
-
-
-	@Query(value = SQLConstants.GET_LANGUAGE_FILTERED_RECENTLY_VIEWED, nativeQuery = true)
-	List<Map<String, Object>> getLanguageFilteredForRecentlyViewed(String puid, String userId, Set<String> learningItemIds);
+	@Query(value = SQLConstants.GET_UPCOMING_CONTENT, nativeQuery = true)
+	List<NewLearningContentEntity> findUpcomingFiltered(Set<String> learningItemIds);
 
 }

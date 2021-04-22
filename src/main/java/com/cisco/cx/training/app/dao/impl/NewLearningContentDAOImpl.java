@@ -36,19 +36,20 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 
 	@Override
 	public List<NewLearningContentEntity> fetchNewLearningContent(Map<String, String> filterParams) {
-		Specification<NewLearningContentEntity> specification = addTimeRangeSpecification();
-		specification = specification.and(new SpecificationBuilder().filter(filterParams));
-		return learningContentRepo.findAll(specification,PageRequest.of( 0, 25, Sort.by(Sort.Direction.fromString(Constants.DESC), Constants.SORTDATE))).getContent();
-	}
-
-	private Specification<NewLearningContentEntity> addTimeRangeSpecification() {
-		Specification<NewLearningContentEntity> specification = Specification.where(null);
-		LocalDateTime localDateTimeStart = LocalDateTime.now().minusMonths(3);
-		ZonedDateTime zdtStart = ZonedDateTime.of(localDateTimeStart, ZoneId.systemDefault());
-		LocalDateTime localDateTimeEnd = LocalDateTime.now();
-		ZonedDateTime zdtEnd = ZonedDateTime.of(localDateTimeEnd, ZoneId.systemDefault());
-		specification= specification.and(CustomSpecifications.hasDateBetweenCriteria(Constants.SORTDATE,new Timestamp(zdtStart.toInstant().toEpochMilli()),new Timestamp(zdtEnd.toInstant().toEpochMilli())));
-		return specification;
+		List<NewLearningContentEntity> result;
+		if(filterParams.isEmpty())
+			result= learningContentRepo.findNew();
+		else {
+			List<NewLearningContentEntity> filteredList = new ArrayList<>();
+			Set<String> learningItemIdsList = new HashSet<String>();
+			Specification<NewLearningContentEntity> specification = Specification.where(null);
+			specification = specification.and(new SpecificationBuilder().filter(filterParams));
+			filteredList = learningContentRepo.findAll(specification);
+			learningItemIdsList = filteredList.stream().map(learningItem -> learningItem.getId())
+					.collect(Collectors.toSet());
+			result=learningContentRepo.findNewFiltered(learningItemIdsList);
+		}
+		return result;
 	}
 	
 	@Override
@@ -98,11 +99,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 			});
 		}
 
-		Specification<NewLearningContentEntity> specification = addTimeRangeSpecification();
-		specification = specification.and(new SpecificationBuilder().filter(filter));
-		int offset=0;
-		int limit = 25;
-		filteredList = learningContentRepo.findAll(specification,PageRequest.of( offset, limit, Sort.by(Sort.Direction.fromString(Constants.DESC), Constants.SORTDATE))).getContent();
+		filteredList = fetchNewLearningContent(filter);
 		learningItemIdsList = filteredList.stream().map(learningItem -> learningItem.getId())
 				.collect(Collectors.toSet());
 
@@ -128,14 +125,20 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 
 	@Override
 	public List<NewLearningContentEntity> fetchRecentlyViewedContent(String puid, String userId, Map<String, String> filterParams) {
-		List<NewLearningContentEntity> filteredList = new ArrayList<>();
-		Set<String> learningItemIdsList = new HashSet<String>();
-		Specification<NewLearningContentEntity> specification = Specification.where(null);
-		specification = specification.and(new SpecificationBuilder().filter(filterParams));
-		filteredList = learningContentRepo.findAll(specification);
-		learningItemIdsList = filteredList.stream().map(learningItem -> learningItem.getId())
-				.collect(Collectors.toSet());
-		return learningContentRepo.getRecentlyViewedContent(puid, userId, learningItemIdsList);
+		List<NewLearningContentEntity> result;
+		if(filterParams.isEmpty())
+			result= learningContentRepo.getRecentlyViewedContent(puid, userId);
+		else {
+			List<NewLearningContentEntity> filteredList = new ArrayList<>();
+			Set<String> learningItemIdsList = new HashSet<String>();
+			Specification<NewLearningContentEntity> specification = Specification.where(null);
+			specification = specification.and(new SpecificationBuilder().filter(filterParams));
+			filteredList = learningContentRepo.findAll(specification);
+			learningItemIdsList = filteredList.stream().map(learningItem -> learningItem.getId())
+					.collect(Collectors.toSet());
+			result=learningContentRepo.getRecentlyViewedContentFiltered(puid, userId, learningItemIdsList);
+		}
+		return result;
 	}
 
 	@Override
@@ -154,40 +157,12 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 				filterGroup.keySet().forEach(key -> filterGroup.put(key, "0"));
 			});
 		}
-
-		Specification<NewLearningContentEntity> specification = Specification.where(null);
-		specification = specification.and(new SpecificationBuilder().filter(filter));
-		filteredList = learningContentRepo.findAll(specification);
+		filteredList = fetchRecentlyViewedContent(puid, userId, filter);
 		learningItemIdsList = filteredList.stream().map(learningItem -> learningItem.getId())
 				.collect(Collectors.toSet());
 
-		// Content Type Filter
-		HashMap<String, String> contentTypeFilter = filterCounts.containsKey(Constants.CONTENT_TYPE) ? filterCounts.get(Constants.CONTENT_TYPE) : new HashMap<>();
-		List<Map<String, Object>> contentTypeFiltersWithCount = learningContentRepo
-				.getContentTypeFilteredForRecentlyViewed(puid, userId, learningItemIdsList);
-		Map<String, String>  allContents = listToMap(contentTypeFiltersWithCount);
-		contentTypeFilter.putAll(allContents);
-		if (!contentTypeFilter.isEmpty())
-			filterCounts.put("Content Type", contentTypeFilter);
-
-		// Live Events Filter
-		HashMap<String, String> regionFilter = filterCounts.containsKey(Constants.LIVE_EVENTS) ? filterCounts.get(Constants.LIVE_EVENTS) : new HashMap<>();
-		List<Map<String, Object>> regionFilterWithCount = learningContentRepo
-				.getRegionFilteredForRecentlyViewed(puid, userId, learningItemIdsList);
-		Map<String, String> allRegions = listToMap(regionFilterWithCount);
-		regionFilter.putAll(allRegions);
-		if (!regionFilter.isEmpty())
-			filterCounts.put("Live Events", regionFilter);
-
-		// Language Filter
-		HashMap<String, String> languageFilter = filterCounts.containsKey(Constants.LANGUAGE) ? filterCounts.get(Constants.LANGUAGE) : new HashMap<>();
-		List<Map<String, Object>> languageFiltered = learningContentRepo
-				.getLanguageFilteredForRecentlyViewed(puid, userId, learningItemIdsList);
-		Map<String, String> allLanguages = listToMap(languageFiltered);
-		languageFilter.putAll(allLanguages);
-		if (!languageFilter.isEmpty())
-			filterCounts.put("Language", languageFilter);
-
+		// Calculating counts after filtering
+		getFilteredCounts(filterCounts, learningItemIdsList);
 		return filterCounts;
 	}
 
@@ -223,22 +198,22 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		return filterCounts;
 	}
 	
-	private Specification<NewLearningContentEntity> addUpcomingSpecifications() {
-		Specification<NewLearningContentEntity> specification = Specification.where(null);
-		LocalDateTime localDateTimeStart = LocalDateTime.now();
-		ZonedDateTime zdtStart = ZonedDateTime.of(localDateTimeStart, ZoneId.systemDefault());
-		specification= specification.and(CustomSpecifications.hasDateGreaterThan(Constants.SORTDATE,new Timestamp(zdtStart.toInstant().toEpochMilli())));
-		specification= specification.and(CustomSpecifications.hasValue(Constants.CONTENT_TYPE_FIELD, Constants.LIVE_WEBINAR));
-		return specification;
-	}
-	
 	@Override
 	public List<NewLearningContentEntity> fetchUpcomingContent(Map<String, String> filterParams) {
-		Specification<NewLearningContentEntity> specification = addUpcomingSpecifications();
-		specification = specification.and(new SpecificationBuilder().filter(filterParams));
-		int offset=0;
-		int limit = 25;
-		return learningContentRepo.findAll(specification,PageRequest.of( offset, limit, Sort.by(Sort.Direction.fromString(Constants.ASC), Constants.SORTDATE))).getContent();
+		List<NewLearningContentEntity> result;
+		if(filterParams.isEmpty())
+			result= learningContentRepo.findUpcoming();
+		else {
+			List<NewLearningContentEntity> filteredList = new ArrayList<>();
+			Set<String> learningItemIdsList = new HashSet<String>();
+			Specification<NewLearningContentEntity> specification = Specification.where(null);
+			specification = specification.and(new SpecificationBuilder().filter(filterParams));
+			filteredList = learningContentRepo.findAll(specification);
+			learningItemIdsList = filteredList.stream().map(learningItem -> learningItem.getId())
+					.collect(Collectors.toSet());
+			result=learningContentRepo.findUpcomingFiltered(learningItemIdsList);
+		}
+		return result;
 	}
 	
 	@Override
@@ -255,11 +230,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 			});
 		}
 
-		Specification<NewLearningContentEntity> specification = addUpcomingSpecifications();
-		specification = specification.and(new SpecificationBuilder().filter(filter));
-		int offset=0;
-		int limit = 25;
-		filteredList = learningContentRepo.findAll(specification,PageRequest.of( offset, limit, Sort.by(Sort.Direction.fromString(Constants.ASC), Constants.SORTDATE))).getContent();
+		filteredList = fetchUpcomingContent(filter);
 		learningItemIdsList = filteredList.stream().map(learningItem -> learningItem.getId())
 				.collect(Collectors.toSet());
 
