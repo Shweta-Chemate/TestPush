@@ -1,5 +1,6 @@
 package com.cisco.cx.training.models;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.cisco.cx.training.util.HasId;
@@ -23,6 +24,8 @@ public class SuccessTalk implements HasId, Comparable<SuccessTalk> {
 	private String imageUrl;
 	@ApiModelProperty(notes = "Status of the SuccessTalk", example = "Recommended")
 	private String status;
+	@ApiModelProperty(notes = "registration updated timestamp", example = "Recommended")
+	private LocalDateTime regTimestamp;
 	@ApiModelProperty(notes = "Pitstop", example = "Onboard")
 	private String recordingUrl;
 	@ApiModelProperty(notes = "Duration of the session in seconds", example = "3600")
@@ -176,6 +179,14 @@ public class SuccessTalk implements HasId, Comparable<SuccessTalk> {
 
 	public void setTechnicalSession(Boolean technicalSession) {
 		this.technicalSession = technicalSession;
+	}
+
+	public LocalDateTime getRegTimestamp() {
+		return regTimestamp;
+	}
+
+	public void setRegTimestamp(LocalDateTime regTimestamp) {
+		this.regTimestamp = regTimestamp;
 	}
 
 }
