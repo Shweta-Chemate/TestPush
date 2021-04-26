@@ -1,6 +1,8 @@
 package com.cisco.cx.training.models;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 
 public class LearningContentItem {
@@ -49,6 +51,8 @@ public class LearningContentItem {
 	private Timestamp sortByDate;
 	
 	private String status;
+	
+	private LocalDateTime regTimestamp;
 	
 	private Boolean bookmark;
 	
@@ -335,6 +339,14 @@ public class LearningContentItem {
 
 	public void setLink(String link) {
 		this.link = link;
+	}
+	
+	public LocalDateTime getRegTimestamp() {
+		return regTimestamp;
+	}
+
+	public void setRegTimestamp(LocalDateTime regTimestamp) {
+		this.regTimestamp = regTimestamp;
 	}
 
 }

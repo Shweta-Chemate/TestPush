@@ -91,6 +91,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 						.findFirst().orElse(null);
 				if (userRegistration != null && userRegistration.getRegStatus() != null) {
 					learningItem.setStatus(userRegistration.getRegStatus());
+					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp());
 				}
 				successtalkList.add(learningItem);
 			}
@@ -153,6 +154,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 						.findFirst().orElse(null);
 				if (userRegistration != null && userRegistration.getRegStatus() != null) {
 					learningItem.setStatus(userRegistration.getRegStatus());
+					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp());
 				}
 				piwItems.add(learningItem);
 			}
@@ -313,6 +315,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 					.findFirst().orElse(null);
 			if (userRegistration != null && userRegistration.getRegStatus() != null) {
 				learningItem.setStatus(userRegistration.getRegStatus());
+				learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp());
 			}
 			result.add(learningItem);
 		}
@@ -348,6 +351,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 						.findFirst().orElse(null);
 				if (userRegistration != null && userRegistration.getRegStatus() != null) {
 					learningItem.setStatus(userRegistration.getRegStatus());
+					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp());
 				}
 			}
 		}
@@ -388,6 +392,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 					.findFirst().orElse(null);
 			if (userRegistration != null && userRegistration.getRegStatus() != null) {
 				learningItem.setStatus(userRegistration.getRegStatus());
+				learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp());
 			}
 			result.add(learningItem);
 		}
