@@ -265,7 +265,7 @@ public class LearningContentServiceTest {
 	
 	private Set<String> getBookmarks() {
 		Set<String> userBookmarks=new HashSet<>();
-		userBookmarks.add("testId");
+		userBookmarks.add("test");
 		return userBookmarks;
 	}
 	
@@ -306,7 +306,7 @@ public class LearningContentServiceTest {
 	private LearningStatusSchema getLearningStatusSchema()
 	{
 		LearningStatusSchema learningStatusSchema = new LearningStatusSchema();
-		learningStatusSchema.setLearningItemId("testId");
+		learningStatusSchema.setLearningItemId("test");
 		learningStatusSchema.setRegStatus(Registration.REGISTERED_T);
 		learningStatusSchema.setViewed(true);
 		return learningStatusSchema;
@@ -316,7 +316,7 @@ public class LearningContentServiceTest {
 	{
 		String testUserId = "sntccbr5@hotmail.com";
 		LearningStatusEntity learningStatusEntity = new LearningStatusEntity();
-		learningStatusEntity.setLearningItemId("testId");
+		learningStatusEntity.setLearningItemId("test");
 		learningStatusEntity.setPuid(this.puid);
 		learningStatusEntity.setUserId(testUserId);
 		learningStatusEntity.setRegStatus("REGISTERED_T");
@@ -327,7 +327,7 @@ public class LearningContentServiceTest {
 	NewLearningContentEntity getLearningEntity()
 	{
 		NewLearningContentEntity learningEntity = new NewLearningContentEntity();
-		learningEntity.setId("testId");
+		learningEntity.setId("test");
 		return learningEntity;
 	}
 	
