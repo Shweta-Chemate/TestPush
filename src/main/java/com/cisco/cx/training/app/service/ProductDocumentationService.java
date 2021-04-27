@@ -64,31 +64,31 @@ public class ProductDocumentationService{
 				default : LOG.info("other {}={}",k,list);
 				};
 			}
-			else if ( v instanceof Map) {	
-				Set<String> cardIdsStUcPs = new HashSet<String>();
-				//LOG.info("ST="+((Map) v).keySet());
-				((Map) v).keySet().forEach(ik->{
-					Object iv = ((Map)v).get(ik);
-					List<String> ilist;
-					if(iv instanceof Map) {
-						//LOG.info("UC="+((Map) iv).keySet());
-						((Map)iv).keySet().forEach(ivk -> {
-							Object ivv = ((Map)iv).get(ivk);
-							List<String> ivlist;
-							if(ivv instanceof List) 
-							{
-								ivlist= (List<String>)ivv;
-								LOG.info("PS={} uc={} st={}",ivlist,ivk,ik);
-								Set<String> pitStops = new HashSet<String>(ivlist);
-								String usecase = ivk.toString();
-								String successtrack = ik.toString();
-								cardIdsStUcPs.addAll(productDocumentationDAO.getCardIdsByPsUcSt(successtrack,usecase,pitStops));
-							}						
-						});
-					}
-				});
-				filteredCards.put(k,cardIdsStUcPs);
-			}
+////			else if ( v instanceof Map) {	
+////				Set<String> cardIdsStUcPs = new HashSet<String>();
+////				//LOG.info("ST="+((Map) v).keySet());
+////				((Map) v).keySet().forEach(ik->{
+////					Object iv = ((Map)v).get(ik);
+////					List<String> ilist;
+////					if(iv instanceof Map) {
+////						//LOG.info("UC="+((Map) iv).keySet());
+////						((Map)iv).keySet().forEach(ivk -> {
+////							Object ivv = ((Map)iv).get(ivk);
+////							List<String> ivlist;
+////							if(ivv instanceof List) 
+////							{
+////								ivlist= (List<String>)ivv;
+////								LOG.info("PS={} uc={} st={}",ivlist,ivk,ik);
+////								Set<String> pitStops = new HashSet<String>(ivlist);
+////								String usecase = ivk.toString();
+////								String successtrack = ik.toString();
+////								cardIdsStUcPs.addAll(productDocumentationDAO.getCardIdsByPsUcSt(successtrack,usecase,pitStops));
+////							}						
+////						});
+////					}
+////				});
+//				filteredCards.put(k,cardIdsStUcPs);
+//			}
 		});
 		
 		LOG.info("filteredCards = {} ",filteredCards);	
@@ -246,10 +246,10 @@ public class ProductDocumentationService{
 		allContentsLE.keySet().forEach(k -> regionFilter.put(k, "0"));
 		
 		//TODO ST
-		HashMap<String, Object> stFilter = new HashMap<>();
-		filters.put(SUCCESS_TRACKS_FILTER, stFilter);
-		List<Map<String,Object>> dbListST = productDocumentationDAO.getAllStUcPsWithCount();
-		Map<String,Object> allContentsST = listToSTMap(dbListST,stFilter);countFilters.put(SUCCESS_TRACKS_FILTER, allContentsST);
+//		HashMap<String, Object> stFilter = new HashMap<>();
+//		filters.put(SUCCESS_TRACKS_FILTER, stFilter);
+//		List<Map<String,Object>> dbListST = productDocumentationDAO.getAllStUcPsWithCount();
+//		Map<String,Object> allContentsST = listToSTMap(dbListST,stFilter);countFilters.put(SUCCESS_TRACKS_FILTER, allContentsST);
 		
 		HashMap<String, Object> youFilter = new HashMap<>();
 		filters.put(FOR_YOU_FILTER, youFilter);		
@@ -329,8 +329,8 @@ public class ProductDocumentationService{
 		((Map<String,String>)filters.get(LIVE_EVENTS_FILTER)).putAll(listToMap(dbListLE));	
 		
 		//TODO ST
-		List<Map<String,Object>> dbListST = productDocumentationDAO.getAllStUcPsWithCountByCards(cardIds);		
-		((Map<String,Object>)filters.get(SUCCESS_TRACKS_FILTER)).putAll(listToSTMap(dbListST,null));
+//		List<Map<String,Object>> dbListST = productDocumentationDAO.getAllStUcPsWithCountByCards(cardIds);		
+//		((Map<String,Object>)filters.get(SUCCESS_TRACKS_FILTER)).putAll(listToSTMap(dbListST,null));
 		
 		
 		Map<String,String> dbMapYou = getForYouCounts(cardIds);		
