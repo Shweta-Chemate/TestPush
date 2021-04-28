@@ -311,4 +311,22 @@ public class TrainingAndEnablementControllerTest {
 	private String loadFromFile(String filePath) throws IOException {
 		return new String(Files.readAllBytes(resourceLoader.getResource("classpath:" + filePath).getFile().toPath()));
 	}
+	
+	
+	@Test
+	public void getAllLearningsInfoPost() throws Exception {
+		this.mockMvc
+				.perform(post("/v1/partner/training/getAllLearningInfo").contentType(MediaType.APPLICATION_JSON_VALUE)
+						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
+				.andDo(print()).andExpect(status().isOk());
+	}
+	
+	@Test
+	public void getAllLearningFiltersPost() throws Exception {
+		this.mockMvc
+				.perform(post("/v1/partner/training/getAllLearningFilters").contentType(MediaType.APPLICATION_JSON_VALUE)
+						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
+				.andDo(print()).andExpect(status().isOk());
+	}
+	
 }
