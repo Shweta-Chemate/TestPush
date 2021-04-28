@@ -91,6 +91,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 						.findFirst().orElse(null);
 				if (userRegistration != null && userRegistration.getRegStatus() != null) {
 					learningItem.setStatus(userRegistration.getRegStatus());
+					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp());
 				}
 				successtalkList.add(learningItem);
 			}
@@ -153,6 +154,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 						.findFirst().orElse(null);
 				if (userRegistration != null && userRegistration.getRegStatus() != null) {
 					learningItem.setStatus(userRegistration.getRegStatus());
+					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp());
 				}
 				piwItems.add(learningItem);
 			}
@@ -238,8 +240,15 @@ public class LearningContentServiceImpl implements LearningContentService {
 
 	@Override
 	public HashMap<String, HashMap<String,String>> getViewMoreNewFiltersWithCount(String filter, HashMap<String, HashMap<String,String>> filterCounts) {
-		Map<String, String> query_map = filterStringtoMap(filter);
-		return learningContentDAO.getViewMoreNewFiltersWithCount(query_map, filterCounts);
+		HashMap<String, HashMap<String,String>> viewMoreCounts = new HashMap<>();
+		try
+		{
+			Map<String, String> query_map = filterStringtoMap(filter);
+			viewMoreCounts = learningContentDAO.getViewMoreNewFiltersWithCount(query_map, filterCounts);
+		}catch (Exception e) {
+			throw new GenericException("There was a problem in fetching new filter counts");
+		}
+		return viewMoreCounts;
 	}
 
 	@Override
@@ -293,28 +302,34 @@ public class LearningContentServiceImpl implements LearningContentService {
 		List<NewLearningContentEntity> learningContentList = new ArrayList<>();
 		List<LearningContentItem> result = new ArrayList<>();
 		Map<String, String> query_map = filterStringtoMap(filter);
-		learningContentList=learningContentDAO.fetchRecentlyViewedContent(puid, ccoid, query_map);
-		//populate bookmark info  and registration info
-		Set<String> userBookmarks = null;
-		if(null != ccoid){
-			userBookmarks = learningBookmarkDAO.getBookmarks(ccoid);
-		}
-		List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserIdAndPuid(ccoid, puid);
-		for(NewLearningContentEntity entity : learningContentList){
-			LearningContentItem learningItem = new LearningContentItem(entity);
-			learningItem.setBookmark(false);
-			if(null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
-					&& userBookmarks.contains(learningItem.getId())){
-				learningItem.setBookmark(true);
+		try
+		{
+			learningContentList=learningContentDAO.fetchRecentlyViewedContent(puid, ccoid, query_map);
+			//populate bookmark info  and registration info
+			Set<String> userBookmarks = null;
+			if(null != ccoid){
+				userBookmarks = learningBookmarkDAO.getBookmarks(ccoid);
 			}
-			LearningStatusEntity userRegistration = userRegistrations.stream()
-					.filter(userRegistrationInStream -> userRegistrationInStream.getLearningItemId()
-							.equalsIgnoreCase(learningItem.getId()))
-					.findFirst().orElse(null);
-			if (userRegistration != null && userRegistration.getRegStatus() != null) {
-				learningItem.setStatus(userRegistration.getRegStatus());
-			}
-			result.add(learningItem);
+			List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserIdAndPuid(ccoid, puid);
+			for(NewLearningContentEntity entity : learningContentList){
+				LearningContentItem learningItem = new LearningContentItem(entity);
+				learningItem.setBookmark(false);
+				if(null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
+						&& userBookmarks.contains(learningItem.getId())){
+					learningItem.setBookmark(true);
+				}
+				LearningStatusEntity userRegistration = userRegistrations.stream()
+						.filter(userRegistrationInStream -> userRegistrationInStream.getLearningItemId()
+								.equalsIgnoreCase(learningItem.getId()))
+						.findFirst().orElse(null);
+				if (userRegistration != null && userRegistration.getRegStatus() != null) {
+					learningItem.setStatus(userRegistration.getRegStatus());
+					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp());
+				}
+				result.add(learningItem);
+			}			
+		}catch (Exception e) {
+			throw new GenericException("There was a problem in fetching recently viewed learning content");
 		}
 		return result;
 	}
@@ -322,8 +337,15 @@ public class LearningContentServiceImpl implements LearningContentService {
 	@Override
 	public HashMap<String, HashMap<String, String>> getRecentlyViewedFiltersWithCount(String puid,String userId, String filter,
 			HashMap<String, HashMap<String, String>> filterCounts) {
-		Map<String, String> query_map = filterStringtoMap(filter);
-		return learningContentDAO.getRecentlyViewedFiltersWithCount(puid, userId, query_map, filterCounts);
+		HashMap<String, HashMap<String,String>> recentlyViewedCounts = new HashMap<>();
+		try
+		{
+			Map<String, String> query_map = filterStringtoMap(filter);
+			recentlyViewedCounts = learningContentDAO.getRecentlyViewedFiltersWithCount(puid, userId, query_map, filterCounts);	
+		}catch (Exception e) {
+			throw new GenericException("There was a problem in fetching recently viewed filter counts");
+		}
+		return recentlyViewedCounts;
 	}
 
 	@Override
@@ -331,25 +353,31 @@ public class LearningContentServiceImpl implements LearningContentService {
 		List<NewLearningContentEntity> learningFilteredList = new ArrayList<>();
 		List<LearningContentItem> result = new ArrayList<>();
 		Map<String, String> query_map = filterStringtoMap(filter);
-		learningFilteredList=learningContentDAO.fetchFilteredContent(puid, ccoid, query_map);
-		//get bookmarked content
-		Set<String> userBookmarks = null;
-		userBookmarks = learningBookmarkDAO.getBookmarks(ccoid);
-		List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserIdAndPuid(ccoid, puid);
-		for(NewLearningContentEntity entity : learningFilteredList){
-			LearningContentItem learningItem = new LearningContentItem(entity);
-			if(null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
-					&& userBookmarks.contains(entity.getId())){
-				learningItem.setBookmark(true);
-				result.add(learningItem);
-				LearningStatusEntity userRegistration = userRegistrations.stream()
-						.filter(userRegistrationInStream -> userRegistrationInStream.getLearningItemId()
-								.equalsIgnoreCase(learningItem.getId()))
-						.findFirst().orElse(null);
-				if (userRegistration != null && userRegistration.getRegStatus() != null) {
-					learningItem.setStatus(userRegistration.getRegStatus());
+		try
+		{
+			learningFilteredList=learningContentDAO.fetchFilteredContent(puid, ccoid, query_map);
+			//get bookmarked content
+			Set<String> userBookmarks = null;
+			userBookmarks = learningBookmarkDAO.getBookmarks(ccoid);
+			List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserIdAndPuid(ccoid, puid);
+			for(NewLearningContentEntity entity : learningFilteredList){
+				LearningContentItem learningItem = new LearningContentItem(entity);
+				if(null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
+						&& userBookmarks.contains(entity.getId())){
+					learningItem.setBookmark(true);
+					result.add(learningItem);
+					LearningStatusEntity userRegistration = userRegistrations.stream()
+							.filter(userRegistrationInStream -> userRegistrationInStream.getLearningItemId()
+									.equalsIgnoreCase(learningItem.getId()))
+							.findFirst().orElse(null);
+					if (userRegistration != null && userRegistration.getRegStatus() != null) {
+						learningItem.setStatus(userRegistration.getRegStatus());
+						learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp());
+					}
 				}
-			}
+			}			
+		}catch (Exception e) {
+			throw new GenericException("There was a problem in fetching bookmarked learning content");
 		}
 		return result;
 	}
@@ -357,10 +385,17 @@ public class LearningContentServiceImpl implements LearningContentService {
 	@Override
 	public HashMap<String, HashMap<String, String>> getBookmarkedFiltersWithCount(String puid, String ccoid,
 			String filter, HashMap<String, HashMap<String, String>> filterCounts) {
-		Map<String, String> query_map = filterStringtoMap(filter);
-		List<LearningContentItem> bookmarkedList = new ArrayList<>();
-		bookmarkedList = fetchBookMarkedContent(puid, ccoid, filter);
-		return learningContentDAO.getBookmarkedFiltersWithCount(query_map, filterCounts, bookmarkedList);
+		HashMap<String, HashMap<String,String>> bookmarkedCounts = new HashMap<>();
+		try
+		{
+			Map<String, String> query_map = filterStringtoMap(filter);
+			List<LearningContentItem> bookmarkedList = new ArrayList<>();
+			bookmarkedList = fetchBookMarkedContent(puid, ccoid, filter);
+			bookmarkedCounts = learningContentDAO.getBookmarkedFiltersWithCount(query_map, filterCounts, bookmarkedList);		
+		}catch (Exception e) {
+			throw new GenericException("There was a problem in fetching bookmarked filter counts");
+		}
+		return bookmarkedCounts;
 	}
 	
 	@Override
@@ -368,28 +403,33 @@ public class LearningContentServiceImpl implements LearningContentService {
 		List<NewLearningContentEntity> upcomingContentList = new ArrayList<>();
 		List<LearningContentItem> result = new ArrayList<>();
 		Map<String, String> query_map = filterStringtoMap(filter);
-		upcomingContentList = learningContentDAO.fetchUpcomingContent(query_map);
-
-		// populate bookmark and registration info
-		Set<String> userBookmarks = null;
-		if (null != ccoid) {
-			userBookmarks = learningBookmarkDAO.getBookmarks(ccoid);
-		}
-		List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserIdAndPuid(ccoid, puid);
-		for (NewLearningContentEntity entity : upcomingContentList) {
-			LearningContentItem learningItem = new LearningContentItem(entity);
-			if (null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
-					&& userBookmarks.contains(learningItem.getId())) {
-				learningItem.setBookmark(true);
+		try
+		{
+			upcomingContentList = learningContentDAO.fetchUpcomingContent(query_map);
+			// populate bookmark and registration info
+			Set<String> userBookmarks = null;
+			if (null != ccoid) {
+				userBookmarks = learningBookmarkDAO.getBookmarks(ccoid);
 			}
-			LearningStatusEntity userRegistration = userRegistrations.stream()
-					.filter(userRegistrationInStream -> userRegistrationInStream.getLearningItemId()
-							.equalsIgnoreCase(learningItem.getId()))
-					.findFirst().orElse(null);
-			if (userRegistration != null && userRegistration.getRegStatus() != null) {
-				learningItem.setStatus(userRegistration.getRegStatus());
-			}
-			result.add(learningItem);
+			List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserIdAndPuid(ccoid, puid);
+			for (NewLearningContentEntity entity : upcomingContentList) {
+				LearningContentItem learningItem = new LearningContentItem(entity);
+				if (null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
+						&& userBookmarks.contains(learningItem.getId())) {
+					learningItem.setBookmark(true);
+				}
+				LearningStatusEntity userRegistration = userRegistrations.stream()
+						.filter(userRegistrationInStream -> userRegistrationInStream.getLearningItemId()
+								.equalsIgnoreCase(learningItem.getId()))
+						.findFirst().orElse(null);
+				if (userRegistration != null && userRegistration.getRegStatus() != null) {
+					learningItem.setStatus(userRegistration.getRegStatus());
+					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp());
+				}
+				result.add(learningItem);
+			}			
+		}catch (Exception e) {
+			throw new GenericException("There was a problem in fetching upcoming learning content");
 		}
 		return result;
 	}
@@ -397,8 +437,15 @@ public class LearningContentServiceImpl implements LearningContentService {
 	@Override
 	public HashMap<String, HashMap<String, String>> getUpcomingFiltersWithCount(String filter,
 			HashMap<String, HashMap<String, String>> filterCounts) {
-		Map<String, String> query_map = filterStringtoMap(filter);
-		return learningContentDAO.getUpcomingFiltersWithCount(query_map, filterCounts);
+		HashMap<String, HashMap<String,String>> upcomingContentCounts = new HashMap<>();
+		try
+		{
+			Map<String, String> query_map = filterStringtoMap(filter);
+			upcomingContentCounts = learningContentDAO.getUpcomingFiltersWithCount(query_map, filterCounts);			
+		}catch (Exception e) {
+			throw new GenericException("There was a problem in fetching upcoming learning content");
+		}
+		return upcomingContentCounts;
 	}
 
 }

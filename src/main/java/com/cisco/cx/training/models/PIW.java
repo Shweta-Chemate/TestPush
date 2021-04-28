@@ -1,5 +1,6 @@
 package com.cisco.cx.training.models;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
@@ -15,6 +16,8 @@ public class PIW {
 	private String description;
 
 	private String status;
+
+	private LocalDateTime regTimestamp;
 
 	private boolean bookmark;
 
@@ -168,7 +171,13 @@ public class PIW {
 		this.bookmark = bookmark;
 	}
 
+	public LocalDateTime getRegTimestamp() {
+		return regTimestamp;
+	}
 
+	public void setRegTimestamp(LocalDateTime regTimestamp) {
+		this.regTimestamp = regTimestamp;
+	}
 
 	public enum PIWStatusEnum {
 		ATTENDED("Attended"),

@@ -433,6 +433,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 					.findFirst().orElse(null);
 			if (userRegistration != null && userRegistration.getRegStatus() != null) {
 				learningItem.setStatus(userRegistration.getRegStatus());
+				learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp());
 			}
 			result.add(learningItem);
 		}
