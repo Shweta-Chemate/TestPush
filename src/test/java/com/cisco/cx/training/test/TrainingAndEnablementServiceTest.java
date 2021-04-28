@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -40,6 +41,7 @@ import com.cisco.cx.training.app.exception.GenericException;
 import com.cisco.cx.training.app.exception.NotAllowedException;
 import com.cisco.cx.training.app.exception.NotFoundException;
 import com.cisco.cx.training.app.service.PartnerProfileService;
+import com.cisco.cx.training.app.service.ProductDocumentationService;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
 import com.cisco.cx.training.app.service.impl.TrainingAndEnablementServiceImpl;
 import com.cisco.cx.training.models.BookmarkRequestSchema;
@@ -47,6 +49,8 @@ import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.cisco.cx.training.models.Community;
 import com.cisco.cx.training.models.Company;
 import com.cisco.cx.training.models.ElasticSearchResults;
+import com.cisco.cx.training.models.GenericLearningModel;
+import com.cisco.cx.training.models.LearningRecordsAndFiltersModel;
 import com.cisco.cx.training.models.SuccessAcademyFilter;
 import com.cisco.cx.training.models.SuccessAcademyLearning;
 import com.cisco.cx.training.models.SuccessTalk;
@@ -88,6 +92,9 @@ public class TrainingAndEnablementServiceTest {
 	
 	@Mock
 	private PartnerProfileService partnerProfileService;
+	
+	@Mock
+	private ProductDocumentationService productDocumentationService;
 
 	@InjectMocks
 	private TrainingAndEnablementService trainingAndEnablementService = new TrainingAndEnablementServiceImpl();	
@@ -437,4 +444,28 @@ public class TrainingAndEnablementServiceTest {
 		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(null);			
 		trainingAndEnablementService.bookmarkLearningForUser(null, "");
 	}
+	
+	@Test
+	public void getAllLearningInfoPost()
+	{
+		List<GenericLearningModel> cards = new ArrayList<GenericLearningModel>();
+		LearningRecordsAndFiltersModel aMock = new LearningRecordsAndFiltersModel();
+		aMock.setLearningData(cards);
+		when(productDocumentationService.getAllLearningInfo("mashery","searchToken",null,"sortBy","sortOrder")).thenReturn(aMock);
+		LearningRecordsAndFiltersModel a = trainingAndEnablementService.getAllLearningInfoPost("mashery","searchToken",null,"sortBy","sortOrder");		
+		Assert.assertEquals(0, a.getLearningData().size());
+	}
+	
+	@Test
+	public void getAllLearningFiltersPost()
+	{
+		HashMap<String, Object> aMock = new HashMap<String, Object>();		
+		when(productDocumentationService.getAllLearningFilters("searchToken",null)).thenReturn(aMock);
+		HashMap<String, Object> a = trainingAndEnablementService.getAllLearningFiltersPost("searchToken",null);
+		Assert.assertEquals(0, a.size());
+	}
+	
 }
+
+
+
