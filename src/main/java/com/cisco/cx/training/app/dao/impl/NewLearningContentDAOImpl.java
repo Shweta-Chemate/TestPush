@@ -224,7 +224,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	@Override
 	public List<NewLearningContentEntity> fetchSuccessAcademyContent(Map<String, String> filterParams) {
 		Specification<NewLearningContentEntity> specification = Specification.where(null);
-		specification= specification.and(CustomSpecifications.hasValue(Constants.LEARNING_TYPE, Constants.MODULE));
+		specification= specification.and(CustomSpecifications.hasValue(Constants.LEARNING_TYPE, Constants.SUCCESS_ACADEMY));
 		specification = specification.and(new SpecificationBuilder().filter(filterParams));
 		return learningContentRepo.findAll(specification);
 	}
