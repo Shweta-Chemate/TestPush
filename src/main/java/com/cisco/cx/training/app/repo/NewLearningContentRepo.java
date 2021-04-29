@@ -49,5 +49,7 @@ public interface NewLearningContentRepo
 
 	@Query(value = SQLConstants.GET_UPCOMING_CONTENT, nativeQuery = true)
 	List<NewLearningContentEntity> findUpcomingFiltered(Set<String> learningItemIds);
-
+	
+	@Query(value = SQLConstants.GET_SUCCESSACADEMY_FILTER_WITH_COUNT, nativeQuery = true)
+	List<Map<String, Object>> findSuccessAcademyFiltered(String asset_model, Set<String> learningItemIds);
 }

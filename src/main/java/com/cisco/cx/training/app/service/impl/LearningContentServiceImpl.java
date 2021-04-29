@@ -474,5 +474,19 @@ public class LearningContentServiceImpl implements LearningContentService {
 		}
 		return result;
 	}
+	
+	@Override
+	public HashMap<String, HashMap<String, String>> getSuccessAcademyFiltersWithCount(String filter,
+			HashMap<String, HashMap<String, String>> filterCounts, String select) {
+		HashMap<String, HashMap<String,String>> successAcademyContentCounts = new HashMap<>();
+		try
+		{
+			Map<String, String> query_map = filterStringtoMap(filter);
+			successAcademyContentCounts = learningContentDAO.getSuccessAcademyFiltersWithCount(query_map, filterCounts, select);
+		}catch (Exception e) {
+			throw new GenericException("There was a problem in fetching successacademy filters");
+		}
+		return successAcademyContentCounts;
+	}
 
 }
