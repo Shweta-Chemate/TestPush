@@ -84,7 +84,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	}
 	
 	@Override
-	public HashMap<String, HashMap<String,String>> getViewMoreNewFiltersWithCount(Map<String, String> filter, HashMap<String, HashMap<String,String>> filterCounts) {
+	public HashMap<String, HashMap<String,String>> getViewMoreNewFiltersWithCount(Map<String, String> filter, HashMap<String, HashMap<String,String>> filterCounts, String select) {
 		List<NewLearningContentEntity> filteredList = new ArrayList<>();
 		Set<String> learningItemIdsList = new HashSet<String>();
 
@@ -92,19 +92,13 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		{
 			filterCounts=new HashMap<>();
 		}
-		else
-		{
-			filterCounts.values().forEach(filterGroup -> {
-				filterGroup.keySet().forEach(key -> filterGroup.put(key, "0"));
-			});
-		}
 
 		filteredList = fetchNewLearningContent(filter);
 		learningItemIdsList = filteredList.stream().map(learningItem -> learningItem.getId())
 				.collect(Collectors.toSet());
 
 		// Calculating counts after filtering
-		getFilteredCounts(filterCounts, learningItemIdsList);
+		getFilteredCounts(filterCounts, learningItemIdsList, select);
 
 		return filterCounts;
 	}
@@ -143,7 +137,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 
 	@Override
 	public HashMap<String, HashMap<String, String>> getRecentlyViewedFiltersWithCount(String puid, String userId, Map<String, String> filter,
-			HashMap<String, HashMap<String, String>> filterCounts) {
+			HashMap<String, HashMap<String, String>> filterCounts, String select) {
 		List<NewLearningContentEntity> filteredList = new ArrayList<>();
 		Set<String> learningItemIdsList = new HashSet<String>();
 
@@ -151,18 +145,13 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		{
 			filterCounts=new HashMap<>();
 		}
-		else
-		{
-			filterCounts.values().forEach(filterGroup -> {
-				filterGroup.keySet().forEach(key -> filterGroup.put(key, "0"));
-			});
-		}
+
 		filteredList = fetchRecentlyViewedContent(puid, userId, filter);
 		learningItemIdsList = filteredList.stream().map(learningItem -> learningItem.getId())
 				.collect(Collectors.toSet());
 
 		// Calculating counts after filtering
-		getFilteredCounts(filterCounts, learningItemIdsList);
+		getFilteredCounts(filterCounts, learningItemIdsList, select);
 		return filterCounts;
 	}
 
@@ -178,22 +167,18 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	
 	@Override
 	public HashMap<String, HashMap<String, String>> getBookmarkedFiltersWithCount(Map<String, String> query_map, HashMap<String, HashMap<String, String>> filterCounts,
-			List<LearningContentItem> filteredBookmarkedList) {
+			List<LearningContentItem> filteredBookmarkedList, String select) {
 		Set<String> learningItemIdsList = new HashSet<String>();
 
 		if (filterCounts == null) {
 			filterCounts = new HashMap<>();
-		} else {
-			filterCounts.values().forEach(filterGroup -> {
-				filterGroup.keySet().forEach(key -> filterGroup.put(key, "0"));
-			});
 		}
 
 		learningItemIdsList = filteredBookmarkedList.stream().map(learningItem -> learningItem.getId())
 				.collect(Collectors.toSet());
 
 		// Calculating counts after filtering
-		getFilteredCounts(filterCounts, learningItemIdsList);
+		getFilteredCounts(filterCounts, learningItemIdsList, select);
 
 		return filterCounts;
 	}
@@ -218,16 +203,12 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	
 	@Override
 	public HashMap<String, HashMap<String, String>> getUpcomingFiltersWithCount(Map<String, String> filter,
-			HashMap<String, HashMap<String, String>> filterCounts) {
+			HashMap<String, HashMap<String, String>> filterCounts, String select) {
 		List<NewLearningContentEntity> filteredList = new ArrayList<>();
 		Set<String> learningItemIdsList = new HashSet<String>();
 
 		if (filterCounts == null) {
 			filterCounts = new HashMap<>();
-		} else {
-			filterCounts.values().forEach(filterGroup -> {
-				filterGroup.keySet().forEach(key -> filterGroup.put(key, "0"));
-			});
 		}
 
 		filteredList = fetchUpcomingContent(filter);
@@ -235,46 +216,66 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 				.collect(Collectors.toSet());
 
 		// Calculating counts after filtering
-		getFilteredCounts(filterCounts, learningItemIdsList);
+		getFilteredCounts(filterCounts, learningItemIdsList, select);
 
 		return filterCounts;
 	}
 	
-	HashMap<String, HashMap<String, String>> getFilteredCounts(HashMap<String, HashMap<String, String>> filterCounts, Set<String> learningItemIdsList)
+	@Override
+	public List<NewLearningContentEntity> fetchSuccessAcademyContent(Map<String, String> filterParams) {
+		Specification<NewLearningContentEntity> specification = Specification.where(null);
+		specification= specification.and(CustomSpecifications.hasValue(Constants.LEARNING_TYPE, Constants.SUCCESS_ACADEMY));
+		specification = specification.and(new SpecificationBuilder().filter(filterParams));
+		return learningContentRepo.findAll(specification);
+	}
+
+	HashMap<String, HashMap<String, String>> getFilteredCounts(HashMap<String, HashMap<String, String>> filterCounts, Set<String> learningItemIdsList, String select)
 	{
+		boolean update=select==null?true:!select.equals(Constants.CONTENT_TYPE);
 		// Content Type Filter
-		HashMap<String, String> contentTypeFilter = filterCounts.containsKey(Constants.CONTENT_TYPE)
-				? filterCounts.get(Constants.CONTENT_TYPE)
-				: new HashMap<>();
-		List<Map<String, Object>> contentTypeFiltersWithCount = learningContentRepo
-				.getAllContentTypeWithCountByCards(learningItemIdsList);
-		Map<String, String> allContents = listToMap(contentTypeFiltersWithCount);
-		contentTypeFilter.putAll(allContents);
-		if (!contentTypeFilter.isEmpty())
-			filterCounts.put("Content Type", contentTypeFilter);
+		if(update) {
+			HashMap<String, String> contentTypeFilter = filterCounts.containsKey(Constants.CONTENT_TYPE)
+					? filterCounts.get(Constants.CONTENT_TYPE)
+							: new HashMap<>();
+					contentTypeFilter.keySet().forEach(key -> contentTypeFilter.put(key, "0"));
+					List<Map<String, Object>> contentTypeFiltersWithCount = learningContentRepo
+							.getAllContentTypeWithCountByCards(learningItemIdsList);
+					Map<String, String> allContents = listToMap(contentTypeFiltersWithCount);
+					contentTypeFilter.putAll(allContents);
+					if (!contentTypeFilter.isEmpty())
+						filterCounts.put("Content Type", contentTypeFilter);
+		}
 
+		update=select==null?true:!select.equals(Constants.LIVE_EVENTS);
 		// Live Events Filter
-		HashMap<String, String> regionFilter = filterCounts.containsKey(Constants.LIVE_EVENTS)
-				? filterCounts.get(Constants.LIVE_EVENTS)
-				: new HashMap<>();
-		List<Map<String, Object>> regionFilterWithCount = learningContentRepo
-				.getAllRegionsWithCountByCards(learningItemIdsList);
-		Map<String, String> allRegions = listToMap(regionFilterWithCount);
-		regionFilter.putAll(allRegions);
-		if (!regionFilter.isEmpty())
-			filterCounts.put("Live Events", regionFilter);
+		if(update) {
+			HashMap<String, String> regionFilter = filterCounts.containsKey(Constants.LIVE_EVENTS)
+					? filterCounts.get(Constants.LIVE_EVENTS)
+					: new HashMap<>();
+			regionFilter.keySet().forEach(key -> regionFilter.put(key, "0"));
+			List<Map<String, Object>> regionFilterWithCount = learningContentRepo
+					.getAllRegionsWithCountByCards(learningItemIdsList);
+			Map<String, String> allRegions = listToMap(regionFilterWithCount);
+			regionFilter.putAll(allRegions);
+			if (!regionFilter.isEmpty())
+				filterCounts.put("Live Events", regionFilter);
+		}
 
+		update=select==null?true:!select.equals(Constants.LANGUAGE);
 		// Language Filter
-		HashMap<String, String> languageFilter = filterCounts.containsKey(Constants.LANGUAGE)
-				? filterCounts.get(Constants.LANGUAGE)
-				: new HashMap<>();
-		List<Map<String, Object>> languageFiltered = learningContentRepo
-				.getAllLanguagesWithCountByCards(learningItemIdsList);
-		Map<String, String> allLanguages = listToMap(languageFiltered);
-		languageFilter.putAll(allLanguages);
-		if (!languageFilter.isEmpty())
-			filterCounts.put("Language", languageFilter);
-		
+		if(update) {
+			HashMap<String, String> languageFilter = filterCounts.containsKey(Constants.LANGUAGE)
+					? filterCounts.get(Constants.LANGUAGE)
+					: new HashMap<>();
+			languageFilter.keySet().forEach(key -> languageFilter.put(key, "0"));
+			List<Map<String, Object>> languageFiltered = learningContentRepo
+					.getAllLanguagesWithCountByCards(learningItemIdsList);
+			Map<String, String> allLanguages = listToMap(languageFiltered);
+			languageFilter.putAll(allLanguages);
+			if (!languageFilter.isEmpty())
+				filterCounts.put("Language", languageFilter);
+		}
+
 		return filterCounts;
 	}
 

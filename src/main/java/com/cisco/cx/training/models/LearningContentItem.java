@@ -36,6 +36,10 @@ public class LearningContentItem {
 		this.technology=entity.getTechnology();
 		this.contentType=entity.getContentType();
 		this.link=entity.getLink();
+		this.archetype=entity.getArchetype();
+		this.assetFacet=entity.getAssetFacet();
+		this.assetGroup=entity.getAssetGroup();
+		this.assetModel=entity.getAssetModel();
 	}
 
 	private String id;
@@ -100,7 +104,46 @@ public class LearningContentItem {
 	
 	private String link;
 	
-	
+	private String archetype;
+
+	private String assetModel;
+
+	private String assetFacet;
+
+	private String assetGroup;
+
+	public String getArchetype() {
+		return archetype;
+	}
+
+	public void setArchetype(String archetype) {
+		this.archetype = archetype;
+	}
+
+	public String getAssetModel() {
+		return assetModel;
+	}
+
+	public void setAssetModel(String assetModel) {
+		this.assetModel = assetModel;
+	}
+
+	public String getAssetFacet() {
+		return assetFacet;
+	}
+
+	public void setAssetFacet(String assetFacet) {
+		this.assetFacet = assetFacet;
+	}
+
+	public String getAssetGroup() {
+		return assetGroup;
+	}
+
+	public void setAssetGroup(String assetGroup) {
+		this.assetGroup = assetGroup;
+	}
+
 	public String getId() {
 		return id;
 	}
