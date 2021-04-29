@@ -45,5 +45,9 @@ public final class Constants {
 	public static final String CONTENT_TYPE_FIELD = "contentType";
 	public static final String LIVE_WEBINAR= "Live Webinar";
 	public static final String SUCCESS_ACADEMY = "successacademy";
+	public static final String ROLE = "Role";
+	public static final String MODEL = "Model";
+	public static final String SUCCESS_TRACK = "Success Track";
+	public static final String TECHNOLOGY = "Technology";
 
 }

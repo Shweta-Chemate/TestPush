@@ -278,5 +278,89 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 
 		return filterCounts;
 	}
+	
+	@Override
+	public HashMap<String, HashMap<String, String>> getSuccessAcademyFiltersWithCount(Map<String, String> filter,
+			HashMap<String, HashMap<String, String>> filterCounts, String select) {
+		List<NewLearningContentEntity> filteredList = new ArrayList<>();
+		Set<String> learningItemIdsList = new HashSet<String>();
 
+		if(filterCounts==null)
+		{
+			filterCounts=new HashMap<>();
+		}
+
+		filteredList = fetchSuccessAcademyContent(filter);
+		learningItemIdsList = filteredList.stream().map(learningItem -> learningItem.getId())
+				.collect(Collectors.toSet());
+
+		// Calculating counts after filtering
+		getSuccessAcademyFilteredCounts(filterCounts, learningItemIdsList, select);
+		return filterCounts;
+	}
+
+	HashMap<String, HashMap<String, String>> getSuccessAcademyFilteredCounts(HashMap<String, HashMap<String, String>> filterCounts, Set<String> learningItemIdsList, String select)
+	{
+		boolean update=select==null?true:!select.equals(Constants.ROLE);
+		// Role Filter
+		if(update) {
+			HashMap<String, String> roleFilter = filterCounts.containsKey(Constants.ROLE)
+					? filterCounts.get(Constants.ROLE)
+							: new HashMap<>();
+					roleFilter.keySet().forEach(key -> roleFilter.put(key, "0"));
+					List<Map<String, Object>> roleFiltersWithCount = learningContentRepo
+							.findSuccessAcademyFiltered(Constants.ROLE, learningItemIdsList);
+					Map<String, String> allRoles = listToMap(roleFiltersWithCount);
+					roleFilter.putAll(allRoles);
+					if (!roleFiltersWithCount.isEmpty())
+						filterCounts.put(Constants.ROLE, roleFilter);
+		}
+		
+		update=select==null?true:!select.equals(Constants.MODEL);
+		// Model Filter
+		if(update) {
+			HashMap<String, String> modelFilter = filterCounts.containsKey(Constants.MODEL)
+					? filterCounts.get(Constants.MODEL)
+					: new HashMap<>();
+					modelFilter.keySet().forEach(key -> modelFilter.put(key, "0"));
+			List<Map<String, Object>> modelFilterWithCount = learningContentRepo
+					.findSuccessAcademyFiltered(Constants.MODEL, learningItemIdsList);
+			Map<String, String> allModels = listToMap(modelFilterWithCount);
+			modelFilter.putAll(allModels);
+			if (!modelFilter.isEmpty())
+				filterCounts.put(Constants.MODEL, modelFilter);
+		}
+		
+		update=select==null?true:!select.equals(Constants.SUCCESS_TRACK);
+		// Success Track Filter
+		if(update) {
+			HashMap<String, String> successTrackFilter = filterCounts.containsKey(Constants.SUCCESS_TRACK)
+					? filterCounts.get(Constants.SUCCESS_TRACK)
+					: new HashMap<>();
+					successTrackFilter.keySet().forEach(key -> successTrackFilter.put(key, "0"));
+			List<Map<String, Object>> successTrackFiltWithCount = learningContentRepo
+					.findSuccessAcademyFiltered(Constants.SUCCESS_TRACK, learningItemIdsList);
+			Map<String, String> allSuccessTracks = listToMap(successTrackFiltWithCount);
+			successTrackFilter.putAll(allSuccessTracks);
+			if (!successTrackFilter.isEmpty())
+				filterCounts.put(Constants.SUCCESS_TRACK, successTrackFilter);
+		}
+		
+		update=select==null?true:!select.equals(Constants.TECHNOLOGY);
+		// Technology Filter
+		if(update) {
+			HashMap<String, String> technologyFilter = filterCounts.containsKey(Constants.TECHNOLOGY)
+					? filterCounts.get(Constants.TECHNOLOGY)
+					: new HashMap<>();
+					technologyFilter.keySet().forEach(key -> technologyFilter.put(key, "0"));
+			List<Map<String, Object>> technologyFilterWithCount = learningContentRepo
+					.findSuccessAcademyFiltered(Constants.TECHNOLOGY, learningItemIdsList);
+			Map<String, String> allTechnologies = listToMap(technologyFilterWithCount);
+			technologyFilter.putAll(allTechnologies);
+			if (!technologyFilter.isEmpty())
+				filterCounts.put(Constants.TECHNOLOGY, technologyFilter);
+		}
+		
+		return filterCounts;
+	}
 }

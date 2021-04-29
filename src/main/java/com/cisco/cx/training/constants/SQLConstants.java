@@ -30,5 +30,8 @@ public class SQLConstants {
 	
 	public static final String GET_RECENTLY_VIEWED_CONTENT = "select * from (\n" + GET_RECENTLY_VIEWED_CONTENT_BASE + ") base\n" +
 			"where base.id in (:learningItemIds)";
-
+	
+	public static final String GET_SUCCESSACADEMY_FILTER_WITH_COUNT = "select asset_facet as label, count(*) as count \n" + 
+			" from cxpp_db.cxpp_learning_content where learning_type='successacademy' and asset_model IS NOT NULL and asset_facet IS NOT NULL and asset_model = :asset_model and id in (:learningItemIds)\n" + 
+			" group by asset_facet;";
 }

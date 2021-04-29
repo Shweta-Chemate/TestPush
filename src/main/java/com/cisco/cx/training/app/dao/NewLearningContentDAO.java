@@ -41,4 +41,6 @@ public interface NewLearningContentDAO {
 
 	List<NewLearningContentEntity> fetchSuccessAcademyContent(Map<String, String> query_map);
 
+	HashMap<String, HashMap<String,String>> getSuccessAcademyFiltersWithCount(Map<String, String> filter, HashMap<String, HashMap<String,String>> filterCounts, String select);
+
 }

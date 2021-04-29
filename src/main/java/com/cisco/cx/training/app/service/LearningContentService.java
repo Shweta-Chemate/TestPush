@@ -39,4 +39,6 @@ public interface LearningContentService {
 
 	List<LearningContentItem> fetchSuccessAcademyContent(String puid, String userId, String filter);
 
+	HashMap<String, HashMap<String,String>> getSuccessAcademyFiltersWithCount(String filter, HashMap<String, HashMap<String,String>> filterCounts, String select);
+
 }
