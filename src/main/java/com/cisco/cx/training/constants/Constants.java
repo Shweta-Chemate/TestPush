@@ -44,5 +44,6 @@ public final class Constants {
 	public static final Object LANGUAGE = "Language";
 	public static final String CONTENT_TYPE_FIELD = "contentType";
 	public static final String LIVE_WEBINAR= "Live Webinar";
+	public static final String MODULE = "module";
 
 }

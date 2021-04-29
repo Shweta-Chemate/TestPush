@@ -117,6 +117,7 @@ public class LearningContentServiceTest {
 	public void testGetViewMoreNewFiltersWithCount()
 	{
 		String testFilter = "test:test";
+		String select="test";
 		HashMap<String, HashMap<String, String>> filterCounts = new HashMap<>();
 		HashMap<String, String> testRegionCount = new HashMap<>();
 		testRegionCount.put("AMER", "1");
@@ -127,8 +128,8 @@ public class LearningContentServiceTest {
 		HashMap<String, String> testLanguageCount = new HashMap<>();
 		testLanguageCount.put("English", "1");
 		filterCounts.put("Language" , testLanguageCount);
-		when(learningContentDAO.getViewMoreNewFiltersWithCount(Mockito.any(),Mockito.any())).thenReturn(filterCounts);
-		learningContentService.getViewMoreNewFiltersWithCount(testFilter, filterCounts);
+		when(learningContentDAO.getViewMoreNewFiltersWithCount(Mockito.any(),Mockito.any(),Mockito.any())).thenReturn(filterCounts);
+		learningContentService.getViewMoreNewFiltersWithCount(testFilter, filterCounts, select);
 	}
 	
 	@Test
@@ -172,6 +173,7 @@ public class LearningContentServiceTest {
 	{
 		String testFilter = "test:test";
 		String testUserId = "testUserId";
+		String select="test";
 		HashMap<String, HashMap<String, String>> filterCounts = new HashMap<>();
 		HashMap<String, String> testRegionCount = new HashMap<>();
 		testRegionCount.put("AMER", "1");
@@ -182,8 +184,8 @@ public class LearningContentServiceTest {
 		HashMap<String, String> testLanguageCount = new HashMap<>();
 		testLanguageCount.put("English", "1");
 		filterCounts.put("Language" , testLanguageCount);
-		when(learningContentDAO.getRecentlyViewedFiltersWithCount(Mockito.any(),Mockito.any(),Mockito.any(),Mockito.any())).thenReturn(filterCounts);
-		learningContentService.getRecentlyViewedFiltersWithCount(this.puid, testUserId, testFilter, filterCounts);
+		when(learningContentDAO.getRecentlyViewedFiltersWithCount(Mockito.any(),Mockito.any(),Mockito.any(),Mockito.any(),Mockito.any())).thenReturn(filterCounts);
+		learningContentService.getRecentlyViewedFiltersWithCount(this.puid, testUserId, testFilter, filterCounts, select);
 	}
 	
 	@Test
@@ -209,6 +211,7 @@ public class LearningContentServiceTest {
 		HashMap<String, String> testRegionCount = new HashMap<>();
 		testRegionCount.put("AMER", "1");
 		filterCounts.put("Live Events" , testRegionCount);
+		String select="test";
 		HashMap<String, String> testContentCount = new HashMap<>();
 		testContentCount.put("PDF", "1");
 		filterCounts.put("Content Type" , testContentCount);
@@ -225,8 +228,8 @@ public class LearningContentServiceTest {
 		List<LearningStatusEntity> learningStatusList = new ArrayList<>();
 		learningStatusList.add(getLearningStatusEntity());
 		when(learningStatusRepo.findByUserIdAndPuid(testUserId, this.puid)).thenReturn(learningStatusList);
-		when(learningContentDAO.getBookmarkedFiltersWithCount(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(filterCounts);
-		learningContentService.getBookmarkedFiltersWithCount(this.puid, testUserId, testFilter, filterCounts);
+		when(learningContentDAO.getBookmarkedFiltersWithCount(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(filterCounts);
+		learningContentService.getBookmarkedFiltersWithCount(this.puid, testUserId, testFilter, filterCounts, select);
 	}
 	
 	@Test
@@ -250,6 +253,7 @@ public class LearningContentServiceTest {
 	{
 		HashMap<String, HashMap<String, String>> filterCounts = new HashMap<>();
 		HashMap<String, String> testRegionCount = new HashMap<>();
+		String select="test";
 		testRegionCount.put("AMER", "1");
 		filterCounts.put("Live Events" , testRegionCount);
 		HashMap<String, String> testContentCount = new HashMap<>();
@@ -259,8 +263,8 @@ public class LearningContentServiceTest {
 		testLanguageCount.put("English", "1");
 		filterCounts.put("Language" , testLanguageCount);
 		String testFilter = "test:test";
-		when(learningContentDAO.getUpcomingFiltersWithCount(Mockito.any(), Mockito.any())).thenReturn(filterCounts);
-		learningContentService.getUpcomingFiltersWithCount(testFilter, filterCounts);
+		when(learningContentDAO.getUpcomingFiltersWithCount(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(filterCounts);
+		learningContentService.getUpcomingFiltersWithCount(testFilter, filterCounts, select);
 	}
 	
 	private Set<String> getBookmarks() {

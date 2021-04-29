@@ -239,12 +239,12 @@ public class LearningContentServiceImpl implements LearningContentService {
 	}
 
 	@Override
-	public HashMap<String, HashMap<String,String>> getViewMoreNewFiltersWithCount(String filter, HashMap<String, HashMap<String,String>> filterCounts) {
+	public HashMap<String, HashMap<String,String>> getViewMoreNewFiltersWithCount(String filter, HashMap<String, HashMap<String,String>> filterCounts, String select) {
 		HashMap<String, HashMap<String,String>> viewMoreCounts = new HashMap<>();
 		try
 		{
 			Map<String, String> query_map = filterStringtoMap(filter);
-			viewMoreCounts = learningContentDAO.getViewMoreNewFiltersWithCount(query_map, filterCounts);
+			viewMoreCounts = learningContentDAO.getViewMoreNewFiltersWithCount(query_map, filterCounts, select);
 		}catch (Exception e) {
 			throw new GenericException("There was a problem in fetching new filter counts");
 		}
@@ -336,12 +336,12 @@ public class LearningContentServiceImpl implements LearningContentService {
 
 	@Override
 	public HashMap<String, HashMap<String, String>> getRecentlyViewedFiltersWithCount(String puid,String userId, String filter,
-			HashMap<String, HashMap<String, String>> filterCounts) {
+			HashMap<String, HashMap<String, String>> filterCounts, String select) {
 		HashMap<String, HashMap<String,String>> recentlyViewedCounts = new HashMap<>();
 		try
 		{
 			Map<String, String> query_map = filterStringtoMap(filter);
-			recentlyViewedCounts = learningContentDAO.getRecentlyViewedFiltersWithCount(puid, userId, query_map, filterCounts);	
+			recentlyViewedCounts = learningContentDAO.getRecentlyViewedFiltersWithCount(puid, userId, query_map, filterCounts, select);
 		}catch (Exception e) {
 			throw new GenericException("There was a problem in fetching recently viewed filter counts");
 		}
@@ -384,14 +384,14 @@ public class LearningContentServiceImpl implements LearningContentService {
 	
 	@Override
 	public HashMap<String, HashMap<String, String>> getBookmarkedFiltersWithCount(String puid, String ccoid,
-			String filter, HashMap<String, HashMap<String, String>> filterCounts) {
+			String filter, HashMap<String, HashMap<String, String>> filterCounts, String select) {
 		HashMap<String, HashMap<String,String>> bookmarkedCounts = new HashMap<>();
 		try
 		{
 			Map<String, String> query_map = filterStringtoMap(filter);
 			List<LearningContentItem> bookmarkedList = new ArrayList<>();
 			bookmarkedList = fetchBookMarkedContent(puid, ccoid, filter);
-			bookmarkedCounts = learningContentDAO.getBookmarkedFiltersWithCount(query_map, filterCounts, bookmarkedList);		
+			bookmarkedCounts = learningContentDAO.getBookmarkedFiltersWithCount(query_map, filterCounts, bookmarkedList,select);
 		}catch (Exception e) {
 			throw new GenericException("There was a problem in fetching bookmarked filter counts");
 		}
@@ -436,16 +436,43 @@ public class LearningContentServiceImpl implements LearningContentService {
 	
 	@Override
 	public HashMap<String, HashMap<String, String>> getUpcomingFiltersWithCount(String filter,
-			HashMap<String, HashMap<String, String>> filterCounts) {
+			HashMap<String, HashMap<String, String>> filterCounts, String select) {
 		HashMap<String, HashMap<String,String>> upcomingContentCounts = new HashMap<>();
 		try
 		{
 			Map<String, String> query_map = filterStringtoMap(filter);
-			upcomingContentCounts = learningContentDAO.getUpcomingFiltersWithCount(query_map, filterCounts);			
+			upcomingContentCounts = learningContentDAO.getUpcomingFiltersWithCount(query_map, filterCounts, select);
 		}catch (Exception e) {
 			throw new GenericException("There was a problem in fetching upcoming learning content");
 		}
 		return upcomingContentCounts;
+	}
+
+	@Override
+	public List<LearningContentItem> fetchSuccessAcademyContent(String puid, String ccoid, String filter) {
+		List<NewLearningContentEntity> contentList = new ArrayList<>();
+		List<LearningContentItem> result = new ArrayList<>();
+		Map<String, String> query_map = filterStringtoMap(filter);
+		try
+		{
+			contentList = learningContentDAO.fetchSuccessAcademyContent(query_map);
+			// populate bookmark and registration info
+			Set<String> userBookmarks = null;
+			if (null != ccoid) {
+				userBookmarks = learningBookmarkDAO.getBookmarks(ccoid);
+			}
+			for (NewLearningContentEntity entity : contentList) {
+				LearningContentItem learningItem = new LearningContentItem(entity);
+				if (null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
+						&& userBookmarks.contains(learningItem.getId())) {
+					learningItem.setBookmark(true);
+				}
+				result.add(learningItem);
+			}
+		}catch (Exception e) {
+			throw new GenericException("There was a problem in fetching upcoming learning content");
+		}
+		return result;
 	}
 
 }
