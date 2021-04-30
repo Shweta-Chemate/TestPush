@@ -152,6 +152,9 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 
 		// Calculating counts after filtering
 		getFilteredCounts(filterCounts, learningItemIdsList, select);
+		
+		// Calculating counts for successacademy filters if applicable
+		getSuccessAcademyFilteredCounts(filterCounts, learningItemIdsList, select);
 		return filterCounts;
 	}
 
@@ -179,6 +182,9 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 
 		// Calculating counts after filtering
 		getFilteredCounts(filterCounts, learningItemIdsList, select);
+		
+		// Calculating counts for successacademy filters if applicable
+		getSuccessAcademyFilteredCounts(filterCounts, learningItemIdsList, select);
 
 		return filterCounts;
 	}
