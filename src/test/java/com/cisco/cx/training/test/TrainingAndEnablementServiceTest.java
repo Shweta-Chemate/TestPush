@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -461,7 +462,7 @@ public class TrainingAndEnablementServiceTest {
 	{
 		HashMap<String, Object> aMock = new HashMap<String, Object>();		
 		when(productDocumentationService.getAllLearningFilters("searchToken",null)).thenReturn(aMock);
-		HashMap<String, Object> a = trainingAndEnablementService.getAllLearningFiltersPost("searchToken",null);
+		Map<String, Object> a = trainingAndEnablementService.getAllLearningFiltersPost("searchToken",null);
 		Assert.assertEquals(0, a.size());
 	}
 	

@@ -285,13 +285,13 @@ public class TrainingAndEnablementController {
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
-	public ResponseEntity<HashMap<String, Object>> getAllLearningsFiltersPost(
+	public ResponseEntity<Map<String, Object>> getAllLearningsFiltersPost(
 			@ApiParam(value = "Search - tiltle, description, author") @RequestParam(value = "searchToken", required = false) String searchToken,
 			@ApiParam(value = "Filters") @RequestBody(required = false) HashMap<String, Object> filters
 			)
 			throws Exception {
-		HashMap<String, Object> learningFilters = trainingAndEnablementService.getAllLearningFiltersPost(searchToken,filters);
-		return new ResponseEntity<HashMap<String, Object>>(learningFilters, HttpStatus.OK);
+		Map<String, Object> learningFilters = trainingAndEnablementService.getAllLearningFiltersPost(searchToken,filters);
+		return new ResponseEntity<Map<String, Object>>(learningFilters, HttpStatus.OK);
 	}
 	
 }

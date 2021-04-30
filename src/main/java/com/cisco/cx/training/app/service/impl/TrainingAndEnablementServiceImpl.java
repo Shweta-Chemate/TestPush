@@ -449,7 +449,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	}
 
 	@Override
-	public HashMap<String, Object> getAllLearningFiltersPost(String searchToken, HashMap<String, Object> filters) {
+	public Map<String, Object> getAllLearningFiltersPost(String searchToken, HashMap<String, Object> filters) {
 		return productDocumentationService.getAllLearningFilters(searchToken,filters);
 	}
 }

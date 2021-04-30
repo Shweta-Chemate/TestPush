@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -246,7 +247,6 @@ public class ProductDocumentationService{
 		Map<String,String> allContentsLE = listToMap(dbListLE);countFilters.put(LIVE_EVENTS_FILTER, allContentsLE);
 		allContentsLE.keySet().forEach(k -> regionFilter.put(k, "0"));
 		
-		//TODO ST
 		HashMap<String, Object> stFilter = new HashMap<>();
 		filters.put(SUCCESS_TRACKS_FILTER, stFilter);
 		List<Map<String,Object>> dbListST = productDocumentationDAO.getAllStUcPsWithCount();
@@ -329,10 +329,8 @@ public class ProductDocumentationService{
 		List<Map<String,Object>> dbListLE = productDocumentationDAO.getAllLiveEventsWithCountByCards(cardIds);		
 		((Map<String,String>)filters.get(LIVE_EVENTS_FILTER)).putAll(listToMap(dbListLE));	
 		
-		//TODO ST
 		List<Map<String,Object>> dbListST = productDocumentationDAO.getAllStUcPsWithCountByCards(cardIds);		
 		((Map<String,Object>)filters.get(SUCCESS_TRACKS_FILTER)).putAll(listToSTMap(dbListST,null));
-		
 		
 		Map<String,String> dbMapYou = getForYouCounts(cardIds);		
 		((Map<String,String>)filters.get(FOR_YOU_FILTER)).putAll(dbMapYou);
@@ -346,7 +344,7 @@ public class ProductDocumentationService{
 	 * @param applyFilters
 	 * @return
 	 */
-	public HashMap<String, Object> getAllLearningFilters(String searchToken, HashMap<String, Object> applyFilters) 
+	public Map<String, Object> getAllLearningFilters(String searchToken, HashMap<String, Object> applyFilters) 
 	{
 		HashMap<String, Object> filters = new HashMap<>();	
 		HashMap<String, Object> countFilters = new HashMap<>();
@@ -368,12 +366,51 @@ public class ProductDocumentationService{
 			cardIds = filterCards(applyFilters);
 		}
 		else {
-			return countFilters;
+			removeOneNullKeyFilters(countFilters);
+			return orderFilters(countFilters);
 		}
 
-		setFilterCounts(cardIds,filters);
+		setFilterCounts(cardIds,filters);		
+		removeOneNullKeyFilters(filters);
 		
-		return filters;
+		return orderFilters(filters);
+	}
+	
+	private Map<String, Object> orderFilters(final HashMap<String, Object> filters)
+	{
+		Map<String, Object> orderedFilters = new LinkedHashMap<String,Object>();
+		for(int i=0;i<FILTER_CATEGORIES.length;i++)
+		{
+			String key = FILTER_CATEGORIES[i];
+			if(filters.containsKey(key)) orderedFilters.put(key, filters.get(key));
+		}
+		return orderedFilters;
+	}
+	
+	
+	/* e.g. Tech null 498 */
+	private void removeOneNullKeyFilters(final HashMap<String, Object> filters)
+	{
+		Set<String> removeThese = new HashSet<String>();
+		filters.forEach((k,v)-> {
+			Map<String, Object> subFilters  = (Map<String, Object>)v;
+			if(subFilters.size()<=1)
+			{
+				if(subFilters.size()==0) removeThese.add(k);
+				else 
+				{
+					Set<String> keys = new HashSet<String>();
+					subFilters.keySet().forEach(k1->{
+						if(k1==null)keys.add("null");else keys.add(k1.trim().toLowerCase());
+					});
+					if(keys.contains("null")) removeThese.add(k);
+				}
+			}			
+		});
+		
+		LOG.info("Removed {}",removeThese);
+		removeThese.forEach(filter->filters.remove(filter));
+		
 	}
 
 	public LearningRecordsAndFiltersModel getAllLearningInfo(String xMasheryHandshake, String searchToken,
