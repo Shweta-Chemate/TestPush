@@ -215,6 +215,9 @@ public class ProductDocumentationService{
 	private static final String[] FOR_YOU_KEYS = new String[]{"New","Top Picks","Based on Your Customers",
 			"Bookmarked","Popular with Partners"};
 	
+	/** nulls **/
+	private static final String NULL_TEXT = "null";
+	
 	private void initializeFilters(final HashMap<String, Object> filters, final HashMap<String, Object> countFilters)
 	{	
 		HashMap<String, String> contentTypeFilter = new HashMap<>();
@@ -366,12 +369,12 @@ public class ProductDocumentationService{
 			cardIds = filterCards(applyFilters);
 		}
 		else {
-			removeOneNullKeyFilters(countFilters);
+			cleanFilters(countFilters);
 			return orderFilters(countFilters);
 		}
 
 		setFilterCounts(cardIds,filters);		
-		removeOneNullKeyFilters(filters);
+		cleanFilters(filters);
 		
 		return orderFilters(filters);
 	}
@@ -387,30 +390,43 @@ public class ProductDocumentationService{
 		return orderedFilters;
 	}
 	
+	private void cleanFilters(final HashMap<String, Object> filters)
+	{	
+		LOG.info("All {}",filters);
+		if(filters.keySet().contains(SUCCESS_TRACKS_FILTER))//do 2 more times
+		{
+			HashMap<String, Object> stFilters = (HashMap<String, Object>)filters.get(SUCCESS_TRACKS_FILTER);//ST
+			stFilters.forEach((k,v) ->
+			{
+				HashMap<String, Object> ucFilters = (HashMap<String, Object>)v;//UC
+				removeNulls(ucFilters);  //this will remove null pts and parent uc if has only one null pt
+			});			
+			removeNulls(stFilters);  //this will remove null ucs and parent st if has only one null uc
+		}
+		Set<String> removeThese = removeNulls(filters);  //all top level
+		LOG.info("Removed {} final {}",removeThese, filters);
+	}
 	
 	/* e.g. Tech null 498 */
-	private void removeOneNullKeyFilters(final HashMap<String, Object> filters)
+	private Set<String> removeNulls(final HashMap<String, Object> filters)
 	{
 		Set<String> removeThese = new HashSet<String>();
 		filters.forEach((k,v)-> {
 			Map<String, Object> subFilters  = (Map<String, Object>)v;
-			if(subFilters.size()<=1)
-			{
-				if(subFilters.size()==0) removeThese.add(k);
-				else 
-				{
-					Set<String> keys = new HashSet<String>();
-					subFilters.keySet().forEach(k1->{
-						if(k1==null)keys.add("null");else keys.add(k1.trim().toLowerCase());
-					});
-					if(keys.contains("null")) removeThese.add(k);
-				}
-			}			
+
+			Set<String> nulls = new HashSet<String>();
+			Set<String>  all = subFilters.keySet();
+			all.forEach(ak -> {
+				if(ak==null || ak.trim().isEmpty() || ak.trim().equalsIgnoreCase(NULL_TEXT))
+					nulls.add(ak);
+			});
+			nulls.forEach(n-> subFilters.remove(n));
+			if(subFilters.size()==0) removeThese.add(k);//remove filter itself
+
 		});
-		
-		LOG.info("Removed {}",removeThese);
+				
 		removeThese.forEach(filter->filters.remove(filter));
-		
+		return removeThese;
 	}
 
 	public LearningRecordsAndFiltersModel getAllLearningInfo(String xMasheryHandshake, String searchToken,
