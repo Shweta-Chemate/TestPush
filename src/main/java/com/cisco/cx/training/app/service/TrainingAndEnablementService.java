@@ -2,6 +2,7 @@ package com.cisco.cx.training.app.service;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.app.exception.NotAllowedException;
@@ -52,7 +53,7 @@ public interface TrainingAndEnablementService {
 	LearningRecordsAndFiltersModel getAllLearningInfoPost(String xMasheryHandshake, String searchToken, HashMap<String, Object> filters,
 			String sortBy, String sortOrder);
 	
-	HashMap<String, Object> getAllLearningFiltersPost(String searchToken, HashMap<String, Object> filters);
+	Map<String, Object> getAllLearningFiltersPost(String searchToken, HashMap<String, Object> filters);
 
 
 
