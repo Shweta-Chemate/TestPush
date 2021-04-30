@@ -414,6 +414,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 			List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserIdAndPuid(ccoid, puid);
 			for (NewLearningContentEntity entity : upcomingContentList) {
 				LearningContentItem learningItem = new LearningContentItem(entity);
+				learningItem.setBookmark(false);
 				if (null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
 						&& userBookmarks.contains(learningItem.getId())) {
 					learningItem.setBookmark(true);
@@ -463,6 +464,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 			}
 			for (NewLearningContentEntity entity : contentList) {
 				LearningContentItem learningItem = new LearningContentItem(entity);
+				learningItem.setBookmark(false);
 				if (null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
 						&& userBookmarks.contains(learningItem.getId())) {
 					learningItem.setBookmark(true);
