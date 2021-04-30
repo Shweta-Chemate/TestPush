@@ -228,10 +228,14 @@ public class LearningContentServiceImpl implements LearningContentService {
 			filter = filter.replaceAll("%3B", ";");
 			filter = filter.replaceAll("%3A", ":");
 			String[] columnFilter = filter.split(";");
+			int count=0;
 			for (int colFilterIndex = 0; colFilterIndex < columnFilter.length; colFilterIndex++) {
 				String[] valueFilter = columnFilter[colFilterIndex].split(":");
 				String fieldName = valueFilter[0];
 				String fieldValue = valueFilter[1];
+				// for differentating between OR and AND condition for successacademy filters
+				if(fieldName.equals("assetFacet"))
+					fieldName+=count++;
 				query_map.put(fieldName, fieldValue);
 			}
 		}
