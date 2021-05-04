@@ -1,5 +1,6 @@
 package com.cisco.cx.training.app.service;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -118,7 +119,7 @@ public class ProductDocumentationService{
 			
 			GenericLearningModel card =  new GenericLearningModel();	
 			
-			card.setCreatedTimeStamp(learning.getSortByDate());  //same as created date
+			card.setCreatedTimeStamp(Timestamp.valueOf(learning.getSortByDate()));  //same as created date
 			card.setDescription(learning.getDescription());
 			card.setDuration(learning.getDuration());
 			

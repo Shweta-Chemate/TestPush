@@ -1,5 +1,7 @@
 package com.cisco.cx.training.models;
 
+import java.sql.Timestamp;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class GenericLearningModel {
@@ -23,7 +25,7 @@ public class GenericLearningModel {
 	private String link;
 	
 	@JsonProperty("createdTimeStamp")
-	private String createdTimeStamp;
+	private Timestamp createdTimeStamp;
 	
 	@JsonProperty("isBookMarked")
 	private Boolean isBookMarked = false;
@@ -85,11 +87,11 @@ public class GenericLearningModel {
 		this.link = link;
 	}
 
-	public String getCreatedTimeStamp() {
+	public Timestamp getCreatedTimeStamp() {
 		return createdTimeStamp;
 	}
 
-	public void setCreatedTimeStamp(String createdTimeStamp) {
+	public void setCreatedTimeStamp(Timestamp createdTimeStamp) {
 		this.createdTimeStamp = createdTimeStamp;
 	}
 
