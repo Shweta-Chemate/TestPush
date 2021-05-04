@@ -3,7 +3,7 @@ package com.cisco.cx.training.constants;
 public class SQLConstants {
 	
 	public static final String GET_CONTENT_TYPE_WITH_COUNT_BY_CARD = "select asset_type as label, count(*) as count "
-			+ " from cxpp_db.cxpp_learning_content " + " where asset_type IS NOT NULL and id in (:learningItemIds) "
+			+ " from cxpp_db.cxpp_learning_content " + " where asset_type IS NOT NULL and learning_type!='successacademy' and id in (:learningItemIds) "
 			+ " group by asset_type;";
 	
 	public static final String GET_REGION_WITH_COUNT_BY_CARD = "select piw_region as label, count(*) as count "
