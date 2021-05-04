@@ -25,10 +25,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.exception.ErrorResponse;
 import com.cisco.cx.training.app.exception.HealthCheckException;
+import com.cisco.cx.training.app.exception.NotFoundException;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
 import com.cisco.cx.training.models.BookmarkRequestSchema;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
@@ -63,6 +65,9 @@ public class TrainingAndEnablementController {
 	
 	@Autowired
 	private TrainingAndEnablementService trainingAndEnablementService;
+	
+	@Autowired
+	private PropertyConfiguration config;
 
 	@RequestMapping(path = "/ready", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Template API Readiness probe", hidden = true)
@@ -121,6 +126,10 @@ public class TrainingAndEnablementController {
 		LOG.info("Entering the fetchlearningcontent method");
 		long requestStartTime = System.currentTimeMillis();
 		String ccoId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
+		if(!config.isNewLearningFeature())
+		{
+			throw new NotFoundException("API Not Found.");
+		}
 		List<LearningContentItem> newLearningContentList = trainingAndEnablementService.fetchNewLearningContent(ccoId, filter, puid);
 		LOG.info("Received new learning content in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<List<LearningContentItem>>(newLearningContentList, HttpStatus.OK);
