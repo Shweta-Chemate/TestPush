@@ -241,6 +241,5 @@ workflows:
               only:
                 - master
                 - LA-hotfix
-                - release/0.9.5
                 - /^pull.*/  
           context: aws-devops-context    
