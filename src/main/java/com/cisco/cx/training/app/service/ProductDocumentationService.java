@@ -333,12 +333,34 @@ public class ProductDocumentationService{
 		List<Map<String,Object>> dbListLE = productDocumentationDAO.getAllLiveEventsWithCountByCards(cardIds);		
 		((Map<String,String>)filters.get(LIVE_EVENTS_FILTER)).putAll(listToMap(dbListLE));	
 		
-		List<Map<String,Object>> dbListST = productDocumentationDAO.getAllStUcPsWithCountByCards(cardIds);		
-		((Map<String,Object>)filters.get(SUCCESS_TRACKS_FILTER)).putAll(listToSTMap(dbListST,null));
+		List<Map<String,Object>> dbListST = productDocumentationDAO.getAllStUcPsWithCountByCards(cardIds);
+		Map<String,Object> filterAndCountsFromDb = listToSTMap(dbListST,null);
+		mergeSTFilterCounts(filters,filterAndCountsFromDb);
 		
 		Map<String,String> dbMapYou = getForYouCounts(cardIds);		
 		((Map<String,String>)filters.get(FOR_YOU_FILTER)).putAll(dbMapYou);
 		
+	}
+	
+	private void mergeSTFilterCounts(Map<String,Object> filters , Map<String,Object> filterAndCountsFromDb) {
+		Map<String,Object> stFilters = ((Map<String,Object>)filters.get(SUCCESS_TRACKS_FILTER));
+		for(String stkey : filterAndCountsFromDb.keySet()) {
+			if(stFilters.containsKey(stkey)) {
+				Map<String,Object> stFilter = (Map<String,Object>)stFilters.get(stkey);
+				Map<String,Object> stFilterFromDB = (Map<String,Object>)filterAndCountsFromDb.get(stkey);
+				for(String useCaseKey : stFilterFromDB.keySet()) {
+					if(stFilter.containsKey(useCaseKey)) {
+						Map<String,Object> useCaseFilter = (Map<String,Object>)stFilter.get(useCaseKey);
+						Map<String,Object> useCaseFilterFromDB = (Map<String,Object>)stFilterFromDB.get(useCaseKey);
+						for(String pitStopKey : useCaseFilterFromDB.keySet()) {
+							if(useCaseFilter.containsKey(pitStopKey)) {
+								useCaseFilter.put(pitStopKey, useCaseFilterFromDB.get(pitStopKey));							
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 	/**
