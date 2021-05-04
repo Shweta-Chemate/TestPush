@@ -1,7 +1,10 @@
 package com.cisco.cx.training.app.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.app.exception.NotAllowedException;
 import com.cisco.cx.training.app.exception.NotFoundException;
 import com.cisco.cx.training.models.BookmarkRequestSchema;
@@ -9,6 +12,8 @@ import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.cisco.cx.training.models.Community;
 import com.cisco.cx.training.models.CountResponseSchema;
 import com.cisco.cx.training.models.CountSchema;
+import com.cisco.cx.training.models.LearningContentItem;
+import com.cisco.cx.training.models.LearningRecordsAndFiltersModel;
 import com.cisco.cx.training.models.SuccessAcademyFilter;
 import com.cisco.cx.training.models.SuccessAcademyLearning;
 import com.cisco.cx.training.models.SuccessTalkResponseSchema;
@@ -42,4 +47,14 @@ public interface TrainingAndEnablementService {
 	List<SuccessAcademyFilter> getSuccessAcademyFilters();
 	
 	BookmarkResponseSchema bookmarkLearningForUser(BookmarkRequestSchema bookmarkRequestSchema , String xMasheryHandshake);
+
+	List<LearningContentItem> fetchNewLearningContent(String ccoId, String filter, String puid);
+
+	LearningRecordsAndFiltersModel getAllLearningInfoPost(String xMasheryHandshake, String searchToken, HashMap<String, Object> filters,
+			String sortBy, String sortOrder);
+	
+	Map<String, Object> getAllLearningFiltersPost(String searchToken, HashMap<String, Object> filters);
+
+
+
 }

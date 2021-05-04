@@ -70,7 +70,7 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
 			results.getDocuments().forEach(successTalk -> {
 				successTalk.setImageUrl("https://www.cisco.com/web/fw/tools/ssue/cp/lifecycle/atx/images/ATX-DNA-Center-Wireless-Assurance.png");
 				successTalk.setRecordingUrl("https://tklcs.cloudapps.cisco.com/tklcs/TKLDownloadServlet?nodeRef=workspace://SpacesStore/cf85fc26-78e0-488e-af04-390fb2c55ad4&activityId=2&fileId=122233");
-				successTalk.setDuration(4500L);
+				successTalk.setDuration("1h 30min");
 				successTalkES.add(successTalk);
 			});
 
@@ -217,7 +217,7 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
                 }
 		        for (SuccesstalkUserRegEsSchema transaction : registeredSuccessTalkList) {
 		            if (transaction.getTitle().equalsIgnoreCase(successTalk.getTitle())) {
-		            	successTalk.setStatus(SuccessTalk.SuccessTalkStatusEnum.REGISTERED);
+		            	successTalk.setStatus(SuccessTalk.SuccessTalkStatusEnum.REGISTERED.toString());
 		            	successTalk.getSessions().forEach(
 		                        session -> {
 									if (session.getSessionStartDate().equals(transaction.getEventStartDate())) {
@@ -225,7 +225,7 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
 										// if the Attended field in smartsheet is set to Yes, mark it complete.
 										if (transaction.getAttendedStatus() != null && transaction.getAttendedStatus()
 												.equals(SuccesstalkUserRegEsSchema.AttendedStatusEnum.YES)) {
-											successTalk.setStatus(SuccessTalk.SuccessTalkStatusEnum.ATTENDED);
+											successTalk.setStatus(SuccessTalk.SuccessTalkStatusEnum.ATTENDED.toString());
 										}
 									}
 		                        }
@@ -235,7 +235,7 @@ public class SuccessTalkDAOImpl implements SuccessTalkDAO{
 				
 				
 				successTalk.setImageUrl("https://www.cisco.com/web/fw/tools/ssue/cp/lifecycle/atx/images/ATX-DNA-Center-Wireless-Assurance.png");
-				successTalk.setDuration(4500L);
+				successTalk.setDuration("1h 30min");
 				successTalkES.add(successTalk);
 			});
 
