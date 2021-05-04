@@ -64,6 +64,9 @@ public class PropertyConfiguration {
 	public SealedObject authUrl;
 
 	private SealedObject partnerUserDetails;
+	
+	@Value("${0.9.5.learning.feature}")
+	private boolean newLearningFeature;
 
 	public String getPartnerUserDetails() {
 		return cryptoAccess.unseal(partnerUserDetails);
@@ -268,6 +271,14 @@ public class PropertyConfiguration {
 	@Value("${cxpp.user.management.auth.url}")
 	public void setAuthUrl(String authUrl) {
 		this.authUrl = cryptoAccess.seal(authUrl);
+	}
+
+	public boolean isNewLearningFeature() {
+		return newLearningFeature;
+	}
+
+	public void setNewLearningFeature(boolean newLearningFeature) {
+		this.newLearningFeature = newLearningFeature;
 	}
 	
 }
