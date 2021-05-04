@@ -284,6 +284,10 @@ public class TrainingAndEnablementController {
 			@ApiParam(value = "sortOrder - asc, desc") @RequestParam(value = "sortOrder", required = false) String sortOrder
 			)
 			throws Exception {
+		if(!config.isNewLearningFeature())
+		{
+			throw new NotFoundException("API Not Found.");
+		}
 		LearningRecordsAndFiltersModel learningCardsAndFilters = trainingAndEnablementService.getAllLearningInfoPost(xMasheryHandshake,search,filters,sortBy,sortOrder);
 		return new ResponseEntity<LearningRecordsAndFiltersModel>(learningCardsAndFilters, HttpStatus.OK);
 	}
@@ -299,6 +303,10 @@ public class TrainingAndEnablementController {
 			@ApiParam(value = "Filters") @RequestBody(required = false) HashMap<String, Object> filters
 			)
 			throws Exception {
+		if(!config.isNewLearningFeature())
+		{
+			throw new NotFoundException("API Not Found.");
+		}
 		HashMap<String, Object> learningFilters = trainingAndEnablementService.getAllLearningFiltersPost(searchToken,filters);
 		return new ResponseEntity<HashMap<String, Object>>(learningFilters, HttpStatus.OK);
 	}
