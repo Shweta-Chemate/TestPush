@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -85,19 +86,19 @@ public class ProductDocumentationServiceTest {
 	public void getAllLearningFilters()
 	{
 		
-		HashMap<String, Object> a1 = productDocumentationService.getAllLearningFilters(null,null);		
-		Assert.assertTrue(a1.size()>=6); //st=7
+		Map<String, Object> a1 = productDocumentationService.getAllLearningFilters(null,null);			
+		Assert.assertTrue(a1.size()>=1); //st=7
 		
-		HashMap<String, Object> a2 = productDocumentationService.getAllLearningFilters("searchToken",null);		
-		Assert.assertTrue(a2.size()>=6); //st=7		
+		Map<String, Object> a2 = productDocumentationService.getAllLearningFilters("searchToken",null);		
+		Assert.assertTrue(a2.size()>=1); //st=7		
 		
 		HashMap<String, Object> aMock = new HashMap<String, Object>();	
 		aMock.put("For You", Arrays.asList(new String[]{"New"}));
-		HashMap<String, Object> a3 = productDocumentationService.getAllLearningFilters(null,aMock);		
-		Assert.assertTrue(a3.size()>=6); //st=7
+		Map<String, Object> a3 = productDocumentationService.getAllLearningFilters(null,aMock);		
+		Assert.assertTrue(a3.size()>=1); //st=7
 				
-		HashMap<String, Object> a4 = productDocumentationService.getAllLearningFilters("searchToken",aMock);		
-		Assert.assertTrue(a4.size()>=6); //st=7
+		Map<String, Object> a4 = productDocumentationService.getAllLearningFilters("searchToken",aMock);		
+		Assert.assertTrue(a4.size()>=1); //st=7
 		
 	}
 	

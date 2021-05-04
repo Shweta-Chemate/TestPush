@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -214,6 +215,9 @@ public class ProductDocumentationService{
 	private static final String[] FOR_YOU_KEYS = new String[]{"New","Top Picks","Based on Your Customers",
 			"Bookmarked","Popular with Partners"};
 	
+	/** nulls **/
+	private static final String NULL_TEXT = "null";
+	
 	private void initializeFilters(final HashMap<String, Object> filters, final HashMap<String, Object> countFilters)
 	{	
 		HashMap<String, String> contentTypeFilter = new HashMap<>();
@@ -246,7 +250,6 @@ public class ProductDocumentationService{
 		Map<String,String> allContentsLE = listToMap(dbListLE);countFilters.put(LIVE_EVENTS_FILTER, allContentsLE);
 		allContentsLE.keySet().forEach(k -> regionFilter.put(k, "0"));
 		
-		//TODO ST
 		HashMap<String, Object> stFilter = new HashMap<>();
 		filters.put(SUCCESS_TRACKS_FILTER, stFilter);
 		List<Map<String,Object>> dbListST = productDocumentationDAO.getAllStUcPsWithCount();
@@ -329,10 +332,8 @@ public class ProductDocumentationService{
 		List<Map<String,Object>> dbListLE = productDocumentationDAO.getAllLiveEventsWithCountByCards(cardIds);		
 		((Map<String,String>)filters.get(LIVE_EVENTS_FILTER)).putAll(listToMap(dbListLE));	
 		
-		//TODO ST
 		List<Map<String,Object>> dbListST = productDocumentationDAO.getAllStUcPsWithCountByCards(cardIds);		
 		((Map<String,Object>)filters.get(SUCCESS_TRACKS_FILTER)).putAll(listToSTMap(dbListST,null));
-		
 		
 		Map<String,String> dbMapYou = getForYouCounts(cardIds);		
 		((Map<String,String>)filters.get(FOR_YOU_FILTER)).putAll(dbMapYou);
@@ -346,7 +347,7 @@ public class ProductDocumentationService{
 	 * @param applyFilters
 	 * @return
 	 */
-	public HashMap<String, Object> getAllLearningFilters(String searchToken, HashMap<String, Object> applyFilters) 
+	public Map<String, Object> getAllLearningFilters(String searchToken, HashMap<String, Object> applyFilters) 
 	{
 		HashMap<String, Object> filters = new HashMap<>();	
 		HashMap<String, Object> countFilters = new HashMap<>();
@@ -368,12 +369,64 @@ public class ProductDocumentationService{
 			cardIds = filterCards(applyFilters);
 		}
 		else {
-			return countFilters;
+			cleanFilters(countFilters);
+			return orderFilters(countFilters);
 		}
 
-		setFilterCounts(cardIds,filters);
+		setFilterCounts(cardIds,filters);		
+		cleanFilters(filters);
 		
-		return filters;
+		return orderFilters(filters);
+	}
+	
+	private Map<String, Object> orderFilters(final HashMap<String, Object> filters)
+	{
+		Map<String, Object> orderedFilters = new LinkedHashMap<String,Object>();
+		for(int i=0;i<FILTER_CATEGORIES.length;i++)
+		{
+			String key = FILTER_CATEGORIES[i];
+			if(filters.containsKey(key)) orderedFilters.put(key, filters.get(key));
+		}
+		return orderedFilters;
+	}
+	
+	private void cleanFilters(final HashMap<String, Object> filters)
+	{	
+		LOG.info("All {}",filters);
+		if(filters.keySet().contains(SUCCESS_TRACKS_FILTER))//do 2 more times
+		{
+			HashMap<String, Object> stFilters = (HashMap<String, Object>)filters.get(SUCCESS_TRACKS_FILTER);//ST
+			stFilters.forEach((k,v) ->
+			{
+				HashMap<String, Object> ucFilters = (HashMap<String, Object>)v;//UC
+				removeNulls(ucFilters);  //this will remove null pts and parent uc if has only one null pt
+			});			
+			removeNulls(stFilters);  //this will remove null ucs and parent st if has only one null uc
+		}
+		Set<String> removeThese = removeNulls(filters);  //all top level
+		LOG.info("Removed {} final {}",removeThese, filters);
+	}
+	
+	/* e.g. Tech null 498 */
+	private Set<String> removeNulls(final HashMap<String, Object> filters)
+	{
+		Set<String> removeThese = new HashSet<String>();
+		filters.forEach((k,v)-> {
+			Map<String, Object> subFilters  = (Map<String, Object>)v;
+
+			Set<String> nulls = new HashSet<String>();
+			Set<String>  all = subFilters.keySet();
+			all.forEach(ak -> {
+				if(ak==null || ak.trim().isEmpty() || ak.trim().equalsIgnoreCase(NULL_TEXT))
+					nulls.add(ak);
+			});
+			nulls.forEach(n-> subFilters.remove(n));
+			if(subFilters.size()==0) removeThese.add(k);//remove filter itself
+
+		});
+				
+		removeThese.forEach(filter->filters.remove(filter));
+		return removeThese;
 	}
 
 	public LearningRecordsAndFiltersModel getAllLearningInfo(String xMasheryHandshake, String searchToken,

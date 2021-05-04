@@ -228,10 +228,14 @@ public class LearningContentServiceImpl implements LearningContentService {
 			filter = filter.replaceAll("%3B", ";");
 			filter = filter.replaceAll("%3A", ":");
 			String[] columnFilter = filter.split(";");
+			int count=0;
 			for (int colFilterIndex = 0; colFilterIndex < columnFilter.length; colFilterIndex++) {
 				String[] valueFilter = columnFilter[colFilterIndex].split(":");
 				String fieldName = valueFilter[0];
 				String fieldValue = valueFilter[1];
+				// for differentating between OR and AND condition for successacademy filters
+				if(fieldName.equals("assetFacet"))
+					fieldName+=count++;
 				query_map.put(fieldName, fieldValue);
 			}
 		}
@@ -414,6 +418,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 			List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserIdAndPuid(ccoid, puid);
 			for (NewLearningContentEntity entity : upcomingContentList) {
 				LearningContentItem learningItem = new LearningContentItem(entity);
+				learningItem.setBookmark(false);
 				if (null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
 						&& userBookmarks.contains(learningItem.getId())) {
 					learningItem.setBookmark(true);
@@ -463,6 +468,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 			}
 			for (NewLearningContentEntity entity : contentList) {
 				LearningContentItem learningItem = new LearningContentItem(entity);
+				learningItem.setBookmark(false);
 				if (null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
 						&& userBookmarks.contains(learningItem.getId())) {
 					learningItem.setBookmark(true);

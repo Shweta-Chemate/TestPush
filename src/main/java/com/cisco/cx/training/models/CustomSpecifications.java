@@ -53,5 +53,9 @@ public class CustomSpecifications {
 	public static <T> Specification<T> searchSuccesstalksWithCriteria(String columnName, String withValue) {
 		return (successtalk, cq, cb) -> cb.like(cb.lower(successtalk.get(columnName)).as(String.class), "%" + withValue + "%");
 	}
+	
+	 public static <T> Specification<T> notEqual(String columnName, String withValue) {
+	        return (customer, cq, cb) -> cb.notEqual(customer.get(columnName), withValue);
+	    }
 
 }
