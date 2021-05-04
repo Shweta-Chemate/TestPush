@@ -182,7 +182,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 			indexCounts.add(webinarCount);
 
 			CountSchema successAcamedyCount = new CountSchema();
-			successAcamedyCount.setLabel("Learning");
+			successAcamedyCount.setLabel("CX Collection");
 			requestStartTime = System.currentTimeMillis();	
 			successAcamedyCount.setCount(successAcademyDAO.count());
 			LOG.info("Received Success Academy count in {} ", (System.currentTimeMillis() - requestStartTime));
