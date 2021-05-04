@@ -307,8 +307,8 @@ public class TrainingAndEnablementController {
 		{
 			throw new NotFoundException("API Not Found.");
 		}
-		HashMap<String, Object> learningFilters = trainingAndEnablementService.getAllLearningFiltersPost(searchToken,filters);
-		return new ResponseEntity<HashMap<String, Object>>(learningFilters, HttpStatus.OK);
+		Map<String, Object> learningFilters = trainingAndEnablementService.getAllLearningFiltersPost(searchToken,filters);
+		return new ResponseEntity<Map<String, Object>>(learningFilters, HttpStatus.OK);
 	}
 	
 }
