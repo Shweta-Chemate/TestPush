@@ -38,6 +38,10 @@ public class GenericLearningModel {
 	
 	@JsonProperty("rating")
 	private Integer rating;
+	
+	private String registrationUrl;
+	private String recordingUrl;
+	private String contentType;
 
 	public String getRowId() {
 		return rowId;
@@ -125,6 +129,30 @@ public class GenericLearningModel {
 
 	public void setRating(Integer rating) {
 		this.rating = rating;
+	}
+
+	public String getRegistrationUrl() {
+		return registrationUrl;
+	}
+
+	public void setRegistrationUrl(String registrationUrl) {
+		this.registrationUrl = registrationUrl;
+	}
+
+	public String getRecordingUrl() {
+		return recordingUrl;
+	}
+
+	public void setRecordingUrl(String recordingUrl) {
+		this.recordingUrl = recordingUrl;
+	}
+
+	public String getContentType() {
+		return contentType;
+	}
+
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
 	}
 	
 

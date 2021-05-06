@@ -127,14 +127,20 @@ public class ProductDocumentationService{
 					&& userBookmarks.contains(learning.getLearning_item_id())) 
 			card.setIsBookMarked(true);
 		
-			card.setLink(learning.getRegistrationUrl());//learning.getLink()
+			//card.setLink(learning.getRegistrationUrl());//learning.getLink()
 			card.setStatus(learning.getStatus());
 			card.setPresenterName(learning.getPresenterName());
 			card.setRowId(learning.getLearning_item_id());
 			card.setTitle(learning.getTitle());
 			card.setType(learning.getLearning_type());
 			card.setRating(learning.getPiw_score());
-					
+			
+			card.setRegistrationUrl(learning.getRegistrationUrl());
+			card.setRecordingUrl(learning.getRecordingUrl());
+			
+			card.setLink(learning.getAsset_links());
+			card.setContentType(learning.getAsset_types());
+											
 			cards.add(card);
 		});
 		return cards;

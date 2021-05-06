@@ -84,6 +84,10 @@ public class LearningItemEntity {
 	@Column(name = "deleted")
 	private boolean deleted;
 
+	
+	private String asset_types;	
+	private String asset_links;
+
 	public boolean isDeleted() {
 		return deleted;
 	}
@@ -250,6 +254,22 @@ public class LearningItemEntity {
 
 	public void setSortByDate(String sortByDate) {
 		this.sortByDate = sortByDate;
+	}
+
+	public String getAsset_types() {
+		return asset_types;
+	}
+
+	public void setAsset_types(String asset_types) {
+		this.asset_types = asset_types;
+	}
+
+	public String getAsset_links() {
+		return asset_links;
+	}
+
+	public void setAsset_links(String asset_links) {
+		this.asset_links = asset_links;
 	}
 
 }

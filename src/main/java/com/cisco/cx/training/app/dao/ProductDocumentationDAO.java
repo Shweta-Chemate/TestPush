@@ -17,7 +17,15 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 	
 	/** all cards **/
 	
-	public static final String GET_PD_LEARNING_CARDS = "select * from cxpp_db.cxpp_learning_item "
+	public static final String GET_PD_LEARNING_CARDS = "select cl.*, CT.asset_types,CT.asset_links  "
+			+ " from cxpp_db.cxpp_learning_item cl "
+			+ " left join "
+			+ "	(select learning_item_id, "
+			+ "	group_concat(ifnull(asset_type,'') separator ',') as asset_types, "
+			+ "	group_concat(ifnull(link,'') separator ',') AS asset_links "
+			+ "	from cxpp_db.cxpp_item_link  "
+			+ "	group by learning_item_id) as CT "
+			+ "	on cl.learning_item_id = CT.learning_item_id "
 			+ "  \n-- #sort\n";	
 	@Query(value=GET_PD_LEARNING_CARDS , nativeQuery=true)
 	List<LearningItemEntity> getAllLearningCards(Sort sort);
@@ -25,7 +33,15 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 	
 	/** search **/
 	
-	public static final String GET_PD_LEARNING_CARDS_SEARCH = " select * from cxpp_db.cxpp_learning_item cl "
+	public static final String GET_PD_LEARNING_CARDS_SEARCH = "select cl.*, CT.asset_types,CT.asset_links  "
+			+ " from cxpp_db.cxpp_learning_item cl "
+			+ " left join "
+			+ "	(select learning_item_id, "
+			+ "	group_concat(ifnull(asset_type,'') separator ',') as asset_types, "
+			+ "	group_concat(ifnull(link,'') separator ',') AS asset_links "
+			+ "	from cxpp_db.cxpp_item_link  "
+			+ "	group by learning_item_id) as CT "
+			+ "	on cl.learning_item_id = CT.learning_item_id "
 			+ " where lower(cl.title) like :likeToken or lower(cl.description) like :likeToken  "
 			+ " or lower(cl.presentername) like :likeToken "
 			+ "  \n-- #sort\n";	
@@ -48,8 +64,16 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 	@Query(value=GET_PD_LEARNING_BY_CONTENT_TYPE , nativeQuery=true)
 	Set<String> getLearningsByContentType(Set<String> contentTypeFilter);	
 	
-	public static final String GET_PD_LEARNING_CARDS_BY_FILTER = "select * from cxpp_db.cxpp_learning_item cl "
-			+ " where learning_item_id in (:filterCards) "
+	public static final String GET_PD_LEARNING_CARDS_BY_FILTER = "select cl.*, CT.asset_types,CT.asset_links  "
+			+ " from cxpp_db.cxpp_learning_item cl "
+			+ " left join "
+			+ "	(select learning_item_id, "
+			+ "	group_concat(ifnull(asset_type,'') separator ',') as asset_types, "
+			+ "	group_concat(ifnull(link,'') separator ',') AS asset_links "
+			+ "	from cxpp_db.cxpp_item_link  "
+			+ "	group by learning_item_id) as CT "
+			+ "	on cl.learning_item_id = CT.learning_item_id "
+			+ " where cl.learning_item_id in (:filterCards) "
 			+ "  \n-- #sort\n";
 	
 	@Query(value=GET_PD_LEARNING_CARDS_BY_FILTER , nativeQuery=true)
@@ -58,7 +82,15 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 	
 	/** filter + search */
 	
-	public static final String GET_PD_LEARNING_CARDS_FILTERED_SEARCH = " select * from cxpp_db.cxpp_learning_item cl "
+	public static final String GET_PD_LEARNING_CARDS_FILTERED_SEARCH = "select cl.*, CT.asset_types,CT.asset_links  "
+			+ " from cxpp_db.cxpp_learning_item cl "
+			+ " left join "
+			+ "	(select learning_item_id, "
+			+ "	group_concat(ifnull(asset_type,'') separator ',') as asset_types, "
+			+ "	group_concat(ifnull(link,'') separator ',') AS asset_links "
+			+ "	from cxpp_db.cxpp_item_link  "
+			+ "	group by learning_item_id) as CT "
+			+ "	on cl.learning_item_id = CT.learning_item_id "
 			+ " where cl.learning_item_id in (:filteredCards) and "
 			+ " ( lower(cl.title) like :likeToken or lower(cl.description) like :likeToken  "
 			+ " or lower(cl.presentername) like :likeToken ) "
