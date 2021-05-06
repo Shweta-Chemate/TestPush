@@ -1,5 +1,6 @@
 package com.cisco.cx.training.models;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.cisco.cx.training.util.HasId;
@@ -22,11 +23,13 @@ public class SuccessTalk implements HasId, Comparable<SuccessTalk> {
 	@ApiModelProperty(notes = "URL of the image to be displayed")
 	private String imageUrl;
 	@ApiModelProperty(notes = "Status of the SuccessTalk", example = "Recommended")
-	private SuccessTalkStatusEnum status = SuccessTalkStatusEnum.RECOMMENDED;
+	private String status;
+	@ApiModelProperty(notes = "registration updated timestamp", example = "Recommended")
+	private LocalDateTime regTimestamp;
 	@ApiModelProperty(notes = "Pitstop", example = "Onboard")
 	private String recordingUrl;
 	@ApiModelProperty(notes = "Duration of the session in seconds", example = "3600")
-	private Long duration;
+	private String duration;
 	@ApiModelProperty(notes = "Is bookmark", example = "true")
 	private boolean bookmark;
 	@ApiModelProperty(notes = "Boolean to identify if this is a technical session")
@@ -109,19 +112,19 @@ public class SuccessTalk implements HasId, Comparable<SuccessTalk> {
 		this.description = description;
 	}
 
-	public SuccessTalkStatusEnum getStatus() {
+	public String getStatus() {
 		return status;
 	}
 
-	public void setStatus(SuccessTalkStatusEnum status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
 
-	public Long getDuration() {
+	public String getDuration() {
 		return duration;
 	}
 
-	public void setDuration(Long duration) {
+	public void setDuration(String duration) {
 		this.duration = duration;
 	}
 
@@ -176,6 +179,14 @@ public class SuccessTalk implements HasId, Comparable<SuccessTalk> {
 
 	public void setTechnicalSession(Boolean technicalSession) {
 		this.technicalSession = technicalSession;
+	}
+
+	public LocalDateTime getRegTimestamp() {
+		return regTimestamp;
+	}
+
+	public void setRegTimestamp(LocalDateTime regTimestamp) {
+		this.regTimestamp = regTimestamp;
 	}
 
 }
