@@ -24,7 +24,6 @@ import com.cisco.cx.training.app.builders.SpecificationBuilder;
 import com.cisco.cx.training.app.builders.SpecificationBuilderPIW;
 import com.cisco.cx.training.app.builders.SpecificationBuilderSuccessTalk;
 import com.cisco.cx.training.app.dao.NewLearningContentDAO;
-import com.cisco.cx.training.app.dao.ProductDocumentationDAO;
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.app.repo.NewLearningContentRepo;
 import com.cisco.cx.training.constants.Constants;
