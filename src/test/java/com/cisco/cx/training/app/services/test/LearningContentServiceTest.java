@@ -267,6 +267,41 @@ public class LearningContentServiceTest {
 		learningContentService.getUpcomingFiltersWithCount(testFilter, filterCounts, select);
 	}
 	
+	@Test
+	public void testFetchSuccessacademyContent()
+	{
+		String testUserId = "testUserId";
+		String testFilter = "test:test";
+		List<NewLearningContentEntity> learningEntityList = new ArrayList<>();
+		learningEntityList.add(getLearningEntity());
+		when(learningContentDAO.fetchSuccessAcademyContent(Mockito.any())).thenReturn(learningEntityList);
+		Set<String> userBookmarks=getBookmarks();
+		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(userBookmarks);
+		List<LearningStatusEntity> learningStatusList = new ArrayList<>();
+		learningStatusList.add(getLearningStatusEntity());
+		when(learningStatusRepo.findByUserIdAndPuid(testUserId, this.puid)).thenReturn(learningStatusList);
+		learningContentService.fetchSuccessAcademyContent(this.puid, testUserId, testFilter);
+	}
+	
+	@Test
+	public void testFetchSuccessacademyFiltersWithCount()
+	{
+		HashMap<String, HashMap<String, String>> filterCounts = new HashMap<>();
+		HashMap<String, String> testRegionCount = new HashMap<>();
+		String select="test";
+		testRegionCount.put("AMER", "1");
+		filterCounts.put("Live Events" , testRegionCount);
+		HashMap<String, String> testContentCount = new HashMap<>();
+		testContentCount.put("PDF", "1");
+		filterCounts.put("Content Type" , testContentCount);
+		HashMap<String, String> testLanguageCount = new HashMap<>();
+		testLanguageCount.put("English", "1");
+		filterCounts.put("Language" , testLanguageCount);
+		String testFilter = "test:test";
+		when(learningContentDAO.getSuccessAcademyFiltersWithCount(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(filterCounts);
+		learningContentService.getSuccessAcademyFiltersWithCount(testFilter, filterCounts, select);
+	}
+	
 	private Set<String> getBookmarks() {
 		Set<String> userBookmarks=new HashSet<>();
 		userBookmarks.add("test");
