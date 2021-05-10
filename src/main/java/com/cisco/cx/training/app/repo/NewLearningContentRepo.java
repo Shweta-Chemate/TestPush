@@ -58,4 +58,7 @@ public interface NewLearningContentRepo
 
 	@Query(value=SQLConstants.GET_PD_ST_WITH_COUNT_BY_CARDS , nativeQuery=true)
 	List<Map<String, Object>> getAllStWithCountByCards(Set<String> cardIds);
+
+	@Query(value = SQLConstants.GET_DOC_WITH_COUNT_BY_CARD, nativeQuery = true)
+	List<Map<String, Object>> getDocFilterCountByCards(Set<String> learningItemIds);
 }

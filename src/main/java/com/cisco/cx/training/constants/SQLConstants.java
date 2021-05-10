@@ -47,4 +47,8 @@ public class SQLConstants {
 			+ "where learning_item_id in (:cardIds) "
 			+ "group by successtrack "
 			+ "order by successtrack";
+
+	public static final String GET_DOC_WITH_COUNT_BY_CARD = "select archetype as label, count(*) as count "
+			+ " from cxpp_db.cxpp_learning_content where archetype IS NOT NULL and id in (:learningItemIds) "
+			+ " group by archetype";
 }

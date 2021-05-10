@@ -426,6 +426,21 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 					if (!successTrackFilter.isEmpty())
 						filterCounts.put(Constants.SUCCESS_TRACK, successTrackFilter);
 		}
+
+		update=select==null?true:!select.equals(Constants.DOCUMENTATION_FILTER);
+		// archetype  Filter
+		if(update) {
+			HashMap<String, String> docFilter = filterCounts.containsKey(Constants.DOCUMENTATION_FILTER)
+					? filterCounts.get(Constants.DOCUMENTATION_FILTER)
+							: new HashMap<>();
+					docFilter.keySet().forEach(key -> docFilter.put(key, "0"));
+					List<Map<String, Object>> docFilterWithCount = learningContentRepo
+							.getDocFilterCountByCards(learningItemIdsList);
+					Map<String, String> allDocContent = listToMap(docFilterWithCount);
+					docFilter.putAll(allDocContent);
+					if (!docFilter.isEmpty())
+						filterCounts.put(Constants.DOCUMENTATION_FILTER, docFilter);
+		}
 		return filterCounts;
 	}
 
