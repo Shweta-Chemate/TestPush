@@ -31,16 +31,20 @@ import com.cisco.cx.training.app.dao.BookmarkDAO;
 import com.cisco.cx.training.app.dao.CommunityDAO;
 import com.cisco.cx.training.app.dao.ElasticSearchDAO;
 import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
+import com.cisco.cx.training.app.dao.NewLearningContentDAO;
 import com.cisco.cx.training.app.dao.PartnerPortalLookupDAO;
 import com.cisco.cx.training.app.dao.SmartsheetDAO;
 import com.cisco.cx.training.app.dao.SuccessAcademyDAO;
 import com.cisco.cx.training.app.dao.SuccessTalkDAO;
+import com.cisco.cx.training.app.entities.LearningStatusEntity;
+import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.app.entities.PartnerPortalLookUpEntity;
 import com.cisco.cx.training.app.entities.SuccessAcademyLearningEntity;
 import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.exception.GenericException;
 import com.cisco.cx.training.app.exception.NotAllowedException;
 import com.cisco.cx.training.app.exception.NotFoundException;
+import com.cisco.cx.training.app.repo.LearningStatusRepo;
 import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.app.service.ProductDocumentationService;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
@@ -96,6 +100,15 @@ public class TrainingAndEnablementServiceTest {
 	
 	@Mock
 	private ProductDocumentationService productDocumentationService;
+	
+	@Mock
+	private NewLearningContentDAO learningContentDAO;
+	
+	@Mock
+	private LearningBookmarkDAO learningBookmarkDAO;
+	
+	@Mock
+	private LearningStatusRepo learningStatusRepo;
 
 	@InjectMocks
 	private TrainingAndEnablementService trainingAndEnablementService = new TrainingAndEnablementServiceImpl();	
@@ -464,6 +477,49 @@ public class TrainingAndEnablementServiceTest {
 		when(productDocumentationService.getAllLearningFilters("searchToken",null)).thenReturn(aMock);
 		Map<String, Object> a = trainingAndEnablementService.getAllLearningFiltersPost("searchToken",null);
 		Assert.assertEquals(0, a.size());
+	}
+	
+	@Test
+	public void testFetchNewLearningContent()
+	{
+		String testUserId = "testUserId";
+		String testFilter = "test:test";
+		String testPuid = "101";
+		List<NewLearningContentEntity> learningEntityList = new ArrayList<>();
+		learningEntityList.add(getLearningEntity());
+		when(learningContentDAO.fetchNewLearningContent(Mockito.any())).thenReturn(learningEntityList);
+		Set<String> userBookmarks=getBookmarks();
+		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(userBookmarks);
+		List<LearningStatusEntity> learningStatusList = new ArrayList<>();
+		learningStatusList.add(getLearningStatusEntity());
+		when(learningStatusRepo.findByUserIdAndPuid(testUserId, testPuid)).thenReturn(learningStatusList);
+		trainingAndEnablementService.fetchNewLearningContent(testUserId, testFilter, testPuid);
+	}
+	
+	NewLearningContentEntity getLearningEntity()
+	{
+		NewLearningContentEntity learningEntity = new NewLearningContentEntity();
+		learningEntity.setId("test");
+		return learningEntity;
+	}
+	
+	private Set<String> getBookmarks() {
+		Set<String> userBookmarks=new HashSet<>();
+		userBookmarks.add("test");
+		return userBookmarks;
+	}
+	
+	LearningStatusEntity getLearningStatusEntity()
+	{
+		String testUserId = "sntccbr5@hotmail.com";
+		String testPuid = "101";
+		LearningStatusEntity learningStatusEntity = new LearningStatusEntity();
+		learningStatusEntity.setLearningItemId("test");
+		learningStatusEntity.setPuid(testPuid);
+		learningStatusEntity.setUserId(testUserId);
+		learningStatusEntity.setRegStatus("REGISTERED_T");
+		return learningStatusEntity;
+		
 	}
 	
 }
