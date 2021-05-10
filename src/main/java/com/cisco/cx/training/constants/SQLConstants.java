@@ -34,4 +34,17 @@ public class SQLConstants {
 	public static final String GET_SUCCESSACADEMY_FILTER_WITH_COUNT = "select asset_facet as label, count(*) as count \n" + 
 			" from cxpp_db.cxpp_learning_content where learning_type='successacademy' and asset_model IS NOT NULL and asset_facet IS NOT NULL and asset_model = :asset_model and id in (:learningItemIds)\n" + 
 			" group by asset_facet;";
+
+	public static final String GET_PD_CARDS__BY_ST = "select lc.* "
+			+ "from cxpp_db.cxpp_learning_successtrack st "
+			+ "inner join cxpp_db.cxpp_learning_content lc "
+			+ "on st.learning_item_id=lc.id "
+			+ "where learning_item_id in (:cardIds) "
+			+ "and st.successtrack in (:successTracks)";
+
+	public static final String GET_PD_ST_WITH_COUNT_BY_CARDS = "select successtrack as label, count(*) as count "
+			+ "from cxpp_db.cxpp_learning_successtrack st  "
+			+ "where learning_item_id in (:cardIds) "
+			+ "group by successtrack "
+			+ "order by successtrack";
 }

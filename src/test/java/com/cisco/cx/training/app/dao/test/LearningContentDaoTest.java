@@ -167,7 +167,7 @@ public class LearningContentDaoTest {
 	
 	@Test
 	public void testFetchFilteredContent() {
-		learningContentDAO.fetchFilteredContent("101", "userid", null);
+		learningContentDAO.fetchFilteredContent("101", "userid", new HashMap<String,String>());
 	}
 	
 	@Test

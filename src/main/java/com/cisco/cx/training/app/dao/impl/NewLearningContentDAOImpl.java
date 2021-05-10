@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -120,6 +122,8 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	@Override
 	public List<NewLearningContentEntity> fetchRecentlyViewedContent(String puid, String userId, Map<String, String> filterParams) {
 		List<NewLearningContentEntity> result;
+		List<NewLearningContentEntity> learningContentListSACampus = new ArrayList<>();
+		Set<String> productDocSuccesstrackfilters=getSuccessTrackFilters(filterParams);
 		if(filterParams.isEmpty())
 			result= learningContentRepo.getRecentlyViewedContent(puid, userId);
 		else {
@@ -131,6 +135,17 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 			learningItemIdsList = filteredList.stream().map(learningItem -> learningItem.getId())
 					.collect(Collectors.toSet());
 			result=learningContentRepo.getRecentlyViewedContentFiltered(puid, userId, learningItemIdsList);
+		}
+		//filter content w.r.t product documentation successtrack filters
+		if(!productDocSuccesstrackfilters.isEmpty()) {
+			Set<String> learningContentIds=result.stream().map(learningItem -> learningItem.getId())
+					.collect(Collectors.toSet());
+			if(productDocSuccesstrackfilters.contains(Constants.CAMPUS_NETWORK)) {
+				learningContentListSACampus=result.stream()
+						.filter(entity->entity.getAssetFacet()!=null && entity.getAssetFacet().equals(Constants.CAMPUS)).collect(Collectors.toList());
+			}
+			result=learningContentRepo.getCardsBySt(productDocSuccesstrackfilters, learningContentIds);
+			result.addAll(learningContentListSACampus);
 		}
 		return result;
 	}
@@ -155,6 +170,10 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		
 		// Calculating counts for successacademy filters if applicable
 		getSuccessAcademyFilteredCounts(filterCounts, learningItemIdsList, select);
+
+		// Calculating counts for product doc filters if applicable
+		getProductDocumentationFilterCounts(filterCounts, learningItemIdsList, select);
+
 		return filterCounts;
 	}
 
@@ -162,9 +181,22 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	public List<NewLearningContentEntity> fetchFilteredContent(String puid, String ccoid,
 			Map<String, String> query_map) {
 		List<NewLearningContentEntity> filteredList = new ArrayList<>();
+		List<NewLearningContentEntity> learningContentListCampusSA = new ArrayList<>();
+		Set<String> productDocSuccesstrackfilters=getSuccessTrackFilters(query_map);
 		Specification<NewLearningContentEntity> specification = Specification.where(null);
 		specification = specification.and(new SpecificationBuilder().filter(query_map));
 		filteredList = learningContentRepo.findAll(specification);
+		//filter content w.r.t product documentation successtrack filters
+		if(!productDocSuccesstrackfilters.isEmpty()) {
+			Set<String> learningContentIds=filteredList.stream().map(learningItem -> learningItem.getId())
+					.collect(Collectors.toSet());
+			if(productDocSuccesstrackfilters.contains(Constants.CAMPUS_NETWORK)) {
+				learningContentListCampusSA=filteredList.stream()
+						.filter(entity->entity.getAssetFacet()!=null && entity.getAssetFacet().equals(Constants.CAMPUS)).collect(Collectors.toList());
+			}
+			filteredList=learningContentRepo.getCardsBySt(productDocSuccesstrackfilters, learningContentIds);
+			filteredList.addAll(learningContentListCampusSA);
+		}
 		return filteredList;
 	}
 	
@@ -186,9 +218,12 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		// Calculating counts for successacademy filters if applicable
 		getSuccessAcademyFilteredCounts(filterCounts, learningItemIdsList, select);
 
+		// Calculating counts for product doc filters if applicable
+		getProductDocumentationFilterCounts(filterCounts, learningItemIdsList, select);
+
 		return filterCounts;
 	}
-	
+
 	@Override
 	public List<NewLearningContentEntity> fetchUpcomingContent(Map<String, String> filterParams) {
 		List<NewLearningContentEntity> result;
@@ -347,6 +382,10 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 			List<Map<String, Object>> successTrackFiltWithCount = learningContentRepo
 					.findSuccessAcademyFiltered(Constants.SUCCESS_TRACK, learningItemIdsList);
 			Map<String, String> allSuccessTracks = listToMap(successTrackFiltWithCount);
+			if(allSuccessTracks.containsKey(Constants.CAMPUS)) {
+				allSuccessTracks.put(Constants.CAMPUS_NETWORK,allSuccessTracks.get(Constants.CAMPUS));
+				allSuccessTracks.remove(Constants.CAMPUS);
+			}
 			successTrackFilter.putAll(allSuccessTracks);
 			if (!successTrackFilter.isEmpty())
 				filterCounts.put(Constants.SUCCESS_TRACK, successTrackFilter);
@@ -368,5 +407,35 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		}
 		
 		return filterCounts;
+	}
+
+	HashMap<String, HashMap<String, String>> getProductDocumentationFilterCounts(HashMap<String, HashMap<String, String>> filterCounts, Set<String> learningItemIdsList, String select){
+		boolean update=select==null?true:!select.equals(Constants.SUCCESS_TRACK);
+		// Success Track Filter
+		if(update) {
+			HashMap<String, String> successTrackFilter = filterCounts.containsKey(Constants.SUCCESS_TRACK)
+					? filterCounts.get(Constants.SUCCESS_TRACK)
+							: new HashMap<>();
+					List<Map<String, Object>> successTrackFilterWithCountPD = learningContentRepo
+							.getAllStWithCountByCards(learningItemIdsList);
+					Map<String, String> allSuccessTracksPD = listToMap(successTrackFilterWithCountPD);
+					Map<String, String> allSuccessTracks=new HashMap<>(successTrackFilter);
+					allSuccessTracksPD.forEach((k, v) -> allSuccessTracks.merge(k, v, (count1,count2)->
+							Integer.toString(Integer.valueOf(count1)+Integer.valueOf(count2))));
+					successTrackFilter.putAll(allSuccessTracks);
+					if (!successTrackFilter.isEmpty())
+						filterCounts.put(Constants.SUCCESS_TRACK, successTrackFilter);
+		}
+		return filterCounts;
+	}
+
+	private Set<String> getSuccessTrackFilters(Map<String, String> filterparams){
+		Set<String> successTracks=new HashSet<>();
+		String fieldValue = filterparams.get(Constants.SUCCESS_TRACK);
+		if(fieldValue!=null){
+			successTracks=new HashSet<>(Arrays.asList(fieldValue.split(",")));
+			filterparams.remove(Constants.SUCCESS_TRACK);
+		}
+		return successTracks;
 	}
 }

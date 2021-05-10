@@ -49,5 +49,7 @@ public final class Constants {
 	public static final String MODEL = "Model";
 	public static final String SUCCESS_TRACK = "Success Track";
 	public static final String TECHNOLOGY = "Technology";
+	public static final String CAMPUS = "CAMPUS";
+	public static final String CAMPUS_NETWORK = "Campus Network";
 
 }
