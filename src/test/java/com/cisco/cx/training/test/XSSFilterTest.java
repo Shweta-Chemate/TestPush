@@ -1,18 +1,12 @@
 package com.cisco.cx.training.test;
 
-import com.cisco.cx.training.app.exception.BadRequestException;
-import com.cisco.cx.training.app.filters.XSSFilter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-
-import java.io.IOException;
-
-import static org.junit.Assert.*;
+import com.cisco.cx.training.app.exception.BadRequestException;
+import com.cisco.cx.training.app.filters.XSSFilter;
 
 public class XSSFilterTest {
 

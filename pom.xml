@@ -41,6 +41,10 @@
 					<groupId>com.jayway.jsonpath</groupId>
 					<artifactId>json-path</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>junit</groupId>
+					<artifactId>junit</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>		
 		<dependency>
@@ -121,6 +125,7 @@
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<configuration>
 					<excludes>
+					    <exclude>*</exclude>
 						<exclude>**/util/**</exclude>
 						<exclude>**/exception/**</exclude>
 						<exclude>**/constants/**</exclude>
