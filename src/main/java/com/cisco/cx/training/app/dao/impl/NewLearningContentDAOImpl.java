@@ -114,6 +114,12 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 
 		// Calculating counts after filtering
 		getFilteredCounts(filterCounts, learningItemIdsList, select);
+		
+		// Calculating counts for successacademy filters if applicable
+		getSuccessAcademyFilteredCounts(filterCounts, learningItemIdsList, select);
+		
+		// Calculating counts for product doc filters if applicable
+		getProductDocumentationFilterCounts(filterCounts, learningItemIdsList, select);
 
 		return filterCounts;
 	}
