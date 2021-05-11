@@ -31,6 +31,7 @@ import com.cisco.cx.training.models.CountResponseSchema;
 import com.cisco.cx.training.models.CountSchema;
 import com.cisco.cx.training.models.LearningContentItem;
 import com.cisco.cx.training.models.LearningStatusSchema;
+import com.cisco.cx.training.models.LearningStatusSchema.Registration;
 import com.cisco.cx.training.models.PIW;
 import com.cisco.cx.training.models.SuccessTalk;
 import com.cisco.cx.training.models.SuccessTalkResponseSchema;
@@ -254,20 +255,22 @@ public class LearningContentServiceImpl implements LearningContentService {
 	@Override
 	public LearningStatusEntity updateUserStatus(String userId, String puid, LearningStatusSchema learningStatusSchema,
 			String xMasheryHandshake) {
-		UserDetailsWithCompanyList userDetails = partnerProfileService.fetchUserDetailsWithCompanyList(xMasheryHandshake);
-		List<Company> companies = userDetails.getCompanyList();
-		Optional<Company> matchingObject = companies.stream()
-				.filter(c -> (c.getPuid().equals(puid) && c.isDemoAccount())).findFirst();
-		Company company = matchingObject.isPresent() ? matchingObject.get() : null;
-		if (company != null)
-			throw new NotAllowedException("Not Allowed for DemoAccount");
-
+		Registration regStatus=learningStatusSchema.getRegStatus();
+		if(regStatus!=null) {
+			UserDetailsWithCompanyList userDetails = partnerProfileService.fetchUserDetailsWithCompanyList(xMasheryHandshake);
+			List<Company> companies = userDetails.getCompanyList();
+			Optional<Company> matchingObject = companies.stream()
+					.filter(c -> (c.getPuid().equals(puid) && c.isDemoAccount())).findFirst();
+			Company company = matchingObject.isPresent() ? matchingObject.get() : null;
+			if (company != null)
+				throw new NotAllowedException("Not Allowed for DemoAccount");
+		}
 		try {
 			LearningStatusEntity learning_status_existing = learningStatusRepo.findByLearningItemIdAndUserIdAndPuid(learningStatusSchema.getLearningItemId(), userId, puid);
 			// record already exists in the table
 			if (learning_status_existing != null) {
-				if(learningStatusSchema.getRegStatus()!=null){
-					learning_status_existing.setRegStatus(learningStatusSchema.getRegStatus().toString());
+				if(regStatus!=null){
+					learning_status_existing.setRegStatus(regStatus.toString());
 					learning_status_existing.setRegUpdatedTimestamp(java.time.LocalDateTime.now());
 				}
 				if(learningStatusSchema.isViewed()){
@@ -282,8 +285,8 @@ public class LearningContentServiceImpl implements LearningContentService {
 				learning_status_new.setUserId(userId);
 				learning_status_new.setPuid(puid);
 				learning_status_new.setLearningItemId(learningStatusSchema.getLearningItemId());
-				if(learningStatusSchema.getRegStatus()!=null){
-					learning_status_new.setRegStatus(learningStatusSchema.getRegStatus().toString());
+				if(regStatus!=null){
+					learning_status_new.setRegStatus(regStatus.toString());
 					learning_status_new.setRegUpdatedTimestamp(java.time.LocalDateTime.now());
 				}
 				if(learningStatusSchema.isViewed()){
