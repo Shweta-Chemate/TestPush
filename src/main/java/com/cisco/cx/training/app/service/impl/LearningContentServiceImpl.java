@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -460,7 +461,8 @@ public class LearningContentServiceImpl implements LearningContentService {
 		List<LearningContentItem> result = new ArrayList<>();
 		Map<String, String> query_map = filterStringtoMap(filter);
 		if(query_map.containsValue(Constants.CAMPUS_NETWORK)) {
-			query_map.put(Constants.ASSET_FACET,Constants.CAMPUS);
+			query_map.replace(query_map.keySet().stream()
+            .filter(key -> Constants.CAMPUS_NETWORK.equals(query_map.get(key))).findFirst().get(), Constants.CAMPUS_NETWORK, Constants.CAMPUS);
 		}
 		try
 		{
@@ -480,7 +482,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 				result.add(learningItem);
 			}
 		}catch (Exception e) {
-			throw new GenericException("There was a problem in fetching upcoming learning content");
+			throw new GenericException("There was a problem in fetching successacademy learning content");
 		}
 		return result;
 	}
