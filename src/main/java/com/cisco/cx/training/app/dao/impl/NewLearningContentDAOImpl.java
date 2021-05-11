@@ -39,6 +39,8 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	@Override
 	public List<NewLearningContentEntity> fetchNewLearningContent(Map<String, String> filterParams) {
 		List<NewLearningContentEntity> result;
+		List<NewLearningContentEntity> learningContentListSACampus = new ArrayList<>();
+		Set<String> productDocSuccesstrackfilters=getSuccessTrackFilters(filterParams);
 		if(filterParams.isEmpty())
 			result= learningContentRepo.findNew();
 		else {
@@ -50,6 +52,17 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 			learningItemIdsList = filteredList.stream().map(learningItem -> learningItem.getId())
 					.collect(Collectors.toSet());
 			result=learningContentRepo.findNewFiltered(learningItemIdsList);
+		}
+		//filter content w.r.t product documentation successtrack filters
+		if(!productDocSuccesstrackfilters.isEmpty()) {
+			Set<String> learningContentIds=result.stream().map(learningItem -> learningItem.getId())
+					.collect(Collectors.toSet());
+			if(productDocSuccesstrackfilters.contains(Constants.CAMPUS_NETWORK)) {
+				learningContentListSACampus=result.stream()
+						.filter(entity->entity.getAssetFacet()!=null && entity.getAssetFacet().equals(Constants.CAMPUS)).collect(Collectors.toList());
+			}
+			result=learningContentRepo.getCardsBySt(productDocSuccesstrackfilters, learningContentIds);
+			result.addAll(learningContentListSACampus);
 		}
 		return result;
 	}
@@ -101,6 +114,12 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 
 		// Calculating counts after filtering
 		getFilteredCounts(filterCounts, learningItemIdsList, select);
+		
+		// Calculating counts for successacademy filters if applicable
+		getSuccessAcademyFilteredCounts(filterCounts, learningItemIdsList, select);
+		
+		// Calculating counts for product doc filters if applicable
+		getProductDocumentationFilterCounts(filterCounts, learningItemIdsList, select);
 
 		return filterCounts;
 	}
