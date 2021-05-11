@@ -1,5 +1,6 @@
 package com.cisco.cx.training.test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -9,13 +10,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import com.cisco.cx.training.app.config.PropertyConfiguration;
+import com.cisco.cx.training.app.dao.impl.LearningBookmarkDAOImpl;
+import com.cisco.cx.training.models.BookmarkResponseSchema;
 
 import software.amazon.awssdk.http.SdkHttpResponse;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -25,11 +29,7 @@ import software.amazon.awssdk.services.dynamodb.model.PutItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
 import software.amazon.awssdk.services.dynamodb.model.QueryResponse;
 
-import com.cisco.cx.training.app.config.PropertyConfiguration;
-import com.cisco.cx.training.app.dao.impl.LearningBookmarkDAOImpl;
-import com.cisco.cx.training.models.BookmarkResponseSchema;
-
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 public class LearningBookMarkDaoImplTest {
 	
 	@Mock
@@ -61,7 +61,7 @@ public class LearningBookMarkDaoImplTest {
 		Mockito.when(dbClient.query(Mockito.any(QueryRequest.class))).thenReturn(response);
 		
 		Set<String> bookMarks = learningBookMarkImpl.getBookmarks("");
-		Assert.assertEquals(bookMarks.size(), 1);
+		assertEquals(bookMarks.size(), 1);
 	}
 	
 	@Test

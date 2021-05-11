@@ -9,9 +9,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 import org.apache.commons.codec.binary.Base64;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -19,7 +20,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -38,7 +39,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import springfox.documentation.swagger2.web.Swagger2Controller;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = { NewLearningContentController.class, Swagger2Controller.class })
 @ContextConfiguration(classes = { TrainingAndEnablementApplication.class,
 		PropertyConfiguration.class,Swagger2Config.class})
@@ -68,7 +69,7 @@ public class NewLearningContentControllerTest {
 
 	private String puid = "101";
 
-	@Before
+	@BeforeEach
 	public void init() throws IOException {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
 				.addFilters(authFilter).build();

@@ -1,20 +1,22 @@
 package com.cisco.cx.training.app.dao.test;
 
 import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import com.cisco.cx.training.app.builders.SpecificationBuilderPIW;
 import com.cisco.cx.training.app.dao.NewLearningContentDAO;
 import com.cisco.cx.training.app.dao.impl.NewLearningContentDAOImpl;
@@ -24,7 +26,7 @@ import com.cisco.cx.training.constants.Constants;
 import com.cisco.cx.training.models.LearningContentItem;
 
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 public class LearningContentDaoTest {
 
 	@Mock
