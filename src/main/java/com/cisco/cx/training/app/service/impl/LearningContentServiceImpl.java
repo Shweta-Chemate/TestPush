@@ -459,7 +459,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 		List<NewLearningContentEntity> contentList = new ArrayList<>();
 		List<LearningContentItem> result = new ArrayList<>();
 		Map<String, String> query_map = filterStringtoMap(filter);
-		if(query_map.containsValue(Constants.CAMPUS)) {
+		if(query_map.containsValue(Constants.CAMPUS_NETWORK)) {
 			query_map.put(Constants.ASSET_FACET,Constants.CAMPUS);
 		}
 		try
