@@ -488,6 +488,10 @@ public class LearningContentServiceImpl implements LearningContentService {
 		try
 		{
 			Map<String, String> query_map = filterStringtoMap(filter);
+			if(query_map.containsValue(Constants.CAMPUS_NETWORK)) {
+				query_map.replace(query_map.keySet().stream()
+	            .filter(key -> Constants.CAMPUS_NETWORK.equals(query_map.get(key))).findFirst().get(), Constants.CAMPUS_NETWORK, Constants.CAMPUS);
+			}
 			successAcademyContentCounts = learningContentDAO.getSuccessAcademyFiltersWithCount(query_map, filterCounts, select);
 		}catch (Exception e) {
 			throw new GenericException("There was a problem in fetching successacademy filters");
