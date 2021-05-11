@@ -28,6 +28,7 @@ import com.cisco.cx.training.app.exception.NotAllowedException;
 import com.cisco.cx.training.app.repo.LearningStatusRepo;
 import com.cisco.cx.training.app.service.LearningContentService;
 import com.cisco.cx.training.app.service.PartnerProfileService;
+import com.cisco.cx.training.constants.Constants;
 import com.cisco.cx.training.models.Company;
 import com.cisco.cx.training.models.CountResponseSchema;
 import com.cisco.cx.training.models.CountSchema;
@@ -458,6 +459,9 @@ public class LearningContentServiceImpl implements LearningContentService {
 		List<NewLearningContentEntity> contentList = new ArrayList<>();
 		List<LearningContentItem> result = new ArrayList<>();
 		Map<String, String> query_map = filterStringtoMap(filter);
+		if(query_map.containsValue(Constants.CAMPUS_NETWORK)) {
+			query_map.put(Constants.ASSET_FACET,Constants.CAMPUS);
+		}
 		try
 		{
 			contentList = learningContentDAO.fetchSuccessAcademyContent(query_map);
