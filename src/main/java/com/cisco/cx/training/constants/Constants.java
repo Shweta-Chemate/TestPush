@@ -52,5 +52,6 @@ public final class Constants {
 	public static final String CAMPUS = "CAMPUS";
 	public static final String CAMPUS_NETWORK = "Campus Network";
 	public static final String DOCUMENTATION_FILTER = "Documentation";
+	public static final String ASSET_FACET = "assetFacet";
 
 }
