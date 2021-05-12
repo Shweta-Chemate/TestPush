@@ -13,15 +13,16 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.codec.binary.Base64;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
 import com.cisco.cx.training.app.dao.NewLearningContentDAO;
 import com.cisco.cx.training.app.dao.SuccessAcademyDAO;
@@ -38,7 +39,7 @@ import com.cisco.cx.training.models.LearningStatusSchema.Registration;
 import com.cisco.cx.training.models.UserDetailsWithCompanyList;
 import com.cisco.cx.training.models.UserRole;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 public class LearningContentServiceTest {
 
 	@Mock
@@ -66,7 +67,7 @@ public class LearningContentServiceTest {
 	@InjectMocks
 	private LearningContentService learningContentService=new LearningContentServiceImpl(); 
 	
-	@Before
+	@BeforeEach
 	public void init() throws IOException {
 		this.XMasheryHeader = new String(Base64.encodeBase64(loadFromFile("mock/auth-mashery-user1.json").getBytes()));
 
@@ -265,6 +266,41 @@ public class LearningContentServiceTest {
 		String testFilter = "test:test";
 		when(learningContentDAO.getUpcomingFiltersWithCount(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(filterCounts);
 		learningContentService.getUpcomingFiltersWithCount(testFilter, filterCounts, select);
+	}
+	
+	@Test
+	public void testFetchSuccessacademyContent()
+	{
+		String testUserId = "testUserId";
+		String testFilter = "test:test";
+		List<NewLearningContentEntity> learningEntityList = new ArrayList<>();
+		learningEntityList.add(getLearningEntity());
+		when(learningContentDAO.fetchSuccessAcademyContent(Mockito.any())).thenReturn(learningEntityList);
+		Set<String> userBookmarks=getBookmarks();
+		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(userBookmarks);
+		List<LearningStatusEntity> learningStatusList = new ArrayList<>();
+		learningStatusList.add(getLearningStatusEntity());
+		when(learningStatusRepo.findByUserIdAndPuid(testUserId, this.puid)).thenReturn(learningStatusList);
+		learningContentService.fetchSuccessAcademyContent(this.puid, testUserId, testFilter);
+	}
+	
+	@Test
+	public void testFetchSuccessacademyFiltersWithCount()
+	{
+		HashMap<String, HashMap<String, String>> filterCounts = new HashMap<>();
+		HashMap<String, String> testRegionCount = new HashMap<>();
+		String select="test";
+		testRegionCount.put("AMER", "1");
+		filterCounts.put("Live Events" , testRegionCount);
+		HashMap<String, String> testContentCount = new HashMap<>();
+		testContentCount.put("PDF", "1");
+		filterCounts.put("Content Type" , testContentCount);
+		HashMap<String, String> testLanguageCount = new HashMap<>();
+		testLanguageCount.put("English", "1");
+		filterCounts.put("Language" , testLanguageCount);
+		String testFilter = "test:test";
+		when(learningContentDAO.getSuccessAcademyFiltersWithCount(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(filterCounts);
+		learningContentService.getSuccessAcademyFiltersWithCount(testFilter, filterCounts, select);
 	}
 	
 	private Set<String> getBookmarks() {

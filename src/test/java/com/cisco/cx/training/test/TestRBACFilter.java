@@ -1,5 +1,6 @@
 package com.cisco.cx.training.test;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -12,14 +13,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
 
 import com.cisco.cx.training.app.config.PropertyConfiguration;
@@ -27,7 +28,7 @@ import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.filters.RBACFilter;
 import com.cisco.cx.training.util.AuthorizationUtil;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 public class TestRBACFilter {
 	
 	@InjectMocks
@@ -66,7 +67,7 @@ public class TestRBACFilter {
 	public static final String PUID="puid";
 	
 	
-	@Before
+	@BeforeEach
 	public void init() throws IOException {
 		this.XMasheryHeader = new String(Base64.encodeBase64(loadFromFile("mock/auth-mashery-user1.json").getBytes()));
 		this.authResult = new String(loadFromFile("mock/authResult.json").getBytes());
@@ -96,26 +97,27 @@ public class TestRBACFilter {
 	}
 	
 	@Test
-	(expected = BadRequestException.class)
 	public void testFilterMissingMashery() throws IOException, ServletException
 	{
 		when(req.getRequestURI()).thenReturn("/testpath");
 		when(propertyConfig.getRbacExcludedEndPoints()).thenReturn("/excludedpath");
-		rbacFilter.doFilter(req, response, chain);
+		assertThrows(BadRequestException.class, () -> {
+			rbacFilter.doFilter(req, response, chain);
+		});
 	}
 	
 	@Test
-	(expected = BadRequestException.class)
 	public void testFilterMissingPuid() throws IOException, ServletException
 	{
 		when(req.getRequestURI()).thenReturn("/testpath");
 		when(propertyConfig.getRbacExcludedEndPoints()).thenReturn("/excludedpath");
 		when(req.getHeader(MASHERY_HANDSHAKE_HEADER_NAME)).thenReturn(this.XMasheryHeader);
-		rbacFilter.doFilter(req, response, chain);
+		assertThrows(BadRequestException.class, () -> {
+			rbacFilter.doFilter(req, response, chain);
+		});
 	}
 	
 	@Test
-	(expected = Exception.class)
 	public void testFilterAuthResultNull() throws IOException, ServletException
 	{
 		when(req.getRequestURI()).thenReturn("/testpath");
@@ -123,6 +125,8 @@ public class TestRBACFilter {
 		when(req.getHeader(MASHERY_HANDSHAKE_HEADER_NAME)).thenReturn(this.XMasheryHeader);
 		when(req.getHeader(PUID)).thenReturn(this.puid);
 		when(AuthorizationUtil.invokeAuthAPI("sntccbr5@hotmail.com", this.puid, this.XMasheryHeader, propertyConfig, restTemplate)).thenReturn(this.authResult);
-		rbacFilter.doFilter(req, response, chain);
+		assertThrows(Exception.class, () -> {
+			rbacFilter.doFilter(req, response, chain);
+		});
 	}
 }

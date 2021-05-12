@@ -52,4 +52,13 @@ public interface NewLearningContentRepo
 	
 	@Query(value = SQLConstants.GET_SUCCESSACADEMY_FILTER_WITH_COUNT, nativeQuery = true)
 	List<Map<String, Object>> findSuccessAcademyFiltered(String asset_model, Set<String> learningItemIds);
+
+	@Query(value= SQLConstants.GET_PD_CARDS__BY_ST , nativeQuery=true)
+	List<NewLearningContentEntity> getCardsBySt(Set<String> successTracks, Set<String> cardIds);
+
+	@Query(value=SQLConstants.GET_PD_ST_WITH_COUNT_BY_CARDS , nativeQuery=true)
+	List<Map<String, Object>> getAllStWithCountByCards(Set<String> cardIds);
+
+	@Query(value = SQLConstants.GET_DOC_WITH_COUNT_BY_CARD, nativeQuery = true)
+	List<Map<String, Object>> getDocFilterCountByCards(Set<String> learningItemIds);
 }

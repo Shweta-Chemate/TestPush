@@ -1,14 +1,12 @@
 package com.cisco.cx.training.app.service.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -22,24 +20,23 @@ import com.cisco.cx.training.app.dao.NewLearningContentDAO;
 import com.cisco.cx.training.app.dao.SuccessAcademyDAO;
 import com.cisco.cx.training.app.entities.LearningStatusEntity;
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
-import com.cisco.cx.training.app.entities.SuccessAcademyLearningEntity;
 import com.cisco.cx.training.app.exception.GenericException;
 import com.cisco.cx.training.app.exception.NotAllowedException;
 import com.cisco.cx.training.app.repo.LearningStatusRepo;
 import com.cisco.cx.training.app.service.LearningContentService;
 import com.cisco.cx.training.app.service.PartnerProfileService;
+import com.cisco.cx.training.constants.Constants;
 import com.cisco.cx.training.models.Company;
 import com.cisco.cx.training.models.CountResponseSchema;
 import com.cisco.cx.training.models.CountSchema;
 import com.cisco.cx.training.models.LearningContentItem;
 import com.cisco.cx.training.models.LearningStatusSchema;
+import com.cisco.cx.training.models.LearningStatusSchema.Registration;
 import com.cisco.cx.training.models.PIW;
-import com.cisco.cx.training.models.SuccessAcademyLearning;
 import com.cisco.cx.training.models.SuccessTalk;
 import com.cisco.cx.training.models.SuccessTalkResponseSchema;
 import com.cisco.cx.training.models.SuccessTalkSession;
 import com.cisco.cx.training.models.UserDetailsWithCompanyList;
-import com.cisco.cx.training.util.SuccessAcademyMapper;
 
 @Service
 public class LearningContentServiceImpl implements LearningContentService {
@@ -258,20 +255,22 @@ public class LearningContentServiceImpl implements LearningContentService {
 	@Override
 	public LearningStatusEntity updateUserStatus(String userId, String puid, LearningStatusSchema learningStatusSchema,
 			String xMasheryHandshake) {
-		UserDetailsWithCompanyList userDetails = partnerProfileService.fetchUserDetailsWithCompanyList(xMasheryHandshake);
-		List<Company> companies = userDetails.getCompanyList();
-		Optional<Company> matchingObject = companies.stream()
-				.filter(c -> (c.getPuid().equals(puid) && c.isDemoAccount())).findFirst();
-		Company company = matchingObject.isPresent() ? matchingObject.get() : null;
-		if (company != null)
-			throw new NotAllowedException("Not Allowed for DemoAccount");
-
+		Registration regStatus=learningStatusSchema.getRegStatus();
+		if(regStatus!=null) {
+			UserDetailsWithCompanyList userDetails = partnerProfileService.fetchUserDetailsWithCompanyList(xMasheryHandshake);
+			List<Company> companies = userDetails.getCompanyList();
+			Optional<Company> matchingObject = companies.stream()
+					.filter(c -> (c.getPuid().equals(puid) && c.isDemoAccount())).findFirst();
+			Company company = matchingObject.isPresent() ? matchingObject.get() : null;
+			if (company != null)
+				throw new NotAllowedException("Not Allowed for DemoAccount");
+		}
 		try {
 			LearningStatusEntity learning_status_existing = learningStatusRepo.findByLearningItemIdAndUserIdAndPuid(learningStatusSchema.getLearningItemId(), userId, puid);
 			// record already exists in the table
 			if (learning_status_existing != null) {
-				if(learningStatusSchema.getRegStatus()!=null){
-					learning_status_existing.setRegStatus(learningStatusSchema.getRegStatus().toString());
+				if(regStatus!=null){
+					learning_status_existing.setRegStatus(regStatus.toString());
 					learning_status_existing.setRegUpdatedTimestamp(java.time.LocalDateTime.now());
 				}
 				if(learningStatusSchema.isViewed()){
@@ -286,8 +285,8 @@ public class LearningContentServiceImpl implements LearningContentService {
 				learning_status_new.setUserId(userId);
 				learning_status_new.setPuid(puid);
 				learning_status_new.setLearningItemId(learningStatusSchema.getLearningItemId());
-				if(learningStatusSchema.getRegStatus()!=null){
-					learning_status_new.setRegStatus(learningStatusSchema.getRegStatus().toString());
+				if(regStatus!=null){
+					learning_status_new.setRegStatus(regStatus.toString());
 					learning_status_new.setRegUpdatedTimestamp(java.time.LocalDateTime.now());
 				}
 				if(learningStatusSchema.isViewed()){
@@ -458,6 +457,10 @@ public class LearningContentServiceImpl implements LearningContentService {
 		List<NewLearningContentEntity> contentList = new ArrayList<>();
 		List<LearningContentItem> result = new ArrayList<>();
 		Map<String, String> query_map = filterStringtoMap(filter);
+		if(query_map.containsValue(Constants.CAMPUS_NETWORK)) {
+			query_map.replace(query_map.keySet().stream()
+            .filter(key -> Constants.CAMPUS_NETWORK.equals(query_map.get(key))).findFirst().get(), Constants.CAMPUS_NETWORK, Constants.CAMPUS);
+		}
 		try
 		{
 			contentList = learningContentDAO.fetchSuccessAcademyContent(query_map);
@@ -476,7 +479,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 				result.add(learningItem);
 			}
 		}catch (Exception e) {
-			throw new GenericException("There was a problem in fetching upcoming learning content");
+			throw new GenericException("There was a problem in fetching successacademy learning content");
 		}
 		return result;
 	}
@@ -488,6 +491,10 @@ public class LearningContentServiceImpl implements LearningContentService {
 		try
 		{
 			Map<String, String> query_map = filterStringtoMap(filter);
+			if(query_map.containsValue(Constants.CAMPUS_NETWORK)) {
+				query_map.replace(query_map.keySet().stream()
+	            .filter(key -> Constants.CAMPUS_NETWORK.equals(query_map.get(key))).findFirst().get(), Constants.CAMPUS_NETWORK, Constants.CAMPUS);
+			}
 			successAcademyContentCounts = learningContentDAO.getSuccessAcademyFiltersWithCount(query_map, filterCounts, select);
 		}catch (Exception e) {
 			throw new GenericException("There was a problem in fetching successacademy filters");

@@ -1,5 +1,7 @@
 package com.cisco.cx.training.test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -17,30 +19,33 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.BeanUtils;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.dao.BookmarkDAO;
 import com.cisco.cx.training.app.dao.CommunityDAO;
 import com.cisco.cx.training.app.dao.ElasticSearchDAO;
 import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
+import com.cisco.cx.training.app.dao.NewLearningContentDAO;
 import com.cisco.cx.training.app.dao.PartnerPortalLookupDAO;
 import com.cisco.cx.training.app.dao.SmartsheetDAO;
 import com.cisco.cx.training.app.dao.SuccessAcademyDAO;
 import com.cisco.cx.training.app.dao.SuccessTalkDAO;
+import com.cisco.cx.training.app.entities.LearningStatusEntity;
+import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.app.entities.PartnerPortalLookUpEntity;
 import com.cisco.cx.training.app.entities.SuccessAcademyLearningEntity;
 import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.exception.GenericException;
 import com.cisco.cx.training.app.exception.NotAllowedException;
 import com.cisco.cx.training.app.exception.NotFoundException;
+import com.cisco.cx.training.app.repo.LearningStatusRepo;
 import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.app.service.ProductDocumentationService;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
@@ -61,7 +66,7 @@ import com.cisco.cx.training.models.UserDetails;
 import com.cisco.cx.training.models.UserDetailsWithCompanyList;
 import com.cisco.cx.training.models.UserProfile;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 public class TrainingAndEnablementServiceTest {
 
 	@Mock
@@ -96,6 +101,15 @@ public class TrainingAndEnablementServiceTest {
 	
 	@Mock
 	private ProductDocumentationService productDocumentationService;
+	
+	@Mock
+	private NewLearningContentDAO learningContentDAO;
+	
+	@Mock
+	private LearningBookmarkDAO learningBookmarkDAO;
+	
+	@Mock
+	private LearningStatusRepo learningStatusRepo;
 
 	@InjectMocks
 	private TrainingAndEnablementService trainingAndEnablementService = new TrainingAndEnablementServiceImpl();	
@@ -135,9 +149,9 @@ public class TrainingAndEnablementServiceTest {
 		bookMarks.add("1");
 		when(learningDAO.getBookmarks(Mockito.anyString())).thenReturn(bookMarks);
 		List<SuccessAcademyLearning> learnings = trainingAndEnablementService.getAllSuccessAcademyLearnings("");
-		Assert.assertEquals(learnings.size(), 2);
-		Assert.assertEquals(learnings.get(0).getIsBookMarked(),true);
-		Assert.assertEquals(learnings.get(1).getIsBookMarked(),false);
+		assertEquals(learnings.size(), 2);
+		assertEquals(learnings.get(0).getIsBookMarked(),true);
+		assertEquals(learnings.get(1).getIsBookMarked(),false);
 	}
 	
 	@Test
@@ -217,7 +231,7 @@ public class TrainingAndEnablementServiceTest {
 	}
 
 
-	@Test(expected = IOException.class)
+	@Test
 	public void cancelUserSuccessTalkRegistrationError() throws Exception {
 		UserDetailsWithCompanyList userDetails=getUserDetailsWithCompanyList();
 		String ccoid = "ccoid";
@@ -227,10 +241,12 @@ public class TrainingAndEnablementServiceTest {
 		when(partnerProfileService.fetchUserDetailsWithCompanyList(Mockito.anyString())).thenReturn(userDetails);
 		SuccesstalkUserRegEsSchema cancelledRegistration = new SuccesstalkUserRegEsSchema(title, eventStartDate, userDetails.getCiscoUserProfileSchema().getUserId(), SuccesstalkUserRegEsSchema.RegistrationStatusEnum.CANCELLED);
 		doThrow(IOException.class).when(successTalkDAO).saveSuccessTalkRegistration(cancelledRegistration);
-		trainingAndEnablementService.cancelUserSuccessTalkRegistration(title, eventStartDate, ccoid,puid);
+		assertThrows(IOException.class, () -> {
+			trainingAndEnablementService.cancelUserSuccessTalkRegistration(title, eventStartDate, ccoid,puid);
+		});
 	}
 	
-	@Test(expected = NotAllowedException.class)
+	@Test
 	public void cancelUserSuccessTalkRegistrationBlockDemoaccount() throws Exception {
 		UserDetailsWithCompanyList userDetails=getUserDetailsWithCompanyList();
 		List<Company> companies=userDetails.getCompanyList();
@@ -241,7 +257,9 @@ public class TrainingAndEnablementServiceTest {
 		Long eventStartDate = 1L;
 		String puid="123";
 		when(partnerProfileService.fetchUserDetailsWithCompanyList(Mockito.anyString())).thenReturn(userDetails);
-		trainingAndEnablementService.cancelUserSuccessTalkRegistration(title, eventStartDate, ccoid,puid);
+		assertThrows(NotAllowedException.class, () -> {
+			trainingAndEnablementService.cancelUserSuccessTalkRegistration(title, eventStartDate, ccoid,puid);
+		});
 	}
 	
 	@Test
@@ -257,7 +275,7 @@ public class TrainingAndEnablementServiceTest {
 		trainingAndEnablementService.registerUserToSuccessTalkRegistration(title, eventStartDate, email,puid);
 	}
 	
-	@Test(expected = NotFoundException.class)
+	@Test
 	public void registerUserToSuccessTalkRegistrationError() throws Exception {
 		UserDetailsWithCompanyList userDetails=getUserDetailsWithCompanyList();
 		String email = "email";
@@ -265,10 +283,12 @@ public class TrainingAndEnablementServiceTest {
 		Long eventStartDate = 1L;
 		String puid="123";
 		when(partnerProfileService.fetchUserDetailsWithCompanyList(Mockito.anyString())).thenReturn(userDetails);
-		trainingAndEnablementService.registerUserToSuccessTalkRegistration(title, eventStartDate, email,puid);
+		assertThrows(NotFoundException.class, () -> {
+			trainingAndEnablementService.registerUserToSuccessTalkRegistration(title, eventStartDate, email,puid);
+		});
 	}
 	
-	@Test(expected = NotAllowedException.class)
+	@Test
 	public void registerUserToSuccessTalkRegistrationBlockDemoaccount() throws Exception {
 		UserDetailsWithCompanyList userDetails=getUserDetailsWithCompanyList();
 		List<Company> companies=userDetails.getCompanyList();
@@ -279,10 +299,12 @@ public class TrainingAndEnablementServiceTest {
 		Long eventStartDate = 1L;
 		String puid="123";
 		when(partnerProfileService.fetchUserDetailsWithCompanyList(Mockito.anyString())).thenReturn(userDetails);
-		trainingAndEnablementService.registerUserToSuccessTalkRegistration(title, eventStartDate, email,puid);
+		assertThrows(NotAllowedException.class, () -> {
+			trainingAndEnablementService.registerUserToSuccessTalkRegistration(title, eventStartDate, email,puid);
+		});
 	}
 	
-	@Test(expected = IOException.class)
+	@Test
 	public void registerUserToSuccessTalkRegistrationSmartsheetError() throws Exception {
 		UserDetailsWithCompanyList userDetails=getUserDetailsWithCompanyList();
 		String email = "email";
@@ -293,7 +315,9 @@ public class TrainingAndEnablementServiceTest {
 		SuccesstalkUserRegEsSchema registration = new SuccesstalkUserRegEsSchema(title, eventStartDate, userDetails.getCiscoUserProfileSchema().getEmailId(), SuccesstalkUserRegEsSchema.RegistrationStatusEnum.PENDING);
 		doThrow(IOException.class).when(successTalkDAO).saveSuccessTalkRegistration(Mockito.any(SuccesstalkUserRegEsSchema.class));
 		when(successTalkDAO.findSuccessTalk(registration.getTitle(), registration.getEventStartDate())).thenReturn(getSuccessTalk());
-		trainingAndEnablementService.registerUserToSuccessTalkRegistration(title, eventStartDate, email,puid);
+		assertThrows(IOException.class, () -> {
+			trainingAndEnablementService.registerUserToSuccessTalkRegistration(title, eventStartDate, email,puid);
+		});
 	}
 	
 
@@ -308,14 +332,16 @@ public class TrainingAndEnablementServiceTest {
 		trainingAndEnablementService.fetchSuccessTalkRegistrationDetails(registration, userDetails.getCiscoUserProfileSchema());
 	}
 	
-	@Test(expected = GenericException.class)
+	@Test
 	public void fetchSuccessTalkRegistrationDetailsError() throws Exception {
 		UserDetailsWithCompanyList userDetails=getUserDetailsWithCompanyList();
 		String title = "title";
 		Long eventStartDate = 1L;
 		SuccesstalkUserRegEsSchema registration = new SuccesstalkUserRegEsSchema(title, eventStartDate, userDetails.getCiscoUserProfileSchema().getEmailId(), SuccesstalkUserRegEsSchema.RegistrationStatusEnum.REGISTERED);
 		when(successTalkDAO.findSuccessTalk(registration.getTitle(), registration.getEventStartDate())).thenThrow(IOException.class);
-		trainingAndEnablementService.fetchSuccessTalkRegistrationDetails(registration, userDetails.getCiscoUserProfileSchema());
+		assertThrows(GenericException.class, () -> {
+			trainingAndEnablementService.fetchSuccessTalkRegistrationDetails(registration, userDetails.getCiscoUserProfileSchema());
+		});
 	}
 	
 	@Test
@@ -334,7 +360,7 @@ public class TrainingAndEnablementServiceTest {
 		trainingAndEnablementService.getSuccessTalkCount();
 	}
 	
-	@Test(expected = GenericException.class)
+	@Test
 	public void getSuccessTalkCountError() throws IOException {
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 		BoolQueryBuilder boolQuery = new BoolQueryBuilder();
@@ -342,7 +368,9 @@ public class TrainingAndEnablementServiceTest {
 		boolQuery.mustNot(includeCancelledQuery);
 		sourceBuilder.query(boolQuery);
 		when(elasticSearchDAO.countRecordsWithFilter(config.getSuccessTalkIndex(), sourceBuilder)).thenThrow(IOException.class);
-		trainingAndEnablementService.getSuccessTalkCount();
+		assertThrows(GenericException.class, () -> {
+			trainingAndEnablementService.getSuccessTalkCount();
+		});
 	}
 	
 	@Test
@@ -421,9 +449,9 @@ public class TrainingAndEnablementServiceTest {
 		when(partnerPortalLookupDAO.getTabLocations()).thenReturn(entityList);	
 		
 		List<SuccessAcademyFilter> learningAcademyFilter = trainingAndEnablementService.getSuccessAcademyFilters();
-		Assert.assertEquals(learningAcademyFilter.size(), 2);
-		Assert.assertEquals(learningAcademyFilter.get(0).getTabLocationOnUI(), "1");
-		Assert.assertEquals(learningAcademyFilter.get(1).getTabLocationOnUI(), "2");
+		assertEquals(learningAcademyFilter.size(), 2);
+		assertEquals(learningAcademyFilter.get(0).getTabLocationOnUI(), "1");
+		assertEquals(learningAcademyFilter.get(1).getTabLocationOnUI(), "2");
 	}
 	
 	public void testBookmarkLearningForUser(){
@@ -436,14 +464,16 @@ public class TrainingAndEnablementServiceTest {
 		when(learningDAO.createOrUpdate(Mockito.any(BookmarkResponseSchema.class))).thenReturn(null);
 		BookmarkResponseSchema response = trainingAndEnablementService.bookmarkLearningForUser(null, "");
 		
-		Assert.assertEquals(response.getLearningid(),"1");
-		Assert.assertEquals(response.getCcoid(),"ccoid");		
+		assertEquals(response.getLearningid(),"1");
+		assertEquals(response.getCcoid(),"ccoid");		
 	}
 		
-	@Test(expected = BadRequestException.class)
+	@Test
 	public void testFailureBookmarkLearningForUser(){		
-		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(null);			
-		trainingAndEnablementService.bookmarkLearningForUser(null, "");
+		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(null);
+		assertThrows(BadRequestException.class, () -> {
+			trainingAndEnablementService.bookmarkLearningForUser(null, "");
+		});
 	}
 	
 	@Test
@@ -454,7 +484,7 @@ public class TrainingAndEnablementServiceTest {
 		aMock.setLearningData(cards);
 		when(productDocumentationService.getAllLearningInfo("mashery","searchToken",null,"sortBy","sortOrder")).thenReturn(aMock);
 		LearningRecordsAndFiltersModel a = trainingAndEnablementService.getAllLearningInfoPost("mashery","searchToken",null,"sortBy","sortOrder");		
-		Assert.assertEquals(0, a.getLearningData().size());
+		assertEquals(0, a.getLearningData().size());
 	}
 	
 	@Test
@@ -463,7 +493,50 @@ public class TrainingAndEnablementServiceTest {
 		HashMap<String, Object> aMock = new HashMap<String, Object>();		
 		when(productDocumentationService.getAllLearningFilters("searchToken",null)).thenReturn(aMock);
 		Map<String, Object> a = trainingAndEnablementService.getAllLearningFiltersPost("searchToken",null);
-		Assert.assertEquals(0, a.size());
+		assertEquals(0, a.size());
+	}
+	
+	@Test
+	public void testFetchNewLearningContent()
+	{
+		String testUserId = "testUserId";
+		String testFilter = "test:test";
+		String testPuid = "101";
+		List<NewLearningContentEntity> learningEntityList = new ArrayList<>();
+		learningEntityList.add(getLearningEntity());
+		when(learningContentDAO.fetchNewLearningContent(Mockito.any())).thenReturn(learningEntityList);
+		Set<String> userBookmarks=getBookmarks();
+		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(userBookmarks);
+		List<LearningStatusEntity> learningStatusList = new ArrayList<>();
+		learningStatusList.add(getLearningStatusEntity());
+		when(learningStatusRepo.findByUserIdAndPuid(testUserId, testPuid)).thenReturn(learningStatusList);
+		trainingAndEnablementService.fetchNewLearningContent(testUserId, testFilter, testPuid);
+	}
+	
+	NewLearningContentEntity getLearningEntity()
+	{
+		NewLearningContentEntity learningEntity = new NewLearningContentEntity();
+		learningEntity.setId("test");
+		return learningEntity;
+	}
+	
+	private Set<String> getBookmarks() {
+		Set<String> userBookmarks=new HashSet<>();
+		userBookmarks.add("test");
+		return userBookmarks;
+	}
+	
+	LearningStatusEntity getLearningStatusEntity()
+	{
+		String testUserId = "sntccbr5@hotmail.com";
+		String testPuid = "101";
+		LearningStatusEntity learningStatusEntity = new LearningStatusEntity();
+		learningStatusEntity.setLearningItemId("test");
+		learningStatusEntity.setPuid(testPuid);
+		learningStatusEntity.setUserId(testUserId);
+		learningStatusEntity.setRegStatus("REGISTERED_T");
+		return learningStatusEntity;
+		
 	}
 	
 }

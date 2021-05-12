@@ -1,5 +1,6 @@
 package com.cisco.cx.training.test;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -13,12 +14,12 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.dao.BookmarkDAO;
@@ -32,7 +33,7 @@ import com.cisco.cx.training.models.SuccessTalk;
 import com.cisco.cx.training.models.SuccessTalkSession;
 import com.cisco.cx.training.models.SuccesstalkUserRegEsSchema;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 public class SuccessTalkDAOTest {
 
 	@Mock
@@ -49,7 +50,7 @@ public class SuccessTalkDAOTest {
 
 	private Long eventTime ;
 	
-	@Before
+	@BeforeEach
 	public void setUp() {
 		Date currentDate = new Date();
 		Calendar c = Calendar.getInstance();
@@ -66,12 +67,14 @@ public class SuccessTalkDAOTest {
 		successTalkDAO.insertSuccessTalk(successTalk);
 	}
 	
-	@Test(expected = GenericException.class)
+	@Test
 	public void insertSuccessTalkESFailure() throws IOException {
 		SuccessTalk successTalk = getSuccessTask();
 		when(config.getSuccessTalkIndex()).thenReturn("");
 		when(elasticSearchDAO.saveEntry(config.getSuccessTalkIndex(), successTalk, SuccessTalk.class)).thenThrow(IOException.class);
-		successTalkDAO.insertSuccessTalk(successTalk);
+		assertThrows(GenericException.class, () -> {
+			successTalkDAO.insertSuccessTalk(successTalk);
+		});
 	}
 
 	@Test
@@ -102,7 +105,7 @@ public class SuccessTalkDAOTest {
 		successTalkDAO.findSuccessTalk(title, successTalk.getSessions().get(0).getSessionStartDate());
 	}
 	
-	@Test(expected = GenericException.class)
+	@Test
 	public void getAllSuccessTalksESFailure() throws IOException {
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 		BoolQueryBuilder boolQuery = new BoolQueryBuilder();
@@ -113,7 +116,10 @@ public class SuccessTalkDAOTest {
 		results.addDocument(successTalk);
 		when(config.getSuccessTalkIndex()).thenReturn("");
 		when(elasticSearchDAO.query(config.getSuccessTalkIndex(), sourceBuilder, SuccessTalk.class)).thenThrow(IOException.class);
-		successTalkDAO.getAllSuccessTalks();
+		assertThrows(GenericException.class, () -> {
+			successTalkDAO.getAllSuccessTalks();
+		});
+		
 	}
 
 	@Test
@@ -126,13 +132,15 @@ public class SuccessTalkDAOTest {
 		successTalkDAO.registerUser(successTalkSessionId, successTalkId);
 	}
 	
-	@Test(expected = GenericException.class)
+	@Test
 	public void registerUserESFailure() throws IOException {
 		when(config.getSuccessTalkIndex()).thenReturn("");
 		String successTalkId = "successTalkId";
 		String successTalkSessionId = "successTalkSessionId";
 		when(elasticSearchDAO.getDocument(config.getSuccessTalkIndex(), successTalkId, SuccessTalk.class)).thenThrow(IOException.class);
-		successTalkDAO.registerUser(successTalkSessionId, successTalkId);
+		assertThrows(GenericException.class, () -> {
+			successTalkDAO.registerUser(successTalkSessionId, successTalkId);
+		});
 	}
 
 	@Test
@@ -144,13 +152,15 @@ public class SuccessTalkDAOTest {
 		successTalkDAO.cancelRegistration(successTalkSessionId, successTalkId);
 	}
 	
-	@Test(expected = GenericException.class)
+	@Test
 	public void cancelRegistrationESFailure() throws IOException {
 		when(config.getSuccessTalkIndex()).thenReturn("");
 		String successTalkId = "successTalkId";
 		String successTalkSessionId = "successTalkSessionId";
 		when(elasticSearchDAO.getDocument(config.getSuccessTalkIndex(), successTalkId, SuccessTalk.class)).thenThrow(IOException.class);
-		successTalkDAO.cancelRegistration(successTalkSessionId, successTalkId);
+		assertThrows(GenericException.class, () -> {
+			successTalkDAO.cancelRegistration(successTalkSessionId, successTalkId);
+		});
 	}
 	
 	@Test
@@ -195,7 +205,7 @@ public class SuccessTalkDAOTest {
 		successTalkDAO.getUserSuccessTalks(email);
 	}
 	
-	@Test(expected = GenericException.class)
+	@Test
 	public void getUserSuccessTalksError() throws IOException {
 		String email = "email";
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
@@ -234,7 +244,9 @@ public class SuccessTalkDAOTest {
 		List<BookmarkResponseSchema> bookMarkList= new ArrayList<BookmarkResponseSchema>();
 		bookMarkList.add(bookmark);
 		when(bookmarkDAO.getBookmarks(email, null)).thenReturn(bookMarkList);
-		successTalkDAO.getUserSuccessTalks(email);
+		assertThrows(GenericException.class, () -> {
+			successTalkDAO.getUserSuccessTalks(email);
+		});
 	}
 	
 	@Test
@@ -256,7 +268,7 @@ public class SuccessTalkDAOTest {
         successTalkDAO.getRegisteredSuccessTalks(ccoid);
 	}
 	
-	@Test(expected = GenericException.class)
+	@Test
 	public void getRegisteredSuccessTalksError() throws IOException {
 		String ccoid = "ccoid";
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
@@ -272,7 +284,9 @@ public class SuccessTalkDAOTest {
         SuccesstalkUserRegEsSchema successtalkUserRegEsSchema = new SuccesstalkUserRegEsSchema();
         results.addDocument(successtalkUserRegEsSchema);
         when(elasticSearchDAO.query(config.getSuccessTalkUserRegistrationsIndex(), sourceBuilder, SuccesstalkUserRegEsSchema.class)).thenThrow(IOException.class);
-        successTalkDAO.getRegisteredSuccessTalks(ccoid);
+        assertThrows(GenericException.class, () -> {
+        	successTalkDAO.getRegisteredSuccessTalks(ccoid);
+		});
 	}
 	
 

@@ -1,17 +1,21 @@
 package com.cisco.cx.training.test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
+
 import java.io.IOException;
+
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.dao.BookmarkDAO;
 import com.cisco.cx.training.app.dao.ElasticSearchDAO;
@@ -20,7 +24,7 @@ import com.cisco.cx.training.app.exception.GenericException;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.cisco.cx.training.models.ElasticSearchResults;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 public class BookmarkDAOTest {
 	@Mock
 	private ElasticSearchDAO elasticSearchDAO;
@@ -51,7 +55,7 @@ public class BookmarkDAOTest {
 		bookmarkDAO.getBookmarks(ccoid, entityId);
 	}
 	
-	@Test(expected = GenericException.class)
+	@Test
 	public void getBookmarksError() throws IOException {
 		String entityId = "entityId";
 		String ccoid = "ccoid";		
@@ -68,10 +72,12 @@ public class BookmarkDAOTest {
 		ElasticSearchResults<BookmarkResponseSchema> results = new ElasticSearchResults<>();
 		results.addDocument(getBookmarkResponseSchema());
 		when(elasticSearchDAO.query(config.getBookmarksIndex(), sourceBuilder, BookmarkResponseSchema.class)).thenThrow(IOException.class);
-		bookmarkDAO.getBookmarks(ccoid, entityId);
+		assertThrows(GenericException.class, () -> {
+			bookmarkDAO.getBookmarks(ccoid, entityId);
+		});
 	}
 
-	@Test(expected = GenericException.class)
+	@Test
 	public void createOrUpdateBookmarkWithError() throws IOException {
 		String entityId = "entityId";
 		String email = "email";
@@ -102,10 +108,10 @@ public class BookmarkDAOTest {
 		bookmark.setTitle("title");
 		bookmark.setUpdated(1L);
 
-		when(elasticSearchDAO.saveEntry(config.getBookmarksIndex(), bookmark, BookmarkResponseSchema.class))
-				.thenThrow(IOException.class);
-		BookmarkResponseSchema actual = bookmarkDAO.createOrUpdate(bookmark);
-		assertEquals(bookmark, actual);
+		when(elasticSearchDAO.saveEntry(config.getBookmarksIndex(), bookmark, BookmarkResponseSchema.class)).thenThrow(IOException.class);
+		assertThrows(GenericException.class, () -> {
+			bookmarkDAO.createOrUpdate(bookmark);
+		});
 	}
 
 	@Test
