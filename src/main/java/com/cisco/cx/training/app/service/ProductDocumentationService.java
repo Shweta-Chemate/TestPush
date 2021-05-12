@@ -550,7 +550,7 @@ public class ProductDocumentationService{
 		if(sortOrder!=null && sortOrder.equalsIgnoreCase("asc")) order = Sort.Direction.ASC;		
 		LOG.info("sort={} {}",sort, order);
 		
-		UserDetails userDetails = null;//partnerProfileService.fetchUserDetails(xMasheryHandshake);
+		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
 		Set<String> userBookmarks = null;
 		if(null != userDetails){userBookmarks = learningDAO.getBookmarks(userDetails.getCecId());}
 		
