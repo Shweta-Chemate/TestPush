@@ -27,6 +27,7 @@ import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.app.repo.NewLearningContentRepo;
 import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.app.service.ProductDocumentationService;
+import com.cisco.cx.training.models.GenericLearningModel;
 import com.cisco.cx.training.models.LearningRecordsAndFiltersModel;
 
 @ExtendWith(SpringExtension.class)
@@ -102,6 +103,95 @@ public class ProductDocumentationServiceTest {
 		Map<String, Object> a4 = productDocumentationService.getAllLearningFilters("searchToken",aMock);		
 		assertTrue(a4.size()>=1); //st=7
 		
+	}
+	
+	@Test
+	public void testLGFilter()
+	{
+		HashMap<String, Object> aMock = new HashMap<String, Object>();	
+		aMock.put("Language", Arrays.asList(new String[]{"English"}));
+		 List<Map<String,Object>> dbListLG = new  ArrayList<Map<String,Object>>();
+		 Map<String,Object> lgMap = new HashMap<String,Object>();lgMap.put("dbkey", "English");lgMap.put("dbvalue", "2");
+		 dbListLG.add(lgMap);
+		when(productDocumentationDAO.getAllLanguageWithCount()).thenReturn(dbListLG);
+		Map<String, Object> a3 = productDocumentationService.getAllLearningFilters(null,aMock);		
+		assertTrue(a3.size()>=1);
+	}
+	
+	@Test
+	public void testYouFilter()
+	{
+		HashMap<String, Object> aMock = new HashMap<String, Object>();	
+		aMock.put("For You", Arrays.asList(new String[]{"New"}));
+		aMock.put("Language", Arrays.asList(new String[]{"English"}));
+		NewLearningContentEntity n1 = new NewLearningContentEntity(); n1.setId("101");
+		List<NewLearningContentEntity> result = new ArrayList<NewLearningContentEntity>();result.add(n1);
+		when(learningContentRepo.findNew()).thenReturn(result);
+		
+		Map<String, Object> a3 = productDocumentationService.getAllLearningFilters(null,aMock);		
+		assertTrue(a3.size()>=1); //st=7
+
+		
+		aMock.put("For You", Arrays.asList(new String[]{"New","Bookmarked","Sth"}));
+		Map<String, Object> a32 = productDocumentationService.getAllLearningFilters(null,aMock);		
+		assertTrue(a32.size()>=1); //st=7
+		
+		
+		when(learningContentRepo.findNew()).thenReturn(null);		
+		Map<String, Object> a31 = productDocumentationService.getAllLearningFilters(null,null);		
+		assertTrue(a31.size()>=1); //st=7
+	}
+	
+	@Test
+	public void testAllFilters()
+	{
+		HashMap<String, Object> aMock = new HashMap<String, Object>();	
+		aMock.put("For You", Arrays.asList(new String[]{"New"}));
+		aMock.put("Language", Arrays.asList(new String[]{"English"}));
+		aMock.put("Technology", Arrays.asList(new String[]{"Enterprise Network"}));
+		aMock.put("Documentation", Arrays.asList(new String[]{"Device setup"}));
+		aMock.put("Live Events", Arrays.asList(new String[]{"APAC"}));
+		aMock.put("Content Type", Arrays.asList(new String[]{"PPT"}));
+		aMock.put("Success Tracks", mockST());
+		NewLearningContentEntity n1 = new NewLearningContentEntity(); n1.setId("101");
+		List<NewLearningContentEntity> result = new ArrayList<NewLearningContentEntity>();result.add(n1);
+		when(learningContentRepo.findNew()).thenReturn(result);
+		
+		when(productDocumentationDAO.getAllStUcPsWithCount()).thenReturn(mockDbST());
+		when(productDocumentationDAO.getAllStUcPsWithCountByCards(Mockito.anySet())).thenReturn(mockDbST());
+		
+		Map<String, Object> a3 = productDocumentationService.getAllLearningFilters(null,aMock);		
+		assertTrue(a3.size()>=1); //st=7
+	}
+	
+	private List mockDbST()
+	{
+		List<Map<String, Object>> value = new ArrayList<Map<String, Object>>();
+		Map<String, Object> oneRecord = new HashMap<String, Object>();
+		oneRecord.put("successtrack", "Campus Network");
+		oneRecord.put("usecase", "CSIM");
+		oneRecord.put("pitstop", "Implement");
+		oneRecord.put("dbvalue", "10");
+		value.add(oneRecord);
+		return value;
+	}
+	
+	private Map mockST()
+	{
+		Map<String,Map<String,List<String>>> st = new HashMap<String,Map<String,List<String>>>();
+		//map.put("Success Tracks", st);
+		
+		Map<String,List<String>> ucCN = new HashMap<String,List<String>>();   
+		List<String> csimPS = new ArrayList<String>(); csimPS.add("Onboard");csimPS.add("Implement");ucCN.put("CSIM", csimPS);
+		List<String> xyzPS = new ArrayList<String>(); xyzPS.add("Use");ucCN.put("XYZ", xyzPS);
+		st.put("Campus Network", ucCN);
+		
+		Map<String,List<String>> ucSY = new HashMap<String,List<String>>();
+		List<String> sy1PS = new ArrayList<String>(); sy1PS.add("Anti-Virus");sy1PS.add("Firewall");ucSY.put("Security1", sy1PS);
+		List<String> abcPS = new ArrayList<String>(); abcPS.add("Umbrella");ucSY.put("ABC", abcPS);
+		st.put("Security", ucSY);
+		
+		return st;
 	}
 	
 }
