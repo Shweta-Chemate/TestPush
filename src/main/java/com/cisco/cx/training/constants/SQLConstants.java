@@ -53,7 +53,7 @@ public class SQLConstants {
 			+ " group by archetype";
 
 	public static final String GET_SA_CAMPUS_COUNT = "select count(*) \n" +
-			" from cxpp_db.cxpp_learning_content where learning_type='successacademy' and asset_model='Sucess Track' and asset_facet='CAMPUS' and id in (:learningItemIdsList) \n";
+			" from cxpp_db.cxpp_learning_content where learning_type='successacademy' and asset_model='Success Track' and asset_facet='CAMPUS' and id in (:learningItemIdsList) \n";
 
 	public static final String GET_CARD_IDs_CT =  "select id from cxpp_db.cxpp_learning_content  "
 			+ " where learning_type!='successacademy' and  asset_type  in (:values) and id in (:learningItemIdsList)" ;
@@ -67,8 +67,8 @@ public class SQLConstants {
 	public static final String GET_CARD_IDs_FACET = "select id from cxpp_db.cxpp_learning_content  "
 			+ " where asset_facet in (:values) and id in (:learningItemIdsList)";
 
-	public static final String GET_ASSET_MODEL = "select asset_model from cxpp_db.cxpp_learning_content  "
-			+ " where asset_facet=(:value) and id in (:learningItemIdsList)";
+	public static final String GET_ASSET_MODEL = "select distinct asset_model from cxpp_db.cxpp_learning_content  "
+			+ " where asset_facet=(:value) ";
 
 	public static final String GET_CARD_IDs_ST = "select lc.id "
 			+ "from cxpp_db.cxpp_learning_content lc "

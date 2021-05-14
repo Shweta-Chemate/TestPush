@@ -26,19 +26,19 @@ public interface LearningContentService {
 	List<LearningContentItem> fetchRecentlyViewedContent(String puid, String userId, String filter);
 
 	HashMap<String, HashMap<String, String>> getRecentlyViewedFiltersWithCount(String puid,String userId, String filter,
-			HashMap<String, HashMap<String, String>> filterCounts, String select);
+			HashMap<String, HashMap<String, String>> filterCounts);
 
 	List<LearningContentItem> fetchBookMarkedContent(String puid, String userId, String filter);
 	
 	HashMap<String, HashMap<String, String>> getBookmarkedFiltersWithCount(String puid, String ccoid, String filter,
-			HashMap<String, HashMap<String, String>> filterCounts, String select);
+			HashMap<String, HashMap<String, String>> filterCounts);
 	
 	List<LearningContentItem> fetchUpcomingContent(String puid, String ccoid, String filter);
 	
-	HashMap<String, HashMap<String,String>> getUpcomingFiltersWithCount(String filter, HashMap<String, HashMap<String,String>> filterCounts, String select);
+	HashMap<String, HashMap<String,String>> getUpcomingFiltersWithCount(String filter, HashMap<String, HashMap<String,String>> filterCounts);
 
 	List<LearningContentItem> fetchSuccessAcademyContent(String puid, String userId, String filter);
 
-	HashMap<String, HashMap<String,String>> getSuccessAcademyFiltersWithCount(String filter, HashMap<String, HashMap<String,String>> filterCounts, String select);
+	HashMap<String, HashMap<String,String>> getSuccessAcademyFiltersWithCount(String filter, HashMap<String, HashMap<String,String>> filterCounts);
 
 }
