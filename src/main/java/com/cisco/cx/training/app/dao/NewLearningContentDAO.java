@@ -28,19 +28,19 @@ public interface NewLearningContentDAO {
 	List<NewLearningContentEntity> fetchRecentlyViewedContent(String puid, String userId,  Map<String, String> query_map);
 
 	HashMap<String, HashMap<String, String>> getRecentlyViewedFiltersWithCount(String puid, String userId, Map<String, String> query_map,
-			HashMap<String, HashMap<String, String>> filterCounts, String select);
+			HashMap<String, HashMap<String, String>> filterCounts);
 
 	List<NewLearningContentEntity> fetchFilteredContent(String puid, String ccoid, Map<String, String> query_map);
 	
 	HashMap<String, HashMap<String, String>> getBookmarkedFiltersWithCount(Map<String, String> query_map,
-			HashMap<String, HashMap<String, String>> filterCounts, List<LearningContentItem> bookmarkedList, String select);
+			HashMap<String, HashMap<String, String>> filterCounts, List<LearningContentItem> bookmarkedList);
 	
 	List<NewLearningContentEntity> fetchUpcomingContent(Map<String, String> filterParams);
 	
-	HashMap<String, HashMap<String,String>> getUpcomingFiltersWithCount(Map<String, String> filter, HashMap<String, HashMap<String,String>> filterCounts, String select);
+	HashMap<String, HashMap<String,String>> getUpcomingFiltersWithCount(Map<String, String> filter, HashMap<String, HashMap<String,String>> filterCounts);
 
 	List<NewLearningContentEntity> fetchSuccessAcademyContent(Map<String, String> query_map);
 
-	HashMap<String, HashMap<String,String>> getSuccessAcademyFiltersWithCount(Map<String, String> filter, HashMap<String, HashMap<String,String>> filterCounts, String select);
+	HashMap<String, HashMap<String,String>> getSuccessAcademyFiltersWithCount(Map<String, String> filter, HashMap<String, HashMap<String,String>> filterCounts);
 
 }

@@ -221,7 +221,6 @@ public class NewLearningContentController {
 	public ResponseEntity<HashMap<String, HashMap<String,String>>> getFiltersForRecentlyViewed(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
             @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
-			@ApiParam(value = "selected filter group") @RequestParam(value = "select", required = false) String select,
 			@ApiParam(value = "Filter - multiple, multiple types e.g filter=contentType:PDF,Video") @RequestParam(value = "filter", required = false) String filter,
 			@ApiParam(value = "JSON Body to update filters", required = false) @RequestBody(required=false) HashMap<String, HashMap<String,String>> filterCounts)
 			throws Exception {
@@ -235,7 +234,7 @@ public class NewLearningContentController {
 		{
 			throw new NotFoundException("API Not Found.");
 		}
-		HashMap<String, HashMap<String,String>> learningFilters = learningContentService.getRecentlyViewedFiltersWithCount(puid, userId, filter, filterCounts, select);
+		HashMap<String, HashMap<String,String>> learningFilters = learningContentService.getRecentlyViewedFiltersWithCount(puid, userId, filter, filterCounts);
 		LOG.info("Received recently viewed filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<HashMap<String, HashMap<String,String>>>(learningFilters, HttpStatus.OK);
 	}
@@ -275,7 +274,6 @@ public class NewLearningContentController {
 	public ResponseEntity<HashMap<String, HashMap<String,String>>> getFiltersForBookmarked(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
             @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
-			@ApiParam(value = "selected filter group") @RequestParam(value = "select", required = false) String select,
 			@ApiParam(value = "Filter - multiple, multiple types e.g filter=contentType:PDF,Video") @RequestParam(value = "filter", required = false) String filter,
 			@ApiParam(value = "JSON Body to update filters", required = false) @RequestBody(required=false) HashMap<String, HashMap<String,String>> filterCounts)
 			throws Exception {
@@ -289,7 +287,7 @@ public class NewLearningContentController {
 		{
 			throw new NotFoundException("API Not Found.");
 		}
-		HashMap<String, HashMap<String,String>> learningFilters = learningContentService.getBookmarkedFiltersWithCount(puid, userId, filter, filterCounts, select);
+		HashMap<String, HashMap<String,String>> learningFilters = learningContentService.getBookmarkedFiltersWithCount(puid, userId, filter, filterCounts);
 		LOG.info("Received bookmarked filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<HashMap<String, HashMap<String,String>>>(learningFilters, HttpStatus.OK);
 	}
@@ -328,7 +326,6 @@ public class NewLearningContentController {
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
 	public ResponseEntity<HashMap<String, HashMap<String,String>>> getFiltersForUpcoming(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
-			@ApiParam(value = "selected filter group") @RequestParam(value = "select", required = false) String select,
 			@ApiParam(value = "Filter - multiple, multiple types e.g filter=contentType:PDF,Video") @RequestParam(value = "filter", required = false) String filter,
 			@ApiParam(value = "JSON Body to update filters", required = false) @RequestBody(required=false) HashMap<String, HashMap<String,String>> filterCounts)
 			throws Exception {
@@ -341,7 +338,7 @@ public class NewLearningContentController {
 		{
 			throw new NotFoundException("API Not Found.");
 		}
-		HashMap<String, HashMap<String,String>> learningFilters = learningContentService.getUpcomingFiltersWithCount(filter, filterCounts, select);
+		HashMap<String, HashMap<String,String>> learningFilters = learningContentService.getUpcomingFiltersWithCount(filter, filterCounts);
 		LOG.info("Received upcoming filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<HashMap<String, HashMap<String,String>>>(learningFilters, HttpStatus.OK);
 	}
@@ -380,7 +377,6 @@ public class NewLearningContentController {
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
 	public ResponseEntity<HashMap<String, HashMap<String,String>>> getFiltersForSuccessacademy(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
-			@ApiParam(value = "selected filter group") @RequestParam(value = "select", required = false) String select,
 			@ApiParam(value = "Filter - multiple, multiple types e.g filter=contentType:PDF,Video") @RequestParam(value = "filter", required = false) String filter,
 			@ApiParam(value = "JSON Body to update filters", required = false) @RequestBody(required=false) HashMap<String, HashMap<String,String>> filterCounts)
 			throws Exception {
@@ -393,7 +389,7 @@ public class NewLearningContentController {
 		{
 			throw new NotFoundException("API Not Found.");
 		}
-		HashMap<String, HashMap<String,String>> learningFilters = learningContentService.getSuccessAcademyFiltersWithCount(filter, filterCounts, select);
+		HashMap<String, HashMap<String,String>> learningFilters = learningContentService.getSuccessAcademyFiltersWithCount(filter, filterCounts);
 		LOG.info("Received successacademy filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<HashMap<String, HashMap<String,String>>>(learningFilters, HttpStatus.OK);
 	}
