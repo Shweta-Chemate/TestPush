@@ -51,4 +51,34 @@ public class SQLConstants {
 	public static final String GET_DOC_WITH_COUNT_BY_CARD = "select archetype as label, count(*) as count "
 			+ " from cxpp_db.cxpp_learning_content where archetype IS NOT NULL and id in (:learningItemIds) "
 			+ " group by archetype";
+
+	public static final String GET_SA_CAMPUS_COUNT = "select count(*) \n" +
+			" from cxpp_db.cxpp_learning_content where learning_type='successacademy' and asset_model='Sucess Track' and asset_facet='CAMPUS' and id in (:learningItemIdsList) \n";
+
+	public static final String GET_CARD_IDs_CT =  "select id from cxpp_db.cxpp_learning_content  "
+			+ " where learning_type!='successacademy' and  asset_type  in (:values) and id in (:learningItemIdsList)" ;
+
+	public static final String GET_CARD_IDs_LANG = "select id from cxpp_db.cxpp_learning_content "
+			+ " where piw_language in (:values) and id in (:learningItemIdsList)";
+
+	public static final String GET_CARD_IDs_REG = "select id from cxpp_db.cxpp_learning_content  "
+			+ " where piw_region in (:values) and id in (:learningItemIdsList)";
+
+	public static final String GET_CARD_IDs_FACET = "select id from cxpp_db.cxpp_learning_content  "
+			+ " where asset_facet in (:values) and id in (:learningItemIdsList)";
+
+	public static final String GET_ASSET_MODEL = "select asset_model from cxpp_db.cxpp_learning_content  "
+			+ " where asset_facet=(:value) and id in (:learningItemIdsList)";
+
+	public static final String GET_CARD_IDs_ST = "select lc.id "
+			+ "from cxpp_db.cxpp_learning_content lc "
+			+ "left join cxpp_db.cxpp_learning_successtrack st "
+			+ "on lc.id=st.learning_item_id "
+			+ "where lc.id in (:learningItemIdsList) "
+			+ " and (st.successtrack in (:values) or lc.asset_facet in (:values)) ";
+
+	public static final String GET_CARD_IDs_DOC = "select id from cxpp_db.cxpp_learning_content  "
+			+ " where archetype in (:values) and id in (:learningItemIdsList)";
+;
+
 }

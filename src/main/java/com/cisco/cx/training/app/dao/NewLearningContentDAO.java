@@ -19,7 +19,7 @@ public interface NewLearningContentDAO {
 	
 	Integer getSuccessTalkCount();
 
-	HashMap<String, HashMap<String,String>> getViewMoreNewFiltersWithCount(Map<String, String> filter, HashMap<String, HashMap<String,String>> filterCounts, String select);
+	HashMap<String, HashMap<String,String>> getViewMoreNewFiltersWithCount(Map<String, String> filter, HashMap<String, HashMap<String,String>> filterCounts);
 
 	Integer getPIWCount();
 
