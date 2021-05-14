@@ -221,7 +221,6 @@ workflows:
                 - master
                 - LA-hotfix
                 - release/0.9.6
-                - Filter-Changes
                 - /^pull.*/ 
           context: aws-devops-context
 
@@ -234,7 +233,6 @@ workflows:
                 - master
                 - LA-hotfix
                 - release/0.9.6
-                - Filter-Changes
                 - /^pull.*/
           context: aws-devops-context
       - Push_Helm_Chart:
@@ -246,6 +244,5 @@ workflows:
                 - master
                 - LA-hotfix
                 - release/0.9.6
-                - Filter-Changes
                 - /^pull.*/  
           context: aws-devops-context    
