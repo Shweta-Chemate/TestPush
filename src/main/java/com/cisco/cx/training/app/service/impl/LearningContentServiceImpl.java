@@ -240,12 +240,12 @@ public class LearningContentServiceImpl implements LearningContentService {
 	}
 
 	@Override
-	public HashMap<String, HashMap<String,String>> getViewMoreNewFiltersWithCount(String filter, HashMap<String, HashMap<String,String>> filterCounts, String select) {
+	public HashMap<String, HashMap<String,String>> getViewMoreNewFiltersWithCount(String filter, HashMap<String, HashMap<String,String>> filterCounts) {
 		HashMap<String, HashMap<String,String>> viewMoreCounts = new HashMap<>();
 		try
 		{
 			Map<String, String> query_map = filterStringtoMap(filter);
-			viewMoreCounts = learningContentDAO.getViewMoreNewFiltersWithCount(query_map, filterCounts, select);
+			viewMoreCounts = learningContentDAO.getViewMoreNewFiltersWithCount(query_map, filterCounts);
 		}catch (Exception e) {
 			throw new GenericException("There was a problem in fetching new filter counts");
 		}

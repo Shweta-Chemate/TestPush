@@ -153,10 +153,9 @@ public class NewLearningContentController {
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
 	public ResponseEntity<HashMap<String, HashMap<String,String>>> getAllLearningsFilters(
 			@ApiParam(value = "Filter - multiple, multiple types e.g filter=contentType:PDF,Video") @RequestParam(value = "filter", required = false) String filter,
-			@ApiParam(value = "selected filter group") @RequestParam(value = "select", required = false) String select,
 			@ApiParam(value = "JSON Body to update filters", required = false) @RequestBody(required=false) HashMap<String, HashMap<String,String>> filterCounts)
 			throws Exception {
-		HashMap<String, HashMap<String,String>> learningFilters = learningContentService.getViewMoreNewFiltersWithCount(filter, filterCounts, select);
+		HashMap<String, HashMap<String,String>> learningFilters = learningContentService.getViewMoreNewFiltersWithCount(filter, filterCounts);
 		return new ResponseEntity<HashMap<String, HashMap<String,String>>>(learningFilters, HttpStatus.OK);
 	}
 

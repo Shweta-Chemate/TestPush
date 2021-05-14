@@ -1,5 +1,6 @@
 package com.cisco.cx.training.app.repo;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -61,4 +62,29 @@ public interface NewLearningContentRepo
 
 	@Query(value = SQLConstants.GET_DOC_WITH_COUNT_BY_CARD, nativeQuery = true)
 	List<Map<String, Object>> getDocFilterCountByCards(Set<String> learningItemIds);
+
+	@Query(value = SQLConstants.GET_SA_CAMPUS_COUNT, nativeQuery = true)
+	int getSACampusCount(Set<String> learningItemIdsList);
+
+	@Query(value = SQLConstants.GET_CARD_IDs_CT, nativeQuery = true)
+	Set<String> getCardIdsByCT(HashSet<String> values, Set<String> learningItemIdsList);
+
+	@Query(value = SQLConstants.GET_CARD_IDs_LANG, nativeQuery = true)
+	Set<String> getCardIdsByLang(HashSet<String> values, Set<String> learningItemIdsList);
+
+	@Query(value = SQLConstants.GET_CARD_IDs_REG, nativeQuery = true)
+	Set<String> getCardIdsByReg(HashSet<String> values, Set<String> learningItemIdsList);
+
+	@Query(value = SQLConstants.GET_CARD_IDs_FACET, nativeQuery = true)
+	Set<String> getCardIdsByfacet(HashSet<String> values, Set<String> learningItemIdsList);
+
+	@Query(value = SQLConstants.GET_ASSET_MODEL, nativeQuery = true)
+	String getAssetModelByValue(String value);
+
+	@Query(value = SQLConstants.GET_CARD_IDs_ST, nativeQuery = true)
+	Set<String> getCardIdsByST(HashSet<String> values, Set<String> learningItemIdsList);
+
+	@Query(value = SQLConstants.GET_CARD_IDs_DOC, nativeQuery = true)
+	Set<String> getCardIdsByDoc(HashSet<String> values, Set<String> learningItemIdsList);
+
 }
