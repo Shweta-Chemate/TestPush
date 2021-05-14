@@ -352,9 +352,10 @@ public class LearningContentServiceImpl implements LearningContentService {
 	}
 
 	@Override
-	public List<LearningContentItem> fetchBookMarkedContent(String puid, String ccoid, Map<String, String> query_map) {
+	public List<LearningContentItem> fetchBookMarkedContent(String puid, String ccoid, String filter) {
 		List<NewLearningContentEntity> learningFilteredList = new ArrayList<>();
 		List<LearningContentItem> result = new ArrayList<>();
+		Map<String, String> query_map = filterStringtoMap(filter);
 		try
 		{
 			learningFilteredList=learningContentDAO.fetchFilteredContent(puid, ccoid, query_map);
@@ -392,7 +393,8 @@ public class LearningContentServiceImpl implements LearningContentService {
 		{
 			Map<String, String> query_map = filterStringtoMap(filter);
 			List<LearningContentItem> bookmarkedList = new ArrayList<>();
-			bookmarkedList = fetchBookMarkedContent(puid, ccoid, new HashMap<String,String>());
+			String empty=new String();
+			bookmarkedList = fetchBookMarkedContent(puid, ccoid, empty);
 			bookmarkedCounts = learningContentDAO.getBookmarkedFiltersWithCount(query_map, filterCounts, bookmarkedList);
 		}catch (Exception e) {
 			throw new GenericException("There was a problem in fetching bookmarked filter counts");
