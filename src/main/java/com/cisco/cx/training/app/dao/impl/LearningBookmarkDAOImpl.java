@@ -88,77 +88,61 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 		LOG.info("Entering the createOrUpdate");
 		long requestStartTime = System.currentTimeMillis();	
 		Map<String, AttributeValue> itemValue = new HashMap<String, AttributeValue>();
-		Set<String> currentBookMarks = getBookmarksWithTime(bookmarkResponseSchema.getCcoid());
-		Map<String,Object> newBookmark = new HashMap<String,Object>();
-		newBookmark.put(bookmarkResponseSchema.getLearningid(), getTime());
-		if(bookmarkResponseSchema.isBookmark()){
-			if(null == currentBookMarks){
-				currentBookMarks = new HashSet<String>();								
-			}
-			try {
-				currentBookMarks.add(mapper.writeValueAsString(newBookmark));
-			} catch (JsonProcessingException e) {
-				LOG.error("Error during mark {} {}",bookmarkResponseSchema.getLearningid(),e);
-			}			
-		}else{
-			Set<String> toRemove = new HashSet<String>();
-			currentBookMarks.forEach(str -> {
-				try {
-					Map<String,Object> currentBookmark = mapper.readValue(str, Map.class);
-					if(currentBookmark.containsKey(bookmarkResponseSchema.getLearningid()))
-					{
-						toRemove.add(str); 
-					}										
-				} catch (JsonProcessingException e) {
-					LOG.error("Error during unmark {} {}",str,e);
+		Set<String> currentBookMarks = new HashSet<String>();
+		Map<String,Object> currentBookMarksMap = getBookmarksWithTime(bookmarkResponseSchema.getCcoid());
+		if(null == currentBookMarksMap)
+			currentBookMarksMap = new HashMap<String,Object>();
+		if(bookmarkResponseSchema.isBookmark())
+			currentBookMarksMap.put(bookmarkResponseSchema.getLearningid(), getTime());
+		else					
+			currentBookMarksMap.remove(bookmarkResponseSchema.getLearningid());	
+		if(currentBookMarksMap.isEmpty()) currentBookMarks.add("");
+		else
+		{	
+			currentBookMarksMap.forEach((k,v)->{
+				Map<String,Object> oneBK = new HashMap<String,Object>();oneBK.put(k, v);
+				try
+				{
+					currentBookMarks.add(mapper.writeValueAsString(oneBK));					
+				} 
+				catch (JsonProcessingException e)
+				{
+					LOG.error("Error during mark {} {}",bookmarkResponseSchema.getLearningid(),e);
 				}
 			});
-			currentBookMarks.removeAll(toRemove);
-			if(currentBookMarks.isEmpty()){
-				currentBookMarks.add("");
-			}
-		}		
-	    itemValue.put("userid", AttributeValue.builder().s(bookmarkResponseSchema.getCcoid().concat(USERID_SUFFIX)).build());
-	    itemValue.put("bookmarks", AttributeValue.builder().ss(currentBookMarks).build());
-	    Builder putItemReq = PutItemRequest.builder();
-	    LOG.info("Preprocessing done in {} ", (System.currentTimeMillis() - requestStartTime));
-	    requestStartTime = System.currentTimeMillis();	
-	    putItemReq.tableName(propertyConfig.getBookmarkTableName()).item(itemValue);
-	    PutItemResponse response = dbClient.putItem(putItemReq.build());
-	    LOG.info("response received in {} ", (System.currentTimeMillis() - requestStartTime));
-	    if(response.sdkHttpResponse().isSuccessful()){
-	    	BookmarkResponseSchema responseSchema = new BookmarkResponseSchema();
-	    	responseSchema.setId(bookmarkResponseSchema.getId());
-	    	return responseSchema;
-	    }else{
-	    	return null;
-	    }
+		}	
+		itemValue.put("userid", AttributeValue.builder().s(bookmarkResponseSchema.getCcoid().concat(USERID_SUFFIX)).build());
+		itemValue.put("bookmarks", AttributeValue.builder().ss(currentBookMarks).build());
+		Builder putItemReq = PutItemRequest.builder();
+		LOG.info("Preprocessing done in {} ", (System.currentTimeMillis() - requestStartTime));
+		requestStartTime = System.currentTimeMillis();	
+		putItemReq.tableName(propertyConfig.getBookmarkTableName()).item(itemValue);
+		PutItemResponse response = dbClient.putItem(putItemReq.build());
+		LOG.info("response received in {} ", (System.currentTimeMillis() - requestStartTime));
+		if(response.sdkHttpResponse().isSuccessful()){
+			BookmarkResponseSchema responseSchema = new BookmarkResponseSchema();
+			responseSchema.setId(bookmarkResponseSchema.getId());
+			return responseSchema;
+		}else{
+			return null;
+		}
 	}
 
 	/*
 	 * ["ACIDistNet1",...]
 	 */
 	@Override
-	public Set<String> getBookmarks(String email){
-		Set<String> userBookMarks = new HashSet<String>();
-		Set<String> userBookMarksMap = getBookmarksWithTime(email);
-		userBookMarksMap.forEach(str -> {
-			try {
-				Map<String,Object> ddbBookmark= mapper.readValue(str, Map.class);
-				ddbBookmark.forEach((k,v)->userBookMarks.add(k));						
-			} catch (JsonProcessingException e) {
-				LOG.error("Error during bkmap {} {}",str,e);
-			}
-		});
-		return userBookMarks;
+	public Set<String> getBookmarks(String email){		
+		Map<String, Object> userBookMarksMap = getBookmarksWithTime(email);	
+		return userBookMarksMap.keySet();
 	}
 
 	/*
-	 * ["{\"ACIDistNet1\":1620903592718}",...]
-	 */
+	 * {"ACIDistNet1":1620903592718, ...}	 */
 	@Override
-	public Set<String> getBookmarksWithTime(String email){
+	public Map<String,Object> getBookmarksWithTime(String email){
 		LOG.info("Entering the fetch bookmarks");
+		Map<String, Object> userBookMarksMap = new HashMap<String,Object>();
 		long requestStartTime = System.currentTimeMillis();	
 		Set<String> userBookMarks = null;
 		Map<String,String> expressionAttributesNames = new HashMap<>();
@@ -183,10 +167,17 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 	    	Map<String,AttributeValue> userBookmarks = attributeValues.get(0);
 	    	AttributeValue bookMarkSet = userBookmarks.get(BOOKMARK_KEY);
 	    	userBookMarks = new HashSet<String>(bookMarkSet.ss());	
-	    	
+	    	userBookMarks.forEach(str -> {
+				try {
+					Map<String,Object> ddbBookmark= mapper.readValue(str, Map.class);
+					userBookMarksMap.putAll(ddbBookmark);						
+				} catch (JsonProcessingException e) {
+					LOG.error("Error during bkmap {} {}",str,e);
+				}
+			});	    	
 	    }	    
-	    LOG.info("final response in {} ", (System.currentTimeMillis() - requestStartTime));
-	    return userBookMarks;
+	    LOG.info("final response in {}", (System.currentTimeMillis() - requestStartTime));
+	    return userBookMarksMap;
 	}
 
 }
