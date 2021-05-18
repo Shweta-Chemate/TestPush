@@ -1,6 +1,8 @@
 package com.cisco.cx.training.app.dao.impl;
 
+import java.time.Clock;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -72,18 +74,23 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 		dDbClientBuilder.region(region);
 		dbClient = dDbClientBuilder.build();
 	}	
+	
+	private long getTime()
+	{
+		final Instant now = Clock.systemUTC().instant();
+		long time = now.toEpochMilli();
+		return time;
+	}
 
 	@Override
 	public BookmarkResponseSchema createOrUpdate(
 			BookmarkResponseSchema bookmarkResponseSchema) {
 		LOG.info("Entering the createOrUpdate");
-		String CARD_KEY="cardId"; String TIME_KEY ="time";
 		long requestStartTime = System.currentTimeMillis();	
 		Map<String, AttributeValue> itemValue = new HashMap<String, AttributeValue>();
-		Set<String> currentBookMarks = getBookmarks(bookmarkResponseSchema.getCcoid());
+		Set<String> currentBookMarks = getBookmarksWithTime(bookmarkResponseSchema.getCcoid());
 		Map<String,Object> newBookmark = new HashMap<String,Object>();
-		newBookmark.put(CARD_KEY, bookmarkResponseSchema.getLearningid());
-		newBookmark.put(TIME_KEY, bookmarkResponseSchema.getUpdated());
+		newBookmark.put(bookmarkResponseSchema.getLearningid(), getTime());
 		if(bookmarkResponseSchema.isBookmark()){
 			if(null == currentBookMarks){
 				currentBookMarks = new HashSet<String>();								
@@ -97,12 +104,11 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 			Set<String> toRemove = new HashSet<String>();
 			currentBookMarks.forEach(str -> {
 				try {
-					Map<String,Object> previousBookmark= mapper.readValue(str, Map.class);
-					if(previousBookmark!=null && previousBookmark.containsKey(CARD_KEY) 
-							&& bookmarkResponseSchema.getLearningid().equals(previousBookmark.get(CARD_KEY)))
+					Map<String,Object> currentBookmark = mapper.readValue(str, Map.class);
+					if(currentBookmark.containsKey(bookmarkResponseSchema.getLearningid()))
 					{
-						toRemove.add(str); // break;?
-					}							
+						toRemove.add(str); 
+					}										
 				} catch (JsonProcessingException e) {
 					LOG.error("Error during unmark {} {}",str,e);
 				}
@@ -129,11 +135,29 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 	    }
 	}
 
-	/**
-	 * [{\"time\":1620903592718,\"card\":\"ACIDistNet1\"}, {\"time\":1620904805105,\"card\":\"ACIDistNet2\"}]"
+	/*
+	 * ["ACIDistNet1",...]
 	 */
 	@Override
 	public Set<String> getBookmarks(String email){
+		Set<String> userBookMarks = new HashSet<String>();
+		Set<String> userBookMarksMap = getBookmarksWithTime(email);
+		userBookMarksMap.forEach(str -> {
+			try {
+				Map<String,Object> ddbBookmark= mapper.readValue(str, Map.class);
+				ddbBookmark.forEach((k,v)->userBookMarks.add(k));						
+			} catch (JsonProcessingException e) {
+				LOG.error("Error during bkmap {} {}",str,e);
+			}
+		});
+		return userBookMarks;
+	}
+
+	/*
+	 * ["{\"ACIDistNet1\":1620903592718}",...]
+	 */
+	@Override
+	public Set<String> getBookmarksWithTime(String email){
 		LOG.info("Entering the fetch bookmarks");
 		long requestStartTime = System.currentTimeMillis();	
 		Set<String> userBookMarks = null;

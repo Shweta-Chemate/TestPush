@@ -10,4 +10,6 @@ public interface LearningBookmarkDAO {
 
 	Set<String> getBookmarks(String email);
 
+	Set<String> getBookmarksWithTime(String email);
+
 }
