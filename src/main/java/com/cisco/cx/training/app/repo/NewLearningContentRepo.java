@@ -34,10 +34,10 @@ public interface NewLearningContentRepo
 
 
 	@Query(value = SQLConstants.GET_RECENTLY_VIEWED_CONTENT_BASE, nativeQuery = true)
-	List<NewLearningContentEntity> getRecentlyViewedContent(String puid, String userId);
+	List<NewLearningContentEntity> getRecentlyViewedContent(String userId);
 	
 	@Query(value = SQLConstants.GET_RECENTLY_VIEWED_CONTENT, nativeQuery = true)
-	List<NewLearningContentEntity> getRecentlyViewedContentFiltered(String puid, String userId, Set<String> learningItemIds);
+	List<NewLearningContentEntity> getRecentlyViewedContentFiltered(String userId, Set<String> learningItemIds);
 
 	@Query(value = SQLConstants.GET_NEW_CONTENT_BASE, nativeQuery = true)
 	List<NewLearningContentEntity> findNew();

@@ -25,7 +25,7 @@ public interface NewLearningContentDAO {
 
 	Integer getDocumentationCount();
 
-	List<NewLearningContentEntity> fetchRecentlyViewedContent(String puid, String userId,  Map<String, String> query_map);
+	List<NewLearningContentEntity> fetchRecentlyViewedContent(String userId,  Map<String, String> query_map);
 
 	HashMap<String, HashMap<String, String>> getRecentlyViewedFiltersWithCount(String puid, String userId, Map<String, String> query_map,
 			HashMap<String, HashMap<String, String>> filterCounts);

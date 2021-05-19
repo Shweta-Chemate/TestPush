@@ -307,7 +307,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 		Map<String, String> query_map = filterStringtoMap(filter);
 		try
 		{
-			learningContentList=learningContentDAO.fetchRecentlyViewedContent(puid, ccoid, query_map);
+			learningContentList=learningContentDAO.fetchRecentlyViewedContent(ccoid, query_map);
 			//populate bookmark info  and registration info
 			Set<String> userBookmarks = null;
 			if(null != ccoid){
