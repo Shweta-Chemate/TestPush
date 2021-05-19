@@ -25,7 +25,7 @@ public class SQLConstants {
 			"where base.id in (:learningItemIds)";
 
 	public static final String GET_RECENTLY_VIEWED_CONTENT_BASE =  "select content.* from cxpp_db.cxpp_learning_content content,cxpp_db.cxpp_learning_status status"
-			+ " where status.puid=:puid and status.user_id=:userId  and content.id=status.learning_item_id "
+			+ " where status.user_id=:userId  and content.id=status.learning_item_id "
 			+ " order by status.viewed_timestamp desc limit 25";
 	
 	public static final String GET_RECENTLY_VIEWED_CONTENT = "select * from (\n" + GET_RECENTLY_VIEWED_CONTENT_BASE + ") base\n" +
