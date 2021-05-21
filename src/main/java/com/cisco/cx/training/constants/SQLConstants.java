@@ -2,8 +2,7 @@ package com.cisco.cx.training.constants;
 
 public class SQLConstants {
 	
-	public static final String GET_CONTENT_TYPE_WITH_COUNT_BY_CARD = "select asset_type as label, count(*) as count "
-			+ " from cxpp_db.cxpp_learning_content " + " where asset_type IS NOT NULL and learning_type!='successacademy' and id in (:learningItemIds) "
+	public static final String GET_CONTENT_TYPE_WITH_COUNT_BY_CARD = "select asset_type as label, count(*) as count from cxpp_db.cxpp_item_link where asset_type IS NOT NULL and asset_type!='null' and learning_item_id in (:learningItemIds) \n"
 			+ " group by asset_type;";
 	
 	public static final String GET_REGION_WITH_COUNT_BY_CARD = "select piw_region as label, count(*) as count "
@@ -55,8 +54,8 @@ public class SQLConstants {
 	public static final String GET_SA_CAMPUS_COUNT = "select count(*) \n" +
 			" from cxpp_db.cxpp_learning_content where learning_type='successacademy' and asset_model='Success Track' and asset_facet='CAMPUS' and id in (:learningItemIdsList) \n";
 
-	public static final String GET_CARD_IDs_CT =  "select id from cxpp_db.cxpp_learning_content  "
-			+ " where learning_type!='successacademy' and  asset_type  in (:values) and id in (:learningItemIdsList)" ;
+	public static final String GET_CARD_IDs_CT =  "select distinct learning_item_id from cxpp_db.cxpp_item_link  "
+			+ " where asset_type  in (:values) and learning_item_id in (:learningItemIdsList)" ;
 
 	public static final String GET_CARD_IDs_LANG = "select id from cxpp_db.cxpp_learning_content "
 			+ " where piw_language in (:values) and id in (:learningItemIdsList)";
