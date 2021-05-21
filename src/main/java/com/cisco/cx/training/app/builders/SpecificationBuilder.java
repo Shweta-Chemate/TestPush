@@ -36,10 +36,19 @@ public class SpecificationBuilder {
 			// for differentating between OR and AND condition for successacademy filters
 			if(key.contains("assetFacet"))
 				key=StringUtils.chop(key);
-			if(key.equals(Constants.CONTENT_TYPE_FIELD))
+			if(key.equals(Constants.CONTENT_TYPE_FIELD)) {
+				String[] values = value.split(",");
+				Specification<T> contentTypeSpecification = Specification.where(null);
+				for(String contentType:values) {
+					contentTypeSpecification=contentTypeSpecification.or(CustomSpecifications.findWithCriteria(key, contentType));
+				}
+				specification=specification.and(contentTypeSpecification);
 				specification=specification.and(CustomSpecifications.notEqual(Constants.LEARNING_TYPE, Constants.SUCCESS_ACADEMY));
-			List<String> values = Arrays.asList(value.split(","));
-			specification = specification.and(CustomSpecifications.hasValueIn(key, values));
+			}
+			else {
+				List<String> values = Arrays.asList(value.split(","));
+				specification = specification.and(CustomSpecifications.hasValueIn(key, values));
+			}
 		}
 		return specification;
 	}

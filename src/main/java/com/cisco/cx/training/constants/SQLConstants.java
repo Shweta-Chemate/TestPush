@@ -2,8 +2,7 @@ package com.cisco.cx.training.constants;
 
 public class SQLConstants {
 	
-	public static final String GET_CONTENT_TYPE_WITH_COUNT_BY_CARD = "select asset_type as label, count(*) as count "
-			+ " from cxpp_db.cxpp_learning_content " + " where asset_type IS NOT NULL and learning_type!='successacademy' and id in (:learningItemIds) "
+	public static final String GET_CONTENT_TYPE_WITH_COUNT_BY_CARD = "select asset_type as label, count(*) as count from cxpp_db.cxpp_item_link where asset_type IS NOT NULL and asset_type!='null' and learning_item_id in (:learningItemIds) \n"
 			+ " group by asset_type;";
 	
 	public static final String GET_REGION_WITH_COUNT_BY_CARD = "select piw_region as label, count(*) as count "
@@ -14,12 +13,12 @@ public class SQLConstants {
 			+ " from cxpp_db.cxpp_learning_content " + " where piw_language IS NOT NULL and id in (:learningItemIds) "
 			+ " group by piw_language;";
 	
-	public static final String GET_NEW_CONTENT_BASE = "select * from cxpp_db.cxpp_learning_content where sort_by_date  between (current_date() - interval 1 month) and  current_date() order by sort_by_date desc limit 25";
+	public static final String GET_NEW_CONTENT_BASE = "select * from cxpp_db.cxpp_learning_content where sort_by_date  between (current_date() - interval 1 month) and  current_date() and status!='cancelled' order by sort_by_date desc limit 25";
 
 	public static final String GET_NEW_CONTENT = "select * from (\n" + GET_NEW_CONTENT_BASE + ") base\n" +
 			"where base.id in (:learningItemIds)";
 	
-	public static final String GET_UPCOMING_CONTENT_BASE = "select * from cxpp_db.cxpp_learning_content where asset_type='Live Webinar' and  sort_by_date > current_date() order by sort_by_date asc limit 25";
+	public static final String GET_UPCOMING_CONTENT_BASE = "select * from cxpp_db.cxpp_learning_content where asset_type='Live Webinar' and  sort_by_date > current_date() and status!='cancelled' order by sort_by_date asc limit 25";
 
 	public static final String GET_UPCOMING_CONTENT = "select * from (\n" + GET_UPCOMING_CONTENT_BASE + ") base\n" +
 			"where base.id in (:learningItemIds)";
@@ -55,8 +54,8 @@ public class SQLConstants {
 	public static final String GET_SA_CAMPUS_COUNT = "select count(*) \n" +
 			" from cxpp_db.cxpp_learning_content where learning_type='successacademy' and asset_model='Success Track' and asset_facet='CAMPUS' and id in (:learningItemIdsList) \n";
 
-	public static final String GET_CARD_IDs_CT =  "select id from cxpp_db.cxpp_learning_content  "
-			+ " where learning_type!='successacademy' and  asset_type  in (:values) and id in (:learningItemIdsList)" ;
+	public static final String GET_CARD_IDs_CT =  "select distinct learning_item_id from cxpp_db.cxpp_item_link  "
+			+ " where asset_type  in (:values) and learning_item_id in (:learningItemIdsList)" ;
 
 	public static final String GET_CARD_IDs_LANG = "select id from cxpp_db.cxpp_learning_content "
 			+ " where piw_language in (:values) and id in (:learningItemIdsList)";
