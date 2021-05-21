@@ -119,6 +119,8 @@ public class ProductDocumentationService{
 			
 			GenericLearningModel card =  new GenericLearningModel();	
 			
+			if(learning.getSortByDate()==null)card.setCreatedTimeStamp(null);
+			else card.setCreatedTimeStamp(Timestamp.valueOf(learning.getSortByDate()));  //same as created date
 			card.setCreatedTimeStamp(Timestamp.valueOf(learning.getSortByDate()));  //same as created date
 			card.setDescription(learning.getDescription());
 			card.setDuration(learning.getDuration());
