@@ -39,9 +39,11 @@ public final class Constants {
 	public static final String SPEAKERS = "presenterName";
 	public static final String LEARNING_TYPE = "learningType";
 	public static final String DOCUMENTATION = "product_documentation";
-	public static final Object CONTENT_TYPE = "Content Type";
-	public static final Object LIVE_EVENTS = "Live Events";
-	public static final Object LANGUAGE = "Language";
+	public static final String CONTENT_TYPE = "Content Type";
+	public static final String CONTENT_TYPE_PRM = "contentType";
+	public static final String LIVE_EVENTS = "Live Events";
+	public static final String LANGUAGE = "Language";
+	public static final String LANGUAGE_PRM = "language";
 	public static final String CONTENT_TYPE_FIELD = "contentType";
 	public static final String LIVE_WEBINAR= "Live Webinar";
 	public static final String SUCCESS_ACADEMY = "successacademy";
@@ -52,6 +54,7 @@ public final class Constants {
 	public static final String CAMPUS = "CAMPUS";
 	public static final String CAMPUS_NETWORK = "Campus Network";
 	public static final String DOCUMENTATION_FILTER = "Documentation";
+	public static final String DOCUMENTATION_FILTER_PRM = "archetype";
 	public static final String ASSET_FACET = "assetFacet";
 
 }

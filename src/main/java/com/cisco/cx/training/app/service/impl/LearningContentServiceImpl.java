@@ -240,12 +240,12 @@ public class LearningContentServiceImpl implements LearningContentService {
 	}
 
 	@Override
-	public HashMap<String, HashMap<String,String>> getViewMoreNewFiltersWithCount(String filter, HashMap<String, HashMap<String,String>> filterCounts, String select) {
+	public HashMap<String, HashMap<String,String>> getViewMoreNewFiltersWithCount(String filter, HashMap<String, HashMap<String,String>> filterCounts) {
 		HashMap<String, HashMap<String,String>> viewMoreCounts = new HashMap<>();
 		try
 		{
 			Map<String, String> query_map = filterStringtoMap(filter);
-			viewMoreCounts = learningContentDAO.getViewMoreNewFiltersWithCount(query_map, filterCounts, select);
+			viewMoreCounts = learningContentDAO.getViewMoreNewFiltersWithCount(query_map, filterCounts);
 		}catch (Exception e) {
 			throw new GenericException("There was a problem in fetching new filter counts");
 		}
@@ -307,7 +307,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 		Map<String, String> query_map = filterStringtoMap(filter);
 		try
 		{
-			learningContentList=learningContentDAO.fetchRecentlyViewedContent(puid, ccoid, query_map);
+			learningContentList=learningContentDAO.fetchRecentlyViewedContent(ccoid, query_map);
 			//populate bookmark info  and registration info
 			Set<String> userBookmarks = null;
 			if(null != ccoid){
@@ -339,12 +339,12 @@ public class LearningContentServiceImpl implements LearningContentService {
 
 	@Override
 	public HashMap<String, HashMap<String, String>> getRecentlyViewedFiltersWithCount(String puid,String userId, String filter,
-			HashMap<String, HashMap<String, String>> filterCounts, String select) {
+			HashMap<String, HashMap<String, String>> filterCounts) {
 		HashMap<String, HashMap<String,String>> recentlyViewedCounts = new HashMap<>();
 		try
 		{
 			Map<String, String> query_map = filterStringtoMap(filter);
-			recentlyViewedCounts = learningContentDAO.getRecentlyViewedFiltersWithCount(puid, userId, query_map, filterCounts, select);
+			recentlyViewedCounts = learningContentDAO.getRecentlyViewedFiltersWithCount(puid, userId, query_map, filterCounts);
 		}catch (Exception e) {
 			throw new GenericException("There was a problem in fetching recently viewed filter counts");
 		}
@@ -387,14 +387,15 @@ public class LearningContentServiceImpl implements LearningContentService {
 	
 	@Override
 	public HashMap<String, HashMap<String, String>> getBookmarkedFiltersWithCount(String puid, String ccoid,
-			String filter, HashMap<String, HashMap<String, String>> filterCounts, String select) {
+			String filter, HashMap<String, HashMap<String, String>> filterCounts) {
 		HashMap<String, HashMap<String,String>> bookmarkedCounts = new HashMap<>();
 		try
 		{
 			Map<String, String> query_map = filterStringtoMap(filter);
 			List<LearningContentItem> bookmarkedList = new ArrayList<>();
-			bookmarkedList = fetchBookMarkedContent(puid, ccoid, filter);
-			bookmarkedCounts = learningContentDAO.getBookmarkedFiltersWithCount(query_map, filterCounts, bookmarkedList,select);
+			String empty=new String();
+			bookmarkedList = fetchBookMarkedContent(puid, ccoid, empty);
+			bookmarkedCounts = learningContentDAO.getBookmarkedFiltersWithCount(query_map, filterCounts, bookmarkedList);
 		}catch (Exception e) {
 			throw new GenericException("There was a problem in fetching bookmarked filter counts");
 		}
@@ -440,12 +441,12 @@ public class LearningContentServiceImpl implements LearningContentService {
 	
 	@Override
 	public HashMap<String, HashMap<String, String>> getUpcomingFiltersWithCount(String filter,
-			HashMap<String, HashMap<String, String>> filterCounts, String select) {
+			HashMap<String, HashMap<String, String>> filterCounts) {
 		HashMap<String, HashMap<String,String>> upcomingContentCounts = new HashMap<>();
 		try
 		{
 			Map<String, String> query_map = filterStringtoMap(filter);
-			upcomingContentCounts = learningContentDAO.getUpcomingFiltersWithCount(query_map, filterCounts, select);
+			upcomingContentCounts = learningContentDAO.getUpcomingFiltersWithCount(query_map, filterCounts);
 		}catch (Exception e) {
 			throw new GenericException("There was a problem in fetching upcoming learning content");
 		}
@@ -486,7 +487,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 	
 	@Override
 	public HashMap<String, HashMap<String, String>> getSuccessAcademyFiltersWithCount(String filter,
-			HashMap<String, HashMap<String, String>> filterCounts, String select) {
+			HashMap<String, HashMap<String, String>> filterCounts) {
 		HashMap<String, HashMap<String,String>> successAcademyContentCounts = new HashMap<>();
 		try
 		{
@@ -495,7 +496,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 				query_map.replace(query_map.keySet().stream()
 	            .filter(key -> Constants.CAMPUS_NETWORK.equals(query_map.get(key))).findFirst().get(), Constants.CAMPUS_NETWORK, Constants.CAMPUS);
 			}
-			successAcademyContentCounts = learningContentDAO.getSuccessAcademyFiltersWithCount(query_map, filterCounts, select);
+			successAcademyContentCounts = learningContentDAO.getSuccessAcademyFiltersWithCount(query_map, filterCounts);
 		}catch (Exception e) {
 			throw new GenericException("There was a problem in fetching successacademy filters");
 		}
