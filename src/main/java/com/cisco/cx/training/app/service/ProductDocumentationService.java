@@ -3,6 +3,8 @@ package com.cisco.cx.training.app.service;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -584,10 +586,40 @@ public class ProductDocumentationService{
 		LOG.info("dbCards={}",dbCards);
 		learningCards.addAll(mapLearningEntityToCards(dbCards, userBookmarks));
 		
+		sortSpecial(learningCards,sort,order);
 		
 		return responseModel;
 	
 	}
+	
+	void sortSpecial(List<GenericLearningModel> learningCards , String sortBy, Direction order)
+	{
+		if(sortBy.equalsIgnoreCase("title"))
+		{
+			learningCards.sort(new SortTitle());
+			if(order.isDescending())
+				Collections.reverse(learningCards);
+		}
+	}
+	
+	class SortTitle implements Comparator<GenericLearningModel>
+	{
+		@Override
+		public int compare(GenericLearningModel o1, GenericLearningModel o2) {	
+			String o1Title = o1.getTitle(), o2Title = o2.getTitle();
+			
+			if(o1Title!=null)
+				o1Title = o1.getTitle().trim().replaceAll(regChars, "").toLowerCase();
+			
+			if(o2Title!=null)
+				o2Title = o2.getTitle().trim().replaceAll(regChars, "").toLowerCase();
+			
+			return o1Title.compareTo(o2Title);			
+		}		
+	}
+	
+	//  !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~   and lower must.
+	private static final String regChars= "[\\Q!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~\\E]";
 	
 }
 
