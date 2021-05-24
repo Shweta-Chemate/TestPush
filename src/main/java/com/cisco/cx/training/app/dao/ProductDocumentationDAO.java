@@ -17,7 +17,9 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 	
 	/** all cards **/
 	
-	public static final String GET_PD_LEARNING_CARDS = "select cl.*, CT.asset_types,CT.asset_links  "
+	public static final String GET_PD_LEARNING_CARDS = "select * from ("
+			+ " select cl.*, CT.asset_types,CT.asset_links "
+			+ " ,REGEXP_REPLACE(title,'[?\\\\[*&\\\\]#]','') as sortTitle  "
 			+ " from cxpp_db.cxpp_learning_item cl "
 			+ " left join "
 			+ "	(select learning_item_id, "
@@ -26,6 +28,7 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 			+ "	from cxpp_db.cxpp_item_link  "
 			+ "	group by learning_item_id) as CT "
 			+ "	on cl.learning_item_id = CT.learning_item_id "
+			+ " ) cl"
 			+ "  \n-- #sort\n";	
 	@Query(value=GET_PD_LEARNING_CARDS , nativeQuery=true)
 	List<LearningItemEntity> getAllLearningCards(Sort sort);
@@ -33,7 +36,9 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 	
 	/** search **/
 	
-	public static final String GET_PD_LEARNING_CARDS_SEARCH = "select cl.*, CT.asset_types,CT.asset_links  "
+	public static final String GET_PD_LEARNING_CARDS_SEARCH =  "select * from ("
+			+ " select cl.*, CT.asset_types,CT.asset_links  "
+			+ " ,REGEXP_REPLACE(title,'[?\\\\[*&\\\\]#]','') as sortTitle  "
 			+ " from cxpp_db.cxpp_learning_item cl "
 			+ " left join "
 			+ "	(select learning_item_id, "
@@ -44,6 +49,7 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 			+ "	on cl.learning_item_id = CT.learning_item_id "
 			+ " where lower(cl.title) like :likeToken or lower(cl.description) like :likeToken  "
 			+ " or lower(cl.presentername) like :likeToken "
+			+ " ) cl"
 			+ "  \n-- #sort\n";	
 	@Query(value=GET_PD_LEARNING_CARDS_SEARCH , nativeQuery=true)
 	List<LearningItemEntity> getAllLearningCardsBySearch(String likeToken, Sort sort);
@@ -64,7 +70,9 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 	@Query(value=GET_PD_LEARNING_BY_CONTENT_TYPE , nativeQuery=true)
 	Set<String> getLearningsByContentType(Set<String> contentTypeFilter);	
 	
-	public static final String GET_PD_LEARNING_CARDS_BY_FILTER = "select cl.*, CT.asset_types,CT.asset_links  "
+	public static final String GET_PD_LEARNING_CARDS_BY_FILTER = "select * from ("
+			+ " select cl.*, CT.asset_types,CT.asset_links  "
+			+ " ,REGEXP_REPLACE(title,'[?\\\\[*&\\\\]#]','') as sortTitle  "
 			+ " from cxpp_db.cxpp_learning_item cl "
 			+ " left join "
 			+ "	(select learning_item_id, "
@@ -74,6 +82,7 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 			+ "	group by learning_item_id) as CT "
 			+ "	on cl.learning_item_id = CT.learning_item_id "
 			+ " where cl.learning_item_id in (:filterCards) "
+			+ " ) cl"
 			+ "  \n-- #sort\n";
 	
 	@Query(value=GET_PD_LEARNING_CARDS_BY_FILTER , nativeQuery=true)
@@ -82,7 +91,9 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 	
 	/** filter + search */
 	
-	public static final String GET_PD_LEARNING_CARDS_FILTERED_SEARCH = "select cl.*, CT.asset_types,CT.asset_links  "
+	public static final String GET_PD_LEARNING_CARDS_FILTERED_SEARCH = "select * from ("
+			+ " select cl.*, CT.asset_types,CT.asset_links  "
+			+ " ,REGEXP_REPLACE(title,'[?\\\\[*&\\\\]#]','') as sortTitle  "
 			+ " from cxpp_db.cxpp_learning_item cl "
 			+ " left join "
 			+ "	(select learning_item_id, "
@@ -94,6 +105,7 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 			+ " where cl.learning_item_id in (:filteredCards) and "
 			+ " ( lower(cl.title) like :likeToken or lower(cl.description) like :likeToken  "
 			+ " or lower(cl.presentername) like :likeToken ) "
+			+ " ) cl"
 			+ "  \n-- #sort\n";
 	
 	@Query(value=GET_PD_LEARNING_CARDS_FILTERED_SEARCH , nativeQuery=true)

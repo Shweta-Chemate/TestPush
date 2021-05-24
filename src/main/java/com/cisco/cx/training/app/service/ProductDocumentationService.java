@@ -211,6 +211,9 @@ public class ProductDocumentationService{
 	
 	private static final String DEFAULT_SORT_FIELD = "sort_by_date";
 	private static final Direction DEFAULT_SORT_ORDER = Sort.Direction.DESC;
+	
+	private static final String TITLE_SORT_FIELD = "title";
+	private static final String SPECIAL_SORT = "sortTitle";
 
 	/** filters **/
 	private static final String CONTENT_TYPE_FILTER = "Content Type";
@@ -547,7 +550,8 @@ public class ProductDocumentationService{
 		String sort = DEFAULT_SORT_FIELD ; 
 		Direction order = DEFAULT_SORT_ORDER ; 		
 		if(sortBy!=null  && !sortBy.equalsIgnoreCase("date")) sort = sortBy;
-		if(sortOrder!=null && sortOrder.equalsIgnoreCase("asc")) order = Sort.Direction.ASC;		
+		if(sortOrder!=null && sortOrder.equalsIgnoreCase("asc")) order = Sort.Direction.ASC;
+		if(TITLE_SORT_FIELD.equalsIgnoreCase(sort)) sort = SPECIAL_SORT;
 		LOG.info("sort={} {}",sort, order);
 		
 		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
