@@ -553,9 +553,15 @@ public class LearningContentServiceImpl implements LearningContentService {
 			sorted.put(filterGroup, filters);
 		}
 		result.putAll(sorted);
-		result.remove(Constants.LIVE_EVENTS); result.put(Constants.LIVE_EVENTS, sorted.get(Constants.LIVE_EVENTS));
-		result.remove(Constants.CONTENT_TYPE); result.put(Constants.CONTENT_TYPE, sorted.get(Constants.CONTENT_TYPE));
-		result.remove(Constants.LANGUAGE); result.put(Constants.LANGUAGE, sorted.get(Constants.LANGUAGE));
+		if(result.containsKey(Constants.LIVE_EVENTS)) {
+			result.remove(Constants.LIVE_EVENTS); result.put(Constants.LIVE_EVENTS, sorted.get(Constants.LIVE_EVENTS));
+		}
+		if(result.containsKey(Constants.CONTENT_TYPE)) {
+			result.remove(Constants.CONTENT_TYPE); result.put(Constants.CONTENT_TYPE, sorted.get(Constants.CONTENT_TYPE));
+		}
+		if(result.containsKey(Constants.LANGUAGE)) {
+			result.remove(Constants.LANGUAGE); result.put(Constants.LANGUAGE, sorted.get(Constants.LANGUAGE));
+		}
 		return result;
 	}
 
