@@ -503,4 +503,33 @@ public class LearningContentServiceImpl implements LearningContentService {
 		return successAcademyContentCounts;
 	}
 
+	@Override
+	public List<LearningContentItem> fetchCXInsightsContent(String ccoid, String filter, String searchToken,
+			String sortField, String sortType) {
+		List<NewLearningContentEntity> contentList = new ArrayList<>();
+		List<LearningContentItem> result = new ArrayList<>();
+		Map<String, String> query_map = filterStringtoMap(filter);
+		try
+		{
+			contentList = learningContentDAO.fetchCXInsightsContent(query_map, searchToken, sortField, sortType);
+			// populate bookmark and registration info
+			Set<String> userBookmarks = null;
+			if (null != ccoid) {
+				userBookmarks = learningBookmarkDAO.getBookmarks(ccoid);
+			}
+			for (NewLearningContentEntity entity : contentList) {
+				LearningContentItem learningItem = new LearningContentItem(entity);
+				learningItem.setBookmark(false);
+				if (null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
+						&& userBookmarks.contains(learningItem.getId())) {
+					learningItem.setBookmark(true);
+				}
+				result.add(learningItem);
+			}
+		}catch (Exception e) {
+			throw new GenericException("There was a problem in fetching successacademy learning content");
+		}
+		return result;
+	}
+
 }

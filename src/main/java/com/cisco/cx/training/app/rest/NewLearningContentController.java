@@ -2,7 +2,6 @@ package com.cisco.cx.training.app.rest;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.entities.LearningStatusEntity;
-import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.exception.ErrorResponse;
 import com.cisco.cx.training.app.exception.NotFoundException;
@@ -151,11 +149,22 @@ public class NewLearningContentController {
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
-	public ResponseEntity<HashMap<String, HashMap<String,String>>> getAllLearningsFilters(
+	public ResponseEntity<HashMap<String, HashMap<String,String>>> getNewLearningsFilters(
 			@ApiParam(value = "Filter - multiple, multiple types e.g filter=contentType:PDF,Video") @RequestParam(value = "filter", required = false) String filter,
-			@ApiParam(value = "JSON Body to update filters", required = false) @RequestBody(required=false) HashMap<String, HashMap<String,String>> filterCounts)
+			@ApiParam(value = "JSON Body to update filters", required = false) @RequestBody(required=false) HashMap<String, HashMap<String,String>> filterCounts,
+			@ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid)
 			throws Exception {
+		LOG.info("Entering the getNewLearningsFilters method");
+		long requestStartTime = System.currentTimeMillis();
+		if(!config.isNewLearningFeature())
+		{
+			throw new NotFoundException("API Not Found.");
+		}
+		if(filter!=null && filterCounts==null) {
+			throw new  BadRequestException("filter counts required in the body");
+		}
 		HashMap<String, HashMap<String,String>> learningFilters = learningContentService.getViewMoreNewFiltersWithCount(filter, filterCounts);
+		LOG.info("Received new learning content in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<HashMap<String, HashMap<String,String>>>(learningFilters, HttpStatus.OK);
 	}
 
@@ -234,6 +243,9 @@ public class NewLearningContentController {
 		{
 			throw new NotFoundException("API Not Found.");
 		}
+		if(filter!=null && filterCounts==null) {
+			throw new  BadRequestException("filter counts required in the body");
+		}
 		HashMap<String, HashMap<String,String>> learningFilters = learningContentService.getRecentlyViewedFiltersWithCount(puid, userId, filter, filterCounts);
 		LOG.info("Received recently viewed filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<HashMap<String, HashMap<String,String>>>(learningFilters, HttpStatus.OK);
@@ -287,6 +299,9 @@ public class NewLearningContentController {
 		{
 			throw new NotFoundException("API Not Found.");
 		}
+		if(filter!=null && filterCounts==null) {
+			throw new  BadRequestException("filter counts required in the body");
+		}
 		HashMap<String, HashMap<String,String>> learningFilters = learningContentService.getBookmarkedFiltersWithCount(puid, userId, filter, filterCounts);
 		LOG.info("Received bookmarked filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<HashMap<String, HashMap<String,String>>>(learningFilters, HttpStatus.OK);
@@ -327,16 +342,17 @@ public class NewLearningContentController {
 	public ResponseEntity<HashMap<String, HashMap<String,String>>> getFiltersForUpcoming(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
 			@ApiParam(value = "Filter - multiple, multiple types e.g filter=contentType:PDF,Video") @RequestParam(value = "filter", required = false) String filter,
-			@ApiParam(value = "JSON Body to update filters", required = false) @RequestBody(required=false) HashMap<String, HashMap<String,String>> filterCounts)
+			@ApiParam(value = "JSON Body to update filters", required = false) @RequestBody(required=false) HashMap<String, HashMap<String,String>> filterCounts,
+			@ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid)
 			throws Exception {
 		LOG.info("Entering the getFiltersForUpcoming method");
 		long requestStartTime = System.currentTimeMillis();
-		if (StringUtils.isBlank(xMasheryHandshake)) {
-			throw new BadRequestException("X-Mashery-Handshake header missing in request");
-		}
 		if(!config.isNewLearningFeature())
 		{
 			throw new NotFoundException("API Not Found.");
+		}
+		if(filter!=null && filterCounts==null) {
+			throw new  BadRequestException("filter counts required in the body");
 		}
 		HashMap<String, HashMap<String,String>> learningFilters = learningContentService.getUpcomingFiltersWithCount(filter, filterCounts);
 		LOG.info("Received upcoming filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
@@ -378,7 +394,8 @@ public class NewLearningContentController {
 	public ResponseEntity<HashMap<String, HashMap<String,String>>> getFiltersForSuccessacademy(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
 			@ApiParam(value = "Filter - multiple, multiple types e.g filter=contentType:PDF,Video") @RequestParam(value = "filter", required = false) String filter,
-			@ApiParam(value = "JSON Body to update filters", required = false) @RequestBody(required=false) HashMap<String, HashMap<String,String>> filterCounts)
+			@ApiParam(value = "JSON Body to update filters", required = false) @RequestBody(required=false) HashMap<String, HashMap<String,String>> filterCounts,
+			@ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid)
 			throws Exception {
 		LOG.info("Entering the getFiltersForSuccessacademy method");
 		long requestStartTime = System.currentTimeMillis();
@@ -389,9 +406,47 @@ public class NewLearningContentController {
 		{
 			throw new NotFoundException("API Not Found.");
 		}
+		if(filter!=null && filterCounts==null) {
+			throw new  BadRequestException("filter counts required in the body");
+		}
 		HashMap<String, HashMap<String,String>> learningFilters = learningContentService.getSuccessAcademyFiltersWithCount(filter, filterCounts);
 		LOG.info("Received successacademy filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<HashMap<String, HashMap<String,String>>>(learningFilters, HttpStatus.OK);
+	}
+
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/cxinsights")
+	@ApiOperation(value = "Fetch CX Insights Content", response = String.class, nickname = "fetchcxinsightscontent")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
+			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
+			@ApiResponse(code = 404, message = "Entity Not Found"),
+			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
+	public ResponseEntity<List<LearningContentItem>> getCXInsightsContent(
+			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = true) String xMasheryHandshake,
+            @ApiParam(value = "search") @RequestParam(value = "search", required = false) String searchToken,
+            @ApiParam(value = "sortfield") @RequestParam(value = "sortfield", required = false) String sortField,
+            @ApiParam(value = "sorttype") @RequestParam(value = "sorttype", required = false) String sortType,
+			@ApiParam(value = "Filters", required = false) @RequestParam(value = "filter", required = false) String filter,
+			@ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid)
+					throws Exception {
+		LOG.info("Entering the getCXInsightsContent method");
+		long requestStartTime = System.currentTimeMillis();
+		if (StringUtils.isBlank(xMasheryHandshake)) {
+			throw new BadRequestException("X-Mashery-Handshake header missing in request");
+		}
+		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
+		if(!config.isNewLearningFeature())
+		{
+			throw new NotFoundException("API Not Found.");
+		}
+		if(sortField==null)
+			sortField="sortByDate";
+		if(sortType==null)
+			sortType="desc";
+		if(searchToken!=null)
+			searchToken=searchToken.trim();
+		List<LearningContentItem> learningContentList = learningContentService.fetchCXInsightsContent(userId, filter, searchToken, sortField, sortType);
+		LOG.info("Received cxinsights content in {} ", (System.currentTimeMillis() - requestStartTime));
+		return new ResponseEntity<List<LearningContentItem>>(learningContentList, HttpStatus.OK);
 	}
 
 }

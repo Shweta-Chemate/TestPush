@@ -56,5 +56,12 @@ public final class Constants {
 	public static final String DOCUMENTATION_FILTER = "Documentation";
 	public static final String DOCUMENTATION_FILTER_PRM = "archetype";
 	public static final String ASSET_FACET = "assetFacet";
+	public static final Object FOR_YOU_FILTER = "For You";
+	public static final String NEW = "New";
+	public static final String ID = "id";
+	public static final String UPCOMING_EVENTS = "Upcoming Events";
+	public static final String RECENTLY_VIEWED = "Recently Viewed";
+	public static final String CX_COLLECTION = "CX Collection";
+	public static final String DESCRIPTION = "description";
 
 }
