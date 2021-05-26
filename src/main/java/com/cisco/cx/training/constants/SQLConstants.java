@@ -80,4 +80,19 @@ public class SQLConstants {
 			+ " where archetype in (:values) and id in (:learningItemIdsList)";
 ;
 
+	public static final String GET_SORTED_BY_TITLE_ASC = "SELECT * FROM\n" + 
+			"cxpp_learning_content\n" + 
+			"where id IN (:learningItemIdsList)\n" + 
+			"ORDER BY CASE \n" + 
+			"WHEN title REGEXP '^[A-Za-z0-9]' THEN 1\n" + 
+			"WHEN title IS NULL THEN 3\n" + 
+			"ELSE 2 END , title asc";
+	
+	public static final String GET_SORTED_BY_TITLE_DESC = "SELECT * FROM\n" + 
+			"cxpp_learning_content\n" + 
+			"where id IN (:learningItemIdsList)\n" + 
+			"ORDER BY CASE \n" + 
+			"WHEN title REGEXP '^[A-Za-z0-9]' THEN 1\n" + 
+			"WHEN title IS NULL THEN 3\n" + 
+			"ELSE 2 END , title desc";
 }

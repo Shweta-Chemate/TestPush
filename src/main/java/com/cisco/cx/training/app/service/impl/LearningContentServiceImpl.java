@@ -527,7 +527,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 				result.add(learningItem);
 			}
 		}catch (Exception e) {
-			throw new GenericException("There was a problem in fetching successacademy learning content");
+			throw new GenericException("There was a problem in fetching CX Insights learning content");
 		}
 		return result;
 	}
