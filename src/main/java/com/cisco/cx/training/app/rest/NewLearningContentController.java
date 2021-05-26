@@ -2,6 +2,7 @@ package com.cisco.cx.training.app.rest;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -149,7 +150,7 @@ public class NewLearningContentController {
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
-	public ResponseEntity<HashMap<String, HashMap<String,String>>> getNewLearningsFilters(
+	public ResponseEntity<Map<String, Map<String,String>>> getNewLearningsFilters(
 			@ApiParam(value = "Filter - multiple, multiple types e.g filter=contentType:PDF,Video") @RequestParam(value = "filter", required = false) String filter,
 			@ApiParam(value = "JSON Body to update filters", required = false) @RequestBody(required=false) HashMap<String, HashMap<String,String>> filterCounts,
 			@ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid)
@@ -163,9 +164,9 @@ public class NewLearningContentController {
 		if(filter!=null && filterCounts==null) {
 			throw new  BadRequestException("filter counts required in the body");
 		}
-		HashMap<String, HashMap<String,String>> learningFilters = learningContentService.getViewMoreNewFiltersWithCount(filter, filterCounts);
+		Map<String, Map<String,String>> learningFilters = learningContentService.getViewMoreNewFiltersWithCount(filter, filterCounts);
 		LOG.info("Received new learning content in {} ", (System.currentTimeMillis() - requestStartTime));
-		return new ResponseEntity<HashMap<String, HashMap<String,String>>>(learningFilters, HttpStatus.OK);
+		return new ResponseEntity<Map<String, Map<String,String>>>(learningFilters, HttpStatus.OK);
 	}
 
 	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/user/status")
@@ -227,7 +228,7 @@ public class NewLearningContentController {
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
-	public ResponseEntity<HashMap<String, HashMap<String,String>>> getFiltersForRecentlyViewed(
+	public ResponseEntity<Map<String, Map<String,String>>> getFiltersForRecentlyViewed(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
             @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
 			@ApiParam(value = "Filter - multiple, multiple types e.g filter=contentType:PDF,Video") @RequestParam(value = "filter", required = false) String filter,
@@ -246,9 +247,9 @@ public class NewLearningContentController {
 		if(filter!=null && filterCounts==null) {
 			throw new  BadRequestException("filter counts required in the body");
 		}
-		HashMap<String, HashMap<String,String>> learningFilters = learningContentService.getRecentlyViewedFiltersWithCount(puid, userId, filter, filterCounts);
+		Map<String, Map<String,String>> learningFilters = learningContentService.getRecentlyViewedFiltersWithCount(puid, userId, filter, filterCounts);
 		LOG.info("Received recently viewed filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
-		return new ResponseEntity<HashMap<String, HashMap<String,String>>>(learningFilters, HttpStatus.OK);
+		return new ResponseEntity<Map<String, Map<String,String>>>(learningFilters, HttpStatus.OK);
 	}
 	
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/bookmarked")
@@ -283,7 +284,7 @@ public class NewLearningContentController {
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
-	public ResponseEntity<HashMap<String, HashMap<String,String>>> getFiltersForBookmarked(
+	public ResponseEntity<Map<String, Map<String,String>>> getFiltersForBookmarked(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
             @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
 			@ApiParam(value = "Filter - multiple, multiple types e.g filter=contentType:PDF,Video") @RequestParam(value = "filter", required = false) String filter,
@@ -302,9 +303,9 @@ public class NewLearningContentController {
 		if(filter!=null && filterCounts==null) {
 			throw new  BadRequestException("filter counts required in the body");
 		}
-		HashMap<String, HashMap<String,String>> learningFilters = learningContentService.getBookmarkedFiltersWithCount(puid, userId, filter, filterCounts);
+		Map<String, Map<String,String>> learningFilters = learningContentService.getBookmarkedFiltersWithCount(puid, userId, filter, filterCounts);
 		LOG.info("Received bookmarked filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
-		return new ResponseEntity<HashMap<String, HashMap<String,String>>>(learningFilters, HttpStatus.OK);
+		return new ResponseEntity<Map<String, Map<String,String>>>(learningFilters, HttpStatus.OK);
 	}
 	
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/upcoming")
@@ -339,7 +340,7 @@ public class NewLearningContentController {
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
-	public ResponseEntity<HashMap<String, HashMap<String,String>>> getFiltersForUpcoming(
+	public ResponseEntity<Map<String, Map<String,String>>> getFiltersForUpcoming(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
 			@ApiParam(value = "Filter - multiple, multiple types e.g filter=contentType:PDF,Video") @RequestParam(value = "filter", required = false) String filter,
 			@ApiParam(value = "JSON Body to update filters", required = false) @RequestBody(required=false) HashMap<String, HashMap<String,String>> filterCounts,
@@ -354,9 +355,9 @@ public class NewLearningContentController {
 		if(filter!=null && filterCounts==null) {
 			throw new  BadRequestException("filter counts required in the body");
 		}
-		HashMap<String, HashMap<String,String>> learningFilters = learningContentService.getUpcomingFiltersWithCount(filter, filterCounts);
+		Map<String, Map<String,String>> learningFilters = learningContentService.getUpcomingFiltersWithCount(filter, filterCounts);
 		LOG.info("Received upcoming filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
-		return new ResponseEntity<HashMap<String, HashMap<String,String>>>(learningFilters, HttpStatus.OK);
+		return new ResponseEntity<Map<String, Map<String,String>>>(learningFilters, HttpStatus.OK);
 	}
 
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successacademy")
@@ -391,7 +392,7 @@ public class NewLearningContentController {
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
-	public ResponseEntity<HashMap<String, HashMap<String,String>>> getFiltersForSuccessacademy(
+	public ResponseEntity<Map<String, Map<String,String>>> getFiltersForSuccessacademy(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
 			@ApiParam(value = "Filter - multiple, multiple types e.g filter=contentType:PDF,Video") @RequestParam(value = "filter", required = false) String filter,
 			@ApiParam(value = "JSON Body to update filters", required = false) @RequestBody(required=false) HashMap<String, HashMap<String,String>> filterCounts,
@@ -409,9 +410,9 @@ public class NewLearningContentController {
 		if(filter!=null && filterCounts==null) {
 			throw new  BadRequestException("filter counts required in the body");
 		}
-		HashMap<String, HashMap<String,String>> learningFilters = learningContentService.getSuccessAcademyFiltersWithCount(filter, filterCounts);
+		Map<String, Map<String,String>> learningFilters = learningContentService.getSuccessAcademyFiltersWithCount(filter, filterCounts);
 		LOG.info("Received successacademy filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
-		return new ResponseEntity<HashMap<String, HashMap<String,String>>>(learningFilters, HttpStatus.OK);
+		return new ResponseEntity<Map<String, Map<String,String>>>(learningFilters, HttpStatus.OK);
 	}
 
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/cxinsights")
