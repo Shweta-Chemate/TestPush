@@ -345,6 +345,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 			String sortField, String sortType) {
 		List<NewLearningContentEntity> result;
 		List<NewLearningContentEntity> filteredListForYou = new ArrayList<>();
+		Set<String> learningItemIdsList = new HashSet<String>();
 		List<String> learningItemIdsListForYou = new ArrayList<String>();
 		if(filterParams.containsKey(Constants.FOR_YOU_FILTER)) {
 			List<String> filtersForYou=Arrays.asList(filterParams.get(Constants.FOR_YOU_FILTER).split(","));
@@ -360,8 +361,19 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		specification = specification.and(new SpecificationBuilder().filter(filterParams));
 		specification=specification.and(new SpecificationBuilder().buildSearchSpecification(searchToken));
 		specification=specification.and(new SpecificationBuilder().filterById(learningItemIdsListForYou));
-		Sort sort = Sort.by(Sort.Direction.fromString(sortType), sortField);
-		result=learningContentRepo.findAll(specification,sort);
+		if(sortField.equals(Constants.TITLE))
+		{
+			result=learningContentRepo.findAll(specification);
+			learningItemIdsList = result.stream().map(learningItem -> learningItem.getId())
+					.collect(Collectors.toSet());
+			result=sortType.equals(Constants.ASC)?learningContentRepo.getSortedByTitleAsc(learningItemIdsList):learningContentRepo.getSortedByTitleDesc(learningItemIdsList);
+			
+		}
+		else
+		{
+			Sort sort = Sort.by(Sort.Direction.fromString(sortType), sortField);
+			result=learningContentRepo.findAll(specification,sort);	
+		}
 		return result;
 	}
 
