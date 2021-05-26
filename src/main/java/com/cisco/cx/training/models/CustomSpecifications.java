@@ -40,6 +40,10 @@ public class CustomSpecifications {
 		};
 	}
 
+	public static <T> Specification<T> searchItemsWithCriteria(String columnName, String withValue) {
+		return (item, cq, cb) -> cb.like(cb.lower(item.get(columnName)).as(String.class), "%" + withValue + "%");
+	}
+
 	public static <T> Specification<T> hasPIWs(String columnName, String withValue) {
 		return (piw, cq, cb) -> cb.equal(piw.get(columnName), withValue);
 	}

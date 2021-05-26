@@ -1,8 +1,10 @@
 package com.cisco.cx.training.app.builders;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -53,5 +55,34 @@ public class SpecificationBuilder {
 		return specification;
 	}
 
+	public <T> Specification<T> buildSearchSpecification(String search) {
+		Specification<T> searchSpecification = Specification.where(null);
+		if (search != null) {
+			for (String searchField : getSearchFields()) {
+				LOGGER.info("searchField : {}  searchValue : {}",searchField,search);
+				searchSpecification = searchSpecification
+						.or(CustomSpecifications.searchItemsWithCriteria(searchField, search));
+			}
+			LOGGER.info(searchSpecification.toString());
+		}
+		return searchSpecification;
+	}
+
+	public <T> Specification<T> filterById(List<String> learningItemIdsListForYou) {
+		Specification<T> specification = Specification.where(null);
+		if (!learningItemIdsListForYou.isEmpty()) {
+
+			specification = specification.and(CustomSpecifications.hasValueIn(Constants.ID, learningItemIdsListForYou));
+		}
+		return specification;
+	}
+
+	public Set<String> getSearchFields() {
+		Set<String> searchFields = new HashSet<String>();
+		searchFields.add(Constants.TITLE);
+		searchFields.add(Constants.SPEAKERS);
+		searchFields.add(Constants.DESCRIPTION);
+		return searchFields;
+	}
 
 }
