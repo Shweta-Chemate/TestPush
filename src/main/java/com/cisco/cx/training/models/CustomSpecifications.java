@@ -3,6 +3,8 @@ package com.cisco.cx.training.models;
 import java.sql.Timestamp;
 import java.util.List;
 
+import javax.persistence.criteria.Expression;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.domain.Specification;
@@ -28,6 +30,18 @@ public class CustomSpecifications {
 	
 	public static <T> Specification<T> hasDateGreaterThan(String columnName, Timestamp startRange) {
 		return (entity, cq, cb) -> cb.greaterThan(entity.get(columnName), startRange);
+	}
+
+	public static <T> Specification<T> findWithCriteria(String columnName, String withValue) {
+		return (entity, cq, cb) -> {
+			Expression<Integer> findInSetFun = cb.function("FIND_IN_SET", Integer.class, cb.literal(withValue),
+                     cb.lower(entity.get(columnName).as(String.class)));
+			return cb.greaterThan(findInSetFun, 0);
+		};
+	}
+
+	public static <T> Specification<T> searchItemsWithCriteria(String columnName, String withValue) {
+		return (item, cq, cb) -> cb.like(cb.lower(item.get(columnName)).as(String.class), "%" + withValue + "%");
 	}
 
 	public static <T> Specification<T> hasPIWs(String columnName, String withValue) {

@@ -43,4 +43,7 @@ public interface NewLearningContentDAO {
 
 	HashMap<String, HashMap<String,String>> getSuccessAcademyFiltersWithCount(Map<String, String> filter, HashMap<String, HashMap<String,String>> filterCounts);
 
+	List<NewLearningContentEntity> fetchCXInsightsContent(Map<String, String> query_map, String searchToken,
+			String sortField, String sortType);
+
 }

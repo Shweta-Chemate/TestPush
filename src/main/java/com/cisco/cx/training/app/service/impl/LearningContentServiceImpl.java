@@ -1,12 +1,15 @@
 package com.cisco.cx.training.app.service.impl;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -240,8 +243,9 @@ public class LearningContentServiceImpl implements LearningContentService {
 	}
 
 	@Override
-	public HashMap<String, HashMap<String,String>> getViewMoreNewFiltersWithCount(String filter, HashMap<String, HashMap<String,String>> filterCounts) {
+	public Map<String, Map<String,String>> getViewMoreNewFiltersWithCount(String filter, HashMap<String, HashMap<String,String>> filterCounts) {
 		HashMap<String, HashMap<String,String>> viewMoreCounts = new HashMap<>();
+		Map<String, Map<String,String>> result;
 		try
 		{
 			Map<String, String> query_map = filterStringtoMap(filter);
@@ -249,7 +253,8 @@ public class LearningContentServiceImpl implements LearningContentService {
 		}catch (Exception e) {
 			throw new GenericException("There was a problem in fetching new filter counts");
 		}
-		return viewMoreCounts;
+		result=orderFilters(viewMoreCounts);
+		return result;
 	}
 
 	@Override
@@ -338,9 +343,10 @@ public class LearningContentServiceImpl implements LearningContentService {
 	}
 
 	@Override
-	public HashMap<String, HashMap<String, String>> getRecentlyViewedFiltersWithCount(String puid,String userId, String filter,
+	public Map<String, Map<String,String>> getRecentlyViewedFiltersWithCount(String puid,String userId, String filter,
 			HashMap<String, HashMap<String, String>> filterCounts) {
 		HashMap<String, HashMap<String,String>> recentlyViewedCounts = new HashMap<>();
+		Map<String, Map<String,String>> result;
 		try
 		{
 			Map<String, String> query_map = filterStringtoMap(filter);
@@ -348,7 +354,8 @@ public class LearningContentServiceImpl implements LearningContentService {
 		}catch (Exception e) {
 			throw new GenericException("There was a problem in fetching recently viewed filter counts");
 		}
-		return recentlyViewedCounts;
+		result=orderFilters(recentlyViewedCounts);
+		return result;
 	}
 
 	@Override
@@ -360,14 +367,15 @@ public class LearningContentServiceImpl implements LearningContentService {
 		{
 			learningFilteredList=learningContentDAO.fetchFilteredContent(puid, ccoid, query_map);
 			//get bookmarked content
-			Set<String> userBookmarks = null;
-			userBookmarks = learningBookmarkDAO.getBookmarks(ccoid);
+			Map<String,Object> userBookmarks = null;
+			userBookmarks = learningBookmarkDAO.getBookmarksWithTime(ccoid);
 			List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserIdAndPuid(ccoid, puid);
 			for(NewLearningContentEntity entity : learningFilteredList){
 				LearningContentItem learningItem = new LearningContentItem(entity);
 				if(null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
-						&& userBookmarks.contains(entity.getId())){
+						&& userBookmarks.keySet().contains(entity.getId())){
 					learningItem.setBookmark(true);
+					learningItem.setBookmarkTimeStamp((long) userBookmarks.get(entity.getId()));
 					result.add(learningItem);
 					LearningStatusEntity userRegistration = userRegistrations.stream()
 							.filter(userRegistrationInStream -> userRegistrationInStream.getLearningItemId()
@@ -382,13 +390,16 @@ public class LearningContentServiceImpl implements LearningContentService {
 		}catch (Exception e) {
 			throw new GenericException("There was a problem in fetching bookmarked learning content");
 		}
-		return result;
+		return result.stream()
+				  .sorted(Comparator.comparing(LearningContentItem::getBookmarkTimeStamp).reversed())
+				  .collect(Collectors.toList());
 	}
 	
 	@Override
-	public HashMap<String, HashMap<String, String>> getBookmarkedFiltersWithCount(String puid, String ccoid,
+	public Map<String, Map<String,String>> getBookmarkedFiltersWithCount(String puid, String ccoid,
 			String filter, HashMap<String, HashMap<String, String>> filterCounts) {
 		HashMap<String, HashMap<String,String>> bookmarkedCounts = new HashMap<>();
+		Map<String, Map<String,String>> result;
 		try
 		{
 			Map<String, String> query_map = filterStringtoMap(filter);
@@ -399,7 +410,8 @@ public class LearningContentServiceImpl implements LearningContentService {
 		}catch (Exception e) {
 			throw new GenericException("There was a problem in fetching bookmarked filter counts");
 		}
-		return bookmarkedCounts;
+		result=orderFilters(bookmarkedCounts);
+		return result;
 	}
 	
 	@Override
@@ -440,9 +452,10 @@ public class LearningContentServiceImpl implements LearningContentService {
 	}
 	
 	@Override
-	public HashMap<String, HashMap<String, String>> getUpcomingFiltersWithCount(String filter,
+	public Map<String, Map<String,String>> getUpcomingFiltersWithCount(String filter,
 			HashMap<String, HashMap<String, String>> filterCounts) {
 		HashMap<String, HashMap<String,String>> upcomingContentCounts = new HashMap<>();
+		Map<String, Map<String,String>> result;
 		try
 		{
 			Map<String, String> query_map = filterStringtoMap(filter);
@@ -450,7 +463,8 @@ public class LearningContentServiceImpl implements LearningContentService {
 		}catch (Exception e) {
 			throw new GenericException("There was a problem in fetching upcoming learning content");
 		}
-		return upcomingContentCounts;
+		result=orderFilters(upcomingContentCounts);
+		return result;
 	}
 
 	@Override
@@ -486,9 +500,10 @@ public class LearningContentServiceImpl implements LearningContentService {
 	}
 	
 	@Override
-	public HashMap<String, HashMap<String, String>> getSuccessAcademyFiltersWithCount(String filter,
+	public Map<String, Map<String,String>> getSuccessAcademyFiltersWithCount(String filter,
 			HashMap<String, HashMap<String, String>> filterCounts) {
 		HashMap<String, HashMap<String,String>> successAcademyContentCounts = new HashMap<>();
+		Map<String, Map<String,String>> result;
 		try
 		{
 			Map<String, String> query_map = filterStringtoMap(filter);
@@ -500,7 +515,59 @@ public class LearningContentServiceImpl implements LearningContentService {
 		}catch (Exception e) {
 			throw new GenericException("There was a problem in fetching successacademy filters");
 		}
-		return successAcademyContentCounts;
+		result=orderFilters(successAcademyContentCounts);
+		return result;
+	}
+
+	@Override
+	public List<LearningContentItem> fetchCXInsightsContent(String ccoid, String filter, String searchToken,
+			String sortField, String sortType) {
+		List<NewLearningContentEntity> contentList = new ArrayList<>();
+		List<LearningContentItem> result = new ArrayList<>();
+		Map<String, String> query_map = filterStringtoMap(filter);
+		try
+		{
+			contentList = learningContentDAO.fetchCXInsightsContent(query_map, searchToken, sortField, sortType);
+			// populate bookmark and registration info
+			Set<String> userBookmarks = null;
+			if (null != ccoid) {
+				userBookmarks = learningBookmarkDAO.getBookmarks(ccoid);
+			}
+			for (NewLearningContentEntity entity : contentList) {
+				LearningContentItem learningItem = new LearningContentItem(entity);
+				learningItem.setBookmark(false);
+				if (null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
+						&& userBookmarks.contains(learningItem.getId())) {
+					learningItem.setBookmark(true);
+				}
+				result.add(learningItem);
+			}
+		}catch (Exception e) {
+			throw new GenericException("There was a problem in fetching CX Insights learning content");
+		}
+		return result;
+	}
+
+	private Map<String, Map<String, String>> orderFilters(HashMap<String, HashMap<String, String>> viewMoreCounts) {
+		TreeMap<String, Map<String, String>> sorted = new TreeMap<>();
+		LinkedHashMap<String, Map<String, String>> result=new LinkedHashMap<>();
+		sorted.putAll(viewMoreCounts);
+		for(String filterGroup:sorted.keySet()) {
+			TreeMap<String, String> filters=new TreeMap<>();
+			filters.putAll(sorted.get(filterGroup));
+			sorted.put(filterGroup, filters);
+		}
+		result.putAll(sorted);
+		if(result.containsKey(Constants.LIVE_EVENTS)) {
+			result.remove(Constants.LIVE_EVENTS); result.put(Constants.LIVE_EVENTS, sorted.get(Constants.LIVE_EVENTS));
+		}
+		if(result.containsKey(Constants.CONTENT_TYPE)) {
+			result.remove(Constants.CONTENT_TYPE); result.put(Constants.CONTENT_TYPE, sorted.get(Constants.CONTENT_TYPE));
+		}
+		if(result.containsKey(Constants.LANGUAGE)) {
+			result.remove(Constants.LANGUAGE); result.put(Constants.LANGUAGE, sorted.get(Constants.LANGUAGE));
+		}
+		return result;
 	}
 
 }

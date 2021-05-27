@@ -112,6 +112,16 @@ public class LearningContentItem {
 
 	private String assetGroup;
 
+	private long bookmarkTimeStamp;
+
+	public long getBookmarkTimeStamp() {
+		return bookmarkTimeStamp;
+	}
+
+	public void setBookmarkTimeStamp(long bookmarkTimeStamp) {
+		this.bookmarkTimeStamp = bookmarkTimeStamp;
+	}
+
 	public String getArchetype() {
 		return archetype;
 	}
