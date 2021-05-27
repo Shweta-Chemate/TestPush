@@ -8,6 +8,7 @@ import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
@@ -86,5 +87,11 @@ public interface NewLearningContentRepo
 
 	@Query(value = SQLConstants.GET_CARD_IDs_DOC, nativeQuery = true)
 	Set<String> getCardIdsByDoc(HashSet<String> values, Set<String> learningItemIdsList);
+	
+	@Query(value = SQLConstants.GET_SORTED_BY_TITLE_ASC, nativeQuery = true)
+	List<NewLearningContentEntity> getSortedByTitleAsc(Set<String> learningItemIdsList);
+	
+	@Query(value = SQLConstants.GET_SORTED_BY_TITLE_DESC, nativeQuery = true)
+	List<NewLearningContentEntity> getSortedByTitleDesc(Set<String> learningItemIdsList);
 
 }

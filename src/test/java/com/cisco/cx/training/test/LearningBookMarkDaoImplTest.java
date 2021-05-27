@@ -52,7 +52,7 @@ public class LearningBookMarkDaoImplTest {
 	public void testGetBookmarks(){
 		Map<String,AttributeValue> userBookmarks = new HashMap<String, AttributeValue>();
 		Set<String> bookMar = new HashSet<String>();
-		bookMar.add("1");
+		bookMar.add("{\"1\":1621324382149}");
 		AttributeValue attrValue = AttributeValue.builder().ss(bookMar).build();
 		userBookmarks.put("bookmarks", attrValue);
 		List<Map<String,AttributeValue>> attributeValues = new ArrayList<Map<String,AttributeValue>>();
