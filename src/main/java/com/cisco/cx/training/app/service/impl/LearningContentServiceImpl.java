@@ -1,6 +1,7 @@
 package com.cisco.cx.training.app.service.impl;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -365,14 +367,15 @@ public class LearningContentServiceImpl implements LearningContentService {
 		{
 			learningFilteredList=learningContentDAO.fetchFilteredContent(puid, ccoid, query_map);
 			//get bookmarked content
-			Set<String> userBookmarks = null;
-			userBookmarks = learningBookmarkDAO.getBookmarks(ccoid);
+			Map<String,Object> userBookmarks = null;
+			userBookmarks = learningBookmarkDAO.getBookmarksWithTime(ccoid);
 			List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserIdAndPuid(ccoid, puid);
 			for(NewLearningContentEntity entity : learningFilteredList){
 				LearningContentItem learningItem = new LearningContentItem(entity);
 				if(null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
-						&& userBookmarks.contains(entity.getId())){
+						&& userBookmarks.keySet().contains(entity.getId())){
 					learningItem.setBookmark(true);
+					learningItem.setBookmarkTimeStamp((long) userBookmarks.get(entity.getId()));
 					result.add(learningItem);
 					LearningStatusEntity userRegistration = userRegistrations.stream()
 							.filter(userRegistrationInStream -> userRegistrationInStream.getLearningItemId()
@@ -387,7 +390,9 @@ public class LearningContentServiceImpl implements LearningContentService {
 		}catch (Exception e) {
 			throw new GenericException("There was a problem in fetching bookmarked learning content");
 		}
-		return result;
+		return result.stream()
+				  .sorted(Comparator.comparing(LearningContentItem::getBookmarkTimeStamp).reversed())
+				  .collect(Collectors.toList());
 	}
 	
 	@Override
