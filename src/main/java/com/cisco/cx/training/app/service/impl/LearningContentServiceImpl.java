@@ -248,6 +248,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 			Map<String, String> query_map = filterStringtoMap(filter);
 			viewMoreCounts = learningContentDAO.getViewMoreNewFiltersWithCount(query_map, filterCounts);
 		}catch (Exception e) {
+			LOG.error("There was a problem in fetching new filter counts", e);
 			throw new GenericException("There was a problem in fetching new filter counts");
 		}
 		return viewMoreCounts;
@@ -297,6 +298,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 			}
 
 		} catch (Exception e) {
+			LOG.error("There was a problem in registering user to the PIW", e);
 			throw new GenericException("There was a problem in registering user to the PIW");
 		}
 	}
@@ -333,6 +335,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 				result.add(learningItem);
 			}			
 		}catch (Exception e) {
+			LOG.error("There was a problem in fetching recently viewed learning content", e);
 			throw new GenericException("There was a problem in fetching recently viewed learning content");
 		}
 		return result;
@@ -347,6 +350,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 			Map<String, String> query_map = filterStringtoMap(filter);
 			recentlyViewedCounts = learningContentDAO.getRecentlyViewedFiltersWithCount(puid, userId, query_map, filterCounts);
 		}catch (Exception e) {
+			LOG.error("There was a problem in fetching recently viewed filter counts", e);
 			throw new GenericException("There was a problem in fetching recently viewed filter counts");
 		}
 		return recentlyViewedCounts;
@@ -381,6 +385,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 				}
 			}			
 		}catch (Exception e) {
+			LOG.error("There was a problem in fetching bookmarked learning content", e);
 			throw new GenericException("There was a problem in fetching bookmarked learning content");
 		}
 		return result;
@@ -398,6 +403,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 			bookmarkedList = fetchBookMarkedContent(puid, ccoid, empty);
 			bookmarkedCounts = learningContentDAO.getBookmarkedFiltersWithCount(query_map, filterCounts, bookmarkedList);
 		}catch (Exception e) {
+			LOG.error("There was a problem in fetching bookmarked filter counts", e);
 			throw new GenericException("There was a problem in fetching bookmarked filter counts");
 		}
 		return bookmarkedCounts;
@@ -435,6 +441,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 				result.add(learningItem);
 			}			
 		}catch (Exception e) {
+			LOG.error("There was a problem in fetching upcoming learning content", e);
 			throw new GenericException("There was a problem in fetching upcoming learning content");
 		}
 		return result;
@@ -449,7 +456,8 @@ public class LearningContentServiceImpl implements LearningContentService {
 			Map<String, String> query_map = filterStringtoMap(filter);
 			upcomingContentCounts = learningContentDAO.getUpcomingFiltersWithCount(query_map, filterCounts);
 		}catch (Exception e) {
-			throw new GenericException("There was a problem in fetching upcoming learning content");
+			LOG.error("There was a problem in fetching upcoming filter counts", e);
+			throw new GenericException("There was a problem in fetching upcoming filter counts");
 		}
 		return upcomingContentCounts;
 	}
@@ -481,6 +489,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 				result.add(learningItem);
 			}
 		}catch (Exception e) {
+			LOG.error("There was a problem in fetching successacademy learning content", e);
 			throw new GenericException("There was a problem in fetching successacademy learning content");
 		}
 		return result;
@@ -499,6 +508,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 			}
 			successAcademyContentCounts = learningContentDAO.getSuccessAcademyFiltersWithCount(query_map, filterCounts);
 		}catch (Exception e) {
+			LOG.error("There was a problem in fetching successacademy filters", e);
 			throw new GenericException("There was a problem in fetching successacademy filters");
 		}
 		return successAcademyContentCounts;
@@ -528,6 +538,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 				result.add(learningItem);
 			}
 		}catch (Exception e) {
+			LOG.error("There was a problem in fetching CX Insights learning content", e);
 			throw new GenericException("There was a problem in fetching CX Insights learning content");
 		}
 		return result;
@@ -540,6 +551,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 		{
 			learningMap = learningContentDAO.getLearningMap(id);
 		}catch (Exception e) {
+			LOG.error("There was a problem fetching learning map", e);
 			throw new GenericException("There was a problem in fetching learning map");
 		}
 		return learningMap;
