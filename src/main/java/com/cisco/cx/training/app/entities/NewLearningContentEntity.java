@@ -90,7 +90,7 @@ public class NewLearningContentEntity {
 	private String modulecount;
 	
 	@Column(name = "learning_map")
-	private String learning_map;
+	private String learningMap;
 	
 	@Column(name = "roles")
 	private String roles;
@@ -300,12 +300,12 @@ public class NewLearningContentEntity {
 		this.modulecount = modulecount;
 	}
 
-	public String getLearning_map() {
-		return learning_map;
+	public String getLearningMap() {
+		return learningMap;
 	}
 
-	public void setLearning_map(String learning_map) {
-		this.learning_map = learning_map;
+	public void setLearningMap(String learningMap) {
+		this.learningMap = learningMap;
 	}
 
 	public String getRoles() {

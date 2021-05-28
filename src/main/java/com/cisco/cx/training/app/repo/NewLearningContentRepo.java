@@ -93,6 +93,8 @@ public interface NewLearningContentRepo
 	
 	@Query(value = SQLConstants.GET_SORTED_BY_TITLE_DESC, nativeQuery = true)
 	List<NewLearningContentEntity> getSortedByTitleDesc(Set<String> learningItemIdsList);
+	
+	List<NewLearningContentEntity> findByLearningTypeAndLearningMap(String learning_type, String learning_map);
 
 	@Query(value = SQLConstants.GET_CARD_IDs_PITSTOP_TAGGED, nativeQuery = true)
 	List<String> getPitstopTaggedContent();
