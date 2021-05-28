@@ -442,16 +442,20 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	@Override
 	public LearningMap getLearningMap(String id) {
 		List<LearningModule> learningModuleList = new ArrayList<>();
-		NewLearningContentEntity learningMapEntity = learningContentRepo.findById(id).get();
-		List<NewLearningContentEntity> learningModuleEntityList = learningContentRepo.findByLearningTypeAndLearningMap(Constants.LEARNINGMODULE, learningMapEntity.getTitle());
-		learningModuleEntityList.forEach(learningModuleEntity -> {
-			LearningModule learningModule = (new LearningModule()).getLearningModuleFromEntity(learningModuleEntity);
-			learningModuleList.add(learningModule);
-		});
-		LearningMap learningMap = (new LearningMap()).getLearningMapFromEntity(learningMapEntity);
-		learningMap.setLearningModules(learningModuleList.stream()
-	            .sorted(Comparator.comparingInt(LearningModule::getSequence))
-	            .collect(Collectors.toList()));
+		LearningMap learningMap = new LearningMap();
+		NewLearningContentEntity learningMapEntity =  learningContentRepo.findById(id).isPresent()?learningContentRepo.findById(id).get():null;
+		if(learningMapEntity!=null)
+		{
+			List<NewLearningContentEntity> learningModuleEntityList = learningContentRepo.findByLearningTypeAndLearningMap(Constants.LEARNINGMODULE, learningMapEntity.getTitle());
+			learningModuleEntityList.forEach(learningModuleEntity -> {
+				LearningModule learningModule = (new LearningModule()).getLearningModuleFromEntity(learningModuleEntity);
+				learningModuleList.add(learningModule);
+			});
+			learningMap = (new LearningMap()).getLearningMapFromEntity(learningMapEntity);
+			learningMap.setLearningModules(learningModuleList.stream()
+		            .sorted(Comparator.comparingInt(LearningModule::getSequence))
+		            .collect(Collectors.toList()));	
+		}
 		return learningMap;
 	}
 
