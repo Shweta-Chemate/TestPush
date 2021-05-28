@@ -94,4 +94,10 @@ public interface NewLearningContentRepo
 	@Query(value = SQLConstants.GET_SORTED_BY_TITLE_DESC, nativeQuery = true)
 	List<NewLearningContentEntity> getSortedByTitleDesc(Set<String> learningItemIdsList);
 
+	@Query(value = SQLConstants.GET_CARD_IDs_PITSTOP_TAGGED, nativeQuery = true)
+	List<String> getPitstopTaggedContent();
+
+	@Query(value = SQLConstants.GET_CARD_IDs_PITSTOP_TAGGED_FILTER, nativeQuery = true)
+	List<String> getPitstopTaggedContentFilter(Set<String> lfcFilters);
+
 }

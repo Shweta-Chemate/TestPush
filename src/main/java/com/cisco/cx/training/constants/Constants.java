@@ -63,5 +63,6 @@ public final class Constants {
 	public static final String RECENTLY_VIEWED = "Recently Viewed";
 	public static final String CX_COLLECTION = "CX Collection";
 	public static final String DESCRIPTION = "description";
+	public static final Object LFC_FILTER = "Lifecycle";
 
 }

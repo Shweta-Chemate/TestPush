@@ -78,7 +78,18 @@ public class SQLConstants {
 
 	public static final String GET_CARD_IDs_DOC = "select id from cxpp_db.cxpp_learning_content  "
 			+ " where archetype in (:values) and id in (:learningItemIdsList)";
-;
+
+	public static final String GET_CARD_IDs_PITSTOP_TAGGED = "select distinct ptview.learning_item_id from\n" +
+			"(SELECT learning_item_id,pitstop FROM cxpp_db.cxpp_learning_pitstop_temp\n" +
+			"UNION\n" +
+			"SELECT learning_item_id,pt.pitstop FROM cxpp_db.cxpp_learning_successtrack as st left join cxpp_db.cxpp_learning_usecase  as uc ON st.successtrack_id=uc.successtrack_id\n" +
+			"left join cxpp_db.cxpp_learning_pitstop as pt on uc.usecase_id=pt.usecase_id) as ptview where ptview.pitstop is not null";
+
+	public static final String GET_CARD_IDs_PITSTOP_TAGGED_FILTER = "select distinct ptview.learning_item_id from\n" +
+			"(SELECT learning_item_id,pitstop FROM cxpp_db.cxpp_learning_pitstop_temp\n" +
+			"UNION\n" +
+			"SELECT learning_item_id,pt.pitstop FROM cxpp_db.cxpp_learning_successtrack as st left join cxpp_db.cxpp_learning_usecase  as uc ON st.successtrack_id=uc.successtrack_id\n" +
+			"left join cxpp_db.cxpp_learning_pitstop as pt on uc.usecase_id=pt.usecase_id) as ptview where ptview.pitstop is not null and ptview.pitstop in (:lfcFilters)";
 
 	public static final String GET_SORTED_BY_TITLE_ASC = "SELECT * FROM\n" + 
 			"cxpp_learning_content\n" + 
