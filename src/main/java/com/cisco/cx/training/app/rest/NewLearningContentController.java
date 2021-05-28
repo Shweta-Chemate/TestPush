@@ -28,6 +28,7 @@ import com.cisco.cx.training.app.exception.NotFoundException;
 import com.cisco.cx.training.app.service.LearningContentService;
 import com.cisco.cx.training.models.CountResponseSchema;
 import com.cisco.cx.training.models.LearningContentItem;
+import com.cisco.cx.training.models.LearningMap;
 import com.cisco.cx.training.models.LearningStatusSchema;
 import com.cisco.cx.training.models.MasheryObject;
 import com.cisco.cx.training.models.PIW;
@@ -447,6 +448,32 @@ public class NewLearningContentController {
 		List<LearningContentItem> learningContentList = learningContentService.fetchCXInsightsContent(userId, filter, searchToken, sortField, sortType);
 		LOG.info("Received cxinsights content in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<List<LearningContentItem>>(learningContentList, HttpStatus.OK);
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/learningmap")
+	@ApiOperation(value = "Fetch learning map", response = String.class, nickname = "fetchlearningmap")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
+			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
+			@ApiResponse(code = 404, message = "Entity Not Found"),
+			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
+	public ResponseEntity<LearningMap> getLearningMap(
+			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = true) String xMasheryHandshake,
+            @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
+			@ApiParam(value = "Learning Map ID", required = false) @RequestParam(value = "id", required = true) String id)
+					throws Exception {
+		LOG.info("Entering the fetchlearningmap method");
+		long requestStartTime = System.currentTimeMillis();
+		if (StringUtils.isBlank(xMasheryHandshake)) {
+			throw new BadRequestException("X-Mashery-Handshake header missing in request");
+		}
+		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
+		if(!config.isNewLearningFeature())
+		{
+			throw new NotFoundException("API Not Found.");
+		}
+		LearningMap learningMap = learningContentService.getLearningMap(id);
+		LOG.info("Retrieved Learning Map in {} ", (System.currentTimeMillis() - requestStartTime));
+		return new ResponseEntity<LearningMap>(learningMap, HttpStatus.OK);
 	}
 
 }
