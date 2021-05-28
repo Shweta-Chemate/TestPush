@@ -96,4 +96,10 @@ public interface NewLearningContentRepo
 	
 	List<NewLearningContentEntity> findByLearningTypeAndLearningMap(String learning_type, String learning_map);
 
+	@Query(value = SQLConstants.GET_CARD_IDs_PITSTOP_TAGGED, nativeQuery = true)
+	List<String> getPitstopTaggedContent();
+
+	@Query(value = SQLConstants.GET_CARD_IDs_PITSTOP_TAGGED_FILTER, nativeQuery = true)
+	List<String> getPitstopTaggedContentFilter(Set<String> lfcFilters);
+
 }

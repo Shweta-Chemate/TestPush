@@ -349,7 +349,18 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		List<NewLearningContentEntity> result;
 		List<NewLearningContentEntity> filteredListForYou = new ArrayList<>();
 		Set<String> learningItemIdsList = new HashSet<String>();
+		List<String> learningItemIdsListCXInsights = new ArrayList<String>();
+		Set<String> lfcFilters=new HashSet<>();
 		List<String> learningItemIdsListForYou = new ArrayList<String>();
+		//get ids for lifecycle filter
+		if(filterParams.containsKey(Constants.LFC_FILTER)) {
+			lfcFilters=new HashSet<>(Arrays.asList(filterParams.get(Constants.LFC_FILTER).split(",")));
+			filterParams.remove(Constants.LFC_FILTER);
+			learningItemIdsListCXInsights=learningContentRepo.getPitstopTaggedContentFilter(lfcFilters);
+		}
+		else
+			learningItemIdsListCXInsights=learningContentRepo.getPitstopTaggedContent();
+		//get ids for foryou filter
 		if(filterParams.containsKey(Constants.FOR_YOU_FILTER)) {
 			List<String> filtersForYou=Arrays.asList(filterParams.get(Constants.FOR_YOU_FILTER).split(","));
 			filterParams.remove(Constants.FOR_YOU_FILTER);
@@ -363,6 +374,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		Specification<NewLearningContentEntity> specification = Specification.where(null);
 		specification = specification.and(new SpecificationBuilder().filter(filterParams));
 		specification=specification.and(new SpecificationBuilder().buildSearchSpecification(searchToken));
+		specification=specification.and(new SpecificationBuilder().filterById(learningItemIdsListCXInsights));
 		specification=specification.and(new SpecificationBuilder().filterById(learningItemIdsListForYou));
 		if(sortField.equals(Constants.TITLE))
 		{
