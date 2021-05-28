@@ -443,7 +443,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	public LearningMap getLearningMap(String id) {
 		List<LearningModule> learningModuleList = new ArrayList<>();
 		NewLearningContentEntity learningMapEntity = learningContentRepo.findById(id).get();
-		List<NewLearningContentEntity> learningModuleEntityList = learningContentRepo.findByLearningTypeAndLearningMap("learningmodule", learningMapEntity.getTitle());
+		List<NewLearningContentEntity> learningModuleEntityList = learningContentRepo.findByLearningTypeAndLearningMap(Constants.LEARNINGMODULE, learningMapEntity.getTitle());
 		learningModuleEntityList.forEach(learningModuleEntity -> {
 			LearningModule learningModule = (new LearningModule()).getLearningModuleFromEntity(learningModuleEntity);
 			learningModuleList.add(learningModule);
