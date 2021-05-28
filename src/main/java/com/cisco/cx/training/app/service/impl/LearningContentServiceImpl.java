@@ -33,6 +33,7 @@ import com.cisco.cx.training.models.Company;
 import com.cisco.cx.training.models.CountResponseSchema;
 import com.cisco.cx.training.models.CountSchema;
 import com.cisco.cx.training.models.LearningContentItem;
+import com.cisco.cx.training.models.LearningMap;
 import com.cisco.cx.training.models.LearningStatusSchema;
 import com.cisco.cx.training.models.LearningStatusSchema.Registration;
 import com.cisco.cx.training.models.PIW;
@@ -546,6 +547,18 @@ public class LearningContentServiceImpl implements LearningContentService {
 			throw new GenericException("There was a problem in fetching CX Insights learning content");
 		}
 		return result;
+	}
+	
+	@Override
+	public LearningMap getLearningMap(String id) {
+		LearningMap learningMap = new LearningMap();
+		try
+		{
+			learningMap = learningContentDAO.getLearningMap(id);
+		}catch (Exception e) {
+			throw new GenericException("There was a problem in fetching learning map");
+		}
+		return learningMap;
 	}
 
 	private Map<String, Map<String, String>> orderFilters(HashMap<String, HashMap<String, String>> viewMoreCounts) {

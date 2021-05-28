@@ -2,6 +2,7 @@ package com.cisco.cx.training.app.dao.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -26,6 +27,8 @@ import com.cisco.cx.training.app.repo.NewLearningContentRepo;
 import com.cisco.cx.training.constants.Constants;
 import com.cisco.cx.training.models.CustomSpecifications;
 import com.cisco.cx.training.models.LearningContentItem;
+import com.cisco.cx.training.models.LearningMap;
+import com.cisco.cx.training.models.LearningModule;
 
 @Repository
 public class NewLearningContentDAOImpl implements NewLearningContentDAO{
@@ -434,6 +437,26 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 			filterparams.remove(Constants.SUCCESS_TRACK);
 		}
 		return successTracks;
+	}
+	
+	@Override
+	public LearningMap getLearningMap(String id) {
+		List<LearningModule> learningModuleList = new ArrayList<>();
+		LearningMap learningMap = new LearningMap();
+		NewLearningContentEntity learningMapEntity =  learningContentRepo.findById(id).isPresent()?learningContentRepo.findById(id).get():null;
+		if(learningMapEntity!=null)
+		{
+			List<NewLearningContentEntity> learningModuleEntityList = learningContentRepo.findByLearningTypeAndLearningMap(Constants.LEARNINGMODULE, learningMapEntity.getTitle());
+			learningModuleEntityList.forEach(learningModuleEntity -> {
+				LearningModule learningModule = (new LearningModule()).getLearningModuleFromEntity(learningModuleEntity);
+				learningModuleList.add(learningModule);
+			});
+			learningMap = (new LearningMap()).getLearningMapFromEntity(learningMapEntity);
+			learningMap.setLearningModules(learningModuleList.stream()
+		            .sorted(Comparator.comparingInt(LearningModule::getSequence))
+		            .collect(Collectors.toList()));	
+		}
+		return learningMap;
 	}
 
 }
