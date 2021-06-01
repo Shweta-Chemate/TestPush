@@ -44,7 +44,7 @@ public class ProductDocumentationService{
 	@Autowired
 	private NewLearningContentRepo learningContentRepo;
 	
-	private Map<String, Set<String>> filterCards(HashMap<String, Object> applyFilters)
+	private Map<String, Set<String>> filterCards(HashMap<String, Object> applyFilters, String contentTab)
 	{	
 		LOG.info("applyFilters = {}",applyFilters);	
 		Map<String, Set<String>> filteredCards = new HashMap<String, Set<String>>();
@@ -57,12 +57,12 @@ public class ProductDocumentationService{
 			if(v instanceof List) {
 				list= (List<String>)v;				
 				switch(k) {
-				case TECHNOLOGY_FILTER : filteredCards.put(k, productDocumentationDAO.getCardIdsByTC(new HashSet<String>(list)));break;
-				case DOCUMENTATION_FILTER : filteredCards.put(k, productDocumentationDAO.getCardIdsByAT(new HashSet<String>(list)));break;
-				case LIVE_EVENTS_FILTER : filteredCards.put(k, productDocumentationDAO.getCardIdsByRegion(new HashSet<String>(list)));break;
-				case CONTENT_TYPE_FILTER : filteredCards.put(k, productDocumentationDAO.getLearningsByContentType(new HashSet<String>(list)));break;
-				case LANGUAGE_FILTER : filteredCards.put(k, productDocumentationDAO.getCardIdsByLanguage(new HashSet<String>(list)));break;
-				case FOR_YOU_FILTER : filteredCards.put(k, getCardIdsByYou(new HashSet<String>(list)));break;
+				case TECHNOLOGY_FILTER : filteredCards.put(k, productDocumentationDAO.getCardIdsByTC(contentTab,new HashSet<String>(list)));break;
+				case DOCUMENTATION_FILTER : filteredCards.put(k, productDocumentationDAO.getCardIdsByAT(contentTab,new HashSet<String>(list)));break;
+				case LIVE_EVENTS_FILTER : filteredCards.put(k, productDocumentationDAO.getCardIdsByRegion(contentTab,new HashSet<String>(list)));break;
+				case CONTENT_TYPE_FILTER : filteredCards.put(k, productDocumentationDAO.getLearningsByContentType(contentTab,new HashSet<String>(list)));break;
+				case LANGUAGE_FILTER : filteredCards.put(k, productDocumentationDAO.getCardIdsByLanguage(contentTab,new HashSet<String>(list)));break;
+				case FOR_YOU_FILTER : filteredCards.put(k, getCardIdsByYou(contentTab,new HashSet<String>(list)));break;
 				default : LOG.info("other {}={}",k,list);
 				};
 			}
@@ -84,7 +84,7 @@ public class ProductDocumentationService{
 								Set<String> pitStops = new HashSet<String>(ivlist);
 								String usecase = ivk.toString();
 								String successtrack = ik.toString();
-								cardIdsStUcPs.addAll(productDocumentationDAO.getCardIdsByPsUcSt(successtrack,usecase,pitStops));
+								cardIdsStUcPs.addAll(productDocumentationDAO.getCardIdsByPsUcSt(contentTab,successtrack,usecase,pitStops));
 							}						
 						});
 					}
@@ -232,51 +232,58 @@ public class ProductDocumentationService{
 	/** nulls **/
 	private static final String NULL_TEXT = "null";
 	
-	private void initializeFilters(final HashMap<String, Object> filters, final HashMap<String, Object> countFilters)
+	private void initializeFilters(final HashMap<String, Object> filters, final HashMap<String, Object> countFilters, String contentTab)
 	{	
 		HashMap<String, String> contentTypeFilter = new HashMap<>();
 		filters.put(CONTENT_TYPE_FILTER, contentTypeFilter);		
-		List<Map<String,Object>> dbListCT = productDocumentationDAO.getAllContentTypeWithCount();
+		List<Map<String,Object>> dbListCT = productDocumentationDAO.getAllContentTypeWithCount(contentTab);
 		Map<String,String> allContentsCT = listToMap(dbListCT);countFilters.put(CONTENT_TYPE_FILTER, allContentsCT);
 		allContentsCT.keySet().forEach(k -> contentTypeFilter.put(k, "0"));
 		
 		HashMap<String, String> technologyFilter = new HashMap<>();
 		filters.put(TECHNOLOGY_FILTER, technologyFilter);		
-		List<Map<String,Object>> dbListTC = productDocumentationDAO.getAllTechnologyWithCount();
+		List<Map<String,Object>> dbListTC = productDocumentationDAO.getAllTechnologyWithCount(contentTab);
 		Map<String,String> allContentsTC = listToMap(dbListTC);countFilters.put(TECHNOLOGY_FILTER, allContentsTC);
 		allContentsTC.keySet().forEach(k -> technologyFilter.put(k, "0"));
 		
 		HashMap<String, String> languageFilter = new HashMap<>();
 		filters.put(LANGUAGE_FILTER, languageFilter);		
-		List<Map<String,Object>> dbListLG= productDocumentationDAO.getAllLanguageWithCount();
+		List<Map<String,Object>> dbListLG= productDocumentationDAO.getAllLanguageWithCount(contentTab);
 		Map<String,String> allContentsLG = listToMap(dbListLG);countFilters.put(LANGUAGE_FILTER, allContentsLG);
 		allContentsLG.keySet().forEach(k -> languageFilter.put(k, "0"));
 		
-		HashMap<String, String> documentationFilter = new HashMap<>();
-		filters.put(DOCUMENTATION_FILTER, documentationFilter);		
-		List<Map<String,Object>> dbListDC = productDocumentationDAO.getAllDocumentationWithCount();
-		Map<String,String> allContentsDC = listToMap(dbListDC);countFilters.put(DOCUMENTATION_FILTER, allContentsDC);
-		allContentsDC.keySet().forEach(k -> documentationFilter.put(k, "0"));
+		if(contentTab.equals(TECHNOLOGY_DB_TABLE))
+		{
+			HashMap<String, String> documentationFilter = new HashMap<>();
+			filters.put(DOCUMENTATION_FILTER, documentationFilter);		
+			List<Map<String,Object>> dbListDC = productDocumentationDAO.getAllDocumentationWithCount(contentTab);
+			Map<String,String> allContentsDC = listToMap(dbListDC);countFilters.put(DOCUMENTATION_FILTER, allContentsDC);
+			allContentsDC.keySet().forEach(k -> documentationFilter.put(k, "0"));
+		}
+
 		
 		HashMap<String, String> regionFilter = new HashMap<>();
 		filters.put(LIVE_EVENTS_FILTER, regionFilter);		
-		List<Map<String,Object>> dbListLE = productDocumentationDAO.getAllLiveEventsWithCount();
+		List<Map<String,Object>> dbListLE = productDocumentationDAO.getAllLiveEventsWithCount(contentTab);
 		Map<String,String> allContentsLE = listToMap(dbListLE);countFilters.put(LIVE_EVENTS_FILTER, allContentsLE);
 		allContentsLE.keySet().forEach(k -> regionFilter.put(k, "0"));
 		
+		if(contentTab.equals(TECHNOLOGY_DB_TABLE))
+		{
 		HashMap<String, Object> stFilter = new HashMap<>();
 		filters.put(SUCCESS_TRACKS_FILTER, stFilter);
-		List<Map<String,Object>> dbListST = productDocumentationDAO.getAllStUcPsWithCount();
+		List<Map<String,Object>> dbListST = productDocumentationDAO.getAllStUcPsWithCount(contentTab);
 		Map<String,Object> allContentsST = listToSTMap(dbListST,stFilter);countFilters.put(SUCCESS_TRACKS_FILTER, allContentsST);
+		}
 		
 		HashMap<String, Object> youFilter = new HashMap<>();
 		filters.put(FOR_YOU_FILTER, youFilter);		
-		Map<String,String> allContentsYou = getForYouCounts(null);countFilters.put(FOR_YOU_FILTER, allContentsYou);
+		Map<String,String> allContentsYou = getForYouCounts(contentTab,null);countFilters.put(FOR_YOU_FILTER, allContentsYou);
 		allContentsYou.keySet().forEach(k -> youFilter.put(k, "0"));
 		
 	}
 	
-	private Set<String> getCardIdsByYou(HashSet<String> youList)
+	private Set<String> getCardIdsByYou(String contentTab, HashSet<String> youList)
 	{
 		Set<String> cardIds = new HashSet<String>();
 		youList.forEach(youKey ->
@@ -302,7 +309,7 @@ public class ProductDocumentationService{
 		return cardIds;
 	}
 
-	private Map<String,String>  getForYouCounts(Set<String>cardIds)
+	private Map<String,String>  getForYouCounts(String contentTab, Set<String>cardIds)
 	{
 		Map<String,String> youMap = new HashMap<String,String>();
 		
@@ -330,42 +337,48 @@ public class ProductDocumentationService{
 	}
 	
 	private void setFilterCounts(Set<String> cardIdsInp, final HashMap<String, Object> filters, 
-			Map<String, Set<String>> filteredCardsMap, boolean search)
+			Map<String, Set<String>> filteredCardsMap, boolean search, String contentTab)
 	{
 		LOG.info("filteredCardsMap={}",filteredCardsMap);
 		if(filteredCardsMap ==null || filteredCardsMap.isEmpty() || filteredCardsMap.size()==1) 
 		{
-			setFilterCounts(cardIdsInp, filters);
+			setFilterCounts(cardIdsInp, filters,contentTab);
 		}			
 		else
 		{
 			Set<String> cardIds = andFiltersWithExcludeKey(filteredCardsMap,CONTENT_TYPE_FILTER,cardIdsInp,search);
-			List<Map<String,Object>> dbListCT = productDocumentationDAO.getAllContentTypeWithCountByCards(cardIds);		
+			List<Map<String,Object>> dbListCT = productDocumentationDAO.getAllContentTypeWithCountByCards(contentTab,cardIds);		
 			((Map<String,String>)filters.get(CONTENT_TYPE_FILTER)).putAll(listToMap(dbListCT));
 			
 			cardIds = andFiltersWithExcludeKey(filteredCardsMap,TECHNOLOGY_FILTER,cardIdsInp,search);
-			List<Map<String,Object>> dbListTC = productDocumentationDAO.getAllTechnologyWithCountByCards(cardIds);		
+			List<Map<String,Object>> dbListTC = productDocumentationDAO.getAllTechnologyWithCountByCards(contentTab,cardIds);		
 			((Map<String,String>)filters.get(TECHNOLOGY_FILTER)).putAll(listToMap(dbListTC));
 			
 			cardIds = andFiltersWithExcludeKey(filteredCardsMap,LANGUAGE_FILTER,cardIdsInp,search);
-			List<Map<String,Object>> dbListLG = productDocumentationDAO.getAllLanguageWithCountByCards(cardIds);		
+			List<Map<String,Object>> dbListLG = productDocumentationDAO.getAllLanguageWithCountByCards(contentTab,cardIds);		
 			((Map<String,String>)filters.get(LANGUAGE_FILTER)).putAll(listToMap(dbListLG));
 			
+			if(contentTab.equals(TECHNOLOGY_DB_TABLE))
+			{
 			cardIds = andFiltersWithExcludeKey(filteredCardsMap,DOCUMENTATION_FILTER,cardIdsInp,search);
-			List<Map<String,Object>> dbListDC = productDocumentationDAO.getAllDocumentationWithCountByCards(cardIds);		
+			List<Map<String,Object>> dbListDC = productDocumentationDAO.getAllDocumentationWithCountByCards(contentTab,cardIds);		
 			((Map<String,String>)filters.get(DOCUMENTATION_FILTER)).putAll(listToMap(dbListDC));
+			}
 			
 			cardIds = andFiltersWithExcludeKey(filteredCardsMap,LIVE_EVENTS_FILTER,cardIdsInp,search);
-			List<Map<String,Object>> dbListLE = productDocumentationDAO.getAllLiveEventsWithCountByCards(cardIds);		
+			List<Map<String,Object>> dbListLE = productDocumentationDAO.getAllLiveEventsWithCountByCards(contentTab,cardIds);		
 			((Map<String,String>)filters.get(LIVE_EVENTS_FILTER)).putAll(listToMap(dbListLE));	
 			
+			if(contentTab.equals(TECHNOLOGY_DB_TABLE))
+			{
 			cardIds = andFiltersWithExcludeKey(filteredCardsMap,SUCCESS_TRACKS_FILTER,cardIdsInp,search);
-			List<Map<String,Object>> dbListST = productDocumentationDAO.getAllStUcPsWithCountByCards(cardIds);
+			List<Map<String,Object>> dbListST = productDocumentationDAO.getAllStUcPsWithCountByCards(contentTab,cardIds);
 			Map<String,Object> filterAndCountsFromDb = listToSTMap(dbListST,null);
 			mergeSTFilterCounts(filters,filterAndCountsFromDb);
+			}
 			
 			cardIds = andFiltersWithExcludeKey(filteredCardsMap,FOR_YOU_FILTER,cardIdsInp,search);
-			Map<String,String> dbMapYou = getForYouCounts(cardIds);		
+			Map<String,String> dbMapYou = getForYouCounts(contentTab,cardIds);		
 			((Map<String,String>)filters.get(FOR_YOU_FILTER)).putAll(dbMapYou);	
 		}		
 	}
@@ -395,28 +408,34 @@ public class ProductDocumentationService{
 		return cardIds;
 	}
 	
-	private void setFilterCounts(Set<String> cardIds, final HashMap<String, Object> filters)
+	private void setFilterCounts(Set<String> cardIds, final HashMap<String, Object> filters, String contentTab)
 	{
-		List<Map<String,Object>> dbListCT = productDocumentationDAO.getAllContentTypeWithCountByCards(cardIds);		
+		List<Map<String,Object>> dbListCT = productDocumentationDAO.getAllContentTypeWithCountByCards(contentTab,cardIds);		
 		((Map<String,String>)filters.get(CONTENT_TYPE_FILTER)).putAll(listToMap(dbListCT));
 		
-		List<Map<String,Object>> dbListTC = productDocumentationDAO.getAllTechnologyWithCountByCards(cardIds);		
+		List<Map<String,Object>> dbListTC = productDocumentationDAO.getAllTechnologyWithCountByCards(contentTab,cardIds);		
 		((Map<String,String>)filters.get(TECHNOLOGY_FILTER)).putAll(listToMap(dbListTC));
 		
-		List<Map<String,Object>> dbListLG = productDocumentationDAO.getAllLanguageWithCountByCards(cardIds);		
+		List<Map<String,Object>> dbListLG = productDocumentationDAO.getAllLanguageWithCountByCards(contentTab,cardIds);		
 		((Map<String,String>)filters.get(LANGUAGE_FILTER)).putAll(listToMap(dbListLG));
 		
-		List<Map<String,Object>> dbListDC = productDocumentationDAO.getAllDocumentationWithCountByCards(cardIds);		
+		if(contentTab.equals(TECHNOLOGY_DB_TABLE))
+		{
+		List<Map<String,Object>> dbListDC = productDocumentationDAO.getAllDocumentationWithCountByCards(contentTab,cardIds);		
 		((Map<String,String>)filters.get(DOCUMENTATION_FILTER)).putAll(listToMap(dbListDC));
+		}
 		
-		List<Map<String,Object>> dbListLE = productDocumentationDAO.getAllLiveEventsWithCountByCards(cardIds);		
+		List<Map<String,Object>> dbListLE = productDocumentationDAO.getAllLiveEventsWithCountByCards(contentTab,cardIds);		
 		((Map<String,String>)filters.get(LIVE_EVENTS_FILTER)).putAll(listToMap(dbListLE));	
 		
-		List<Map<String,Object>> dbListST = productDocumentationDAO.getAllStUcPsWithCountByCards(cardIds);
+		if(contentTab.equals(TECHNOLOGY_DB_TABLE))
+		{
+		List<Map<String,Object>> dbListST = productDocumentationDAO.getAllStUcPsWithCountByCards(contentTab,cardIds);
 		Map<String,Object> filterAndCountsFromDb = listToSTMap(dbListST,null);
 		mergeSTFilterCounts(filters,filterAndCountsFromDb);
+		}
 		
-		Map<String,String> dbMapYou = getForYouCounts(cardIds);		
+		Map<String,String> dbMapYou = getForYouCounts(contentTab,cardIds);		
 		((Map<String,String>)filters.get(FOR_YOU_FILTER)).putAll(dbMapYou);
 		
 	}
@@ -447,14 +466,18 @@ public class ProductDocumentationService{
 	 * {"Language":["English","Japanese"],"Content Type":["PDF","Video"],"Success Tracks":{"Security":{"ABC":["Umbrella"],"Security1":["Anti-Virus","Firewall"]},"Campus Network":{"XYZ":["Use"],"CSIM":["Onboard","Implement"]}}}
 	 * @param searchToken
 	 * @param applyFilters
+	 * @param contentTab 
 	 * @return
 	 */
-	public Map<String, Object> getAllLearningFilters(String searchToken, HashMap<String, Object> applyFilters) 
-	{
+	public Map<String, Object> getAllLearningFilters(String searchToken, HashMap<String, Object> applyFilters, String contentTabInp) 
+	{		
+		String contentTab =  contentTabInp!=null && contentTabInp.toLowerCase().equals(ROLE_DB_TABLE.toLowerCase())?
+				ROLE_DB_TABLE:TECHNOLOGY_DB_TABLE;
+		
 		HashMap<String, Object> filters = new HashMap<>();	
 		HashMap<String, Object> countFilters = new HashMap<>();
 		
-		initializeFilters(filters,countFilters);
+		initializeFilters(filters,countFilters,contentTab);
 				
 		Set<String> cardIds =  new HashSet<String>();
 		Map<String, Set<String>> filteredCardsMap = new HashMap<String, Set<String>>();
@@ -463,18 +486,18 @@ public class ProductDocumentationService{
 		if( searchToken!=null && !searchToken.trim().isEmpty() && applyFilters!=null && !applyFilters.isEmpty()	)
 		{
 			search = true;
-			filteredCardsMap = filterCards(applyFilters);
+			filteredCardsMap = filterCards(applyFilters,contentTab);
 			Set<String> filteredCards = andFilters(filteredCardsMap);
-			cardIds = productDocumentationDAO.getAllLearningCardIdsByFilterSearch(filteredCards,"%"+searchToken+"%");		
+			cardIds = productDocumentationDAO.getAllLearningCardIdsByFilterSearch(contentTab,filteredCards,"%"+searchToken+"%");		
 		}		
 		else if(searchToken!=null && !searchToken.trim().isEmpty())
 		{			
 			search = true;
-			cardIds = productDocumentationDAO.getAllLearningCardIdsBySearch("%"+searchToken+"%");				
+			cardIds = productDocumentationDAO.getAllLearningCardIdsBySearch(contentTab,"%"+searchToken+"%");				
 		}
 		else if(applyFilters!=null && !applyFilters.isEmpty())
 		{
-			filteredCardsMap = filterCards(applyFilters);
+			filteredCardsMap = filterCards(applyFilters,contentTab);
 			cardIds = andFilters(filteredCardsMap);			
 		}
 		else 
@@ -487,7 +510,7 @@ public class ProductDocumentationService{
 		{
 			applyFilters.keySet().forEach(k -> filters.put(k, countFilters.get(k)));
 		}
-		setFilterCounts(cardIds,filters,filteredCardsMap,search);		
+		setFilterCounts(cardIds,filters,filteredCardsMap,search,contentTab);		
 		cleanFilters(filters);
 		
 		return orderFilters(filters);
@@ -544,7 +567,10 @@ public class ProductDocumentationService{
 	}
 
 	public LearningRecordsAndFiltersModel getAllLearningInfo(String xMasheryHandshake, String searchToken,
-			HashMap<String, Object> applyFilters, String sortBy, String sortOrder) {
+			HashMap<String, Object> applyFilters, String sortBy, String sortOrder, String contentTabInp) {
+		
+		String contentTab =  contentTabInp!=null && contentTabInp.toLowerCase().equals(ROLE_DB_TABLE.toLowerCase())?
+				ROLE_DB_TABLE:TECHNOLOGY_DB_TABLE;
 
 		String sort = DEFAULT_SORT_FIELD ; 
 		Direction order = DEFAULT_SORT_ORDER ; 		
@@ -564,23 +590,23 @@ public class ProductDocumentationService{
 		if( searchToken!=null && !searchToken.trim().isEmpty() &&
 				applyFilters!=null && !applyFilters.isEmpty()	)
 		{
-			Set<String> filteredCards = andFilters(filterCards(applyFilters));
+			Set<String> filteredCards = andFilters(filterCards(applyFilters,contentTab));
 			if(filteredCards!=null && !filteredCards.isEmpty())
-				dbCards = productDocumentationDAO.getAllLearningCardsByFilterSearch(filteredCards,"%"+searchToken+"%",Sort.by(order, sort));			
+				dbCards = productDocumentationDAO.getAllLearningCardsByFilterSearch(contentTab,filteredCards,"%"+searchToken+"%",Sort.by(order, sort));			
 		}
 		else if(searchToken!=null && !searchToken.trim().isEmpty())
 		{
-			dbCards = productDocumentationDAO.getAllLearningCardsBySearch("%"+searchToken+"%",Sort.by(order, sort));
+			dbCards = productDocumentationDAO.getAllLearningCardsBySearch(contentTab,"%"+searchToken+"%",Sort.by(order, sort));
 		}			
 		else if(applyFilters!=null && !applyFilters.isEmpty())
 		{
-			Set<String> filteredCards = andFilters(filterCards(applyFilters));
+			Set<String> filteredCards = andFilters(filterCards(applyFilters,contentTab));
 			if(filteredCards!=null && !filteredCards.isEmpty())
-				dbCards = productDocumentationDAO.getAllLearningCardsByFilter(filteredCards,Sort.by(order, sort)); 
+				dbCards = productDocumentationDAO.getAllLearningCardsByFilter(contentTab,filteredCards,Sort.by(order, sort)); 
 		}			
 		else 
 		{
-			dbCards=productDocumentationDAO.getAllLearningCards(Sort.by(order, sort));
+			dbCards=productDocumentationDAO.getAllLearningCards(contentTab,Sort.by(order, sort));
 		}			
 		
 		LOG.info("dbCards={}",dbCards);
@@ -620,6 +646,9 @@ public class ProductDocumentationService{
 	
 	//  !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~   and lower must.
 	private static final String regChars= "[\\Q!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~\\E]";
+	
+	private static final String TECHNOLOGY_DB_TABLE = "Technology";
+	private static final String ROLE_DB_TABLE = "Skill";
 	
 }
 

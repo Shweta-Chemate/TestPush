@@ -51,9 +51,9 @@ public interface TrainingAndEnablementService {
 	List<LearningContentItem> fetchNewLearningContent(String ccoId, String filter, String puid);
 
 	LearningRecordsAndFiltersModel getAllLearningInfoPost(String xMasheryHandshake, String searchToken, HashMap<String, Object> filters,
-			String sortBy, String sortOrder);
+			String sortBy, String sortOrder, String contentTab);
 	
-	Map<String, Object> getAllLearningFiltersPost(String searchToken, HashMap<String, Object> filters);
+	Map<String, Object> getAllLearningFiltersPost(String searchToken, HashMap<String, Object> filters, String contentTab);
 
 
 

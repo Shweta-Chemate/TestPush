@@ -113,6 +113,8 @@ public class TrainingAndEnablementServiceTest {
 
 	@InjectMocks
 	private TrainingAndEnablementService trainingAndEnablementService = new TrainingAndEnablementServiceImpl();	
+	
+	String learningTab = "Technology";
 
 	@Test
 	public void testGetSuccessAcademy() {
@@ -482,8 +484,8 @@ public class TrainingAndEnablementServiceTest {
 		List<GenericLearningModel> cards = new ArrayList<GenericLearningModel>();
 		LearningRecordsAndFiltersModel aMock = new LearningRecordsAndFiltersModel();
 		aMock.setLearningData(cards);
-		when(productDocumentationService.getAllLearningInfo("mashery","searchToken",null,"sortBy","sortOrder")).thenReturn(aMock);
-		LearningRecordsAndFiltersModel a = trainingAndEnablementService.getAllLearningInfoPost("mashery","searchToken",null,"sortBy","sortOrder");		
+		when(productDocumentationService.getAllLearningInfo("mashery","searchToken",null,"sortBy","sortOrder",learningTab)).thenReturn(aMock);
+		LearningRecordsAndFiltersModel a = trainingAndEnablementService.getAllLearningInfoPost("mashery","searchToken",null,"sortBy","sortOrder",learningTab);		
 		assertEquals(0, a.getLearningData().size());
 	}
 	
@@ -491,8 +493,8 @@ public class TrainingAndEnablementServiceTest {
 	public void getAllLearningFiltersPost()
 	{
 		HashMap<String, Object> aMock = new HashMap<String, Object>();		
-		when(productDocumentationService.getAllLearningFilters("searchToken",null)).thenReturn(aMock);
-		Map<String, Object> a = trainingAndEnablementService.getAllLearningFiltersPost("searchToken",null);
+		when(productDocumentationService.getAllLearningFilters("searchToken",null,learningTab)).thenReturn(aMock);
+		Map<String, Object> a = trainingAndEnablementService.getAllLearningFiltersPost("searchToken",null,learningTab);
 		assertEquals(0, a.size());
 	}
 	
