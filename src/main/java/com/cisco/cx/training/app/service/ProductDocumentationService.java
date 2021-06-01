@@ -63,6 +63,7 @@ public class ProductDocumentationService{
 				case CONTENT_TYPE_FILTER : filteredCards.put(k, productDocumentationDAO.getLearningsByContentType(contentTab,new HashSet<String>(list)));break;
 				case LANGUAGE_FILTER : filteredCards.put(k, productDocumentationDAO.getCardIdsByLanguage(contentTab,new HashSet<String>(list)));break;
 				case FOR_YOU_FILTER : filteredCards.put(k, getCardIdsByYou(contentTab,new HashSet<String>(list)));break;
+				case ROLE_FILTER : filteredCards.put(k, productDocumentationDAO.getCardIdsByRole(new HashSet<String>(list)));break;
 				default : LOG.info("other {}={}",k,list);
 				};
 			}
@@ -222,9 +223,10 @@ public class ProductDocumentationService{
 	private static final String SUCCESS_TRACKS_FILTER = "Success Tracks";
 	private static final String TECHNOLOGY_FILTER = "Technology";
 	private static final String FOR_YOU_FILTER = "For You";
+	private static final String ROLE_FILTER = "Role";
 	private static final String[] FILTER_CATEGORIES = new String[]{ 
-			TECHNOLOGY_FILTER, SUCCESS_TRACKS_FILTER, DOCUMENTATION_FILTER, 
-			LIVE_EVENTS_FILTER, FOR_YOU_FILTER, CONTENT_TYPE_FILTER, LANGUAGE_FILTER};
+			ROLE_FILTER, TECHNOLOGY_FILTER, SUCCESS_TRACKS_FILTER, DOCUMENTATION_FILTER, 
+			LIVE_EVENTS_FILTER, FOR_YOU_FILTER, CONTENT_TYPE_FILTER, LANGUAGE_FILTER };
 	
 	private static final String[] FOR_YOU_KEYS = new String[]{"New","Top Picks","Based on Your Customers",
 			"Bookmarked","Popular with Partners"};
@@ -279,8 +281,16 @@ public class ProductDocumentationService{
 		HashMap<String, Object> youFilter = new HashMap<>();
 		filters.put(FOR_YOU_FILTER, youFilter);		
 		Map<String,String> allContentsYou = getForYouCounts(contentTab,null);countFilters.put(FOR_YOU_FILTER, allContentsYou);
-		allContentsYou.keySet().forEach(k -> youFilter.put(k, "0"));
+		allContentsYou.keySet().forEach(k -> youFilter.put(k, "0"));		
 		
+		if(contentTab.equals(ROLE_DB_TABLE))
+		{
+		HashMap<String, String> roleFilter = new HashMap<>();
+		filters.put(ROLE_FILTER, roleFilter);		
+		List<Map<String,Object>> dbListRole = productDocumentationDAO.getAllRoleWithCount();
+		Map<String,String> allContentsRole = listToMap(dbListRole);countFilters.put(ROLE_FILTER, allContentsRole);
+		allContentsRole.keySet().forEach(k -> roleFilter.put(k, "0"));
+		}
 	}
 	
 	private Set<String> getCardIdsByYou(String contentTab, HashSet<String> youList)
@@ -379,7 +389,14 @@ public class ProductDocumentationService{
 			
 			cardIds = andFiltersWithExcludeKey(filteredCardsMap,FOR_YOU_FILTER,cardIdsInp,search);
 			Map<String,String> dbMapYou = getForYouCounts(contentTab,cardIds);		
-			((Map<String,String>)filters.get(FOR_YOU_FILTER)).putAll(dbMapYou);	
+			((Map<String,String>)filters.get(FOR_YOU_FILTER)).putAll(dbMapYou);				
+			
+			if(contentTab.equals(ROLE_DB_TABLE))
+			{
+			cardIds = andFiltersWithExcludeKey(filteredCardsMap,ROLE_FILTER,cardIdsInp,search);
+			List<Map<String,Object>> dbListRole = productDocumentationDAO.getAllRoleWithCountByCards(cardIds);		
+			((Map<String,String>)filters.get(ROLE_FILTER)).putAll(listToMap(dbListRole));
+			}
 		}		
 	}
 	
@@ -437,6 +454,12 @@ public class ProductDocumentationService{
 		
 		Map<String,String> dbMapYou = getForYouCounts(contentTab,cardIds);		
 		((Map<String,String>)filters.get(FOR_YOU_FILTER)).putAll(dbMapYou);
+				
+		if(contentTab.equals(ROLE_DB_TABLE))
+		{
+		List<Map<String,Object>> dbListRole = productDocumentationDAO.getAllRoleWithCountByCards(cardIds);		
+		((Map<String,String>)filters.get(ROLE_FILTER)).putAll(listToMap(dbListRole));
+		}
 		
 	}
 	

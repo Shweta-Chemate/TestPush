@@ -15,17 +15,14 @@ import com.cisco.cx.training.app.entities.LearningItemEntity;
 public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntity,String>{
 	
 	
-	public static final String CASE_CLAUSE_WHERE = " where ( "
+	public static final String CASE_CLAUSE = " ( "
 			+ " case when :joinTable='Technology' then learning_item_id in (select ct.learning_item_id from cxpp_db.cxpp_learning_technology ct) "
 			+ " when :joinTable='Skill' then learning_item_id in (select cr.learning_item_id from cxpp_db.cxpp_learning_roles cr) "
 			+ " else 1=1 end "
 			+ " ) ";
 	
-	public static final String CASE_CLAUSE_AND = " and ( "
-			+ " case when :joinTable='Technology' then learning_item_id in (select ct.learning_item_id from cxpp_db.cxpp_learning_technology ct) "
-			+ " when :joinTable='Skill' then learning_item_id in (select cr.learning_item_id from cxpp_db.cxpp_learning_roles cr) "
-			+ " else 1=1 end "
-			+ " ) ";
+	public static final String CASE_CLAUSE_WHERE = " where " + CASE_CLAUSE;			
+	public static final String CASE_CLAUSE_AND = " and " + CASE_CLAUSE;
 	
 	public static final String CASE_CLAUSE_CL = " ( "
 			+ " case when :joinTable='Technology' then cl.learning_item_id in (select ct.learning_item_id from cxpp_db.cxpp_learning_technology ct) "
@@ -185,13 +182,13 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 	
 	/** count by cards **/	
 	
-	public static final String GET_PD_TECHNOLOGY_WITH_COUNT_SEARCH = "select technology as dbkey, count(*) as dbvalue "
+	public static final String GET_PD_TECHNOLOGY_WITH_COUNT_BY_CARD = "select technology as dbkey, count(*) as dbvalue "
 			+ " from cxpp_db.cxpp_learning_technology "
 			+ " where learning_item_id in (:cardIds) "
 			+ CASE_CLAUSE_AND 
 			+ " group by technology "
 			+ " order by technology ";	
-	@Query(value=GET_PD_TECHNOLOGY_WITH_COUNT_SEARCH , nativeQuery=true)	
+	@Query(value=GET_PD_TECHNOLOGY_WITH_COUNT_BY_CARD , nativeQuery=true)	
 	List<Map<String, Object>> getAllTechnologyWithCountByCards(String joinTable,Set<String> cardIds);	
 	
 	public static final String GET_PD_CONTENT_TYPE_WITH_COUNT_BY_CARD = "select asset_type as dbkey, count(*) as dbvalue "
@@ -304,6 +301,27 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 	List<Map<String, Object>> getAllStUcPsWithCountByCards(String joinTable,Set<String> cardIds);
 	
 	
+	/** skill  - for role no case clause required **/
+	
+	public static final String GET_PD_ROLE_WITH_COUNT = "select roles as dbkey, count(*) as dbvalue "
+			+ "	from cxpp_db.cxpp_learning_roles 		"
+			+ " group by roles order by roles ";	
+	@Query(value=GET_PD_ROLE_WITH_COUNT , nativeQuery=true)
+	List<Map<String, Object>> getAllRoleWithCount();
+	
+	public static final String GET_PD_CARD_IDS_ROLE = "select learning_item_id "
+			+ " from cxpp_db.cxpp_learning_roles "
+			+ " where roles in (:values) " ;							
+	@Query(value=GET_PD_CARD_IDS_ROLE , nativeQuery=true)
+	Set<String> getCardIdsByRole(Set<String> values);
+	
+	public static final String GET_PD_ROLE_WITH_COUNT_BY_CARD = "select roles as dbkey, count(*) as dbvalue "
+			+ " from cxpp_db.cxpp_learning_roles "
+			+ " where learning_item_id in (:cardIds) "		
+			+ " group by roles "
+			+ " order by roles ";	
+	@Query(value=GET_PD_ROLE_WITH_COUNT_BY_CARD , nativeQuery=true)	
+	List<Map<String, Object>> getAllRoleWithCountByCards(Set<String> cardIds);
 		
 }
 
