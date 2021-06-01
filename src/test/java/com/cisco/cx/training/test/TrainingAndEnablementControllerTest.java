@@ -319,7 +319,7 @@ public class TrainingAndEnablementControllerTest {
 	@Test
 	public void getAllLearningsInfoPost() throws Exception {
 		this.mockMvc
-				.perform(post("/v1/partner/training/getAllLearningInfo").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.perform(post("/v1/partner/training/getAllLearningInfo/Technology").contentType(MediaType.APPLICATION_JSON_VALUE)
 						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
 				.andDo(print()).andExpect(status().isOk());
 	}
@@ -327,7 +327,7 @@ public class TrainingAndEnablementControllerTest {
 	@Test
 	public void getAllLearningFiltersPost() throws Exception {
 		this.mockMvc
-				.perform(post("/v1/partner/training/getAllLearningFilters").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.perform(post("/v1/partner/training/getAllLearningFilters/Technology").contentType(MediaType.APPLICATION_JSON_VALUE)
 						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
 				.andDo(print()).andExpect(status().isOk());
 	}

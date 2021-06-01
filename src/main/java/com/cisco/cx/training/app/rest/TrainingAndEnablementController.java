@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -270,7 +271,7 @@ public class TrainingAndEnablementController {
 		}
     }	
 	
-	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/getAllLearningInfo")
+	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/getAllLearningInfo/{learningTab}")
 	@ApiOperation(value = "Fetch All Learnings Information", response = String.class, nickname = "fetchalllearningsInfo")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
@@ -281,18 +282,20 @@ public class TrainingAndEnablementController {
 			@ApiParam(value = "Search - tiltle, description, author") @RequestParam(value = "searchToken", required = false) String search,
 			@ApiParam(value = "Filters") @RequestBody(required = false) HashMap<String, Object> filters,
 			@ApiParam(value = "sortBy - date, title ") @RequestParam(value = "sortBy", required = false) String sortBy,
-			@ApiParam(value = "sortOrder - asc, desc") @RequestParam(value = "sortOrder", required = false) String sortOrder
+			@ApiParam(value = "sortOrder - asc, desc") @RequestParam(value = "sortOrder", required = false) String sortOrder,
+			@ApiParam(value = "learningTab - Technology, Skill") @PathVariable(value = "learningTab", required = true) String learningTab
 			)
 			throws Exception {
 		if(!config.isNewLearningFeature())
 		{
 			throw new NotFoundException("API Not Found.");
 		}
-		LearningRecordsAndFiltersModel learningCardsAndFilters = trainingAndEnablementService.getAllLearningInfoPost(xMasheryHandshake,search,filters,sortBy,sortOrder);
+		LearningRecordsAndFiltersModel learningCardsAndFilters = trainingAndEnablementService.
+				getAllLearningInfoPost(xMasheryHandshake,search,filters,sortBy,sortOrder,learningTab);
 		return new ResponseEntity<LearningRecordsAndFiltersModel>(learningCardsAndFilters, HttpStatus.OK);
 	}
 	
-	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/getAllLearningFilters")
+	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/getAllLearningFilters/{learningTab}")
 	@ApiOperation(value = "Fetch All Learnings Filters", response = String.class, nickname = "fetchalllearningsFilters")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
@@ -300,6 +303,7 @@ public class TrainingAndEnablementController {
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
 	public ResponseEntity<Map<String, Object>> getAllLearningsFiltersPost(
 			@ApiParam(value = "Search - tiltle, description, author") @RequestParam(value = "searchToken", required = false) String searchToken,
+			@ApiParam(value = "learningTab - Technology, Skill") @PathVariable(value = "learningTab", required = true) String learningTab,
 			@ApiParam(value = "Filters") @RequestBody(required = false) HashMap<String, Object> filters
 			)
 			throws Exception {
@@ -307,7 +311,7 @@ public class TrainingAndEnablementController {
 		{
 			throw new NotFoundException("API Not Found.");
 		}
-		Map<String, Object> learningFilters = trainingAndEnablementService.getAllLearningFiltersPost(searchToken,filters);
+		Map<String, Object> learningFilters = trainingAndEnablementService.getAllLearningFiltersPost(searchToken,filters,learningTab);
 		return new ResponseEntity<Map<String, Object>>(learningFilters, HttpStatus.OK);
 	}
 	

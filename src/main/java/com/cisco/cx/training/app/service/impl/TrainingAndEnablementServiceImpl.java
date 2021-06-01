@@ -443,14 +443,14 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 
 	@Override
 	public LearningRecordsAndFiltersModel getAllLearningInfoPost(String xMasheryHandshake, String searchToken,
-			HashMap<String, Object> filters, String sortBy, String sortOrder) {
+			HashMap<String, Object> filters, String sortBy, String sortOrder, String contentTab) {
 		
-		return productDocumentationService.getAllLearningInfo(xMasheryHandshake,searchToken,filters,sortBy, sortOrder);
+		return productDocumentationService.getAllLearningInfo(xMasheryHandshake,searchToken,filters,sortBy, sortOrder,contentTab);
 	}
 
 	@Override
-	public Map<String, Object> getAllLearningFiltersPost(String searchToken, HashMap<String, Object> filters) {
-		return productDocumentationService.getAllLearningFilters(searchToken,filters);
+	public Map<String, Object> getAllLearningFiltersPost(String searchToken, HashMap<String, Object> filters, String contentTab) {
+		return productDocumentationService.getAllLearningFilters(searchToken,filters,contentTab);
 	}
 }
 
