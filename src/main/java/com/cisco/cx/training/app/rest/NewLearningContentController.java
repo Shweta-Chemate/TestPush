@@ -463,7 +463,8 @@ public class NewLearningContentController {
 	public ResponseEntity<LearningMap> getLearningMap(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
             @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
-			@ApiParam(value = "Learning Map ID", required = false) @RequestParam(value = "id", required = true) String id)
+			@ApiParam(value = "Learning Map ID", required = false) @RequestParam(value = "id", required = false) String id,
+			@ApiParam(value = "Learning Map Title", required = false) @RequestParam(value = "title", required = false) String title)
 					throws Exception {
 		LOG.info("Entering the fetchlearningmap method");
 		long requestStartTime = System.currentTimeMillis();
@@ -475,7 +476,7 @@ public class NewLearningContentController {
 		{
 			throw new NotFoundException("API Not Found.");
 		}
-		LearningMap learningMap = learningContentService.getLearningMap(id);
+		LearningMap learningMap = learningContentService.getLearningMap(id, title);
 		LOG.info("Retrieved Learning Map in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<LearningMap>(learningMap, HttpStatus.OK);
 	}

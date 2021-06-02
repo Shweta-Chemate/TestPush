@@ -46,5 +46,5 @@ public interface LearningContentService {
 	List<LearningContentItem> fetchCXInsightsContent(String userId, String filter, String searchToken, String sortField,
 			String sortType);
 
-	LearningMap getLearningMap(String id);
+	LearningMap getLearningMap(String id, String title);
 }

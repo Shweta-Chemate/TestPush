@@ -422,11 +422,12 @@ public class LearningContentDaoTest {
 	@Test
 	public void testGetLearningMap() {
 		String id= "testId";
+		String title= "testTitle";
 		List<NewLearningContentEntity> learningEntityList = new ArrayList<>();
 		learningEntityList.add(getLearningEntity());
 		when(learningContentRepo.findById(id)).thenReturn(Optional.of(getLearningEntity()));
 		when(learningContentRepo.findByLearningTypeAndLearningMap(Constants.LEARNINGMODULE, getLearningEntity().getTitle())).thenReturn(learningEntityList);
-		learningContentDAO.getLearningMap(id);
+		learningContentDAO.getLearningMap(id,title);
 		
 	}
 	
