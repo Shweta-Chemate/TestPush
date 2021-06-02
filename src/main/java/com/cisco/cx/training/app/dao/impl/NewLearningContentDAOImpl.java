@@ -452,10 +452,18 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	}
 	
 	@Override
-	public LearningMap getLearningMap(String id) {
+	public LearningMap getLearningMap(String id, String title) {
 		List<LearningModule> learningModuleList = new ArrayList<>();
 		LearningMap learningMap = new LearningMap();
-		NewLearningContentEntity learningMapEntity =  learningContentRepo.findById(id).isPresent()?learningContentRepo.findById(id).get():null;
+		NewLearningContentEntity learningMapEntity = new NewLearningContentEntity();
+		if(id!=null)
+		{
+			learningMapEntity =  learningContentRepo.findById(id).isPresent()?learningContentRepo.findById(id).get():null;
+		}
+		else if(title!=null)
+		{
+			learningMapEntity =  learningContentRepo.findByTitle(title);
+		}
 		if(learningMapEntity!=null)
 		{
 			List<NewLearningContentEntity> learningModuleEntityList = learningContentRepo.findByLearningTypeAndLearningMap(Constants.LEARNINGMODULE, learningMapEntity.getTitle());

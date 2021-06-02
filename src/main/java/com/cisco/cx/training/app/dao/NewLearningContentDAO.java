@@ -47,6 +47,6 @@ public interface NewLearningContentDAO {
 	List<NewLearningContentEntity> fetchCXInsightsContent(Map<String, String> query_map, String searchToken,
 			String sortField, String sortType);
 	
-	LearningMap getLearningMap(String id);
+	LearningMap getLearningMap(String id, String title);
 
 }

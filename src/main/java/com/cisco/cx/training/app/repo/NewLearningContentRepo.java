@@ -101,5 +101,7 @@ public interface NewLearningContentRepo
 
 	@Query(value = SQLConstants.GET_CARD_IDs_PITSTOP_TAGGED_FILTER, nativeQuery = true)
 	List<String> getPitstopTaggedContentFilter(Set<String> lfcFilters);
+	
+	NewLearningContentEntity findByTitle(String title);
 
 }
