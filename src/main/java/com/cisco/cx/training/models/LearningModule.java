@@ -69,6 +69,7 @@ public class LearningModule {
 		learningModule.setId(learningModuleEntity.getId());
 		learningModule.setTitle(learningModuleEntity.getTitle());
 		learningModule.setDescription(learningModuleEntity.getDescription());
+		if(learningModuleEntity.getSequence()!=null)
 		learningModule.setSequence(Integer.parseInt(learningModuleEntity.getSequence()));
 		learningModule.setAsset_type(learningModuleEntity.getContentType());
 		learningModule.setLink(learningModuleEntity.getLink());
