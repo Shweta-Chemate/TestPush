@@ -98,7 +98,7 @@ public class LearningContentDaoTest {
 		List<NewLearningContentEntity> newContentList = new ArrayList<>();
 		newContentList.add(getLearningEntity());
 		when(learningContentRepo.findNew()).thenReturn(newContentList);
-		learningContentDAO.getViewMoreNewFiltersWithCount(filterParams, null, null);
+		learningContentDAO.getViewMoreNewFiltersWithCount(filterParams, null);
 	}
 	
 	@Test
@@ -117,15 +117,15 @@ public class LearningContentDaoTest {
 		List<NewLearningContentEntity> newContentList = new ArrayList<>();
 		newContentList.add(getLearningEntity());
 		when(learningContentRepo.findNew()).thenReturn(newContentList);
-		learningContentDAO.getViewMoreNewFiltersWithCount(filterParams, filterCounts, "test");
+		learningContentDAO.getViewMoreNewFiltersWithCount(filterParams, filterCounts);
 	}
 	
 	@Test
 	public void testFetchRecentlyViewedContentWithoutFilter() {
 		Map<String, String> filterParams = new HashMap<String, String>();
 		List<NewLearningContentEntity> newContentList = new ArrayList<>();
-		when(learningContentRepo.getRecentlyViewedContent("101","testuserid")).thenReturn(newContentList);
-		learningContentDAO.fetchRecentlyViewedContent("101", "testuserid", filterParams);
+		when(learningContentRepo.getRecentlyViewedContent("101")).thenReturn(newContentList);
+		learningContentDAO.fetchRecentlyViewedContent("101", filterParams);
 	}
 	
 	@Test
@@ -135,8 +135,8 @@ public class LearningContentDaoTest {
 		List<NewLearningContentEntity> newContentList = new ArrayList<>();
 		newContentList.add(getLearningEntity());
 		when(learningContentRepo.findAll()).thenReturn(newContentList);
-		when(learningContentRepo.getRecentlyViewedContentFiltered(Mockito.anyString(), Mockito.anyString(),Mockito.any())).thenReturn(newContentList);
-		learningContentDAO.fetchRecentlyViewedContent("101","testuserid",filterParams);
+		when(learningContentRepo.getRecentlyViewedContentFiltered(Mockito.anyString(),Mockito.any())).thenReturn(newContentList);
+		learningContentDAO.fetchRecentlyViewedContent("101",filterParams);
 	}
 	
 	@Test
@@ -144,8 +144,8 @@ public class LearningContentDaoTest {
 		Map<String, String> filterParams = new HashMap<String, String>();
 		List<NewLearningContentEntity> newContentList = new ArrayList<>();
 		newContentList.add(getLearningEntity());
-		when(learningContentRepo.getRecentlyViewedContent("101","testuserid")).thenReturn(newContentList);
-		learningContentDAO.getRecentlyViewedFiltersWithCount("101","testuserid",filterParams, null, null);
+		when(learningContentRepo.getRecentlyViewedContent("101")).thenReturn(newContentList);
+		learningContentDAO.getRecentlyViewedFiltersWithCount("101","testuserid",filterParams, null);
 	}
 	
 	@Test
@@ -163,8 +163,8 @@ public class LearningContentDaoTest {
 		Map<String, String> filterParams = new HashMap<String, String>();
 		List<NewLearningContentEntity> newContentList = new ArrayList<>();
 		newContentList.add(getLearningEntity());
-		when(learningContentRepo.getRecentlyViewedContent("101","testuserid")).thenReturn(newContentList);
-		learningContentDAO.getRecentlyViewedFiltersWithCount("101","testuserid",filterParams, filterCounts, "test");
+		when(learningContentRepo.getRecentlyViewedContent("101")).thenReturn(newContentList);
+		learningContentDAO.getRecentlyViewedFiltersWithCount("101","testuserid",filterParams, filterCounts);
 	}
 	
 	@Test
@@ -177,7 +177,7 @@ public class LearningContentDaoTest {
 		Map<String, String> filterParams = new HashMap<String, String>();
 		List<LearningContentItem> newContentList = new ArrayList<>();
 		newContentList.add(getLearningItem());
-		learningContentDAO.getBookmarkedFiltersWithCount(filterParams, null, newContentList, null);
+		learningContentDAO.getBookmarkedFiltersWithCount(filterParams, null, newContentList);
 	}
 	
 	@Test
@@ -195,7 +195,7 @@ public class LearningContentDaoTest {
 		Map<String, String> filterParams = new HashMap<String, String>();
 		List<LearningContentItem> newContentList = new ArrayList<>();
 		newContentList.add(getLearningItem());
-		learningContentDAO.getBookmarkedFiltersWithCount(filterParams, filterCounts, newContentList, "test");
+		learningContentDAO.getBookmarkedFiltersWithCount(filterParams, filterCounts, newContentList);
 	}
 	
 	@Test
@@ -223,7 +223,7 @@ public class LearningContentDaoTest {
 		List<NewLearningContentEntity> newContentList = new ArrayList<>();
 		newContentList.add(getLearningEntity());
 		when(learningContentRepo.findUpcoming()).thenReturn(newContentList);
-		learningContentDAO.getUpcomingFiltersWithCount(filterParams, null, null);
+		learningContentDAO.getUpcomingFiltersWithCount(filterParams, null);
 	}
 	
 	@Test
@@ -242,7 +242,7 @@ public class LearningContentDaoTest {
 		List<NewLearningContentEntity> newContentList = new ArrayList<>();
 		newContentList.add(getLearningEntity());
 		when(learningContentRepo.findUpcoming()).thenReturn(newContentList);
-		learningContentDAO.getUpcomingFiltersWithCount(filterParams, filterCounts, "test");
+		learningContentDAO.getUpcomingFiltersWithCount(filterParams, filterCounts);
 	}
 	
 	
@@ -257,7 +257,7 @@ public class LearningContentDaoTest {
 		Map<String, String> filterParams = new HashMap<String, String>();
 		List<NewLearningContentEntity> newContentList = new ArrayList<>();
 		newContentList.add(getLearningEntity());
-		learningContentDAO.getSuccessAcademyFiltersWithCount(filterParams, null, null);
+		learningContentDAO.getSuccessAcademyFiltersWithCount(filterParams, null);
 	}
 	
 	@Test
@@ -278,7 +278,7 @@ public class LearningContentDaoTest {
 		Map<String, String> filterParams = new HashMap<String, String>();
 		List<NewLearningContentEntity> newContentList = new ArrayList<>();
 		newContentList.add(getLearningEntity());
-		learningContentDAO.getSuccessAcademyFiltersWithCount(filterParams, filterCounts, "test");
+		learningContentDAO.getSuccessAcademyFiltersWithCount(filterParams, filterCounts);
 	}
 	
 	NewLearningContentEntity getLearningEntity()
