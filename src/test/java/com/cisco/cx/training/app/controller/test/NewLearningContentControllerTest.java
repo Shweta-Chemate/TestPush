@@ -1,5 +1,6 @@
 package com.cisco.cx.training.app.controller.test;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -9,7 +10,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 import org.apache.commons.codec.binary.Base64;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -59,6 +59,7 @@ public class NewLearningContentControllerTest {
 
 	@MockBean
 	private CommunityDAO communityDAO;
+
 	@Autowired
 	ResourceLoader resourceLoader;
 
@@ -86,6 +87,15 @@ public class NewLearningContentControllerTest {
 				.param("filter", "region:APJC")
 				.characterEncoding("utf-8"))
 		.andDo(print()).andExpect(status().isOk());
+
+		assertThrows(Exception.class, () -> {
+			this.mockMvc
+			.perform(get("/v1/partner/learning/piws").contentType(MediaType.APPLICATION_JSON_VALUE)
+					.header("puid", this.puid)
+					.param("filter", "region:APJC")
+					.characterEncoding("utf-8"))
+			.andDo(print()).andExpect(status().isOk());
+		});
 	}
 
 	@Test
@@ -97,6 +107,15 @@ public class NewLearningContentControllerTest {
 				.param("filter", "test:test")
 				.characterEncoding("utf-8"))
 		.andDo(print()).andExpect(status().isOk());
+
+		assertThrows(Exception.class, () -> {
+			this.mockMvc
+			.perform(get("/v1/partner/learning/successTalks").contentType(MediaType.APPLICATION_JSON_VALUE)
+					.header("puid", this.puid)
+					.param("filter", "test:test")
+					.characterEncoding("utf-8"))
+			.andDo(print()).andExpect(status().isOk());
+		});
 	}
 
 	@Test
@@ -107,16 +126,34 @@ public class NewLearningContentControllerTest {
 				.header("puid", this.puid)
 				.characterEncoding("utf-8"))
 		.andDo(print()).andExpect(status().isOk());
+
+		assertThrows(Exception.class, () -> {
+			this.mockMvc
+			.perform(get("/v1/partner/learning/indexCounts").contentType(MediaType.APPLICATION_JSON_VALUE)
+					.header("puid", this.puid)
+					.characterEncoding("utf-8"))
+			.andDo(print()).andExpect(status().isOk());
+		});
+
 	}
 
 	@Test
-	public void testGetAllLearningsFilters() throws Exception {
+	public void testGetNewLearningsFilters() throws Exception {
 		this.mockMvc
 		.perform(post("/v1/partner/learning/viewmore/new/filters").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.header("X-Mashery-Handshake", this.XMasheryHeader)
 				.header("puid", this.puid)
 				.characterEncoding("utf-8"))
 		.andDo(print()).andExpect(status().isOk());
+
+		assertThrows(Exception.class, () -> {
+			this.mockMvc
+			.perform(post("/v1/partner/learning/viewmore/new/filters").contentType(MediaType.APPLICATION_JSON_VALUE)
+					.header("puid", this.puid)
+					.param("filter", "test")
+					.characterEncoding("utf-8"))
+			.andDo(print()).andExpect(status().isOk());
+		});
 	}
 
 	@Test
@@ -133,6 +170,15 @@ public class NewLearningContentControllerTest {
 				.header("puid", this.puid)
 				.characterEncoding("utf-8"))
 		.andDo(print()).andExpect(status().isOk());
+
+		assertThrows(Exception.class, () -> {
+			this.mockMvc
+			.perform(post("/v1/partner/learning/user/status").contentType(MediaType.APPLICATION_JSON_VALUE)
+					.content(asJsonString(schema))
+					.header("puid", this.puid)
+					.characterEncoding("utf-8"))
+			.andDo(print()).andExpect(status().isOk());
+		});
 	}
 
 	@Test
@@ -143,6 +189,14 @@ public class NewLearningContentControllerTest {
 				.header("puid", this.puid)
 				.characterEncoding("utf-8"))
 		.andDo(print()).andExpect(status().isOk());
+
+		assertThrows(Exception.class, () -> {
+			this.mockMvc
+			.perform(get("/v1/partner/learning/recentlyviewed").contentType(MediaType.APPLICATION_JSON_VALUE)
+					.header("puid", this.puid)
+					.characterEncoding("utf-8"))
+			.andDo(print()).andExpect(status().isOk());
+		});
 	}
 
 	@Test
@@ -153,6 +207,14 @@ public class NewLearningContentControllerTest {
 				.header("puid", this.puid)
 				.characterEncoding("utf-8"))
 		.andDo(print()).andExpect(status().isOk());
+
+		assertThrows(Exception.class, () -> {
+			this.mockMvc
+			.perform(post("/v1/partner/learning/viewmore/recentlyviewed/filters").contentType(MediaType.APPLICATION_JSON_VALUE)
+					.header("puid", this.puid)
+					.characterEncoding("utf-8"))
+			.andDo(print()).andExpect(status().isOk());
+		});
 	}
 
 	@Test
@@ -163,6 +225,14 @@ public class NewLearningContentControllerTest {
 				.header("puid", this.puid)
 				.characterEncoding("utf-8"))
 		.andDo(print()).andExpect(status().isOk());
+
+		assertThrows(Exception.class, () -> {
+			this.mockMvc
+			.perform(get("/v1/partner/learning/bookmarked").contentType(MediaType.APPLICATION_JSON_VALUE)
+					.header("puid", this.puid)
+					.characterEncoding("utf-8"))
+			.andDo(print()).andExpect(status().isOk());
+		});
 	}
 
 	@Test
@@ -173,6 +243,14 @@ public class NewLearningContentControllerTest {
 				.header("puid", this.puid)
 				.characterEncoding("utf-8"))
 		.andDo(print()).andExpect(status().isOk());
+
+		assertThrows(Exception.class, () -> {
+			this.mockMvc
+			.perform(post("/v1/partner/learning/viewmore/bookmarked/filters").contentType(MediaType.APPLICATION_JSON_VALUE)
+					.header("puid", this.puid)
+					.characterEncoding("utf-8"))
+			.andDo(print()).andExpect(status().isOk());
+		});
 	}
 
 	@Test
@@ -183,6 +261,14 @@ public class NewLearningContentControllerTest {
 				.header("puid", this.puid)
 				.characterEncoding("utf-8"))
 		.andDo(print()).andExpect(status().isOk());
+
+		assertThrows(Exception.class, () -> {
+			this.mockMvc
+			.perform(get("/v1/partner/learning/upcoming").contentType(MediaType.APPLICATION_JSON_VALUE)
+					.header("puid", this.puid)
+					.characterEncoding("utf-8"))
+			.andDo(print()).andExpect(status().isOk());
+		});
 	}
 
 	@Test
@@ -193,6 +279,88 @@ public class NewLearningContentControllerTest {
 				.header("puid", this.puid)
 				.characterEncoding("utf-8"))
 		.andDo(print()).andExpect(status().isOk());
+
+		assertThrows(Exception.class, () -> {
+			this.mockMvc
+			.perform(post("/v1/partner/learning/viewmore/upcoming/filters").contentType(MediaType.APPLICATION_JSON_VALUE)
+					.header("puid", this.puid)
+					.characterEncoding("utf-8"))
+			.andDo(print()).andExpect(status().isOk());
+		});
+	}
+
+	@Test
+	public void testGetSuccessAcademyContent() throws Exception {
+		this.mockMvc
+		.perform(get("/v1/partner/learning/successacademy").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.header("X-Mashery-Handshake", this.XMasheryHeader)
+				.header("puid", this.puid)
+				.characterEncoding("utf-8"))
+		.andDo(print()).andExpect(status().isOk());
+
+		assertThrows(Exception.class, () -> {
+			this.mockMvc
+			.perform(get("/v1/partner/learning/successacademy").contentType(MediaType.APPLICATION_JSON_VALUE)
+					.header("puid", this.puid)
+					.characterEncoding("utf-8"))
+			.andDo(print()).andExpect(status().isOk());
+		});
+	}
+
+	@Test
+	public void testGetFiltersForSuccessacademy() throws Exception {
+		this.mockMvc
+		.perform(post("/v1/partner/learning/successacademy/filters").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.header("X-Mashery-Handshake", this.XMasheryHeader)
+				.header("puid", this.puid)
+				.characterEncoding("utf-8"))
+		.andDo(print()).andExpect(status().isOk());
+
+		assertThrows(Exception.class, () -> {
+			this.mockMvc
+			.perform(post("/v1/partner/learning/successacademy/filters").contentType(MediaType.APPLICATION_JSON_VALUE)
+					.header("puid", this.puid)
+					.characterEncoding("utf-8"))
+			.andDo(print()).andExpect(status().isOk());
+		});
+	}
+
+	@Test
+	public void testGetCXInsightsContent() throws Exception {
+		this.mockMvc
+		.perform(get("/v1/partner/learning/cxinsights").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.header("X-Mashery-Handshake", this.XMasheryHeader)
+				.header("puid", this.puid)
+				.characterEncoding("utf-8"))
+		.andDo(print()).andExpect(status().isOk());
+
+		assertThrows(Exception.class, () -> {
+			this.mockMvc
+			.perform(get("/v1/partner/learning/cxinsights").contentType(MediaType.APPLICATION_JSON_VALUE)
+					.header("puid", this.puid)
+					.characterEncoding("utf-8"))
+			.andDo(print()).andExpect(status().isOk());
+		});
+	}
+
+	@Test
+	public void testGetLearningMap() throws Exception {
+		this.mockMvc
+		.perform(get("/v1/partner/learning/learningmap").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.header("X-Mashery-Handshake", this.XMasheryHeader)
+				.header("puid", this.puid)
+				.param("id", "id")
+				.characterEncoding("utf-8"))
+		.andDo(print()).andExpect(status().isOk());
+
+		assertThrows(Exception.class, () -> {
+			this.mockMvc
+			.perform(get("/v1/partner/learning/learningmap").contentType(MediaType.APPLICATION_JSON_VALUE)
+					.header("puid", this.puid)
+					.param("id", "id")
+					.characterEncoding("utf-8"))
+			.andDo(print()).andExpect(status().isOk());
+		});
 	}
 
 	private String loadFromFile(String filePath) throws IOException {
