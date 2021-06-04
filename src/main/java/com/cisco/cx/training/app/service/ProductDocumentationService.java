@@ -295,15 +295,18 @@ public class ProductDocumentationService{
 	
 	private Set<String> getCardIdsByYou(String contentTab, HashSet<String> youList)
 	{
-		Set<String> cardIds = new HashSet<String>();
+		final Set<String> cardIds = new HashSet<String>();
 		youList.forEach(youKey ->
 		{
 			if(Arrays.asList(FOR_YOU_KEYS).contains(youKey))
 			{
 				if(youKey.equals(FOR_YOU_KEYS[0])) //New
 				{
+					final Set<String> cardIdsNew = new HashSet<String>();
 					List<NewLearningContentEntity> result = learningContentRepo.findNew();
-					result.forEach(card -> cardIds.add(card.getId()));
+					result.forEach(card -> cardIdsNew.add(card.getId()));
+					if(!cardIdsNew.isEmpty())
+					cardIds.addAll(productDocumentationDAO.getAllNewCardIdsByCards(contentTab, cardIdsNew));
 				}
 				else if(youKey.equals(FOR_YOU_KEYS[3])) //Bookmarked
 				{
@@ -328,17 +331,18 @@ public class ProductDocumentationService{
 		if(result == null) youMap.put(FOR_YOU_KEYS[0], "0"); 
 		else 
 		{
+			Set<String> cardIdsNew = new HashSet<String>();
+			Set<String> dbSet = new HashSet<String>();
+			result.forEach(card -> cardIdsNew.add(card.getId()));
+			dbSet.addAll(productDocumentationDAO.getAllNewCardIdsByCards(contentTab, cardIdsNew));
+			
 			if(cardIds!=null) // && !cardIds.isEmpty() -- set can be empty here
-			{
-				Set<String> dbSet = new HashSet<String>();
-				result.forEach(card -> dbSet.add(card.getId()));				
+			{							
 				dbSet.retainAll(cardIds);
-				youMap.put(FOR_YOU_KEYS[0], String.valueOf(dbSet.size()));
 			}
-			else
-			{
-				youMap.put(FOR_YOU_KEYS[0], String.valueOf(result.size()));
-			}				
+			
+			youMap.put(FOR_YOU_KEYS[0], String.valueOf(dbSet.size()));
+						
 		}
 		
 		//2. Bookmarked

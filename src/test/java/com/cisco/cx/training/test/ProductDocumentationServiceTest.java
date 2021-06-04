@@ -8,8 +8,10 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -72,7 +74,8 @@ public class ProductDocumentationServiceTest {
 		
 		NewLearningContentEntity n1 = new NewLearningContentEntity(); n1.setId("101");
 		List<NewLearningContentEntity> result = new ArrayList<NewLearningContentEntity>();result.add(n1);
-		when(learningContentRepo.findNew()).thenReturn(result);
+		when(learningContentRepo.findNew()).thenReturn(result); Set<String> hs = new HashSet<String>();hs.add("101");
+		when(productDocumentationDAO.getAllNewCardIdsByCards(Mockito.anyString(),Mockito.anySet())).thenReturn(hs);
 		
 		LearningRecordsAndFiltersModel a5 = productDocumentationService.getAllLearningInfo("mashery","searchToken",aMock,"sortBy","sortOrder",learningTab);		
 		assertEquals(0, a5.getLearningData().size());
