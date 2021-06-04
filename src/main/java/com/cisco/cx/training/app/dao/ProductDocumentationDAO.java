@@ -228,6 +228,7 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 			+ " order by piw_region ";
 	@Query(value=GET_PD_LIVE_EVENTS_WITH_COUNT_BY_CARD , nativeQuery=true)
 	List<Map<String, Object>> getAllLiveEventsWithCountByCards(String joinTable,Set<String> cardIds);
+
 	
 	/** all counts **/
 	
@@ -322,6 +323,14 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 			+ " order by roles ";	
 	@Query(value=GET_PD_ROLE_WITH_COUNT_BY_CARD , nativeQuery=true)	
 	List<Map<String, Object>> getAllRoleWithCountByCards(Set<String> cardIds);
+	
+	/** For You - New **/	
+	public static final String GET_PD_YOU_CARD_IDS_BY_CARD = "select learning_item_id "
+			+ " from cxpp_db.cxpp_learning_item "
+			+ " where learning_item_id in (:cardIds) "
+			+ CASE_CLAUSE_AND ;			
+	@Query(value=GET_PD_YOU_CARD_IDS_BY_CARD , nativeQuery=true)
+	Set<String> getAllNewCardIdsByCards(String joinTable,Set<String> cardIds);
 		
 }
 
