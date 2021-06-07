@@ -63,7 +63,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 	private LearningStatusRepo learningStatusRepo;
 
 	@Override
-	public SuccessTalkResponseSchema fetchSuccesstalks(String ccoid, String puid, String sortField, String sortType,
+	public SuccessTalkResponseSchema fetchSuccesstalks(String ccoid, String sortField, String sortType,
 			String filter, String search) {
 		SuccessTalkResponseSchema successTalkResponseSchema = new SuccessTalkResponseSchema();
 		try
@@ -78,7 +78,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 			if(null != ccoid){
 				userBookmarks = learningBookmarkDAO.getBookmarks(ccoid);
 			}
-			List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserIdAndPuid(ccoid, puid);
+			List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserId(ccoid);
 			for (NewLearningContentEntity entity : successTalkEntityList) {
 				SuccessTalk learningItem = mapLearningEntityToSuccesstalk(entity);
 				learningItem.setBookmark(false);
@@ -127,7 +127,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 		return successtalk;
 	}
 	
-	public List<PIW> fetchPIWs(String ccoid, String puid, String region, String sortField, String sortType, String filter,
+	public List<PIW> fetchPIWs(String ccoid, String region, String sortField, String sortType, String filter,
 			String search) {
 		List<NewLearningContentEntity> result = new ArrayList<>();
 		List<PIW> piwItems = new ArrayList<>();
@@ -141,7 +141,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 			if(null != ccoid){
 				userBookmarks = learningBookmarkDAO.getBookmarks(ccoid);
 			}
-			List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserIdAndPuid(ccoid, puid);
+			List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserId(ccoid);
 			for(NewLearningContentEntity entity : result){
 				PIW learningItem =  new PIW(entity);
 				learningItem.setBookmark(false);
@@ -309,7 +309,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 	}
 
 	@Override
-	public List<LearningContentItem> fetchRecentlyViewedContent(String puid, String ccoid, String filter) {
+	public List<LearningContentItem> fetchRecentlyViewedContent(String ccoid, String filter) {
 		List<NewLearningContentEntity> learningContentList = new ArrayList<>();
 		List<LearningContentItem> result = new ArrayList<>();
 		Map<String, String> query_map = filterStringtoMap(filter);
@@ -321,7 +321,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 			if(null != ccoid){
 				userBookmarks = learningBookmarkDAO.getBookmarks(ccoid);
 			}
-			List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserIdAndPuid(ccoid, puid);
+			List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserId(ccoid);
 			for(NewLearningContentEntity entity : learningContentList){
 				LearningContentItem learningItem = new LearningContentItem(entity);
 				learningItem.setBookmark(false);
@@ -347,14 +347,14 @@ public class LearningContentServiceImpl implements LearningContentService {
 	}
 
 	@Override
-	public Map<String, Map<String,String>> getRecentlyViewedFiltersWithCount(String puid,String userId, String filter,
+	public Map<String, Map<String,String>> getRecentlyViewedFiltersWithCount(String userId, String filter,
 			HashMap<String, HashMap<String, String>> filterCounts) {
 		HashMap<String, HashMap<String,String>> recentlyViewedCounts = new HashMap<>();
 		Map<String, Map<String,String>> result;
 		try
 		{
 			Map<String, String> query_map = filterStringtoMap(filter);
-			recentlyViewedCounts = learningContentDAO.getRecentlyViewedFiltersWithCount(puid, userId, query_map, filterCounts);
+			recentlyViewedCounts = learningContentDAO.getRecentlyViewedFiltersWithCount(userId, query_map, filterCounts);
 		}catch (Exception e) {
 			LOG.error("There was a problem in fetching recently viewed filter counts", e);
 			throw new GenericException("There was a problem in fetching recently viewed filter counts");
@@ -364,17 +364,17 @@ public class LearningContentServiceImpl implements LearningContentService {
 	}
 
 	@Override
-	public List<LearningContentItem> fetchBookMarkedContent(String puid, String ccoid, String filter) {
+	public List<LearningContentItem> fetchBookMarkedContent(String ccoid, String filter) {
 		List<NewLearningContentEntity> learningFilteredList = new ArrayList<>();
 		List<LearningContentItem> result = new ArrayList<>();
 		Map<String, String> query_map = filterStringtoMap(filter);
 		try
 		{
-			learningFilteredList=learningContentDAO.fetchFilteredContent(puid, ccoid, query_map);
+			learningFilteredList=learningContentDAO.fetchFilteredContent(ccoid, query_map);
 			//get bookmarked content
 			Map<String,Object> userBookmarks = null;
 			userBookmarks = learningBookmarkDAO.getBookmarksWithTime(ccoid);
-			List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserIdAndPuid(ccoid, puid);
+			List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserId(ccoid);
 			for(NewLearningContentEntity entity : learningFilteredList){
 				LearningContentItem learningItem = new LearningContentItem(entity);
 				if(null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
@@ -402,7 +402,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 	}
 	
 	@Override
-	public Map<String, Map<String,String>> getBookmarkedFiltersWithCount(String puid, String ccoid,
+	public Map<String, Map<String,String>> getBookmarkedFiltersWithCount(String ccoid,
 			String filter, HashMap<String, HashMap<String, String>> filterCounts) {
 		HashMap<String, HashMap<String,String>> bookmarkedCounts = new HashMap<>();
 		Map<String, Map<String,String>> result;
@@ -411,7 +411,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 			Map<String, String> query_map = filterStringtoMap(filter);
 			List<LearningContentItem> bookmarkedList = new ArrayList<>();
 			String empty=new String();
-			bookmarkedList = fetchBookMarkedContent(puid, ccoid, empty);
+			bookmarkedList = fetchBookMarkedContent(ccoid, empty);
 			bookmarkedCounts = learningContentDAO.getBookmarkedFiltersWithCount(query_map, filterCounts, bookmarkedList);
 		}catch (Exception e) {
 			LOG.error("There was a problem in fetching bookmarked filter counts", e);
@@ -422,7 +422,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 	}
 	
 	@Override
-	public List<LearningContentItem> fetchUpcomingContent(String puid, String ccoid, String filter) {
+	public List<LearningContentItem> fetchUpcomingContent(String ccoid, String filter) {
 		List<NewLearningContentEntity> upcomingContentList = new ArrayList<>();
 		List<LearningContentItem> result = new ArrayList<>();
 		Map<String, String> query_map = filterStringtoMap(filter);
@@ -434,7 +434,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 			if (null != ccoid) {
 				userBookmarks = learningBookmarkDAO.getBookmarks(ccoid);
 			}
-			List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserIdAndPuid(ccoid, puid);
+			List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserId(ccoid);
 			for (NewLearningContentEntity entity : upcomingContentList) {
 				LearningContentItem learningItem = new LearningContentItem(entity);
 				learningItem.setBookmark(false);
@@ -477,7 +477,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 	}
 
 	@Override
-	public List<LearningContentItem> fetchSuccessAcademyContent(String puid, String ccoid, String filter) {
+	public List<LearningContentItem> fetchSuccessAcademyContent(String ccoid, String filter) {
 		List<NewLearningContentEntity> contentList = new ArrayList<>();
 		List<LearningContentItem> result = new ArrayList<>();
 		Map<String, String> query_map = filterStringtoMap(filter);

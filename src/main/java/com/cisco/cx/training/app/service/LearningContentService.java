@@ -14,9 +14,9 @@ import com.cisco.cx.training.models.SuccessTalkResponseSchema;
 
 public interface LearningContentService {
 
-	SuccessTalkResponseSchema fetchSuccesstalks(String ccoId, String puid, String sortField, String sortType, String filter, String search);
+	SuccessTalkResponseSchema fetchSuccesstalks(String ccoId, String sortField, String sortType, String filter, String search);
 
-	List<PIW> fetchPIWs(String ccoId, String puid, String region, String sortField, String sortType, String filter,
+	List<PIW> fetchPIWs(String ccoId, String region, String sortField, String sortType, String filter,
 			String search);
 
 	CountResponseSchema getIndexCounts();
@@ -25,21 +25,21 @@ public interface LearningContentService {
 
 	LearningStatusEntity updateUserStatus(String userId, String puid, LearningStatusSchema learningStatusSchema, String xMasheryHandshake);
 
-	List<LearningContentItem> fetchRecentlyViewedContent(String puid, String userId, String filter);
+	List<LearningContentItem> fetchRecentlyViewedContent(String userId, String filter);
 
-	Map<String, Map<String,String>> getRecentlyViewedFiltersWithCount(String puid,String userId, String filter,
+	Map<String, Map<String,String>> getRecentlyViewedFiltersWithCount(String userId, String filter,
 			HashMap<String, HashMap<String, String>> filterCounts);
 
-	List<LearningContentItem> fetchBookMarkedContent(String puid, String userId, String filter);
+	List<LearningContentItem> fetchBookMarkedContent(String userId, String filter);
 	
-	Map<String, Map<String,String>> getBookmarkedFiltersWithCount(String puid, String ccoid, String filter,
+	Map<String, Map<String,String>> getBookmarkedFiltersWithCount(String ccoid, String filter,
 			HashMap<String, HashMap<String, String>> filterCounts);
 	
-	List<LearningContentItem> fetchUpcomingContent(String puid, String ccoid, String filter);
+	List<LearningContentItem> fetchUpcomingContent(String ccoid, String filter);
 	
 	Map<String, Map<String,String>> getUpcomingFiltersWithCount(String filter, HashMap<String, HashMap<String,String>> filterCounts);
 
-	List<LearningContentItem> fetchSuccessAcademyContent(String puid, String userId, String filter);
+	List<LearningContentItem> fetchSuccessAcademyContent(String userId, String filter);
 
 	Map<String, Map<String,String>> getSuccessAcademyFiltersWithCount(String filter, HashMap<String, HashMap<String,String>> filterCounts);
 

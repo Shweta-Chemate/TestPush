@@ -85,7 +85,7 @@ public class NewLearningContentController {
 		{
 			throw new NotFoundException("API Not Found.");
 		}
-		SuccessTalkResponseSchema successTalkResponseSchema = learningContentService.fetchSuccesstalks(ccoId, puid, sortField, sortType, filter, search);
+		SuccessTalkResponseSchema successTalkResponseSchema = learningContentService.fetchSuccesstalks(ccoId, sortField, sortType, filter, search);
 		return new ResponseEntity<SuccessTalkResponseSchema>(successTalkResponseSchema, HttpStatus.OK);
 	}
 
@@ -120,7 +120,7 @@ public class NewLearningContentController {
 		{
 			throw new NotFoundException("API Not Found.");
 		}
-		List<PIW> piw_items = learningContentService.fetchPIWs(ccoId, puid, region, sortField, sortType, filter, search);
+		List<PIW> piw_items = learningContentService.fetchPIWs(ccoId, region, sortField, sortType, filter, search);
 		LOG.info("Received PIWs content in {} ", (System.currentTimeMillis() - requestStartTime));
 		return piw_items;
 	}
@@ -218,7 +218,7 @@ public class NewLearningContentController {
 		{
 			throw new NotFoundException("API Not Found.");
 		}
-		List<LearningContentItem> learningContentList = learningContentService.fetchRecentlyViewedContent(puid, userId, filter);
+		List<LearningContentItem> learningContentList = learningContentService.fetchRecentlyViewedContent(userId, filter);
 		LOG.info("Received recently viewed learning content in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<List<LearningContentItem>>(learningContentList, HttpStatus.OK);
 	}
@@ -248,7 +248,7 @@ public class NewLearningContentController {
 		if(filter!=null && filterCounts==null) {
 			throw new  BadRequestException("filter counts required in the body");
 		}
-		Map<String, Map<String,String>> learningFilters = learningContentService.getRecentlyViewedFiltersWithCount(puid, userId, filter, filterCounts);
+		Map<String, Map<String,String>> learningFilters = learningContentService.getRecentlyViewedFiltersWithCount(userId, filter, filterCounts);
 		LOG.info("Received recently viewed filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<Map<String, Map<String,String>>>(learningFilters, HttpStatus.OK);
 	}
@@ -274,7 +274,7 @@ public class NewLearningContentController {
 		{
 			throw new NotFoundException("API Not Found.");
 		}
-		List<LearningContentItem> learningContentList = learningContentService.fetchBookMarkedContent(puid, userId, filter);
+		List<LearningContentItem> learningContentList = learningContentService.fetchBookMarkedContent(userId, filter);
 		LOG.info("Received bookmarked learning content in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<List<LearningContentItem>>(learningContentList, HttpStatus.OK);
 	}
@@ -304,7 +304,7 @@ public class NewLearningContentController {
 		if(filter!=null && filterCounts==null) {
 			throw new  BadRequestException("filter counts required in the body");
 		}
-		Map<String, Map<String,String>> learningFilters = learningContentService.getBookmarkedFiltersWithCount(puid, userId, filter, filterCounts);
+		Map<String, Map<String,String>> learningFilters = learningContentService.getBookmarkedFiltersWithCount(userId, filter, filterCounts);
 		LOG.info("Received bookmarked filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<Map<String, Map<String,String>>>(learningFilters, HttpStatus.OK);
 	}
@@ -330,7 +330,7 @@ public class NewLearningContentController {
 		{
 			throw new NotFoundException("API Not Found.");
 		}
-		List<LearningContentItem> learningContentList = learningContentService.fetchUpcomingContent(puid, userId, filter);
+		List<LearningContentItem> learningContentList = learningContentService.fetchUpcomingContent(userId, filter);
 		LOG.info("Received bookmarked learning content in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<List<LearningContentItem>>(learningContentList, HttpStatus.OK);
 	}
@@ -385,7 +385,7 @@ public class NewLearningContentController {
 		{
 			throw new NotFoundException("API Not Found.");
 		}
-		List<LearningContentItem> learningContentList = learningContentService.fetchSuccessAcademyContent(puid, userId, filter);
+		List<LearningContentItem> learningContentList = learningContentService.fetchSuccessAcademyContent(userId, filter);
 		LOG.info("Received SuccessAcademy content in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<List<LearningContentItem>>(learningContentList, HttpStatus.OK);
 	}

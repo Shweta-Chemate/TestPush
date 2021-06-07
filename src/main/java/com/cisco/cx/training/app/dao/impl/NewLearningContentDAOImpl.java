@@ -167,7 +167,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	}
 
 	@Override
-	public HashMap<String, HashMap<String, String>> getRecentlyViewedFiltersWithCount(String puid, String userId, Map<String, String> filter,
+	public HashMap<String, HashMap<String, String>> getRecentlyViewedFiltersWithCount(String userId, Map<String, String> filter,
 			HashMap<String, HashMap<String, String>> filterCountsMap) {
 		Map<String, Set<String>> filteredCardsMap = new HashMap<String, Set<String>>();
 		List<NewLearningContentEntity> filteredList = new ArrayList<>();
@@ -393,7 +393,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	}
 
 	@Override
-	public List<NewLearningContentEntity> fetchFilteredContent(String puid, String ccoid,
+	public List<NewLearningContentEntity> fetchFilteredContent(String ccoid,
 			Map<String, String> query_map) {
 		List<NewLearningContentEntity> filteredList = new ArrayList<>();
 		List<NewLearningContentEntity> learningContentListCampusSA = new ArrayList<>();

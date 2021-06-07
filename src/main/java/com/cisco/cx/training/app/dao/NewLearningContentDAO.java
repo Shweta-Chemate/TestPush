@@ -28,10 +28,10 @@ public interface NewLearningContentDAO {
 
 	List<NewLearningContentEntity> fetchRecentlyViewedContent(String userId,  Map<String, String> query_map);
 
-	HashMap<String, HashMap<String, String>> getRecentlyViewedFiltersWithCount(String puid, String userId, Map<String, String> query_map,
+	HashMap<String, HashMap<String, String>> getRecentlyViewedFiltersWithCount(String userId, Map<String, String> query_map,
 			HashMap<String, HashMap<String, String>> filterCounts);
 
-	List<NewLearningContentEntity> fetchFilteredContent(String puid, String ccoid, Map<String, String> query_map);
+	List<NewLearningContentEntity> fetchFilteredContent(String ccoid, Map<String, String> query_map);
 	
 	HashMap<String, HashMap<String, String>> getBookmarkedFiltersWithCount(Map<String, String> query_map,
 			HashMap<String, HashMap<String, String>> filterCounts, List<LearningContentItem> bookmarkedList);
