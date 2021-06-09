@@ -29,6 +29,7 @@ import com.cisco.cx.training.app.exception.NotFoundException;
 import com.cisco.cx.training.app.service.LearningContentService;
 import com.cisco.cx.training.models.CountResponseSchema;
 import com.cisco.cx.training.models.LearningContentItem;
+import com.cisco.cx.training.models.LearningMap;
 import com.cisco.cx.training.models.LearningStatusSchema;
 import com.cisco.cx.training.models.MasheryObject;
 import com.cisco.cx.training.models.PIW;
@@ -64,7 +65,7 @@ public class NewLearningContentController {
 			@RequestParam(value = "sortType", required = false) String sortType,
 			@RequestParam(value = "filter", required = false) String filter,
 			@RequestParam(value = "search", required = false) String search,
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = true) String xMasheryHandshake,
+			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
 			@ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid)
 					throws Exception {
 
@@ -99,7 +100,7 @@ public class NewLearningContentController {
 			@RequestParam(value = "sortType", required = false) String sortType,
 			@RequestParam(value = "filter", required = false) String filter,
 			@RequestParam(value = "search", required = false) String search,
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = true) String xMasheryHandshake,
+			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
 			@ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid){
 		LOG.info("PIWs API called");
 		long requestStartTime = System.currentTimeMillis();
@@ -176,7 +177,7 @@ public class NewLearningContentController {
 			@ApiResponse(code = 403, message = "Operation forbidden due to business policies", response = ErrorResponse.class),
 			@ApiResponse(code = 500, message = "Error during updation", response = ErrorResponse.class) })
 	public ResponseEntity updateStatus(
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = true) String xMasheryHandshake,
+			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
             @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
 			@ApiParam(value = "JSON Body to update user status", required = true) @Valid @RequestBody LearningStatusSchema learningStatusSchema)
 			throws Exception {
@@ -203,7 +204,7 @@ public class NewLearningContentController {
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
 	public ResponseEntity<List<LearningContentItem>> getRecentlyViewedContent(
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = true) String xMasheryHandshake,
+			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
             @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
 			@ApiParam(value = "Filters", required = false) @RequestParam(value = "filter", required = false) String filter)
 					throws Exception {
@@ -259,7 +260,7 @@ public class NewLearningContentController {
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
 	public ResponseEntity<List<LearningContentItem>> getBookmarkedContent(
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = true) String xMasheryHandshake,
+			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
             @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
 			@ApiParam(value = "Filters", required = false) @RequestParam(value = "filter", required = false) String filter)
 					throws Exception {
@@ -315,7 +316,7 @@ public class NewLearningContentController {
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
 	public ResponseEntity<List<LearningContentItem>> getUpcomingContent(
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = true) String xMasheryHandshake,
+			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
             @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
 			@ApiParam(value = "Filters", required = false) @RequestParam(value = "filter", required = false) String filter)
 					throws Exception {
@@ -348,6 +349,9 @@ public class NewLearningContentController {
 			throws Exception {
 		LOG.info("Entering the getFiltersForUpcoming method");
 		long requestStartTime = System.currentTimeMillis();
+		if (StringUtils.isBlank(xMasheryHandshake)) {
+			throw new BadRequestException("X-Mashery-Handshake header missing in request");
+		}
 		if(!config.isNewLearningFeature())
 		{
 			throw new NotFoundException("API Not Found.");
@@ -367,7 +371,7 @@ public class NewLearningContentController {
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
 	public ResponseEntity<List<LearningContentItem>> getSuccessAcademyContent(
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = true) String xMasheryHandshake,
+			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
             @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
 			@ApiParam(value = "Filters", required = false) @RequestParam(value = "filter", required = false) String filter)
 					throws Exception {
@@ -422,7 +426,7 @@ public class NewLearningContentController {
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
 	public ResponseEntity<List<LearningContentItem>> getCXInsightsContent(
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = true) String xMasheryHandshake,
+			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
             @ApiParam(value = "search") @RequestParam(value = "search", required = false) String searchToken,
             @ApiParam(value = "sortfield") @RequestParam(value = "sortfield", required = false) String sortField,
             @ApiParam(value = "sorttype") @RequestParam(value = "sorttype", required = false) String sortType,
@@ -448,6 +452,33 @@ public class NewLearningContentController {
 		List<LearningContentItem> learningContentList = learningContentService.fetchCXInsightsContent(userId, filter, searchToken, sortField, sortType);
 		LOG.info("Received cxinsights content in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<List<LearningContentItem>>(learningContentList, HttpStatus.OK);
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/learningmap")
+	@ApiOperation(value = "Fetch learning map", response = String.class, nickname = "fetchlearningmap")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
+			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
+			@ApiResponse(code = 404, message = "Entity Not Found"),
+			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
+	public ResponseEntity<LearningMap> getLearningMap(
+			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
+            @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
+			@ApiParam(value = "Learning Map ID", required = false) @RequestParam(value = "id", required = false) String id,
+			@ApiParam(value = "Learning Map Title", required = false) @RequestParam(value = "title", required = false) String title)
+					throws Exception {
+		LOG.info("Entering the fetchlearningmap method");
+		long requestStartTime = System.currentTimeMillis();
+		if (StringUtils.isBlank(xMasheryHandshake)) {
+			throw new BadRequestException("X-Mashery-Handshake header missing in request");
+		}
+		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
+		if(!config.isNewLearningFeature())
+		{
+			throw new NotFoundException("API Not Found.");
+		}
+		LearningMap learningMap = learningContentService.getLearningMap(id, title);
+		LOG.info("Retrieved Learning Map in {} ", (System.currentTimeMillis() - requestStartTime));
+		return new ResponseEntity<LearningMap>(learningMap, HttpStatus.OK);
 	}
 
 }

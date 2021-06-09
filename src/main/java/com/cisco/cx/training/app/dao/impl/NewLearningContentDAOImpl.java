@@ -2,6 +2,7 @@ package com.cisco.cx.training.app.dao.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -26,6 +27,8 @@ import com.cisco.cx.training.app.repo.NewLearningContentRepo;
 import com.cisco.cx.training.constants.Constants;
 import com.cisco.cx.training.models.CustomSpecifications;
 import com.cisco.cx.training.models.LearningContentItem;
+import com.cisco.cx.training.models.LearningMap;
+import com.cisco.cx.training.models.LearningModule;
 
 @Repository
 public class NewLearningContentDAOImpl implements NewLearningContentDAO{
@@ -346,7 +349,18 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		List<NewLearningContentEntity> result;
 		List<NewLearningContentEntity> filteredListForYou = new ArrayList<>();
 		Set<String> learningItemIdsList = new HashSet<String>();
+		List<String> learningItemIdsListCXInsights = new ArrayList<String>();
+		Set<String> lfcFilters=new HashSet<>();
 		List<String> learningItemIdsListForYou = new ArrayList<String>();
+		//get ids for lifecycle filter
+		if(filterParams.containsKey(Constants.LFC_FILTER)) {
+			lfcFilters=new HashSet<>(Arrays.asList(filterParams.get(Constants.LFC_FILTER).split(",")));
+			filterParams.remove(Constants.LFC_FILTER);
+			learningItemIdsListCXInsights=learningContentRepo.getPitstopTaggedContentFilter(lfcFilters);
+		}
+		else
+			learningItemIdsListCXInsights=learningContentRepo.getPitstopTaggedContent();
+		//get ids for foryou filter
 		if(filterParams.containsKey(Constants.FOR_YOU_FILTER)) {
 			List<String> filtersForYou=Arrays.asList(filterParams.get(Constants.FOR_YOU_FILTER).split(","));
 			filterParams.remove(Constants.FOR_YOU_FILTER);
@@ -360,6 +374,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		Specification<NewLearningContentEntity> specification = Specification.where(null);
 		specification = specification.and(new SpecificationBuilder().filter(filterParams));
 		specification=specification.and(new SpecificationBuilder().buildSearchSpecification(searchToken));
+		specification=specification.and(new SpecificationBuilder().filterById(learningItemIdsListCXInsights));
 		specification=specification.and(new SpecificationBuilder().filterById(learningItemIdsListForYou));
 		if(sortField.equals(Constants.TITLE))
 		{
@@ -434,6 +449,34 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 			filterparams.remove(Constants.SUCCESS_TRACK);
 		}
 		return successTracks;
+	}
+	
+	@Override
+	public LearningMap getLearningMap(String id, String title) {
+		List<LearningModule> learningModuleList = new ArrayList<>();
+		LearningMap learningMap = new LearningMap();
+		NewLearningContentEntity learningMapEntity = new NewLearningContentEntity();
+		if(id!=null)
+		{
+			learningMapEntity =  learningContentRepo.findById(id).isPresent()?learningContentRepo.findById(id).get():null;
+		}
+		else if(title!=null)
+		{
+			learningMapEntity =  learningContentRepo.findByTitle(title);
+		}
+		if(learningMapEntity!=null)
+		{
+			List<NewLearningContentEntity> learningModuleEntityList = learningContentRepo.findByLearningTypeAndLearningMap(Constants.LEARNINGMODULE, learningMapEntity.getTitle());
+			learningModuleEntityList.forEach(learningModuleEntity -> {
+				LearningModule learningModule = (new LearningModule()).getLearningModuleFromEntity(learningModuleEntity);
+				learningModuleList.add(learningModule);
+			});
+			learningMap = (new LearningMap()).getLearningMapFromEntity(learningMapEntity);
+			learningMap.setLearningModules(learningModuleList.stream()
+		            .sorted(Comparator.comparingInt(LearningModule::getSequence))
+		            .collect(Collectors.toList()));	
+		}
+		return learningMap;
 	}
 
 }

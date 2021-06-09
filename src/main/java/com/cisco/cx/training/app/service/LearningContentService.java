@@ -7,6 +7,7 @@ import java.util.Map;
 import com.cisco.cx.training.app.entities.LearningStatusEntity;
 import com.cisco.cx.training.models.CountResponseSchema;
 import com.cisco.cx.training.models.LearningContentItem;
+import com.cisco.cx.training.models.LearningMap;
 import com.cisco.cx.training.models.LearningStatusSchema;
 import com.cisco.cx.training.models.PIW;
 import com.cisco.cx.training.models.SuccessTalkResponseSchema;
@@ -45,4 +46,5 @@ public interface LearningContentService {
 	List<LearningContentItem> fetchCXInsightsContent(String userId, String filter, String searchToken, String sortField,
 			String sortType);
 
+	LearningMap getLearningMap(String id, String title);
 }

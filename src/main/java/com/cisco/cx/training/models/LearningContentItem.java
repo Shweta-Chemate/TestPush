@@ -31,7 +31,7 @@ public class LearningContentItem {
 		this.created_date=entity.getCreated_date();
 		this.updated_date=entity.getUpdated_date();
 		this.modulecount=entity.getModulecount();
-		this.learning_map=entity.getLearning_map();
+		this.learning_map=entity.getLearningMap();
 		this.roles=entity.getRoles();
 		this.technology=entity.getTechnology();
 		this.contentType=entity.getContentType();

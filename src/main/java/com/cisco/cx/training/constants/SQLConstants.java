@@ -78,7 +78,18 @@ public class SQLConstants {
 
 	public static final String GET_CARD_IDs_DOC = "select id from cxpp_db.cxpp_learning_content  "
 			+ " where archetype in (:values) and id in (:learningItemIdsList)";
-;
+
+	public static final String GET_CARD_IDs_PITSTOP_TAGGED = "select distinct ptview.learning_item_id from\n" +
+			"(SELECT learning_item_id,pitstop FROM cxpp_db.cxpp_learning_pitstop_temp\n" +
+			"UNION\n" +
+			"SELECT learning_map_id as learning_item_id,pitstop from cxpp_db.cxpp_learning_pitstop_temp pt left join cxpp_db.cxpp_learning_item item on pt.learning_item_id=item.learning_item_id) \n" +
+			" as ptview where ptview.pitstop is not null ";
+
+	public static final String GET_CARD_IDs_PITSTOP_TAGGED_FILTER = "select distinct ptview.learning_item_id from\n" +
+			"(SELECT learning_item_id,pitstop FROM cxpp_db.cxpp_learning_pitstop_temp\n" +
+			"UNION\n" +
+			"SELECT learning_map_id as learning_item_id,pitstop from cxpp_db.cxpp_learning_pitstop_temp pt left join cxpp_db.cxpp_learning_item item on pt.learning_item_id=item.learning_item_id) \n" +
+	        " as ptview where ptview.pitstop is not null and ptview.pitstop in (:lfcFilters)";
 
 	public static final String GET_SORTED_BY_TITLE_ASC = "SELECT * FROM\n" + 
 			"cxpp_learning_content\n" + 

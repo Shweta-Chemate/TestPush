@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.models.LearningContentItem;
+import com.cisco.cx.training.models.LearningMap;
 
 public interface NewLearningContentDAO {
   
@@ -45,5 +46,7 @@ public interface NewLearningContentDAO {
 
 	List<NewLearningContentEntity> fetchCXInsightsContent(Map<String, String> query_map, String searchToken,
 			String sortField, String sortType);
+	
+	LearningMap getLearningMap(String id, String title);
 
 }
