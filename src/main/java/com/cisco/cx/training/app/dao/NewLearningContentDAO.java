@@ -10,7 +10,7 @@ import com.cisco.cx.training.models.LearningMap;
 
 public interface NewLearningContentDAO {
   
-	List<NewLearningContentEntity> fetchNewLearningContent(Map<String, String> filterParams);
+	List<NewLearningContentEntity> fetchNewLearningContent( Map<String, List<String>> queryMap, Object stMap);
 	
 	List<NewLearningContentEntity> fetchSuccesstalks(String sortField, String sortType,
 			Map<String, String> filterParams, String search);
@@ -20,33 +20,29 @@ public interface NewLearningContentDAO {
 	
 	Integer getSuccessTalkCount();
 
-	HashMap<String, HashMap<String,String>> getViewMoreNewFiltersWithCount(Map<String, String> filter, HashMap<String, HashMap<String,String>> filterCounts);
+	HashMap<String, Object> getViewMoreNewFiltersWithCount(HashMap<String, Object> filtersSelected);
 
 	Integer getPIWCount();
 
 	Integer getDocumentationCount();
 
-	List<NewLearningContentEntity> fetchRecentlyViewedContent(String userId,  Map<String, String> query_map);
+	List<NewLearningContentEntity> fetchRecentlyViewedContent(String userId, Map<String, List<String>> queryMap, Object stMap);
 
-	HashMap<String, HashMap<String, String>> getRecentlyViewedFiltersWithCount(String userId, Map<String, String> query_map,
-			HashMap<String, HashMap<String, String>> filterCounts);
+	HashMap<String, Object> getRecentlyViewedFiltersWithCount(String userId, HashMap<String, Object> filtersSelected);
 
-	List<NewLearningContentEntity> fetchFilteredContent(String ccoid, Map<String, String> query_map);
+	List<NewLearningContentEntity> fetchFilteredContent(Map<String, List<String>> queryMap, Object stMap);
 	
-	HashMap<String, HashMap<String, String>> getBookmarkedFiltersWithCount(Map<String, String> query_map,
-			HashMap<String, HashMap<String, String>> filterCounts, List<LearningContentItem> bookmarkedList);
+	HashMap<String, Object> getBookmarkedFiltersWithCount(HashMap<String, Object> filtersSelected, List<LearningContentItem> bookmarkedList);
 	
-	List<NewLearningContentEntity> fetchUpcomingContent(Map<String, String> filterParams);
+	List<NewLearningContentEntity> fetchUpcomingContent(Map<String, List<String>> queryMap, Object stMap);
 	
-	HashMap<String, HashMap<String,String>> getUpcomingFiltersWithCount(Map<String, String> filter, HashMap<String, HashMap<String,String>> filterCounts);
+	HashMap<String, Object> getUpcomingFiltersWithCount(HashMap<String, Object> filtersSelected);
 
-	List<NewLearningContentEntity> fetchSuccessAcademyContent(Map<String, String> query_map);
-
-	HashMap<String, HashMap<String,String>> getSuccessAcademyFiltersWithCount(Map<String, String> filter, HashMap<String, HashMap<String,String>> filterCounts);
-
-	List<NewLearningContentEntity> fetchCXInsightsContent(Map<String, String> query_map, String searchToken,
+	List<NewLearningContentEntity> fetchCXInsightsContent(String userId, Map<String, List<String>> queryMap, Object stMap, String searchToken,
 			String sortField, String sortType);
 	
 	LearningMap getLearningMap(String id);
+
+	HashMap<String, Object> getCXInsightsFiltersWithCount(String userId, String searchToken, HashMap<String, Object> filtersSelected);
 
 }

@@ -21,30 +21,30 @@ public interface LearningContentService {
 
 	CountResponseSchema getIndexCounts();
 	
-	Map<String, Map<String,String>> getViewMoreNewFiltersWithCount(String filter, HashMap<String, HashMap<String,String>> filterCounts);
+	List<LearningContentItem> fetchNewLearningContent(String ccoId, HashMap<String, Object> filtersSelected);
+
+	Map<String, Object> getViewMoreNewFiltersWithCount(HashMap<String, Object> filtersSelected);
 
 	LearningStatusEntity updateUserStatus(String userId, String puid, LearningStatusSchema learningStatusSchema, String xMasheryHandshake);
 
-	List<LearningContentItem> fetchRecentlyViewedContent(String userId, String filter);
+	List<LearningContentItem> fetchRecentlyViewedContent(String userId, HashMap<String, Object> filtersSelected);
 
-	Map<String, Map<String,String>> getRecentlyViewedFiltersWithCount(String userId, String filter,
-			HashMap<String, HashMap<String, String>> filterCounts);
+	Map<String, Object> getRecentlyViewedFiltersWithCount(String userId, HashMap<String, Object> filtersSelected);
 
-	List<LearningContentItem> fetchBookMarkedContent(String userId, String filter);
+	List<LearningContentItem> fetchBookMarkedContent(String userId, HashMap<String, Object> filtersSelected);
 	
-	Map<String, Map<String,String>> getBookmarkedFiltersWithCount(String ccoid, String filter,
-			HashMap<String, HashMap<String, String>> filterCounts);
+	Map<String, Object> getBookmarkedFiltersWithCount(String ccoid, HashMap<String, Object> filtersSelected);
 	
-	List<LearningContentItem> fetchUpcomingContent(String ccoid, String filter);
+	List<LearningContentItem> fetchUpcomingContent(String userId, HashMap<String, Object> filtersSelected);
 	
-	Map<String, Map<String,String>> getUpcomingFiltersWithCount(String filter, HashMap<String, HashMap<String,String>> filterCounts);
+	Map<String, Object> getUpcomingFiltersWithCount(HashMap<String, Object> filtersSelected);
 
-	List<LearningContentItem> fetchSuccessAcademyContent(String userId, String filter);
-
-	Map<String, Map<String,String>> getSuccessAcademyFiltersWithCount(String filter, HashMap<String, HashMap<String,String>> filterCounts);
-
-	List<LearningContentItem> fetchCXInsightsContent(String userId, String filter, String searchToken, String sortField,
+	List<LearningContentItem> fetchCXInsightsContent(String userId, HashMap<String, Object> filtersSelected, String searchToken, String sortField,
 			String sortType);
 
 	LearningMap getLearningMap(String id);
+
+	Map<String, Object> getCXInsightsFiltersWithCount(String userId, String searchToken, HashMap<String, Object> filtersSelected);
+
+
 }

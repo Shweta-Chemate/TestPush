@@ -49,7 +49,7 @@ public final class Constants {
 	public static final String SUCCESS_ACADEMY = "successacademy";
 	public static final String ROLE = "Role";
 	public static final String MODEL = "Model";
-	public static final String SUCCESS_TRACK = "Success Track";
+	public static final String SUCCESS_TRACK = "Success Tracks";
 	public static final String TECHNOLOGY = "Technology";
 	public static final String CAMPUS = "CAMPUS";
 	public static final String CAMPUS_NETWORK = "Campus Network";
@@ -63,7 +63,10 @@ public final class Constants {
 	public static final String RECENTLY_VIEWED = "Recently Viewed";
 	public static final String CX_COLLECTION = "CX Collection";
 	public static final String DESCRIPTION = "description";
-	public static final String LFC_FILTER = "Lifecycle";
+	public static final String LIFECYCLE = "Lifecycle";
 	public static final String LEARNINGMODULE = "learningmodule";
+	public static final String CX_INSIGHTS = "CX Insights";
+	public static final String FILTER_KEY = "filter";
+	public static final String ST_FILTER_KEY = "Success Tracks";
 
 }
