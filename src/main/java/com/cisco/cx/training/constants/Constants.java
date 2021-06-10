@@ -32,6 +32,7 @@ public final class Constants {
 	public static final String REGION = "region";
 	public static final String MOST_POPULAR = "mostpopular";
 	public static final String BOOKMARKED = "bookmarked";
+	public static final String BOOKMARKED_FOR_YOU = "Bookmarked";
 	public static final String REGISTERED = "registered";
 	public static final int MINIMUM_SCORE = 4;
 	public static final String SCORE_COLUMN = "score";
