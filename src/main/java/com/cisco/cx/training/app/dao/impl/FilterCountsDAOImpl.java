@@ -1,7 +1,6 @@
 package com.cisco.cx.training.app.dao.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -9,26 +8,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
-
-import com.cisco.cx.training.app.builders.SpecificationBuilder;
-import com.cisco.cx.training.app.builders.SpecificationBuilderPIW;
-import com.cisco.cx.training.app.builders.SpecificationBuilderSuccessTalk;
 import com.cisco.cx.training.app.dao.FilterCountsDAO;
 import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
-import com.cisco.cx.training.app.dao.NewLearningContentDAO;
-import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.app.repo.NewLearningContentRepo;
 import com.cisco.cx.training.constants.Constants;
-import com.cisco.cx.training.models.CustomSpecifications;
-import com.cisco.cx.training.models.LearningContentItem;
+
 
 @Repository
 public class FilterCountsDAOImpl implements FilterCountsDAO{
@@ -121,7 +110,8 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 			Set<String> bookmarkIds=getBookMarkedIds(userId);
 			bookmarkIds.retainAll(cardIds);
 			count = bookmarkIds.size();
-			forYouMap.put(Constants.BOOKMARKED, Integer.toString(count));
+			if(count>0)
+				forYouMap.put(Constants.BOOKMARKED, Integer.toString(count));
 			((Map<String, String>) filterCountsMap.get(Constants.FOR_YOU_FILTER)).putAll(forYouMap);
 		}
 	}
@@ -256,11 +246,11 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 						cardIds.addAll(learningContentRepo.findNewFilteredIds(learningItemIdsList));
 					if(list.contains(Constants.RECENTLY_VIEWED))
 						cardIds.addAll(learningContentRepo.getRecentlyViewedContentFilteredIds(userId, learningItemIdsList));
-					//					if(list.contains(Constants.BOOKMARKED)) {
-					//						Set<String> bookmarkIds=getBookMarkedIds(userId);
-					//						bookmarkIds.retainAll(learningItemIdsList);
-					//						cardIds.addAll(bookmarkIds);
-					//					}
+					if(list.contains(Constants.BOOKMARKED)) {
+						Set<String> bookmarkIds=getBookMarkedIds(userId);
+						bookmarkIds.retainAll(learningItemIdsList);
+						cardIds.addAll(bookmarkIds);
+					}
 					filteredCards.put(filterGroup, cardIds);
 				}
 				default : LOG.info("other {}={}",filterGroup,list);
