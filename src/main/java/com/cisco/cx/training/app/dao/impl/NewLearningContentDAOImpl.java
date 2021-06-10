@@ -144,8 +144,6 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 
 		filterCountsDAO.initializeFiltersWithCounts(filterGroups, filters, countFilters, learningItemIdsList, null);
 
-		initializeFilters(countFilters);
-
 		if(filtersSelected==null)
 		{
 			return countFilters;
