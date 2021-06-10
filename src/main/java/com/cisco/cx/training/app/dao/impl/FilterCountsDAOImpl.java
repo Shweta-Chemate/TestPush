@@ -1,31 +1,23 @@
 package com.cisco.cx.training.app.dao.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.TreeMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
-
-import com.cisco.cx.training.app.builders.SpecificationBuilder;
-import com.cisco.cx.training.app.builders.SpecificationBuilderPIW;
-import com.cisco.cx.training.app.builders.SpecificationBuilderSuccessTalk;
 import com.cisco.cx.training.app.dao.FilterCountsDAO;
-import com.cisco.cx.training.app.dao.NewLearningContentDAO;
-import com.cisco.cx.training.app.entities.NewLearningContentEntity;
+import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
 import com.cisco.cx.training.app.repo.NewLearningContentRepo;
 import com.cisco.cx.training.constants.Constants;
-import com.cisco.cx.training.models.CustomSpecifications;
-import com.cisco.cx.training.models.LearningContentItem;
+
 
 @Repository
 public class FilterCountsDAOImpl implements FilterCountsDAO{
@@ -35,20 +27,8 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 	@Autowired
 	private NewLearningContentRepo learningContentRepo;
 
-	public static final HashMap<String, String> filterGroupMappings=getMappings();
-
-	private static HashMap<String, String> getMappings() {
-		HashMap<String, String> filterGroupMappings=new HashMap<String, String>();
-		filterGroupMappings.put(Constants.LANGUAGE_PRM,Constants.LANGUAGE);
-		filterGroupMappings.put(Constants.REGION, Constants.LIVE_EVENTS);
-		filterGroupMappings.put(Constants.CONTENT_TYPE_PRM, Constants.CONTENT_TYPE);
-		filterGroupMappings.put(Constants.ROLE, Constants.ROLE);
-		filterGroupMappings.put(Constants.MODEL, Constants.MODEL);
-		filterGroupMappings.put(Constants.TECHNOLOGY, Constants.TECHNOLOGY);
-		filterGroupMappings.put(Constants.DOCUMENTATION_FILTER_PRM, Constants.DOCUMENTATION_FILTER);
-		filterGroupMappings.put(Constants.SUCCESS_TRACK, Constants.SUCCESS_TRACK);
-		return filterGroupMappings;
-	}
+	@Autowired
+	private LearningBookmarkDAO learningBookmarkDAO;
 
 	@Override
 	public Set<String> andFilters(Map<String, Set<String>> filteredCards)
@@ -70,132 +50,150 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 		return cardIds;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public void setFilterCounts(Set<String> cardIdsInp, HashMap<String, HashMap<String, String>> filterCountsMap,
-			Map<String, Set<String>> filteredCardsMap) {
-		if(filteredCardsMap ==null || filteredCardsMap.isEmpty() || filteredCardsMap.size()==1) 
+	public void setFilterCounts(Set<String> cardIds, HashMap<String, Object> filterCountsMap, String filterGroup, String userId) {
+		if(filterCountsMap.containsKey(Constants.CONTENT_TYPE) && !filterGroup.equals(Constants.CONTENT_TYPE)) {
+			List<Map<String,Object>> dbListCT = learningContentRepo.getAllContentTypeWithCountByCards(cardIds);
+			((Map<String, String>) filterCountsMap.get(Constants.CONTENT_TYPE)).putAll(listToMap(dbListCT));
+		}
+
+		if(filterCountsMap.containsKey(Constants.LANGUAGE) && !filterGroup.equals(Constants.LANGUAGE)) {
+			List<Map<String,Object>> dbListLang = learningContentRepo.getAllLanguagesWithCountByCards(cardIds);
+			((Map<String, String>) filterCountsMap.get(Constants.LANGUAGE)).putAll(listToMap(dbListLang));
+		}
+
+		if(filterCountsMap.containsKey(Constants.LIVE_EVENTS) && !filterGroup.equals(Constants.LIVE_EVENTS)) {
+			List<Map<String,Object>> dbListReg = learningContentRepo.getAllRegionsWithCountByCards(cardIds);
+			((Map<String, String>) filterCountsMap.get(Constants.LIVE_EVENTS)).putAll(listToMap(dbListReg));
+		}
+
+		if(filterCountsMap.containsKey(Constants.ROLE) && !filterGroup.equals(Constants.ROLE)) {
+			List<Map<String,Object>> dbListRole = learningContentRepo
+					.getAllRoleCountByCards(cardIds);
+			((Map<String, String>) filterCountsMap.get(Constants.ROLE)).putAll(listToMap(dbListRole));
+		}
+
+		if(filterCountsMap.containsKey(Constants.TECHNOLOGY) && !filterGroup.equals(Constants.TECHNOLOGY)) {
+			List<Map<String,Object>> dbListTech = learningContentRepo
+					.getAllTechCountByCards(cardIds);
+			((Map<String, String>) filterCountsMap.get(Constants.TECHNOLOGY)).putAll(listToMap(dbListTech));
+		}
+
+		if(filterCountsMap.containsKey(Constants.DOCUMENTATION_FILTER) && !filterGroup.equals(Constants.DOCUMENTATION_FILTER)) {
+			List<Map<String,Object>> dbListDoc = learningContentRepo
+					.getDocFilterCountByCards(cardIds);
+			((Map<String, String>) filterCountsMap.get(Constants.DOCUMENTATION_FILTER)).putAll(listToMap(dbListDoc));
+		}
+
+		if(filterCountsMap.containsKey(Constants.LIFECYCLE) && !filterGroup.equals(Constants.LIFECYCLE)) {
+			List<Map<String,Object>> dbListLFC = learningContentRepo
+					.getAllLFCWithCountByCards(cardIds);
+			((Map<String, String>) filterCountsMap.get(Constants.LIFECYCLE)).putAll(listToMap(dbListLFC));
+		}
+
+		if(filterCountsMap.containsKey(Constants.SUCCESS_TRACK) && !filterGroup.equals(Constants.SUCCESS_TRACK))
 		{
-			setFilterCounts(cardIdsInp, filterCountsMap);
+			List<Map<String,Object>> dbListST = learningContentRepo.getAllStUcPsWithCount(cardIds);
+			Map<String,Object> filterAndCountsFromDb = listToSTMap(dbListST,null);
+			mergeSTFilterCounts(filterCountsMap,filterAndCountsFromDb);
+		}
+
+		if(filterCountsMap.containsKey(Constants.FOR_YOU_FILTER) && !filterGroup.equals(Constants.FOR_YOU_FILTER)) {
+			Map<String, String> forYouMap=new TreeMap<>();
+			int count = learningContentRepo.findNewFilteredIds(cardIds).size();
+			if(count>0)
+				forYouMap.put(Constants.NEW, Integer.toString(count));
+			count = learningContentRepo.getRecentlyViewedContentFilteredIds(userId, cardIds).size();
+			if(count>0)
+				forYouMap.put(Constants.RECENTLY_VIEWED, Integer.toString(count));
+			Set<String> bookmarkIds=getBookMarkedIds(userId);
+			bookmarkIds.retainAll(cardIds);
+			count = bookmarkIds.size();
+			if(count>0)
+				forYouMap.put(Constants.BOOKMARKED, Integer.toString(count));
+			((Map<String, String>) filterCountsMap.get(Constants.FOR_YOU_FILTER)).putAll(forYouMap);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void setFilterCounts(Set<String> cardIdsInp, HashMap<String, Object> filterCountsMap,
+			Map<String, Set<String>> filteredCardsMap, String userId) {
+		if(filteredCardsMap.size()==1)
+		{
+			setFilterCounts(cardIdsInp, filterCountsMap, (String)filteredCardsMap.keySet().toArray()[0], userId);
 			return;
 		}
 		if(filterCountsMap.containsKey(Constants.CONTENT_TYPE)) {
 			Set<String> cardIds = andFiltersWithExcludeKey(filteredCardsMap,Constants.CONTENT_TYPE);
 			List<Map<String,Object>> dbListCT = learningContentRepo.getAllContentTypeWithCountByCards(cardIds);
-			filterCountsMap.get(Constants.CONTENT_TYPE).putAll(listToMap(dbListCT));
+			((Map<String, String>) filterCountsMap.get(Constants.CONTENT_TYPE)).putAll(listToMap(dbListCT));
 		}
 
 		if(filterCountsMap.containsKey(Constants.LANGUAGE)) {
 			Set<String> cardIds = andFiltersWithExcludeKey(filteredCardsMap,Constants.LANGUAGE);
 			List<Map<String,Object>> dbListLang = learningContentRepo.getAllLanguagesWithCountByCards(cardIds);
-			filterCountsMap.get(Constants.LANGUAGE).putAll(listToMap(dbListLang));
+			((Map<String, String>) filterCountsMap.get(Constants.LANGUAGE)).putAll(listToMap(dbListLang));
 		}
 
 		if(filterCountsMap.containsKey(Constants.LIVE_EVENTS)) {
 			Set<String> cardIds = andFiltersWithExcludeKey(filteredCardsMap,Constants.LIVE_EVENTS);
 			List<Map<String,Object>> dbListReg = learningContentRepo.getAllRegionsWithCountByCards(cardIds);
-			filterCountsMap.get(Constants.LIVE_EVENTS).putAll(listToMap(dbListReg));
+			((Map<String, String>) filterCountsMap.get(Constants.LIVE_EVENTS)).putAll(listToMap(dbListReg));
 		}
 
 		if(filterCountsMap.containsKey(Constants.ROLE)) {
 			Set<String> cardIds = andFiltersWithExcludeKey(filteredCardsMap,Constants.ROLE);
 			List<Map<String,Object>> dbListRole = learningContentRepo
-					.findSuccessAcademyFiltered(Constants.ROLE, cardIds);
-			filterCountsMap.get(Constants.ROLE).putAll(listToMap(dbListRole));
-		}
-
-		if(filterCountsMap.containsKey(Constants.MODEL)) {
-			Set<String> cardIds = andFiltersWithExcludeKey(filteredCardsMap,Constants.MODEL);
-			List<Map<String,Object>> dbListModel = learningContentRepo
-					.findSuccessAcademyFiltered(Constants.MODEL, cardIds);
-			filterCountsMap.get(Constants.MODEL).putAll(listToMap(dbListModel));
+					.getAllRoleCountByCards(cardIds);
+			((Map<String, String>) filterCountsMap.get(Constants.ROLE)).putAll(listToMap(dbListRole));
 		}
 
 		if(filterCountsMap.containsKey(Constants.TECHNOLOGY)) {
 			Set<String> cardIds = andFiltersWithExcludeKey(filteredCardsMap,Constants.TECHNOLOGY);
 			List<Map<String,Object>> dbListTech = learningContentRepo
-					.findSuccessAcademyFiltered(Constants.TECHNOLOGY, cardIds);
-			filterCountsMap.get(Constants.TECHNOLOGY).putAll(listToMap(dbListTech));
+					.getAllTechCountByCards(cardIds);
+			((Map<String, String>) filterCountsMap.get(Constants.TECHNOLOGY)).putAll(listToMap(dbListTech));
 		}
 
 		if(filterCountsMap.containsKey(Constants.DOCUMENTATION_FILTER)) {
 			Set<String> cardIds = andFiltersWithExcludeKey(filteredCardsMap,Constants.DOCUMENTATION_FILTER);
 			List<Map<String,Object>> dbListDoc = learningContentRepo
 					.getDocFilterCountByCards(cardIds);
-			filterCountsMap.get(Constants.DOCUMENTATION_FILTER).putAll(listToMap(dbListDoc));
+			((Map<String, String>) filterCountsMap.get(Constants.DOCUMENTATION_FILTER)).putAll(listToMap(dbListDoc));
 		}
 
-		if(filterCountsMap.containsKey(Constants.SUCCESS_TRACK)) {
-			Set<String> cardIds = andFiltersWithExcludeKey(filteredCardsMap,Constants.SUCCESS_TRACK);
-			List<Map<String,Object>> dbListST = learningContentRepo
-					.getAllStWithCountByCards(cardIds);
-			Map<String,String> dbListSTFinal=listToMap(dbListST);
-			int SACount=learningContentRepo.getSACampusCount(cardIds);
-			if(SACount>0) {
-				if(dbListSTFinal.containsKey(Constants.CAMPUS_NETWORK)) {
-					dbListSTFinal.put(Constants.CAMPUS_NETWORK,
-							Integer.toString((Integer.valueOf(dbListSTFinal.get(Constants.CAMPUS_NETWORK))+SACount)));
-				}
-				else
-					dbListSTFinal.put(Constants.CAMPUS_NETWORK, Integer.toString(SACount));
-			}
-			filterCountsMap.get(Constants.SUCCESS_TRACK).putAll(dbListSTFinal);
-		}
-	}
-
-	@Override
-	public void setFilterCounts(Set<String> cardIds, HashMap<String, HashMap<String, String>> filterCountsMap) {
-
-		if(filterCountsMap.containsKey(Constants.CONTENT_TYPE)) {
-			List<Map<String,Object>> dbListCT = learningContentRepo.getAllContentTypeWithCountByCards(cardIds);
-			filterCountsMap.get(Constants.CONTENT_TYPE).putAll(listToMap(dbListCT));
+		if(filterCountsMap.containsKey(Constants.LIFECYCLE)) {
+			Set<String> cardIds = andFiltersWithExcludeKey(filteredCardsMap,Constants.LIFECYCLE);
+			List<Map<String,Object>> dbListLFC = learningContentRepo
+					.getAllLFCWithCountByCards(cardIds);
+			((Map<String, String>) filterCountsMap.get(Constants.LIFECYCLE)).putAll(listToMap(dbListLFC));
 		}
 
-		if(filterCountsMap.containsKey(Constants.LANGUAGE)) {
-			List<Map<String,Object>> dbListLang = learningContentRepo.getAllLanguagesWithCountByCards(cardIds);
-			filterCountsMap.get(Constants.LANGUAGE).putAll(listToMap(dbListLang));
+		if(filterCountsMap.containsKey(Constants.SUCCESS_TRACK))
+		{
+			Set<String> cardIds = andFiltersWithExcludeKey(filteredCardsMap, Constants.SUCCESS_TRACK);
+			List<Map<String,Object>> dbListST = learningContentRepo.getAllStUcPsWithCount(cardIds);
+			Map<String,Object> filterAndCountsFromDb = listToSTMap(dbListST,null);
+			mergeSTFilterCounts(filterCountsMap,filterAndCountsFromDb);
 		}
 
-		if(filterCountsMap.containsKey(Constants.LIVE_EVENTS)) {
-			List<Map<String,Object>> dbListReg = learningContentRepo.getAllRegionsWithCountByCards(cardIds);
-			filterCountsMap.get(Constants.LIVE_EVENTS).putAll(listToMap(dbListReg));
-		}
-
-		if(filterCountsMap.containsKey(Constants.ROLE)) {
-			List<Map<String,Object>> dbListRole = learningContentRepo
-					.findSuccessAcademyFiltered(Constants.ROLE, cardIds);
-			filterCountsMap.get(Constants.ROLE).putAll(listToMap(dbListRole));
-		}
-
-		if(filterCountsMap.containsKey(Constants.MODEL)) {
-			List<Map<String,Object>> dbListModel = learningContentRepo
-					.findSuccessAcademyFiltered(Constants.MODEL, cardIds);
-			filterCountsMap.get(Constants.MODEL).putAll(listToMap(dbListModel));
-		}
-
-		if(filterCountsMap.containsKey(Constants.TECHNOLOGY)) {
-			List<Map<String,Object>> dbListTech = learningContentRepo
-					.findSuccessAcademyFiltered(Constants.TECHNOLOGY, cardIds);
-			filterCountsMap.get(Constants.TECHNOLOGY).putAll(listToMap(dbListTech));
-		}
-
-		if(filterCountsMap.containsKey(Constants.DOCUMENTATION_FILTER)) {
-			List<Map<String,Object>> dbListDoc = learningContentRepo
-					.getDocFilterCountByCards(cardIds);
-			filterCountsMap.get(Constants.DOCUMENTATION_FILTER).putAll(listToMap(dbListDoc));
-		}
-
-		if (filterCountsMap.containsKey(Constants.SUCCESS_TRACK)) {
-			List<Map<String, Object>> dbListST = learningContentRepo.getAllStWithCountByCards(cardIds);
-			Map<String, String> dbListSTFinal = listToMap(dbListST);
-			int SACount = learningContentRepo.getSACampusCount(cardIds);
-			if (SACount > 0) {
-				if (dbListSTFinal.containsKey(Constants.CAMPUS_NETWORK)) {
-					dbListSTFinal.put(Constants.CAMPUS_NETWORK,
-							Integer.toString((Integer.valueOf(dbListSTFinal.get(Constants.CAMPUS_NETWORK)) + SACount)));
-				} else
-					dbListSTFinal.put(Constants.CAMPUS_NETWORK, Integer.toString(SACount));
-			}
-			filterCountsMap.get(Constants.SUCCESS_TRACK).putAll(dbListSTFinal);
+		if(filterCountsMap.containsKey(Constants.FOR_YOU_FILTER)) {
+			Set<String> cardIds = andFiltersWithExcludeKey(filteredCardsMap,Constants.FOR_YOU_FILTER);
+			Map<String, String> forYouMap=new TreeMap<>();
+			int count = learningContentRepo.findNewFilteredIds(cardIds).size();
+			if(count>0)
+				forYouMap.put(Constants.NEW, Integer.toString(count));
+			count = learningContentRepo.getRecentlyViewedContentFilteredIds(userId, cardIds).size();
+			if(count>0)
+				forYouMap.put(Constants.RECENTLY_VIEWED, Integer.toString(count));
+			Set<String> bookmarkIds=getBookMarkedIds(userId);
+			bookmarkIds.retainAll(cardIds);
+			count = bookmarkIds.size();
+			if(count>0)
+				forYouMap.put(Constants.BOOKMARKED, Integer.toString(count));
+			((Map<String, String>) filterCountsMap.get(Constants.FOR_YOU_FILTER)).putAll(forYouMap);
 
 		}
 	}
@@ -221,143 +219,199 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 		return cardIds;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public Map<String, Set<String>> filterCards(Map<String, String> filter, Set<String> learningItemIdsList) {
+	public Map<String, Set<String>> filterCards(Map<String, Object> filtersSelected, Set<String> learningItemIdsList, String userId){
+		LOG.info("applyFilters = {}",filtersSelected);
 		Map<String, Set<String>> filteredCards = new HashMap<String, Set<String>>();
-		String[] keys=filter.keySet().toArray(new String[0]);
-		for (int i=0;i<keys.length;i++) {
-			String filterGroup=keys[i];
-			String value=filter.get(filterGroup);
-			List<String> values = new ArrayList<String>(Arrays.asList(value.split(",")));
-			if(filterGroup.contains("assetFacet")) {
-				filter.remove(filterGroup);
-				filterGroup=learningContentRepo.getAssetModelByValue(values.get(0));
-				filter.put(filterGroup, value);
+		if(filtersSelected==null || filtersSelected.isEmpty()) return filteredCards;
+
+		/** OR **/
+		filtersSelected.keySet().forEach(filterGroup -> {
+			Object v = filtersSelected.get(filterGroup);
+			List<String> list;
+			if(v instanceof List) {
+				list= (List<String>)v;
+				switch(filterGroup) {
+				case Constants.CONTENT_TYPE : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByCT(new HashSet<String>(list),learningItemIdsList));break;
+				case Constants.LANGUAGE : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByLang(new HashSet<String>(list),learningItemIdsList));break;
+				case Constants.LIVE_EVENTS : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByReg(new HashSet<String>(list),learningItemIdsList));break;
+				case Constants.ROLE : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByRole(new HashSet<String>(list),learningItemIdsList));break;
+				case Constants.TECHNOLOGY : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByTech(new HashSet<String>(list),learningItemIdsList));break;
+				case Constants.DOCUMENTATION_FILTER : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByDoc(new HashSet<String>(list),learningItemIdsList));break;
+				case Constants.LIFECYCLE : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByLFC(new HashSet<String>(list),learningItemIdsList));break;
+				case Constants.FOR_YOU_FILTER : {
+					Set<String> cardIds=new HashSet<>();
+					if(list.contains(Constants.NEW))
+						cardIds.addAll(learningContentRepo.findNewFilteredIds(learningItemIdsList));
+					if(list.contains(Constants.RECENTLY_VIEWED))
+						cardIds.addAll(learningContentRepo.getRecentlyViewedContentFilteredIds(userId, learningItemIdsList));
+					if(list.contains(Constants.BOOKMARKED)) {
+						Set<String> bookmarkIds=getBookMarkedIds(userId);
+						bookmarkIds.retainAll(learningItemIdsList);
+						cardIds.addAll(bookmarkIds);
+					}
+					filteredCards.put(filterGroup, cardIds);
+				}
+				default : LOG.info("other {}={}",filterGroup,list);
+				};
 			}
-			LOG.info("filter={}",filterGroup);
-			switch(filterGroup) {
-			case Constants.CONTENT_TYPE_PRM : filteredCards.put(FilterCountsDAOImpl.filterGroupMappings.get(filterGroup), learningContentRepo.getCardIdsByCT(new HashSet<String>(values),learningItemIdsList));break;
-			case Constants.LANGUAGE_PRM : filteredCards.put(FilterCountsDAOImpl.filterGroupMappings.get(filterGroup), learningContentRepo.getCardIdsByLang(new HashSet<String>(values),learningItemIdsList));break;
-			case Constants.REGION : filteredCards.put(FilterCountsDAOImpl.filterGroupMappings.get(filterGroup), learningContentRepo.getCardIdsByReg(new HashSet<String>(values),learningItemIdsList));break;
-			case Constants.ROLE : filteredCards.put(FilterCountsDAOImpl.filterGroupMappings.get(filterGroup), learningContentRepo.getCardIdsByfacet(new HashSet<String>(values),learningItemIdsList));break;
-			case Constants.MODEL : filteredCards.put(FilterCountsDAOImpl.filterGroupMappings.get(filterGroup), learningContentRepo.getCardIdsByfacet(new HashSet<String>(values),learningItemIdsList));break;
-			case Constants.TECHNOLOGY : filteredCards.put(FilterCountsDAOImpl.filterGroupMappings.get(filterGroup), learningContentRepo.getCardIdsByfacet(new HashSet<String>(values),learningItemIdsList));break;
-			case Constants.SUCCESS_TRACK : {
-				if(values.contains(Constants.CAMPUS_NETWORK))
-					values.add(Constants.CAMPUS);
-				filteredCards.put(FilterCountsDAOImpl.filterGroupMappings.get(filterGroup), learningContentRepo.getCardIdsByST(new HashSet<String>(values),learningItemIdsList));break;
+			else if ( v instanceof Map) {
+				Set<String> cardIdsStUcPs = new HashSet<String>();
+				//LOG.info("ST="+((Map) v).keySet());
+				((Map) v).keySet().forEach(ik->{
+					Object iv = ((Map)v).get(ik);
+					List<String> ilist;
+					if(iv instanceof Map) {
+						//LOG.info("UC="+((Map) iv).keySet());
+						((Map)iv).keySet().forEach(ivk -> {
+							Object ivv = ((Map)iv).get(ivk);
+							List<String> ivlist;
+							if(ivv instanceof List)
+							{
+								ivlist= (List<String>)ivv;
+								LOG.info("PS={} uc={} st={}",ivlist,ivk,ik);
+								Set<String> pitStops = new HashSet<String>(ivlist);
+								String usecase = ivk.toString();
+								String successtrack = ik.toString();
+								cardIdsStUcPs.addAll(learningContentRepo.getCardIdsByPsUcStFilter(successtrack,usecase,pitStops,learningItemIdsList));
+							}
+						});
+					}
+				});
+				filteredCards.put(filterGroup,cardIdsStUcPs);
 			}
-			case Constants.DOCUMENTATION_FILTER_PRM : filteredCards.put(FilterCountsDAOImpl.filterGroupMappings.get(filterGroup), learningContentRepo.getCardIdsByDoc(new HashSet<String>(values),learningItemIdsList));break;
-			default : LOG.info("other {}={}",filterGroup,values);
-			}
-		}
+		});
+		LOG.info("filteredCards = {} ",filteredCards);
 		return filteredCards;
 	}
 
 	@Override
-	public void initializeFiltersWithCounts(List<String> filterGroups, HashMap<String, HashMap<String, String>> countFilters, Set<String> learningItemIdsList) {		
+	public void initializeFiltersWithCounts(List<String> filterGroups, HashMap<String, Object> filters, HashMap<String, Object> countFilters, Set<String> learningItemIdsList, String userId) {
 
 		if(filterGroups.contains(Constants.CONTENT_TYPE)) {
-			HashMap<String, String> contentTypeFilter = new HashMap<>();
+			Map<String, String> contentTypeFilter = new LinkedHashMap<>();
 			List<Map<String,Object>> dbListCT = learningContentRepo
 					.getAllContentTypeWithCountByCards(learningItemIdsList);
 			Map<String,String> allContentsCT = listToMap(dbListCT);
-			contentTypeFilter.putAll(allContentsCT);
-			if(!contentTypeFilter.isEmpty()) {
-				countFilters.put(Constants.CONTENT_TYPE, contentTypeFilter);
+			if(!allContentsCT.isEmpty()) {
+				countFilters.put(Constants.CONTENT_TYPE, allContentsCT);
+				filters.put(Constants.CONTENT_TYPE, contentTypeFilter);
+				allContentsCT.keySet().forEach(k -> contentTypeFilter.put(k, "0"));
 			}
 		}
 
 		if(filterGroups.contains(Constants.LANGUAGE)) {
-			HashMap<String, String> languageFilter = new HashMap<>();
+			Map<String, String> languageFilter = new LinkedHashMap<>();
 			List<Map<String,Object>> dbListLang =  learningContentRepo
 					.getAllLanguagesWithCountByCards(learningItemIdsList);
 			Map<String,String> allContentsLANG = listToMap(dbListLang);
-			languageFilter.putAll(allContentsLANG);
-			if(!languageFilter.isEmpty()) {
-				countFilters.put(Constants.LANGUAGE, languageFilter);
+			if(!allContentsLANG.isEmpty()) {
+				countFilters.put(Constants.LANGUAGE, allContentsLANG);
+				filters.put(Constants.LANGUAGE, languageFilter);
+				allContentsLANG.keySet().forEach(k -> languageFilter.put(k, "0"));
 			}
 		}
 
 		if(filterGroups.contains(Constants.LIVE_EVENTS)) {
-			HashMap<String, String> regionFilter = new HashMap<>();
+			Map<String, String> regionFilter = new LinkedHashMap<>();
 			List<Map<String,Object>> dbListReg =  learningContentRepo
 					.getAllRegionsWithCountByCards(learningItemIdsList);
 			Map<String,String> allContentsReg = listToMap(dbListReg);
-			regionFilter.putAll(allContentsReg);
-			if(!regionFilter.isEmpty()) {
-				countFilters.put(Constants.LIVE_EVENTS, regionFilter);
+			if(!allContentsReg.isEmpty()) {
+				countFilters.put(Constants.LIVE_EVENTS, allContentsReg);
+				filters.put(Constants.LIVE_EVENTS, regionFilter);
+				allContentsReg.keySet().forEach(k -> regionFilter.put(k, "0"));
 			}
 		}
 
 		if(filterGroups.contains(Constants.ROLE)) {
-			HashMap<String, String> roleFilter = new HashMap<>();
+			Map<String, String> roleFilter = new LinkedHashMap<>();
 			List<Map<String,Object>> dbListRole =  learningContentRepo
-					.findSuccessAcademyFiltered(Constants.ROLE, learningItemIdsList);
+					.getAllRoleCountByCards(learningItemIdsList);
 			Map<String,String> allContentsRole = listToMap(dbListRole);
-			roleFilter.putAll(allContentsRole);
-			if(!roleFilter.isEmpty()) {
-				countFilters.put(Constants.ROLE, roleFilter);
+			if(!allContentsRole.isEmpty()) {
+				countFilters.put(Constants.ROLE, allContentsRole);
+				filters.put(Constants.ROLE, roleFilter);
+				allContentsRole.keySet().forEach(k -> roleFilter.put(k, "0"));
 			}
 		}
 
-		if(filterGroups.contains(Constants.ROLE)) {
-			HashMap<String, String> modelFilter = new HashMap<>();
-			List<Map<String,Object>> dbListModel =   learningContentRepo
-					.findSuccessAcademyFiltered(Constants.MODEL, learningItemIdsList);
-			Map<String,String> allContentsModel = listToMap(dbListModel);
-			modelFilter.putAll(allContentsModel);
-			if(!modelFilter.isEmpty()) {
-				countFilters.put(Constants.MODEL, modelFilter);
-			}
-		}
-
-		if(filterGroups.contains(Constants.ROLE)) {
-			HashMap<String, String> techFilter = new HashMap<>();
+		if(filterGroups.contains(Constants.TECHNOLOGY)) {
+			Map<String, String> techFilter = new LinkedHashMap<>();
 			List<Map<String,Object>> dbListTech =   learningContentRepo
-					.findSuccessAcademyFiltered(Constants.TECHNOLOGY, learningItemIdsList);
+					.getAllTechCountByCards(learningItemIdsList);
 			Map<String,String> allContentsTech = listToMap(dbListTech);
-			techFilter.putAll(allContentsTech);
-			if(!techFilter.isEmpty()) {
-				countFilters.put(Constants.TECHNOLOGY, techFilter);
-			}
-		}
-
-		if(filterGroups.contains(Constants.SUCCESS_TRACK)) {
-			HashMap<String, String> STFilter = new HashMap<>();
-			List<Map<String,Object>> dbListST =  learningContentRepo
-					.getAllStWithCountByCards(learningItemIdsList);
-			Map<String,String> allContentsST = listToMap(dbListST);
-			int SACount=learningContentRepo.getSACampusCount(learningItemIdsList);
-			if(SACount>0) {
-				if(allContentsST.containsKey(Constants.CAMPUS_NETWORK)) {
-					allContentsST.put(Constants.CAMPUS_NETWORK,
-							Integer.toString((Integer.valueOf(allContentsST.get(Constants.CAMPUS_NETWORK))+SACount)));
-				}
-				else
-					allContentsST.put(Constants.CAMPUS_NETWORK, Integer.toString(SACount));
-			}
-			STFilter.putAll(allContentsST);
-			if(!STFilter.isEmpty()) {
-				countFilters.put(Constants.SUCCESS_TRACK, STFilter);
+			if(!allContentsTech.isEmpty()) {
+				countFilters.put(Constants.TECHNOLOGY, allContentsTech);
+				filters.put(Constants.TECHNOLOGY, techFilter);
+				allContentsTech.keySet().forEach(k -> techFilter.put(k, "0"));
 			}
 		}
 
 		if(filterGroups.contains(Constants.DOCUMENTATION_FILTER)) {
-			HashMap<String, String> docFilter = new HashMap<>();
+			Map<String, String> docFilter = new LinkedHashMap<>();
 			List<Map<String,Object>> dbListDoc =   learningContentRepo
 					.getDocFilterCountByCards(learningItemIdsList);
 			Map<String,String> allContentsDoc = listToMap(dbListDoc);
-			docFilter.putAll(allContentsDoc);
-			if(!docFilter.isEmpty()) {
-				countFilters.put(Constants.DOCUMENTATION_FILTER, docFilter);
+			if(!allContentsDoc.isEmpty()) {
+				countFilters.put(Constants.DOCUMENTATION_FILTER, allContentsDoc);
+				filters.put(Constants.DOCUMENTATION_FILTER, docFilter);
+				allContentsDoc.keySet().forEach(k -> docFilter.put(k, "0"));
+			}
+		}
+
+		if(filterGroups.contains(Constants.SUCCESS_TRACK)) {
+			Map<String, Object> stFilter = new LinkedHashMap<>();
+			List<Map<String,Object>> dbListST = learningContentRepo.getAllStUcPsWithCount(learningItemIdsList);
+			Map<String,Object> allContentsST = listToSTMap(dbListST,stFilter);
+			if(!stFilter.isEmpty()) {
+				countFilters.put(Constants.SUCCESS_TRACK, allContentsST);
+				filters.put(Constants.SUCCESS_TRACK, stFilter);
+			}
+		}
+
+		if(filterGroups.contains(Constants.LIFECYCLE)) {
+			Map<String, String> lfcFilter = new LinkedHashMap<>();
+			List<Map<String,Object>> dbListLFC = learningContentRepo.getAllLFCWithCountByCards(learningItemIdsList);
+			Map<String,String> allContentsLFC = listToMap(dbListLFC);
+			if(!allContentsLFC.isEmpty()) {
+				countFilters.put(Constants.LIFECYCLE, allContentsLFC);
+				filters.put(Constants.LIFECYCLE, lfcFilter);
+				allContentsLFC.keySet().forEach(k -> lfcFilter.put(k, "0"));
+			}
+		}
+
+		if(filterGroups.contains(Constants.FOR_YOU_FILTER)) {
+			Map<String, String> forYouMap=new TreeMap<>();
+			Map<String, String> forYouMapEmpty=new TreeMap<>();
+			int count = learningContentRepo.findNewFilteredIds(learningItemIdsList).size();
+			if(count>0) {
+				forYouMap.put(Constants.NEW, Integer.toString(count));
+				forYouMapEmpty.put(Constants.NEW, "0");
+			}
+			count = learningContentRepo.getRecentlyViewedContentFilteredIds(userId, learningItemIdsList).size();
+			if(count>0) {
+				forYouMap.put(Constants.RECENTLY_VIEWED, Integer.toString(count));
+				forYouMapEmpty.put(Constants.RECENTLY_VIEWED, "0");
+			}
+			Set<String> bookmarkIds=getBookMarkedIds(userId);
+			bookmarkIds.retainAll(learningItemIdsList);
+			count = bookmarkIds.size();
+			if(count>0) {
+				forYouMap.put(Constants.BOOKMARKED, Integer.toString(count));
+				forYouMapEmpty.put(Constants.BOOKMARKED, "0");
+			}
+			if(!forYouMap.isEmpty()) {
+				countFilters.put(Constants.FOR_YOU_FILTER, forYouMap);
+				filters.put(Constants.FOR_YOU_FILTER, forYouMapEmpty);
 			}
 		}
 	}
 
 	private Map<String,String> listToMap(List<Map<String,Object>> dbList)
 	{
-		Map<String,String> countMap = new HashMap<String,String>();
+		Map<String,String> countMap = new TreeMap<String,String>();
 		for(Map<String,Object> dbMap : dbList)
 		{
 			String dbKey = String.valueOf(dbMap.get("label"));
@@ -366,5 +420,77 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 		}
 		return countMap;
 	}
+
+	private Map<String,Object> listToSTMap(List<Map<String,Object>> dbList, final Map<String,Object> stFilter)
+	{
+		Map<String,Object> stAllKeysMap = new TreeMap<String,Object>();
+		Map<String,Object> stCountMap = new TreeMap<String,Object>();
+
+		Map<String,Object> stMap = new TreeMap<String,Object>();//new HashMap<String,Map<String,Map<String,String>>>();
+
+		Set<String> distinctST = new HashSet<String>();
+		Map<String,List<String>> distinctUCForST = new TreeMap<String,List<String>>();
+		Map<String,List<String>> distinctPSForUC = new TreeMap<String,List<String>>();
+
+
+		for(Map<String,Object> dbMap : dbList)
+		{
+			String st = String.valueOf(dbMap.get("successtrack"));
+			String uc = String.valueOf(dbMap.get("usecase"));
+			String ps = String.valueOf(dbMap.get("pitstop"));
+
+			String dbValue = String.valueOf(dbMap.get("dbvalue"));
+
+			distinctST.add(st);
+			if(!distinctUCForST.keySet().contains(st)) distinctUCForST.put(st, new ArrayList<String>());
+			distinctUCForST.get(st).add(uc);
+			if(!distinctPSForUC.keySet().contains(uc)) distinctPSForUC.put(uc, new ArrayList<String>());
+			distinctPSForUC.get(uc).add(ps);
+
+			if(!stMap.keySet().contains(st)) stMap.put(st, new TreeMap<String,Map<String,String>>()) ;
+			if(!((Map)stMap.get(st)).keySet().contains(uc)) ((Map)stMap.get(st)).put(uc, new TreeMap<String,String>());
+			if(!((Map)((Map)stMap.get(st)).get(uc)).keySet().contains(ps)) ((Map)((Map)stMap.get(st)).get(uc)).put(ps, dbValue);
+
+			if(stFilter!=null)
+			{
+				if(!stAllKeysMap.keySet().contains(st)) stAllKeysMap.put(st, new TreeMap<String,Map<String,String>>()) ;
+				if(!((Map)stAllKeysMap.get(st)).keySet().contains(uc)) ((Map)stAllKeysMap.get(st)).put(uc, new TreeMap<String,String>());
+				if(!((Map)((Map)stAllKeysMap.get(st)).get(uc)).keySet().contains(ps)) ((Map)((Map)stAllKeysMap.get(st)).get(uc)).put(ps, "0");
+			}
+		}
+		stCountMap.putAll(stMap);if(stFilter!=null)stFilter.putAll(stAllKeysMap);
+
+		LOG.info("stCountMap {} , stFilter={}",stCountMap, stFilter);
+
+		return stCountMap;
+	}
+
+	@SuppressWarnings("unchecked")
+	private void mergeSTFilterCounts(Map<String,Object> filters , Map<String,Object> filterAndCountsFromDb) {
+		Map<String,Object> stFilters = ((Map<String,Object>)filters.get(Constants.SUCCESS_TRACK));
+		for(String stkey : filterAndCountsFromDb.keySet()) {
+			if(stFilters.containsKey(stkey)) {
+				Map<String,Object> stFilter = (Map<String,Object>)stFilters.get(stkey);
+				Map<String,Object> stFilterFromDB = (Map<String,Object>)filterAndCountsFromDb.get(stkey);
+				for(String useCaseKey : stFilterFromDB.keySet()) {
+					if(stFilter.containsKey(useCaseKey)) {
+						Map<String,Object> useCaseFilter = (Map<String,Object>)stFilter.get(useCaseKey);
+						Map<String,Object> useCaseFilterFromDB = (Map<String,Object>)stFilterFromDB.get(useCaseKey);
+						for(String pitStopKey : useCaseFilterFromDB.keySet()) {
+							if(useCaseFilter.containsKey(pitStopKey)) {
+								useCaseFilter.put(pitStopKey, useCaseFilterFromDB.get(pitStopKey));
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+
+	Set<String> getBookMarkedIds(String userId){
+		return learningBookmarkDAO.getBookmarks(userId);
+	}
+
 
 }

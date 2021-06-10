@@ -48,8 +48,6 @@ public interface TrainingAndEnablementService {
 	
 	BookmarkResponseSchema bookmarkLearningForUser(BookmarkRequestSchema bookmarkRequestSchema , String xMasheryHandshake);
 
-	List<LearningContentItem> fetchNewLearningContent(String ccoId, String filter, String puid);
-
 	LearningRecordsAndFiltersModel getAllLearningInfoPost(String xMasheryHandshake, String searchToken, HashMap<String, Object> filters,
 			String sortBy, String sortOrder, String contentTab);
 	

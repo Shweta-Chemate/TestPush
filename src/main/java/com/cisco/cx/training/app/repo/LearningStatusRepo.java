@@ -12,6 +12,6 @@ public interface LearningStatusRepo extends JpaRepository<LearningStatusEntity, 
 
 	LearningStatusEntity findByLearningItemIdAndUserIdAndPuid(String learningItemId, String userId, String puid);
 	
-	List<LearningStatusEntity> findByUserIdAndPuid(String userId, String puid);
+	List<LearningStatusEntity> findByUserId(String userId);
 	
 }

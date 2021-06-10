@@ -113,30 +113,6 @@ public class TrainingAndEnablementController {
 		return new ResponseEntity<List<SuccessAcademyLearning>>(sucessAcademyList, HttpStatus.OK);
 	}
 	
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/learnings/new")
-	@ApiOperation(value = "Fetch New Learning Content", response = String.class, nickname = "fetchlearningcontent")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
-			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
-			@ApiResponse(code = 404, message = "Entity Not Found"),
-			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
-	public ResponseEntity<List<LearningContentItem>> getNewLearningContent(
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
-			@ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
-			@ApiParam(value = "Filters", required = false) @RequestParam(value = "filter", required = false) String filter)
-			throws Exception {
-		LOG.info("Entering the fetchlearningcontent method");
-		long requestStartTime = System.currentTimeMillis();
-		String ccoId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException("API Not Found.");
-		}
-		List<LearningContentItem> newLearningContentList = trainingAndEnablementService.fetchNewLearningContent(ccoId, filter, puid);
-		LOG.info("Received new learning content in {} ", (System.currentTimeMillis() - requestStartTime));
-		return new ResponseEntity<List<LearningContentItem>>(newLearningContentList, HttpStatus.OK);
-	}
-
-	
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalks")
 	@ApiOperation(value = "Fetch SuccessTalks For User", response = SuccessTalkResponseSchema.class, nickname = "fetchUserSuccessTalks")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),

@@ -398,50 +398,6 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	}
 
 	@Override
-	public List<LearningContentItem> fetchNewLearningContent(String ccoid, String filter, String puid) {
-		List<NewLearningContentEntity> learningContentList = new ArrayList<>();
-		List<LearningContentItem> result = new ArrayList<>();
-		Map<String, String> query_map = new LinkedHashMap<>();
-		if (!StringUtils.isBlank(filter)) {
-			filter = filter.replaceAll("%3B", ";");
-			filter = filter.replaceAll("%3A", ":");
-			String[] columnFilter = filter.split(";");
-			for (int colFilterIndex = 0; colFilterIndex < columnFilter.length; colFilterIndex++) {
-				String[] valueFilter = columnFilter[colFilterIndex].split(":");
-				String fieldName = valueFilter[0];
-				String fieldValue = valueFilter[1];
-				query_map.put(fieldName, fieldValue);
-			}
-		}
-		learningContentList = learningContentDAO.fetchNewLearningContent(query_map);
-		// populate bookmark and registration info
-		Set<String> userBookmarks = null;
-		if (null != ccoid) {
-			userBookmarks = learningBookmarkDAO.getBookmarks(ccoid);
-		}
-		List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserIdAndPuid(ccoid, puid);
-		for (NewLearningContentEntity entity : learningContentList) {
-			LearningContentItem learningItem = new LearningContentItem(entity);
-			learningItem.setBookmark(false);
-			if (null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
-					&& userBookmarks.contains(learningItem.getId())) {
-				learningItem.setBookmark(true);
-			}
-			LearningStatusEntity userRegistration = userRegistrations.stream()
-					.filter(userRegistrationInStream -> userRegistrationInStream.getLearningItemId()
-							.equalsIgnoreCase(learningItem.getId()))
-					.findFirst().orElse(null);
-			if (userRegistration != null && userRegistration.getRegStatus() != null) {
-				learningItem.setStatus(userRegistration.getRegStatus());
-				learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp());
-			}
-			result.add(learningItem);
-		}
-
-		return result;
-	}
-
-	@Override
 	public LearningRecordsAndFiltersModel getAllLearningInfoPost(String xMasheryHandshake, String searchToken,
 			HashMap<String, Object> filters, String sortBy, String sortOrder, String contentTab) {
 		
