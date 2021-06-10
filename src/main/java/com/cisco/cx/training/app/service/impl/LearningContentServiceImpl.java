@@ -637,11 +637,16 @@ public class LearningContentServiceImpl implements LearningContentService {
 	}
 	
 	@Override
-	public LearningMap getLearningMap(String id) {
+	public LearningMap getLearningMap(String id, String title) {
+		if(id == null && title ==null)
+		{
+			LOG.error("Both ID and Title cannot be null");
+			throw new GenericException("There was a problem in fetching learning map: both ID and Title cannot be null.");
+		}
 		LearningMap learningMap = new LearningMap();
 		try
 		{
-			learningMap = learningContentDAO.getLearningMap(id);
+			learningMap = learningContentDAO.getLearningMap(id,title);
 		}catch (Exception e) {
 			LOG.error("There was a problem fetching learning map", e);
 			throw new GenericException("There was a problem in fetching learning map");

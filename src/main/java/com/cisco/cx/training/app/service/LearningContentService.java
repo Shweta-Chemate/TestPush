@@ -42,9 +42,7 @@ public interface LearningContentService {
 	List<LearningContentItem> fetchCXInsightsContent(String userId, HashMap<String, Object> filtersSelected, String searchToken, String sortField,
 			String sortType);
 
-	LearningMap getLearningMap(String id);
-
 	Map<String, Object> getCXInsightsFiltersWithCount(String userId, String searchToken, HashMap<String, Object> filtersSelected);
 
-
+	LearningMap getLearningMap(String id, String title);
 }

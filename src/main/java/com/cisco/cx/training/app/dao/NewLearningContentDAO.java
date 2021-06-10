@@ -41,7 +41,7 @@ public interface NewLearningContentDAO {
 	List<NewLearningContentEntity> fetchCXInsightsContent(String userId, Map<String, List<String>> queryMap, Object stMap, String searchToken,
 			String sortField, String sortType);
 	
-	LearningMap getLearningMap(String id);
+	LearningMap getLearningMap(String id, String title);
 
 	HashMap<String, Object> getCXInsightsFiltersWithCount(String userId, String searchToken, HashMap<String, Object> filtersSelected);
 
