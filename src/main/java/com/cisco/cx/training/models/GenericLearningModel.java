@@ -42,6 +42,9 @@ public class GenericLearningModel {
 	private String registrationUrl;
 	private String recordingUrl;
 	private String contentType;
+	
+	private String modulecount;
+	private String learning_map;
 
 	public String getRowId() {
 		return rowId;
@@ -153,6 +156,22 @@ public class GenericLearningModel {
 
 	public void setContentType(String contentType) {
 		this.contentType = contentType;
+	}
+
+	public String getModulecount() {
+		return modulecount;
+	}
+
+	public void setModulecount(String modulecount) {
+		this.modulecount = modulecount;
+	}
+
+	public String getLearning_map() {
+		return learning_map;
+	}
+
+	public void setLearning_map(String learning_map) {
+		this.learning_map = learning_map;
 	}
 	
 

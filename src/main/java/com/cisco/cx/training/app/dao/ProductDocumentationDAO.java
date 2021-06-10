@@ -38,7 +38,7 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 	
 	/** all cards **/
 	
-	public static final String GET_PD_LEARNING_CARDS = "select cl.*, CT.asset_types,CT.asset_links  "
+	public static final String GET_PD_LEARNING_CARDS = "select cl.*, CT.asset_types,CT.asset_links, mp.title as learning_map  "
 			//+ " from cxpp_db.cxpp_learning_item cl "
 			+ DYNAMIC_FROM_SUBQUERY
 			+ " left join "
@@ -48,6 +48,7 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 			+ "	from cxpp_db.cxpp_item_link  "
 			+ "	group by learning_item_id) as CT "
 			+ "	on cl.learning_item_id = CT.learning_item_id "
+			+ " left join cxpp_db.cxpp_learning_map mp on cl.learning_map_id=mp.learning_map_id "
 			+ "  \n-- #sort\n";	
 	@Query(value=GET_PD_LEARNING_CARDS , nativeQuery=true )
 	List<LearningItemEntity> getAllLearningCards(String joinTable,Sort sort);
@@ -55,7 +56,7 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 	
 	/** search **/
 	
-	public static final String GET_PD_LEARNING_CARDS_SEARCH = "select cl.*, CT.asset_types,CT.asset_links  "
+	public static final String GET_PD_LEARNING_CARDS_SEARCH = "select cl.*, CT.asset_types,CT.asset_links, mp.title as learning_map  "
 			//+ " from cxpp_db.cxpp_learning_item cl "
 			+ DYNAMIC_FROM_SUBQUERY
 			+ " left join "
@@ -65,6 +66,7 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 			+ "	from cxpp_db.cxpp_item_link  "
 			+ "	group by learning_item_id) as CT "
 			+ "	on cl.learning_item_id = CT.learning_item_id "
+			+ " left join cxpp_db.cxpp_learning_map mp on cl.learning_map_id=mp.learning_map_id "
 			+ " where lower(cl.title) like :likeToken or lower(cl.description) like :likeToken  "
 			+ " or lower(cl.presentername) like :likeToken "
 			+ "  \n-- #sort\n";	
@@ -90,7 +92,7 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 	@Query(value=GET_PD_LEARNING_BY_CONTENT_TYPE , nativeQuery=true)
 	Set<String> getLearningsByContentType(String joinTable,Set<String> contentTypeFilter);	
 	
-	public static final String GET_PD_LEARNING_CARDS_BY_FILTER = "select cl.*, CT.asset_types,CT.asset_links  "
+	public static final String GET_PD_LEARNING_CARDS_BY_FILTER = "select cl.*, CT.asset_types,CT.asset_links, mp.title as learning_map  "
 			//+ " from cxpp_db.cxpp_learning_item cl "
 			+ DYNAMIC_FROM_SUBQUERY
 			+ " left join "
@@ -100,6 +102,7 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 			+ "	from cxpp_db.cxpp_item_link  "
 			+ "	group by learning_item_id) as CT "
 			+ "	on cl.learning_item_id = CT.learning_item_id "
+			+ " left join cxpp_db.cxpp_learning_map mp on cl.learning_map_id=mp.learning_map_id "
 			+ " where cl.learning_item_id in (:filterCards) "
 			+ "  \n-- #sort\n";
 	
@@ -109,7 +112,7 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 	
 	/** filter + search */
 	
-	public static final String GET_PD_LEARNING_CARDS_FILTERED_SEARCH = "select cl.*, CT.asset_types,CT.asset_links  "
+	public static final String GET_PD_LEARNING_CARDS_FILTERED_SEARCH = "select cl.*, CT.asset_types,CT.asset_links, mp.title as learning_map  "
 			//+ " from cxpp_db.cxpp_learning_item cl "
 			+ DYNAMIC_FROM_SUBQUERY
 			+ " left join "
@@ -119,6 +122,7 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 			+ "	from cxpp_db.cxpp_item_link  "
 			+ "	group by learning_item_id) as CT "
 			+ "	on cl.learning_item_id = CT.learning_item_id "
+			+ " left join cxpp_db.cxpp_learning_map mp on cl.learning_map_id=mp.learning_map_id "
 			+ " where cl.learning_item_id in (:filteredCards) and "
 			+ " ( lower(cl.title) like :likeToken or lower(cl.description) like :likeToken  "
 			+ " or lower(cl.presentername) like :likeToken ) "
@@ -331,6 +335,17 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 			+ CASE_CLAUSE_AND ;			
 	@Query(value=GET_PD_YOU_CARD_IDS_BY_CARD , nativeQuery=true)
 	Set<String> getAllNewCardIdsByCards(String joinTable,Set<String> cardIds);
+	
+	/** learning map **/
+	
+	public static final String GET_PD_LEARNING_MAP_COUNTS = "select mp.learning_map_id as dbkey, count(*) as dbvalue"
+			+ " from cxpp_db.cxpp_learning_item cl "
+			+ " inner join cxpp_db.cxpp_learning_map mp "
+			+ " on cl.learning_map_id=mp.learning_map_id "
+			+ " where cl.learning_map_id is not null "
+			+ " group by mp.learning_map_id;";			
+	@Query(value=GET_PD_LEARNING_MAP_COUNTS , nativeQuery=true)
+	List<Map<String, Object>> getLearningMapCounts();
 		
 }
 

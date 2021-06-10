@@ -87,6 +87,7 @@ public class LearningItemEntity {
 	
 	private String asset_types;	
 	private String asset_links;
+	private String learning_map;
 
 	public boolean isDeleted() {
 		return deleted;
@@ -270,6 +271,14 @@ public class LearningItemEntity {
 
 	public void setAsset_links(String asset_links) {
 		this.asset_links = asset_links;
+	}
+
+	public String getLearning_map() {
+		return learning_map;
+	}
+
+	public void setLearning_map(String learning_map) {
+		this.learning_map = learning_map;
 	}
 
 }
