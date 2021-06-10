@@ -142,4 +142,11 @@ public class SQLConstants {
 
 	public static final String GET_PD_CARD_IDS_BY_STUCPS_FILTER = GET_PD_CARD_IDS_BY_STUCPS + " and st.learning_item_id in (:learningItemIds)";
 
+	public static final String GET_SUCCESSTRACKS_COUNT = "select count(*) FROM cxpp_db.cxpp_learning_successtrack";
+	
+	public static final String GET_LIFECYCLE_COUNT = "select count(*) FROM cxpp_db.cxpp_learning_pitstop_temp";
+	
+	public static final String GET_ROLES_COUNT = "select count(*) FROM cxpp_db.cxpp_learning_roles";
+	
+	public static final String GET_TECHNOLOGY_COUNT= "select count(*) FROM cxpp_db.cxpp_learning_technology";
 }

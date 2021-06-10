@@ -45,4 +45,11 @@ public interface NewLearningContentDAO {
 
 	HashMap<String, Object> getCXInsightsFiltersWithCount(String userId, String searchToken, HashMap<String, Object> filtersSelected);
 
+	Integer getSuccessTracksCount();
+	
+	Integer getLifecycleCount();
+	
+	Integer getTechnologyCount();
+	
+	Integer getRolesCount();
 }
