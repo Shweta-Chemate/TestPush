@@ -492,5 +492,25 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	List<String> getBookMarkedIds(String userId){
 		return new ArrayList<String>(learningBookmarkDAO.getBookmarks(userId));
 	}
+	
+	@Override
+	public Integer getSuccessTracksCount() {
+		return learningContentRepo.getSuccessTracksCount();
+	}
+	
+	@Override
+	public Integer getLifecycleCount() {
+		return learningContentRepo.getLifecycleCount();
+	}
+	
+	@Override
+	public Integer getTechnologyCount() {
+		return learningContentRepo.getTechnologyount();
+	}
+	
+	@Override
+	public Integer getRolesCount() {
+		return learningContentRepo.getRolesCount();
+	}
 
 }

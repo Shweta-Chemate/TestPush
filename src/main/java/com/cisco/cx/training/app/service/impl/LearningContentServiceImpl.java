@@ -86,9 +86,6 @@ public class LearningContentServiceImpl implements LearningContentService {
 	
 	@Autowired
 	private LearningBookmarkDAO learningBookmarkDAO;
-
-	@Autowired
-	private SuccessAcademyDAO successAcademyDAO;
 	
 	@Autowired
 	private PartnerProfileService partnerProfileService;
@@ -216,17 +213,30 @@ public class LearningContentServiceImpl implements LearningContentService {
 			LOG.info("Received webinar count in {} ", (System.currentTimeMillis() - requestStartTime));
 			indexCounts.add(webinarCount);
 
-			CountSchema successAcamedyCount = new CountSchema();
-			successAcamedyCount.setLabel("CX Collection");
-			requestStartTime = System.currentTimeMillis();	
-			successAcamedyCount.setCount(successAcademyDAO.count());
-			LOG.info("Received Success Academy count in {} ", (System.currentTimeMillis() - requestStartTime));
-			indexCounts.add(successAcamedyCount);
-
 			requestStartTime = System.currentTimeMillis();	
 			CountSchema documentationCount = getDocumentationCount();
 			LOG.info("Received documentation count in {} ", (System.currentTimeMillis() - requestStartTime));
 			indexCounts.add(documentationCount);
+			
+			requestStartTime = System.currentTimeMillis();	
+			CountSchema successTrackCount = getSuccessTrackCount();
+			LOG.info("Received Success Tracks count in {} ", (System.currentTimeMillis() - requestStartTime));
+			indexCounts.add(successTrackCount);
+			
+			requestStartTime = System.currentTimeMillis();	
+			CountSchema lifecycleCount = getLifecycleCount();
+			LOG.info("Received lifecycle count in {} ", (System.currentTimeMillis() - requestStartTime));
+			indexCounts.add(lifecycleCount);
+			
+			requestStartTime = System.currentTimeMillis();	
+			CountSchema technologyCount = getTechnologyCount();
+			LOG.info("Received technology count in {} ", (System.currentTimeMillis() - requestStartTime));
+			indexCounts.add(technologyCount);
+			
+			requestStartTime = System.currentTimeMillis();	
+			CountSchema roleCount = getRolesCount();
+			LOG.info("Received roles count in {} ", (System.currentTimeMillis() - requestStartTime));
+			indexCounts.add(roleCount);
 
 			countResponse.setLearningStatus(indexCounts);
 
@@ -253,6 +263,42 @@ public class LearningContentServiceImpl implements LearningContentService {
 		CountSchema documentationCount = new CountSchema();
 		documentationCount.setLabel("Documentation");
 		documentationCount.setCount(new Long(learningContentDAO.getDocumentationCount()));
+		return documentationCount;
+
+	}
+	
+	private CountSchema getSuccessTrackCount() {
+
+		CountSchema documentationCount = new CountSchema();
+		documentationCount.setLabel("Success Tracks");
+		documentationCount.setCount(new Long(learningContentDAO.getSuccessTracksCount()));
+		return documentationCount;
+
+	}
+	
+	private CountSchema getLifecycleCount() {
+
+		CountSchema documentationCount = new CountSchema();
+		documentationCount.setLabel("Lifecycle");
+		documentationCount.setCount(new Long(learningContentDAO.getLifecycleCount()));
+		return documentationCount;
+
+	}
+	
+	private CountSchema getTechnologyCount() {
+
+		CountSchema documentationCount = new CountSchema();
+		documentationCount.setLabel("Technology");
+		documentationCount.setCount(new Long(learningContentDAO.getTechnologyCount()));
+		return documentationCount;
+
+	}
+	
+	private CountSchema getRolesCount() {
+
+		CountSchema documentationCount = new CountSchema();
+		documentationCount.setLabel("Role");
+		documentationCount.setCount(new Long(learningContentDAO.getRolesCount()));
 		return documentationCount;
 
 	}

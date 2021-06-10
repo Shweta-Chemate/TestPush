@@ -116,5 +116,17 @@ public interface NewLearningContentRepo
 	List<String> getPitstopTaggedContentFilter(Set<String> lfcFilters);
 	
 	NewLearningContentEntity findByTitle(String title);
+	
+	@Query(value = SQLConstants.GET_SUCCESSTRACKS_COUNT, nativeQuery = true)
+	Integer getSuccessTracksCount();
+
+	@Query(value = SQLConstants.GET_LIFECYCLE_COUNT, nativeQuery = true)
+	Integer getLifecycleCount();
+	
+	@Query(value = SQLConstants.GET_TECHNOLOGY_COUNT, nativeQuery = true)
+	Integer getTechnologyount();
+	
+	@Query(value = SQLConstants.GET_ROLES_COUNT, nativeQuery = true)
+	Integer getRolesCount();
 
 }
