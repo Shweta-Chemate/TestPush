@@ -110,7 +110,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		
 		filterCountsDAO.initializeFiltersWithCounts(filterGroups, filters, countFilters, learningItemIdsList, null);
 
-		if(filtersSelected==null)
+		if(filtersSelected==null || filtersSelected.isEmpty())
 		{
 			return countFilters;
 		}else {
@@ -144,7 +144,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 
 		filterCountsDAO.initializeFiltersWithCounts(filterGroups, filters, countFilters, learningItemIdsList, null);
 
-		if(filtersSelected==null)
+		if(filtersSelected==null || filtersSelected.isEmpty())
 		{
 			return countFilters;
 		}else {
@@ -178,7 +178,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 
 		filterCountsDAO.initializeFiltersWithCounts(filterGroups, filters, countFilters, learningItemIdsList, null);
 
-		if(filtersSelected==null)
+		if(filtersSelected==null || filtersSelected.isEmpty())
 		{
 			return countFilters;
 		}else {
@@ -210,7 +210,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 
 		filterCountsDAO.initializeFiltersWithCounts(filterGroups, filters, countFilters, learningItemIdsList, null);
 
-		if(filtersSelected==null)
+		if(filtersSelected==null || filtersSelected.isEmpty())
 		{
 			return countFilters;
 		}else {
@@ -252,7 +252,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 			filterCountsDAO.setFilterCounts(learningItemIdsList, countFilters, "none", userId);
 		}
 
-		if(filtersSelected==null)
+		if(filtersSelected==null || filtersSelected.isEmpty())
 		{
 			return countFilters;
 		}else {
