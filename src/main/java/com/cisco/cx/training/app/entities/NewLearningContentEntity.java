@@ -107,45 +107,12 @@ public class NewLearningContentEntity {
 	@Column(name = "archetype")
 	private String archetype;
 
-	@Column(name = "asset_model")
-	private String assetModel;
-
-	@Column(name = "asset_facet")
-	private String assetFacet;
-
-	@Column(name = "asset_group")
-	private String assetGroup;
-
 	public String getArchetype() {
 		return archetype;
 	}
 
 	public void setArchetype(String archetype) {
 		this.archetype = archetype;
-	}
-
-	public String getAssetModel() {
-		return assetModel;
-	}
-
-	public void setAssetModel(String assetModel) {
-		this.assetModel = assetModel;
-	}
-
-	public String getAssetFacet() {
-		return assetFacet;
-	}
-
-	public void setAssetFacet(String assetFacet) {
-		this.assetFacet = assetFacet;
-	}
-
-	public String getAssetGroup() {
-		return assetGroup;
-	}
-
-	public void setAssetGroup(String assetGroup) {
-		this.assetGroup = assetGroup;
 	}
 
 	public String getId() {
