@@ -553,7 +553,7 @@ public class ProductDocumentationService{
 			return orderFilters(countFilters);
 		}
 
-		if(applyFilters!=null && !applyFilters.isEmpty() && applyFilters.size()==1 )//&& !search
+		if(applyFilters!=null && !applyFilters.isEmpty() && applyFilters.size()==1 && !search)
 		{
 			applyFilters.keySet().forEach(k -> filters.put(k, countFilters.get(k)));
 		}
