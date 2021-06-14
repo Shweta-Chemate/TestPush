@@ -50,6 +50,9 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 		return cardIds;
 	}
 
+	/*
+	 * set filter counts for each filter  when only one filter group is selected
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public void setFilterCounts(Set<String> cardIds, HashMap<String, Object> filterCountsMap, String filterGroup, String userId) {
@@ -116,6 +119,9 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 		}
 	}
 
+	/*
+	 * set filter counts for each filter groups
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public void setFilterCounts(Set<String> cardIdsInp, HashMap<String, Object> filterCountsMap,
@@ -198,6 +204,9 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 		}
 	}
 
+	/*
+	 * get learning items ids pertaining to all the filter groups selected and ignoring the excludeKey filter group
+	 */
 	private Set<String> andFiltersWithExcludeKey(Map<String, Set<String>> filteredCardsMap, String excludeKey) {
 		Set<String> cardIds = new HashSet<String>();
 
@@ -219,6 +228,9 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 		return cardIds;
 	}
 
+	/*
+	 * store all learning items ids that falls under each filter group that is selected 
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public Map<String, Set<String>> filterCards(Map<String, Object> filtersSelected, Set<String> learningItemIdsList, String userId){
@@ -286,6 +298,9 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 		return filteredCards;
 	}
 
+	/*
+	 * initialize filters with count. This is done to get the initial hierarchy of filters. 
+	 */
 	@Override
 	public void initializeFiltersWithCounts(List<String> filterGroups, HashMap<String, Object> filters, HashMap<String, Object> countFilters, Set<String> learningItemIdsList, String userId) {
 

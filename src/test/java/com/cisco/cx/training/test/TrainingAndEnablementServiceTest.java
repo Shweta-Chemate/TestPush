@@ -498,23 +498,6 @@ public class TrainingAndEnablementServiceTest {
 		assertEquals(0, a.size());
 	}
 	
-	@Test
-	public void testFetchNewLearningContent()
-	{
-		String testUserId = "testUserId";
-		String testFilter = "test:test";
-		String testPuid = "101";
-		List<NewLearningContentEntity> learningEntityList = new ArrayList<>();
-		learningEntityList.add(getLearningEntity());
-		when(learningContentDAO.fetchNewLearningContent(Mockito.any())).thenReturn(learningEntityList);
-		Set<String> userBookmarks=getBookmarks();
-		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(userBookmarks);
-		List<LearningStatusEntity> learningStatusList = new ArrayList<>();
-		learningStatusList.add(getLearningStatusEntity());
-		when(learningStatusRepo.findByUserIdAndPuid(testUserId, testPuid)).thenReturn(learningStatusList);
-		trainingAndEnablementService.fetchNewLearningContent(testUserId, testFilter, testPuid);
-	}
-	
 	NewLearningContentEntity getLearningEntity()
 	{
 		NewLearningContentEntity learningEntity = new NewLearningContentEntity();

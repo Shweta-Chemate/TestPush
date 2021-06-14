@@ -389,7 +389,6 @@ public class NewLearningContentController {
 		if (StringUtils.isBlank(xMasheryHandshake)) {
 			throw new BadRequestException("X-Mashery-Handshake header missing in request");
 		}
-		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		if(!config.isNewLearningFeature())
 		{
 			throw new NotFoundException("API Not Found.");
@@ -400,6 +399,7 @@ public class NewLearningContentController {
 			sortType="desc";
 		if(searchToken!=null)
 			searchToken=searchToken.trim();
+		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		List<LearningContentItem> learningContentList = learningContentService.fetchCXInsightsContent(userId, filtersSelected, searchToken, sortField, sortType);
 		LOG.info("Received cxinsights content in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<List<LearningContentItem>>(learningContentList, HttpStatus.OK);
