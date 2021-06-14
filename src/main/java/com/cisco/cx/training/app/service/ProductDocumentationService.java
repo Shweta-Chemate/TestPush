@@ -118,9 +118,18 @@ public class ProductDocumentationService{
 		return cardIds;
 	}
 	
+	private Map<String,String> getLearningMapCounts()
+	{
+		List<Map<String, Object>> dbList = productDocumentationDAO.getLearningMapCounts();
+		Map<String, String> lmCounts = listToMap(dbList);//LOG.info("lmCounts={}",lmCounts);
+		return lmCounts;
+	}
+	
 	//"createdTimeStamp": "2021-04-05 17:10:50.0",card.setCreatedTimeStamp(learning.getUpdated_timestamp().toString());//yyyy-mm-dd hh:mm:ss.fffffffff
 	private List<GenericLearningModel>  mapLearningEntityToCards(List<LearningItemEntity> dbList, Set<String> userBookmarks)
 	{
+		
+		Map<String, String> lmCounts = getLearningMapCounts();
 		List<GenericLearningModel>  cards = new ArrayList<GenericLearningModel>();
 		if(dbList==null || dbList.size()==0) return cards;
 		dbList.forEach(learning -> {
@@ -148,6 +157,13 @@ public class ProductDocumentationService{
 			
 			card.setLink(learning.getAsset_links());
 			card.setContentType(learning.getAsset_types());
+			
+			card.setLearning_map(learning.getLearning_map());
+			if(LEARNING_MAP_TYPE.equals(learning.getLearning_type())
+					&& lmCounts.containsKey(learning.getLearning_item_id()))
+			{
+				card.setModulecount(lmCounts.get(learning.getLearning_item_id()));
+			}
 											
 			cards.add(card);
 		});
@@ -233,6 +249,9 @@ public class ProductDocumentationService{
 	
 	/** nulls **/
 	private static final String NULL_TEXT = "null";
+	
+	/** lmap **/
+	private static final String LEARNING_MAP_TYPE = "learningmap";
 	
 	private void initializeFilters(final HashMap<String, Object> filters, final HashMap<String, Object> countFilters, String contentTab)
 	{	
@@ -354,7 +373,8 @@ public class ProductDocumentationService{
 			Map<String, Set<String>> filteredCardsMap, boolean search, String contentTab)
 	{
 		LOG.info("filteredCardsMap={}",filteredCardsMap);
-		if(filteredCardsMap ==null || filteredCardsMap.isEmpty() || filteredCardsMap.size()==1) 
+		//LOG.info("fix filters= {} , filteredCardsMap={}, cardIdsInp={}",filters,filteredCardsMap,cardIdsInp);
+		if(filteredCardsMap ==null || filteredCardsMap.isEmpty() || (filteredCardsMap.size()==1 && search))  //only search
 		{
 			setFilterCounts(cardIdsInp, filters,contentTab);
 		}			

@@ -32,13 +32,6 @@ public class LearningItemEntity {
 	@Column(name = "description")
 	private String description;
 	
-	@Column(name = "sessionstartdate")
-	private Timestamp sessionStartDate;
-	
-	@UpdateTimestamp
-	@Column(name = "updated_timestamp")
-	private Timestamp updated_timestamp;
-	
 	@Column(name = "status")
 	private String status;
 	
@@ -57,44 +50,18 @@ public class LearningItemEntity {
 	@Column(name = "piw_region")
 	private String piw_region;
 	
-	@Column(name = "piw_architecture")
-	private String piw_architecture;
-	
-	@Column(name = "piw_technology")
-	private String piw_technology;
-	
-	@Column(name = "piw_sub_technology")
-	private String piw_sub_technology;
-	
 	@Column(name = "piw_score")
 	private Integer piw_score;
 	
 	@Column(name = "piw_language")
 	private String piw_language;
 	
-	@Column(name = "piw_timezone")
-	private String piw_timezone;
-	
-	@Column(name = "piw_ppt_url")
-	private String piw_ppt_url;
-	
 	@Column(name = "sort_by_date")
 	private String sortByDate;
 	
-	@Column(name = "deleted")
-	private boolean deleted;
-
-	
 	private String asset_types;	
 	private String asset_links;
-
-	public boolean isDeleted() {
-		return deleted;
-	}
-
-	public void setDeleted(boolean deleted) {
-		this.deleted = deleted;
-	}
+	private String learning_map;
 
 	public String getLearning_item_id() {
 		return learning_item_id;
@@ -126,22 +93,6 @@ public class LearningItemEntity {
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public Timestamp getSessionStartDate() {
-		return sessionStartDate;
-	}
-
-	public void setSessionStartDate(Timestamp sessionStartDate) {
-		this.sessionStartDate = sessionStartDate;
-	}
-
-	public Timestamp getUpdated_timestamp() {
-		return updated_timestamp;
-	}
-
-	public void setUpdated_timestamp(Timestamp updated_timestamp) {
-		this.updated_timestamp = updated_timestamp;
 	}
 
 	public String getStatus() {
@@ -192,30 +143,6 @@ public class LearningItemEntity {
 		this.piw_region = piw_region;
 	}
 
-	public String getPiw_architecture() {
-		return piw_architecture;
-	}
-
-	public void setPiw_architecture(String piw_architecture) {
-		this.piw_architecture = piw_architecture;
-	}
-
-	public String getPiw_technology() {
-		return piw_technology;
-	}
-
-	public void setPiw_technology(String piw_technology) {
-		this.piw_technology = piw_technology;
-	}
-
-	public String getPiw_sub_technology() {
-		return piw_sub_technology;
-	}
-
-	public void setPiw_sub_technology(String piw_sub_technology) {
-		this.piw_sub_technology = piw_sub_technology;
-	}
-
 	public Integer getPiw_score() {
 		return piw_score;
 	}
@@ -230,22 +157,6 @@ public class LearningItemEntity {
 
 	public void setPiw_language(String piw_language) {
 		this.piw_language = piw_language;
-	}
-
-	public String getPiw_timezone() {
-		return piw_timezone;
-	}
-
-	public void setPiw_timezone(String piw_timezone) {
-		this.piw_timezone = piw_timezone;
-	}
-
-	public String getPiw_ppt_url() {
-		return piw_ppt_url;
-	}
-
-	public void setPiw_ppt_url(String piw_ppt_url) {
-		this.piw_ppt_url = piw_ppt_url;
 	}
 
 	public String getSortByDate() {
@@ -270,6 +181,14 @@ public class LearningItemEntity {
 
 	public void setAsset_links(String asset_links) {
 		this.asset_links = asset_links;
+	}
+
+	public String getLearning_map() {
+		return learning_map;
+	}
+
+	public void setLearning_map(String learning_map) {
+		this.learning_map = learning_map;
 	}
 
 }
