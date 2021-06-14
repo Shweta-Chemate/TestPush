@@ -370,13 +370,12 @@ public class ProductDocumentationService{
 	}
 	
 	private void setFilterCounts(Set<String> cardIdsInp, final HashMap<String, Object> filters, 
-			Map<String, Set<String>> filteredCardsMap, boolean search, String contentTab)
+			Map<String, Set<String>> filteredCardsMap, boolean search, String contentTab, Set<String> searchCardIds)
 	{
 		LOG.info("filteredCardsMap={}",filteredCardsMap);
-		//LOG.info("fix filters= {} , filteredCardsMap={}, cardIdsInp={}",filters,filteredCardsMap,cardIdsInp);
-		if(filteredCardsMap ==null || filteredCardsMap.isEmpty() || (filteredCardsMap.size()==1 && search))  //only search
+		if(filteredCardsMap ==null || filteredCardsMap.isEmpty() || filteredCardsMap.size()==1 )  //only search
 		{
-			setFilterCounts(cardIdsInp, filters,contentTab);
+			setFilterCounts(cardIdsInp, filters,contentTab, filteredCardsMap,search, searchCardIds);
 		}			
 		else
 		{
@@ -449,38 +448,49 @@ public class ProductDocumentationService{
 		return cardIds;
 	}
 	
-	private void setFilterCounts(Set<String> cardIds, final HashMap<String, Object> filters, String contentTab)
+	private void setFilterCounts(Set<String> cardIdsInp, final HashMap<String, Object> filters, String contentTab, 
+			Map<String, Set<String>> filteredCardsMap, boolean search, Set<String> searchCardIds)
 	{
+		Set<String> cardIds = cardIdsInp;
+		
+		if(search && filteredCardsMap.containsKey(CONTENT_TYPE_FILTER)) cardIds = searchCardIds;  
 		List<Map<String,Object>> dbListCT = productDocumentationDAO.getAllContentTypeWithCountByCards(contentTab,cardIds);		
 		((Map<String,String>)filters.get(CONTENT_TYPE_FILTER)).putAll(listToMap(dbListCT));
-		
+				
+		if(search && filteredCardsMap.containsKey(TECHNOLOGY_FILTER)) cardIds = searchCardIds; else cardIds = cardIdsInp; 
 		List<Map<String,Object>> dbListTC = productDocumentationDAO.getAllTechnologyWithCountByCards(contentTab,cardIds);		
 		((Map<String,String>)filters.get(TECHNOLOGY_FILTER)).putAll(listToMap(dbListTC));
 		
+		if(search && filteredCardsMap.containsKey(LANGUAGE_FILTER)) cardIds = searchCardIds; else cardIds = cardIdsInp;
 		List<Map<String,Object>> dbListLG = productDocumentationDAO.getAllLanguageWithCountByCards(contentTab,cardIds);		
 		((Map<String,String>)filters.get(LANGUAGE_FILTER)).putAll(listToMap(dbListLG));
 		
 		if(contentTab.equals(TECHNOLOGY_DB_TABLE))
 		{
+		if(search && filteredCardsMap.containsKey(DOCUMENTATION_FILTER)) cardIds = searchCardIds; else cardIds = cardIdsInp;
 		List<Map<String,Object>> dbListDC = productDocumentationDAO.getAllDocumentationWithCountByCards(contentTab,cardIds);		
 		((Map<String,String>)filters.get(DOCUMENTATION_FILTER)).putAll(listToMap(dbListDC));
 		}
 		
+		if(search && filteredCardsMap.containsKey(LIVE_EVENTS_FILTER)) cardIds = searchCardIds; else cardIds = cardIdsInp;
 		List<Map<String,Object>> dbListLE = productDocumentationDAO.getAllLiveEventsWithCountByCards(contentTab,cardIds);		
 		((Map<String,String>)filters.get(LIVE_EVENTS_FILTER)).putAll(listToMap(dbListLE));	
 		
 		if(contentTab.equals(TECHNOLOGY_DB_TABLE))
 		{
+		if(search && filteredCardsMap.containsKey(SUCCESS_TRACKS_FILTER)) cardIds = searchCardIds; else cardIds = cardIdsInp;
 		List<Map<String,Object>> dbListST = productDocumentationDAO.getAllStUcPsWithCountByCards(contentTab,cardIds);
 		Map<String,Object> filterAndCountsFromDb = listToSTMap(dbListST,null);
 		mergeSTFilterCounts(filters,filterAndCountsFromDb);
 		}
 		
+		if(search && filteredCardsMap.containsKey(FOR_YOU_FILTER)) cardIds = searchCardIds; else cardIds = cardIdsInp;
 		Map<String,String> dbMapYou = getForYouCounts(contentTab,cardIds);		
 		((Map<String,String>)filters.get(FOR_YOU_FILTER)).putAll(dbMapYou);
 				
 		if(contentTab.equals(ROLE_DB_TABLE))
 		{
+		if(search && filteredCardsMap.containsKey(ROLE_FILTER)) cardIds = searchCardIds; else cardIds = cardIdsInp;
 		List<Map<String,Object>> dbListRole = productDocumentationDAO.getAllRoleWithCountByCards(cardIds);		
 		((Map<String,String>)filters.get(ROLE_FILTER)).putAll(listToMap(dbListRole));
 		}
@@ -529,13 +539,19 @@ public class ProductDocumentationService{
 		Set<String> cardIds =  new HashSet<String>();
 		Map<String, Set<String>> filteredCardsMap = new HashMap<String, Set<String>>();
 		boolean search=false;
+		Set<String> searchCardIds =  new HashSet<String>();
 		
 		if( searchToken!=null && !searchToken.trim().isEmpty() && applyFilters!=null && !applyFilters.isEmpty()	)
 		{
 			search = true;
 			filteredCardsMap = filterCards(applyFilters,contentTab);
 			Set<String> filteredCards = andFilters(filteredCardsMap);
-			cardIds = productDocumentationDAO.getAllLearningCardIdsByFilterSearch(contentTab,filteredCards,"%"+searchToken+"%");		
+			cardIds = productDocumentationDAO.getAllLearningCardIdsByFilterSearch(contentTab,filteredCards,"%"+searchToken+"%");
+			
+			if(applyFilters.size()==1)
+			{
+				searchCardIds = productDocumentationDAO.getAllLearningCardIdsBySearch(contentTab,"%"+searchToken+"%");	
+			}
 		}		
 		else if(searchToken!=null && !searchToken.trim().isEmpty())
 		{			
@@ -557,7 +573,7 @@ public class ProductDocumentationService{
 		{
 			applyFilters.keySet().forEach(k -> filters.put(k, countFilters.get(k)));
 		}
-		setFilterCounts(cardIds,filters,filteredCardsMap,search,contentTab);		
+		setFilterCounts(cardIds,filters,filteredCardsMap,search,contentTab, searchCardIds);		
 		cleanFilters(filters);
 		
 		return orderFilters(filters);
