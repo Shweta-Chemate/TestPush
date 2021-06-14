@@ -81,63 +81,57 @@ public class LearningContentServiceTest {
 	public void testFetchPIWs() {
 		List<NewLearningContentEntity> result = getLearningEntities();
 		Set<String> userBookmarks=getBookmarks();
-		when(learningContentDAO.listPIWs(Mockito.anyString(),Mockito.anyString(),Mockito.anyString(),Mockito.anyMap(),Mockito.anyString())).thenReturn(result);
+		when(learningContentDAO.listPIWs(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyMap(), Mockito.anyString())).thenReturn(result);
 		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(userBookmarks);
 		when(learningStatusRepo.findByLearningItemIdAndUserIdAndPuid("test", "test", "test")).thenReturn(new LearningStatusEntity());
-		assertNotNull(learningContentService.fetchPIWs("test","101", "test","test","test","test:test","test"));
+		assertNotNull(learningContentService.fetchPIWs("test", "test", "test", "test", "test:test", "test"));
 	}
 
 	@Test
 	public void testFetchSuccesstalks() {
 		List<NewLearningContentEntity> result = getLearningEntities();
 		Set<String> userBookmarks=getBookmarks();
-		when(learningContentDAO.fetchSuccesstalks(Mockito.anyString(),Mockito.anyString(),Mockito.anyMap(),Mockito.anyString())).thenReturn(result);
+		when(learningContentDAO.fetchSuccesstalks(Mockito.anyString(), Mockito.anyString(), Mockito.anyMap(), Mockito.anyString())).thenReturn(result);
 		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(userBookmarks);
 		when(learningStatusRepo.findByLearningItemIdAndUserIdAndPuid("test", "test", "test")).thenReturn(new LearningStatusEntity());
-		assertNotNull(learningContentService.fetchSuccesstalks("test","101", "test","test","test:test","test"));
-	}
-
-	private List<NewLearningContentEntity> getLearningEntities() {
-		List<NewLearningContentEntity> resp=new ArrayList<NewLearningContentEntity>();
-		NewLearningContentEntity learningContentEntity=new NewLearningContentEntity();
-		learningContentEntity.setId("test");
-		learningContentEntity.setTitle("test");
-		learningContentEntity.setDuration("test");
-		learningContentEntity.setPresenterName("test");
-		learningContentEntity.setRegistrationUrl("test");
-		learningContentEntity.setRegion("test");
-		learningContentEntity.setSessionStartDate(new Timestamp(System.currentTimeMillis()));
-		resp.add(learningContentEntity);
-		return resp;
+		assertNotNull(learningContentService.fetchSuccesstalks("test", "test", "test", "test:test", "test"));
 	}
 
 	@Test
 	public void getIndexCounts() {
-		when(learningContentDAO.getSuccessTalkCount()).thenReturn(2);
-		when(successAcademyDAO.count()).thenReturn((long) 2);
 		learningContentService.getIndexCounts();
+	}
+
+	@Test
+	public void testFetchNewLearningContent()
+	{
+		HashMap<String, Object> testFilter = getTestFiltersSelected();
+		String testUserId = "testUserId";
+		List<NewLearningContentEntity> learningEntityList = new ArrayList<>();
+		learningEntityList.add(getLearningEntity());
+		when(learningContentDAO.fetchNewLearningContent(Mockito.any(), Mockito.any())).thenReturn(learningEntityList);
+		Set<String> userBookmarks=getBookmarks();
+		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(userBookmarks);
+		List<LearningStatusEntity> learningStatusList = new ArrayList<>();
+		learningStatusList.add(getLearningStatusEntity());
+		when(learningStatusRepo.findByUserId(testUserId)).thenReturn(learningStatusList);
+		learningContentService.fetchNewLearningContent(testUserId, testFilter);
+		when(learningContentDAO.fetchNewLearningContent(Mockito.any(), Mockito.any())).thenThrow(new GenericException("There was a problem in fetching CX Insights learning content"));
+		assertThrows(Exception.class, () -> {
+			learningContentService.fetchNewLearningContent(testUserId, testFilter);
+		});
 	}
 
 	@Test
 	public void testGetViewMoreNewFiltersWithCount()
 	{
-		String testFilter = "test:test";
-		String select="test";
-		HashMap<String, HashMap<String, String>> filterCounts = new HashMap<>();
-		HashMap<String, String> testRegionCount = new HashMap<>();
-		testRegionCount.put("AMER", "1");
-		filterCounts.put("Live Events" , testRegionCount);
-		HashMap<String, String> testContentCount = new HashMap<>();
-		testContentCount.put("PDF", "1");
-		filterCounts.put("Content Type" , testContentCount);
-		HashMap<String, String> testLanguageCount = new HashMap<>();
-		testLanguageCount.put("English", "1");
-		filterCounts.put("Language" , testLanguageCount);
-		when(learningContentDAO.getViewMoreNewFiltersWithCount(Mockito.any(),Mockito.any())).thenReturn(filterCounts);
-		learningContentService.getViewMoreNewFiltersWithCount(testFilter, filterCounts);
-		when(learningContentDAO.getViewMoreNewFiltersWithCount(Mockito.any(),Mockito.any())).thenThrow(new GenericException("There was a problem in fetching CX Insights learning content"));
+		HashMap<String, Object> testFilter = getTestFiltersSelected();
+		HashMap<String, Object> filterCounts = getTestFilterCounts();
+		when(learningContentDAO.getViewMoreNewFiltersWithCount(Mockito.any())).thenReturn(filterCounts);
+		learningContentService.getViewMoreNewFiltersWithCount(testFilter);
+		when(learningContentDAO.getViewMoreNewFiltersWithCount(Mockito.any())).thenThrow(new GenericException("There was a problem in fetching CX Insights learning content"));
 		assertThrows(Exception.class, () -> {
-			learningContentService.getViewMoreNewFiltersWithCount(testFilter, filterCounts);
+			learningContentService.getViewMoreNewFiltersWithCount(testFilter);
 		});
 	}
 
@@ -147,7 +141,7 @@ public class LearningContentServiceTest {
 		LearningStatusSchema testLearningStatusSchema = getLearningStatusSchema();
 		String testUserId = "sntccbr5@hotmail.com";
 		when(partnerProfileService.fetchUserDetailsWithCompanyList(this.XMasheryHeader)).thenReturn(getUserDetails());
-		when(learningStatusRepo.findByLearningItemIdAndUserIdAndPuid(testLearningStatusSchema.getLearningItemId(),testUserId, this.puid)).thenReturn(null);
+		when(learningStatusRepo.findByLearningItemIdAndUserIdAndPuid(testLearningStatusSchema.getLearningItemId(), testUserId, this.puid)).thenReturn(null);
 		learningContentService.updateUserStatus(testUserId, this.puid, getLearningStatusSchema(), this.XMasheryHeader);
 	}
 
@@ -157,185 +151,116 @@ public class LearningContentServiceTest {
 		LearningStatusSchema testLearningStatusSchema = getLearningStatusSchema();
 		String testUserId = "sntccbr5@hotmail.com";
 		when(partnerProfileService.fetchUserDetailsWithCompanyList(this.XMasheryHeader)).thenReturn(getUserDetails());
-		when(learningStatusRepo.findByLearningItemIdAndUserIdAndPuid(testLearningStatusSchema.getLearningItemId(),testUserId, this.puid)).thenReturn(getLearningStatusEntity());
+		when(learningStatusRepo.findByLearningItemIdAndUserIdAndPuid(testLearningStatusSchema.getLearningItemId(), testUserId, this.puid)).thenReturn(getLearningStatusEntity());
 		learningContentService.updateUserStatus(testUserId, this.puid, getLearningStatusSchema(), this.XMasheryHeader);
 	}
 
 	@Test
 	public void testfetchRecentlyViewedContent()
 	{
-		String testFilter = "test:test";
+		HashMap<String, Object> testFilter = getTestFiltersSelected();
 		String testUserId = "testUserId";
 		List<NewLearningContentEntity> learningEntityList = new ArrayList<>();
 		learningEntityList.add(getLearningEntity());
-		when(learningContentDAO.fetchRecentlyViewedContent(Mockito.anyString(), Mockito.any())).thenReturn(learningEntityList);
+		when(learningContentDAO.fetchRecentlyViewedContent(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(learningEntityList);
 		Set<String> userBookmarks=getBookmarks();
 		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(userBookmarks);
 		List<LearningStatusEntity> learningStatusList = new ArrayList<>();
 		learningStatusList.add(getLearningStatusEntity());
-		when(learningStatusRepo.findByUserIdAndPuid(testUserId, this.puid)).thenReturn(learningStatusList);
-		learningContentService.fetchRecentlyViewedContent(this.puid, testUserId, testFilter);
-		when(learningContentDAO.fetchRecentlyViewedContent(Mockito.anyString(), Mockito.any())).thenThrow(new GenericException("There was a problem in fetching CX Insights learning content"));
+		when(learningStatusRepo.findByUserId(testUserId)).thenReturn(learningStatusList);
+		learningContentService.fetchRecentlyViewedContent(testUserId, testFilter);
+		when(learningContentDAO.fetchRecentlyViewedContent(Mockito.any(), Mockito.any(), Mockito.any())).thenThrow(new GenericException("There was a problem in fetching CX Insights learning content"));
 		assertThrows(Exception.class, () -> {
-			learningContentService.fetchRecentlyViewedContent(this.puid, testUserId, testFilter);
+			learningContentService.fetchRecentlyViewedContent(testUserId, testFilter);
 		});
 	}
 
 	@Test
 	public void testGetRecentlyViewedFiltersWithCount()
 	{
-		String testFilter = "test:test";
+		HashMap<String, Object> testFilter = getTestFiltersSelected();
+		HashMap<String, Object> filterCounts = getTestFilterCounts();
 		String testUserId = "testUserId";
-		String select="test";
-		HashMap<String, HashMap<String, String>> filterCounts = new HashMap<>();
-		HashMap<String, String> testRegionCount = new HashMap<>();
-		testRegionCount.put("AMER", "1");
-		filterCounts.put("Live Events" , testRegionCount);
-		HashMap<String, String> testContentCount = new HashMap<>();
-		testContentCount.put("PDF", "1");
-		filterCounts.put("Content Type" , testContentCount);
-		HashMap<String, String> testLanguageCount = new HashMap<>();
-		testLanguageCount.put("English", "1");
-		filterCounts.put("Language" , testLanguageCount);
-		when(learningContentDAO.getRecentlyViewedFiltersWithCount(Mockito.any(),Mockito.any(),Mockito.any(),Mockito.any())).thenReturn(filterCounts);
-		learningContentService.getRecentlyViewedFiltersWithCount(this.puid, testUserId, testFilter, filterCounts);
-		when(learningContentDAO.getRecentlyViewedFiltersWithCount(Mockito.any(),Mockito.any(),Mockito.any(),Mockito.any())).thenThrow(new GenericException("There was a problem in fetching CX Insights learning content"));
+		when(learningContentDAO.getRecentlyViewedFiltersWithCount(Mockito.any(), Mockito.any())).thenReturn(filterCounts);
+		learningContentService.getRecentlyViewedFiltersWithCount(testUserId, testFilter);
+		when(learningContentDAO.getRecentlyViewedFiltersWithCount(Mockito.any() ,Mockito.any())).thenThrow(new GenericException("There was a problem in fetching CX Insights learning content"));
 		assertThrows(Exception.class, () -> {
-			learningContentService.getRecentlyViewedFiltersWithCount(this.puid, testUserId, testFilter, filterCounts);
+			learningContentService.getRecentlyViewedFiltersWithCount(testUserId, testFilter);
 		});
 	}
 
 	@Test
 	public void testFetchBookMarkedContent()
 	{
+		HashMap<String, Object> testFilter = getTestFiltersSelected();
 		String testUserId = "testUserId";
-		String testFilter = "test:test";
 		List<NewLearningContentEntity> learningEntityList = new ArrayList<>();
 		learningEntityList.add(getLearningEntity());
-		when(learningContentDAO.fetchFilteredContent(Mockito.anyString(), Mockito.anyString(), Mockito.any())).thenReturn(learningEntityList);
+		when(learningContentDAO.fetchFilteredContent(Mockito.any(), Mockito.any())).thenReturn(learningEntityList);
 		Map<String,Object> userBookmarks=getBookmarksWithTime();
 		when(learningBookmarkDAO.getBookmarksWithTime(Mockito.anyString())).thenReturn(userBookmarks);
 		List<LearningStatusEntity> learningStatusList = new ArrayList<>();
 		learningStatusList.add(getLearningStatusEntity());
-		when(learningStatusRepo.findByUserIdAndPuid(testUserId, this.puid)).thenReturn(learningStatusList);
-		learningContentService.fetchBookMarkedContent(this.puid, testUserId, testFilter);
-		when(learningContentDAO.fetchFilteredContent(Mockito.any(), Mockito.any(), Mockito.any())).thenThrow(new GenericException("There was a problem in fetching CX Insights learning content"));
+		when(learningStatusRepo.findByUserId(testUserId)).thenReturn(learningStatusList);
+		learningContentService.fetchBookMarkedContent(testUserId, testFilter);
+		when(learningContentDAO.fetchFilteredContent(Mockito.any(), Mockito.any())).thenThrow(new GenericException("There was a problem in fetching CX Insights learning content"));
 		assertThrows(Exception.class, () -> {
-			learningContentService.fetchBookMarkedContent(this.puid, testUserId, testFilter);
+			learningContentService.fetchBookMarkedContent(testUserId, testFilter);
 		});
 	}
 
 	@Test
 	public void testGetBookmarkedFiltersWithCount()
 	{
-		HashMap<String, HashMap<String, String>> filterCounts = new HashMap<>();
-		HashMap<String, String> testRegionCount = new HashMap<>();
-		testRegionCount.put("AMER", "1");
-		filterCounts.put("Live Events" , testRegionCount);
-		String select="test";
-		HashMap<String, String> testContentCount = new HashMap<>();
-		testContentCount.put("PDF", "1");
-		filterCounts.put("Content Type" , testContentCount);
-		HashMap<String, String> testLanguageCount = new HashMap<>();
-		testLanguageCount.put("English", "1");
-		filterCounts.put("Language" , testLanguageCount);
+		HashMap<String, Object> testFilter = getTestFiltersSelected();
+		HashMap<String, Object> filterCounts = getTestFilterCounts();
 		String testUserId = "testUserId";
-		String testFilter = "test:test";
 		List<NewLearningContentEntity> learningEntityList = new ArrayList<>();
 		learningEntityList.add(getLearningEntity());
-		when(learningContentDAO.fetchFilteredContent(Mockito.anyString(), Mockito.anyString(), Mockito.any())).thenReturn(learningEntityList);
+		when(learningContentDAO.fetchFilteredContent(Mockito.any(), Mockito.any())).thenReturn(learningEntityList);
 		Set<String> userBookmarks=getBookmarks();
 		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(userBookmarks);
 		List<LearningStatusEntity> learningStatusList = new ArrayList<>();
 		learningStatusList.add(getLearningStatusEntity());
-		when(learningStatusRepo.findByUserIdAndPuid(testUserId, this.puid)).thenReturn(learningStatusList);
-		when(learningContentDAO.getBookmarkedFiltersWithCount(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(filterCounts);
-		learningContentService.getBookmarkedFiltersWithCount(this.puid, testUserId, testFilter, filterCounts);
-		when(learningContentDAO.getBookmarkedFiltersWithCount(Mockito.any(), Mockito.any(), Mockito.any())).thenThrow(new GenericException("There was a problem in fetching CX Insights learning content"));
+		when(learningStatusRepo.findByUserId(testUserId)).thenReturn(learningStatusList);
+		when(learningContentDAO.getBookmarkedFiltersWithCount(Mockito.any(), Mockito.any())).thenReturn(filterCounts);
+		learningContentService.getBookmarkedFiltersWithCount(testUserId, testFilter);
+		when(learningContentDAO.getBookmarkedFiltersWithCount(Mockito.any(), Mockito.any())).thenThrow(new GenericException("There was a problem in fetching CX Insights learning content"));
 		assertThrows(Exception.class, () -> {
-			learningContentService.getBookmarkedFiltersWithCount(this.puid, testUserId, testFilter, filterCounts);
+			learningContentService.getBookmarkedFiltersWithCount(testUserId, testFilter);
 		});
 	}
 
 	@Test
 	public void testFetchUpcomingContent()
 	{
+		HashMap<String, Object> testFilter = getTestFiltersSelected();
 		String testUserId = "testUserId";
-		String testFilter = "test:test";
 		List<NewLearningContentEntity> learningEntityList = new ArrayList<>();
 		learningEntityList.add(getLearningEntity());
-		when(learningContentDAO.fetchUpcomingContent(Mockito.any())).thenReturn(learningEntityList);
+		when(learningContentDAO.fetchUpcomingContent(Mockito.any(), Mockito.any())).thenReturn(learningEntityList);
 		Set<String> userBookmarks=getBookmarks();
 		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(userBookmarks);
 		List<LearningStatusEntity> learningStatusList = new ArrayList<>();
 		learningStatusList.add(getLearningStatusEntity());
-		when(learningStatusRepo.findByUserIdAndPuid(testUserId, this.puid)).thenReturn(learningStatusList);
-		learningContentService.fetchUpcomingContent(this.puid, testUserId, testFilter);
-		when(learningContentDAO.fetchUpcomingContent(Mockito.any())).thenThrow(new GenericException("There was a problem in fetching CX Insights learning content"));
+		when(learningStatusRepo.findByUserId(testUserId)).thenReturn(learningStatusList);
+		learningContentService.fetchUpcomingContent(testUserId, testFilter);
+		when(learningContentDAO.fetchUpcomingContent(Mockito.any(), Mockito.any())).thenThrow(new GenericException("There was a problem in fetching CX Insights learning content"));
 		assertThrows(Exception.class, () -> {
-			learningContentService.fetchUpcomingContent(this.puid, testUserId, testFilter);
+			learningContentService.fetchUpcomingContent(testUserId, testFilter);
 		});
 	}
 
 	@Test
 	public void testGetUpcomingFiltersWithCount()
 	{
-		HashMap<String, HashMap<String, String>> filterCounts = new HashMap<>();
-		HashMap<String, String> testRegionCount = new HashMap<>();
-		String select="test";
-		testRegionCount.put("AMER", "1");
-		filterCounts.put("Live Events" , testRegionCount);
-		HashMap<String, String> testContentCount = new HashMap<>();
-		testContentCount.put("PDF", "1");
-		filterCounts.put("Content Type" , testContentCount);
-		HashMap<String, String> testLanguageCount = new HashMap<>();
-		testLanguageCount.put("English", "1");
-		filterCounts.put("Language" , testLanguageCount);
-		String testFilter = "test:test";
-		when(learningContentDAO.getUpcomingFiltersWithCount(Mockito.any(), Mockito.any())).thenReturn(filterCounts);
-		learningContentService.getUpcomingFiltersWithCount(testFilter, filterCounts);
-		when(learningContentDAO.getUpcomingFiltersWithCount(Mockito.any(), Mockito.any())).thenThrow(new GenericException("There was a problem in fetching CX Insights learning content"));
+		HashMap<String, Object> testFilter = getTestFiltersSelected();
+		HashMap<String, Object> filterCounts = getTestFilterCounts();
+		when(learningContentDAO.getUpcomingFiltersWithCount(Mockito.any())).thenReturn(filterCounts);
+		learningContentService.getUpcomingFiltersWithCount(testFilter);
+		when(learningContentDAO.getUpcomingFiltersWithCount(Mockito.any())).thenThrow(new GenericException("There was a problem in fetching CX Insights learning content"));
 		assertThrows(Exception.class, () -> {
-			learningContentService.getUpcomingFiltersWithCount(testFilter, filterCounts);
-		});
-	}
-
-	@Test
-	public void testFetchSuccessacademyContent()
-	{
-		String testUserId = "testUserId";
-		String testFilter = "test:Campus Network";
-		List<NewLearningContentEntity> learningEntityList = new ArrayList<>();
-		learningEntityList.add(getLearningEntity());
-		when(learningContentDAO.fetchSuccessAcademyContent(Mockito.any())).thenReturn(learningEntityList);
-		Set<String> userBookmarks=getBookmarks();
-		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(userBookmarks);
-		learningContentService.fetchSuccessAcademyContent(this.puid, testUserId, testFilter);
-		when(learningContentDAO.fetchSuccessAcademyContent(Mockito.any())).thenThrow(new GenericException("There was a problem in fetching CX Insights learning content"));
-		assertThrows(Exception.class, () -> {
-			learningContentService.fetchSuccessAcademyContent(this.puid, testUserId, testFilter);
-		});
-	}
-
-	@Test
-	public void testFetchSuccessacademyFiltersWithCount()
-	{
-		HashMap<String, HashMap<String, String>> filterCounts = new HashMap<>();
-		HashMap<String, String> testRegionCount = new HashMap<>();
-		testRegionCount.put("AMER", "1");
-		filterCounts.put("Live Events" , testRegionCount);
-		HashMap<String, String> testContentCount = new HashMap<>();
-		testContentCount.put("PDF", "1");
-		filterCounts.put("Content Type" , testContentCount);
-		HashMap<String, String> testLanguageCount = new HashMap<>();
-		testLanguageCount.put("English", "1");
-		filterCounts.put("Language" , testLanguageCount);
-		String testFilter = "test:Campus Network";
-		when(learningContentDAO.getSuccessAcademyFiltersWithCount(Mockito.any(), Mockito.any())).thenReturn(filterCounts);
-		learningContentService.getSuccessAcademyFiltersWithCount(testFilter, filterCounts);
-		when(learningContentDAO.getSuccessAcademyFiltersWithCount(Mockito.any(), Mockito.any())).thenThrow(new GenericException("There was a problem in fetching CX Insights learning content"));
-		assertThrows(Exception.class, () -> {
-			learningContentService.getSuccessAcademyFiltersWithCount(testFilter, filterCounts);
+			learningContentService.getUpcomingFiltersWithCount(testFilter);
 		});
 	}
 
@@ -343,17 +268,30 @@ public class LearningContentServiceTest {
 	public void testFetchCXInsightsContent()
 	{
 		String testUserId = "testUserId";
-		String testFilter = "test:test";
+		HashMap<String, Object> testFilter = getTestFiltersSelected();
 		String searchToken = "test";
 		List<NewLearningContentEntity> learningEntityList = new ArrayList<>();
 		learningEntityList.add(getLearningEntity());
-		when(learningContentDAO.fetchCXInsightsContent(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(learningEntityList);
+		when(learningContentDAO.fetchCXInsightsContent(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(learningEntityList);
 		Set<String> userBookmarks=getBookmarks();
 		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(userBookmarks);
 		learningContentService.fetchCXInsightsContent(testUserId, testFilter, searchToken, null, null);
-		when(learningContentDAO.fetchCXInsightsContent(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenThrow(new GenericException("There was a problem in fetching CX Insights learning content"));
+		when(learningContentDAO.fetchCXInsightsContent(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenThrow(new GenericException("There was a problem in fetching CX Insights learning content"));
 		assertThrows(Exception.class, () -> {
 			learningContentService.fetchCXInsightsContent(testUserId, testFilter, searchToken, null, null);
+		});
+	}
+
+	@Test
+	public void testGetCXInsightsFiltersWithCount()
+	{
+		HashMap<String, Object> testFilter = getTestFiltersSelected();
+		HashMap<String, Object> filterCounts = getTestFilterCounts();
+		when(learningContentDAO.getCXInsightsFiltersWithCount(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(filterCounts);
+		learningContentService.getCXInsightsFiltersWithCount("test", "test", testFilter);
+		when(learningContentDAO.getCXInsightsFiltersWithCount(Mockito.any(), Mockito.any(), Mockito.any())).thenThrow(new GenericException("There was a problem in fetching CX Insights learning content"));
+		assertThrows(Exception.class, () -> {
+			learningContentService.getCXInsightsFiltersWithCount("test", "test", testFilter);
 		});
 	}
 
@@ -361,11 +299,11 @@ public class LearningContentServiceTest {
 	public void testGetLearningMap()
 	{
 		LearningMap learningMap = getLearningMap();
-		when(learningContentDAO.getLearningMap(Mockito.anyString())).thenReturn(learningMap);
-		learningContentService.getLearningMap("test");
-		when(learningContentDAO.getLearningMap(Mockito.anyString())).thenThrow(new GenericException("There was a problem in fetching CX Insights learning content"));
+		when(learningContentDAO.getLearningMap(Mockito.anyString(), Mockito.anyString())).thenReturn(learningMap);
+		learningContentService.getLearningMap("test", "test");
+		when(learningContentDAO.getLearningMap(Mockito.anyString(), Mockito.anyString())).thenThrow(new GenericException("There was a problem in fetching CX Insights learning content"));
 		assertThrows(Exception.class, () -> {
-			learningContentService.getLearningMap("test");
+			learningContentService.getLearningMap("test", "test");
 		});
 	}
 
@@ -450,6 +388,49 @@ public class LearningContentServiceTest {
 		NewLearningContentEntity learningEntity = new NewLearningContentEntity();
 		learningEntity.setId("test");
 		return learningEntity;
+	}
+
+	private HashMap<String, Object> getTestFiltersSelected() {
+		HashMap<String, Object> testFilter = new HashMap<>();
+		List<String> valueList=new ArrayList<>();
+		valueList.add("test");
+		testFilter.put("test", valueList);
+		HashMap<String, Map<String, List<String>>> stFilter= new HashMap<>();
+		HashMap<String, List<String>> ucList=new HashMap<>();
+		List<String> ptList=new ArrayList<>();
+		ptList.add("test");
+		ucList.put("test", ptList);
+		stFilter.put("test", ucList);
+		testFilter.put("Success Tracks", stFilter);
+		return testFilter;
+	}
+
+	private HashMap<String, Object> getTestFilterCounts() {
+		HashMap<String, Object> filterCounts = new HashMap<>();
+		HashMap<String, String> testRegionCount = new HashMap<>();
+		testRegionCount.put("AMER", "1");
+		filterCounts.put("Live Events" , testRegionCount);
+		HashMap<String, String> testContentCount = new HashMap<>();
+		testContentCount.put("PDF", "1");
+		filterCounts.put("Content Type" , testContentCount);
+		HashMap<String, String> testLanguageCount = new HashMap<>();
+		testLanguageCount.put("English", "1");
+		filterCounts.put("Language", testLanguageCount);
+		return filterCounts;
+	}
+	
+	private List<NewLearningContentEntity> getLearningEntities() {
+		List<NewLearningContentEntity> resp=new ArrayList<NewLearningContentEntity>();
+		NewLearningContentEntity learningContentEntity=new NewLearningContentEntity();
+		learningContentEntity.setId("test");
+		learningContentEntity.setTitle("test");
+		learningContentEntity.setDuration("test");
+		learningContentEntity.setPresenterName("test");
+		learningContentEntity.setRegistrationUrl("test");
+		learningContentEntity.setRegion("test");
+		learningContentEntity.setSessionStartDate(new Timestamp(System.currentTimeMillis()));
+		resp.add(learningContentEntity);
+		return resp;
 	}
 
 }

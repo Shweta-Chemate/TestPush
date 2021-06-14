@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -20,7 +19,6 @@ import org.springframework.util.CollectionUtils;
 
 import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
 import com.cisco.cx.training.app.dao.NewLearningContentDAO;
-import com.cisco.cx.training.app.dao.SuccessAcademyDAO;
 import com.cisco.cx.training.app.entities.LearningStatusEntity;
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.app.exception.GenericException;
@@ -325,6 +323,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 		List<LearningContentItem> result = new ArrayList<>();
 		Map<String, List<String>> queryMap=new HashMap<>();
 		Object stMap=null;
+		//get filters selected for success track filter and other filters separately and populate the selection into different objects
 		if(filtersSelected!=null) {
 			filtersSelected.keySet().forEach(filterGroup->{
 				if(!filterGroup.equals(Constants.ST_FILTER_KEY)) {
@@ -438,6 +437,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 		List<LearningContentItem> result = new ArrayList<>();
 		Map<String, List<String>> queryMap=new HashMap<>();
 		Object stMap=null;
+		//get filters selected for success track filter and other filters separately and populate the selection into different objects
 		if(filtersSelected!=null) {
 			filtersSelected.keySet().forEach(filterGroup->{
 				if(!filterGroup.equals(Constants.ST_FILTER_KEY)) {
@@ -502,6 +502,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 		List<LearningContentItem> result = new ArrayList<>();
 		Map<String, List<String>> queryMap=new HashMap<>();
 		Object stMap=null;
+		//get filters selected for success track filter and other filters separately and populate the selection into different objects
 		if(filtersSelected!=null) {
 			filtersSelected.keySet().forEach(filterGroup->{
 				if(!filterGroup.equals(Constants.ST_FILTER_KEY)) {

@@ -103,11 +103,14 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		HashMap<String, Object> filters = new HashMap<>();
 		HashMap<String, Object> countFilters = new HashMap<>();
 
+		//get all filter groups to be considered for the section
 		List<String> filterGroups=NewLearningContentDAOImpl.APIFilterGroupMappings.get(Constants.NEW);
+		//fetch learning content for the section
 		filteredList = fetchNewLearningContent(new HashMap<String,List<String>>(), null);
 		learningItemIdsList = filteredList.stream().map(learningItem -> learningItem.getId())
 				.collect(Collectors.toSet());
 		
+		//initialize filter counts
 		filterCountsDAO.initializeFiltersWithCounts(filterGroups, filters, countFilters, learningItemIdsList, null);
 
 		if(filtersSelected==null || filtersSelected.isEmpty())
@@ -338,7 +341,6 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		List<String> learningItemIdsListCXInsights = new ArrayList<String>();
 		//get ids tagged with pitstop
 		learningItemIdsListCXInsights=learningContentRepo.getPitstopTaggedContent();
-		//get ids for foryou filter
 		SpecificationBuilder builder=new SpecificationBuilder();
 		Specification<NewLearningContentEntity> specification = Specification.where(null);
 		specification = getSpecificationForCuratedTags(queryMap ,stMap, userId);
@@ -420,6 +422,11 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		return learningMap;
 	}
 
+	/*
+	* get specification for filters which cannot be filtered directly on the learning content specification
+	* For example : Specification for all filters that can have multiple
+	* values populated in the table like role, technology etc is built here.
+	*/
 	private Specification<NewLearningContentEntity> getSpecificationForCuratedTags(Map<String, List<String>> queryMap, Object stMap, String userId) {
 		Specification<NewLearningContentEntity> specification = Specification.where(null);
 		for (Entry<String, List<String>> filterParam : queryMap.entrySet()) {
