@@ -138,9 +138,9 @@ public class NewLearningContentControllerTest {
 	}
 
 	@Test
-	public void testGetNewLearningsFilters() throws Exception {
+	public void testGetNewLearningContent() throws Exception {
 		this.mockMvc
-		.perform(post("/v1/partner/learning/viewmore/new/filters").contentType(MediaType.APPLICATION_JSON_VALUE)
+		.perform(post("/v1/partner/learning/new").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.header("X-Mashery-Handshake", this.XMasheryHeader)
 				.header("puid", this.puid)
 				.characterEncoding("utf-8"))
@@ -148,12 +148,22 @@ public class NewLearningContentControllerTest {
 
 		assertThrows(Exception.class, () -> {
 			this.mockMvc
-			.perform(post("/v1/partner/learning/viewmore/new/filters").contentType(MediaType.APPLICATION_JSON_VALUE)
+			.perform(post("/v1/partner/learning/new").contentType(MediaType.APPLICATION_JSON_VALUE)
 					.header("puid", this.puid)
 					.param("filter", "test")
 					.characterEncoding("utf-8"))
 			.andDo(print()).andExpect(status().isOk());
 		});
+	}
+
+	@Test
+	public void testGetNewLearningsFilters() throws Exception {
+		this.mockMvc
+		.perform(post("/v1/partner/learning/viewmore/new/filters").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.header("X-Mashery-Handshake", this.XMasheryHeader)
+				.header("puid", this.puid)
+				.characterEncoding("utf-8"))
+		.andDo(print()).andExpect(status().isOk());
 	}
 
 	@Test
@@ -184,7 +194,7 @@ public class NewLearningContentControllerTest {
 	@Test
 	public void testGetRecentlyViewedContent() throws Exception {
 		this.mockMvc
-		.perform(get("/v1/partner/learning/recentlyviewed").contentType(MediaType.APPLICATION_JSON_VALUE)
+		.perform(post("/v1/partner/learning/recentlyviewed").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.header("X-Mashery-Handshake", this.XMasheryHeader)
 				.header("puid", this.puid)
 				.characterEncoding("utf-8"))
@@ -192,7 +202,7 @@ public class NewLearningContentControllerTest {
 
 		assertThrows(Exception.class, () -> {
 			this.mockMvc
-			.perform(get("/v1/partner/learning/recentlyviewed").contentType(MediaType.APPLICATION_JSON_VALUE)
+			.perform(post("/v1/partner/learning/recentlyviewed").contentType(MediaType.APPLICATION_JSON_VALUE)
 					.header("puid", this.puid)
 					.characterEncoding("utf-8"))
 			.andDo(print()).andExpect(status().isOk());
@@ -220,7 +230,7 @@ public class NewLearningContentControllerTest {
 	@Test
 	public void testGetBookmarkedContent() throws Exception {
 		this.mockMvc
-		.perform(get("/v1/partner/learning/bookmarked").contentType(MediaType.APPLICATION_JSON_VALUE)
+		.perform(post("/v1/partner/learning/bookmarked").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.header("X-Mashery-Handshake", this.XMasheryHeader)
 				.header("puid", this.puid)
 				.characterEncoding("utf-8"))
@@ -228,7 +238,7 @@ public class NewLearningContentControllerTest {
 
 		assertThrows(Exception.class, () -> {
 			this.mockMvc
-			.perform(get("/v1/partner/learning/bookmarked").contentType(MediaType.APPLICATION_JSON_VALUE)
+			.perform(post("/v1/partner/learning/bookmarked").contentType(MediaType.APPLICATION_JSON_VALUE)
 					.header("puid", this.puid)
 					.characterEncoding("utf-8"))
 			.andDo(print()).andExpect(status().isOk());
@@ -256,7 +266,7 @@ public class NewLearningContentControllerTest {
 	@Test
 	public void testGetUpcomingContent() throws Exception {
 		this.mockMvc
-		.perform(get("/v1/partner/learning/upcoming").contentType(MediaType.APPLICATION_JSON_VALUE)
+		.perform(post("/v1/partner/learning/upcoming").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.header("X-Mashery-Handshake", this.XMasheryHeader)
 				.header("puid", this.puid)
 				.characterEncoding("utf-8"))
@@ -264,7 +274,7 @@ public class NewLearningContentControllerTest {
 
 		assertThrows(Exception.class, () -> {
 			this.mockMvc
-			.perform(get("/v1/partner/learning/upcoming").contentType(MediaType.APPLICATION_JSON_VALUE)
+			.perform(post("/v1/partner/learning/upcoming").contentType(MediaType.APPLICATION_JSON_VALUE)
 					.header("puid", this.puid)
 					.characterEncoding("utf-8"))
 			.andDo(print()).andExpect(status().isOk());
@@ -280,55 +290,12 @@ public class NewLearningContentControllerTest {
 				.characterEncoding("utf-8"))
 		.andDo(print()).andExpect(status().isOk());
 
-		assertThrows(Exception.class, () -> {
-			this.mockMvc
-			.perform(post("/v1/partner/learning/viewmore/upcoming/filters").contentType(MediaType.APPLICATION_JSON_VALUE)
-					.header("puid", this.puid)
-					.characterEncoding("utf-8"))
-			.andDo(print()).andExpect(status().isOk());
-		});
-	}
-
-	@Test
-	public void testGetSuccessAcademyContent() throws Exception {
-		this.mockMvc
-		.perform(get("/v1/partner/learning/successacademy").contentType(MediaType.APPLICATION_JSON_VALUE)
-				.header("X-Mashery-Handshake", this.XMasheryHeader)
-				.header("puid", this.puid)
-				.characterEncoding("utf-8"))
-		.andDo(print()).andExpect(status().isOk());
-
-		assertThrows(Exception.class, () -> {
-			this.mockMvc
-			.perform(get("/v1/partner/learning/successacademy").contentType(MediaType.APPLICATION_JSON_VALUE)
-					.header("puid", this.puid)
-					.characterEncoding("utf-8"))
-			.andDo(print()).andExpect(status().isOk());
-		});
-	}
-
-	@Test
-	public void testGetFiltersForSuccessacademy() throws Exception {
-		this.mockMvc
-		.perform(post("/v1/partner/learning/successacademy/filters").contentType(MediaType.APPLICATION_JSON_VALUE)
-				.header("X-Mashery-Handshake", this.XMasheryHeader)
-				.header("puid", this.puid)
-				.characterEncoding("utf-8"))
-		.andDo(print()).andExpect(status().isOk());
-
-		assertThrows(Exception.class, () -> {
-			this.mockMvc
-			.perform(post("/v1/partner/learning/successacademy/filters").contentType(MediaType.APPLICATION_JSON_VALUE)
-					.header("puid", this.puid)
-					.characterEncoding("utf-8"))
-			.andDo(print()).andExpect(status().isOk());
-		});
 	}
 
 	@Test
 	public void testGetCXInsightsContent() throws Exception {
 		this.mockMvc
-		.perform(get("/v1/partner/learning/cxinsights").contentType(MediaType.APPLICATION_JSON_VALUE)
+		.perform(post("/v1/partner/learning/cxinsights").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.header("X-Mashery-Handshake", this.XMasheryHeader)
 				.header("puid", this.puid)
 				.characterEncoding("utf-8"))
@@ -336,7 +303,25 @@ public class NewLearningContentControllerTest {
 
 		assertThrows(Exception.class, () -> {
 			this.mockMvc
-			.perform(get("/v1/partner/learning/cxinsights").contentType(MediaType.APPLICATION_JSON_VALUE)
+			.perform(post("/v1/partner/learning/cxinsights").contentType(MediaType.APPLICATION_JSON_VALUE)
+					.header("puid", this.puid)
+					.characterEncoding("utf-8"))
+			.andDo(print()).andExpect(status().isOk());
+		});
+	}
+
+	@Test
+	public void testGetFiltersForCXInsights() throws Exception {
+		this.mockMvc
+		.perform(post("/v1/partner/learning/cxinsights/filters").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.header("X-Mashery-Handshake", this.XMasheryHeader)
+				.header("puid", this.puid)
+				.characterEncoding("utf-8"))
+		.andDo(print()).andExpect(status().isOk());
+
+		assertThrows(Exception.class, () -> {
+			this.mockMvc
+			.perform(post("/v1/partner/learning/cxinsights/filters").contentType(MediaType.APPLICATION_JSON_VALUE)
 					.header("puid", this.puid)
 					.characterEncoding("utf-8"))
 			.andDo(print()).andExpect(status().isOk());
