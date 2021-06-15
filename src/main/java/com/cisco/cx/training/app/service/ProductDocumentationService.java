@@ -373,7 +373,7 @@ public class ProductDocumentationService{
 			Map<String, Set<String>> filteredCardsMap, boolean search, String contentTab, Set<String> searchCardIds)
 	{
 		LOG.info("filteredCardsMap={}",filteredCardsMap);
-		if(filteredCardsMap ==null || filteredCardsMap.isEmpty() || filteredCardsMap.size()==1 )  //only search
+		if(filteredCardsMap ==null || filteredCardsMap.isEmpty() || (filteredCardsMap.size()==1 && search) )  //only search
 		{
 			setFilterCounts(cardIdsInp, filters,contentTab, filteredCardsMap,search, searchCardIds);
 		}			
