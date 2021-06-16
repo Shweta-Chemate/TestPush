@@ -219,8 +219,6 @@ workflows:
             branches:
               only: 
                 - master
-                - LA-hotfix
-                - release/0.9.6
                 - /^pull.*/ 
           context: aws-devops-context
 
@@ -231,8 +229,6 @@ workflows:
             branches:
               only: 
                 - master
-                - LA-hotfix
-                - release/0.9.6
                 - /^pull.*/
           context: aws-devops-context
       - Push_Helm_Chart:
@@ -242,7 +238,5 @@ workflows:
             branches:
               only:
                 - master
-                - LA-hotfix
-                - release/0.9.6
                 - /^pull.*/  
           context: aws-devops-context    
