@@ -444,8 +444,6 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 			}
 			if(key.equals(Constants.FOR_YOU_FILTER)) {
 				List<String> learningItemIdsListForYouFiltered=new ArrayList<>();
-				if(values.contains(Constants.NEW))
-					learningItemIdsListForYouFiltered.addAll(fetchNewLearningContent(new HashMap<String, List<String>>(), null).stream().map(learningItem -> learningItem.getId()).collect(Collectors.toSet()));
 				if(values.contains(Constants.BOOKMARKED_FOR_YOU))
 					learningItemIdsListForYouFiltered.addAll(getBookMarkedIds(userId));
 				if(values.contains(Constants.RECENTLY_VIEWED))

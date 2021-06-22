@@ -104,10 +104,7 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 
 		if(filterCountsMap.containsKey(Constants.FOR_YOU_FILTER) && !filterGroup.equals(Constants.FOR_YOU_FILTER)) {
 			Map<String, String> forYouMap=new TreeMap<>();
-			int count = learningContentRepo.findNewFilteredIds(cardIds).size();
-			if(count>0)
-				forYouMap.put(Constants.NEW, Integer.toString(count));
-			count = learningContentRepo.getRecentlyViewedContentFilteredIds(userId, cardIds).size();
+			int count = learningContentRepo.getRecentlyViewedContentFilteredIds(userId, cardIds).size();
 			if(count>0)
 				forYouMap.put(Constants.RECENTLY_VIEWED, Integer.toString(count));
 			Set<String> bookmarkIds=getBookMarkedIds(userId);
@@ -188,10 +185,7 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 		if(filterCountsMap.containsKey(Constants.FOR_YOU_FILTER)) {
 			Set<String> cardIds = andFiltersWithExcludeKey(filteredCardsMap,Constants.FOR_YOU_FILTER);
 			Map<String, String> forYouMap=new TreeMap<>();
-			int count = learningContentRepo.findNewFilteredIds(cardIds).size();
-			if(count>0)
-				forYouMap.put(Constants.NEW, Integer.toString(count));
-			count = learningContentRepo.getRecentlyViewedContentFilteredIds(userId, cardIds).size();
+			int count = learningContentRepo.getRecentlyViewedContentFilteredIds(userId, cardIds).size();
 			if(count>0)
 				forYouMap.put(Constants.RECENTLY_VIEWED, Integer.toString(count));
 			Set<String> bookmarkIds=getBookMarkedIds(userId);
@@ -254,8 +248,6 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 				case Constants.LIFECYCLE : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByLFC(new HashSet<String>(list),learningItemIdsList));break;
 				case Constants.FOR_YOU_FILTER : {
 					Set<String> cardIds=new HashSet<>();
-					if(list.contains(Constants.NEW))
-						cardIds.addAll(learningContentRepo.findNewFilteredIds(learningItemIdsList));
 					if(list.contains(Constants.RECENTLY_VIEWED))
 						cardIds.addAll(learningContentRepo.getRecentlyViewedContentFilteredIds(userId, learningItemIdsList));
 					if(list.contains(Constants.BOOKMARKED_FOR_YOU)) {
@@ -406,11 +398,6 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 			if(count>0) {
 				forYouMap.put(Constants.BOOKMARKED_FOR_YOU, Integer.toString(count));
 				forYouMapEmpty.put(Constants.BOOKMARKED_FOR_YOU, "0");
-			}
-			count = learningContentRepo.findNewFilteredIds(learningItemIdsList).size();
-			if(count>0) {
-				forYouMap.put(Constants.NEW, Integer.toString(count));
-				forYouMapEmpty.put(Constants.NEW, "0");
 			}
 			count = learningContentRepo.getRecentlyViewedContentFilteredIds(userId, learningItemIdsList).size();
 			if(count>0) {
