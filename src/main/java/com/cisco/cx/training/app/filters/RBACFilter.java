@@ -112,7 +112,8 @@ public class RBACFilter implements Filter {
 				response.setStatus(errorResponse.getStatus());
 				response.setContentType(Constants.APPLICATION_JSON);
 				response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
-
+				response.getWriter().flush();
+				response.getWriter().close();
 			} finally {
 				logger.debug("PERF_TIME_TAKEN REQUEST | " + request.getRequestURL() + " | "
 						+ (System.currentTimeMillis() - requestStartTime) + " milli seconds");
