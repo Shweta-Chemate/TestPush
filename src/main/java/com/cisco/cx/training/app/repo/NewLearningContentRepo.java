@@ -41,8 +41,8 @@ public interface NewLearningContentRepo
 	@Query(value = SQLConstants.GET_LFC_WITH_COUNT_BY_CARD, nativeQuery = true)
 	List<Map<String, Object>> getAllLFCWithCountByCards(Set<String> learningItemIds);
 
-	@Query(value=SQLConstants.GET_PD_ST_UC_PS_WITH_COUNT , nativeQuery=true)
-	List<Map<String, Object>> getAllStUcPsWithCount(Set<String> learningItemIds);
+	@Query(value=SQLConstants.GET_PD_ST_UC_WITH_COUNT , nativeQuery=true)
+	List<Map<String, Object>> getAllStUcWithCount(Set<String> learningItemIds);
 
 	@Query(value = SQLConstants.GET_RECENTLY_VIEWED_CONTENT_BASE, nativeQuery = true)
 	List<NewLearningContentEntity> getRecentlyViewedContent(String userId);
@@ -95,11 +95,11 @@ public interface NewLearningContentRepo
 	@Query(value = SQLConstants.GET_CARD_IDs_LFC, nativeQuery = true)
 	Set<String> getCardIdsByLFC(Set<String> values, Set<String> learningItemIds);
 
-	@Query(value=SQLConstants.GET_PD_CARD_IDS_BY_STUCPS , nativeQuery=true)
-	Set<String> getCardIdsByPsUcSt(String successtrackInp, String usecaseInp, Set<String> pitstopInp);
+	@Query(value=SQLConstants.GET_PD_CARD_IDS_BY_STUC , nativeQuery=true)
+	Set<String> getCardIdsByUcSt(String successtrackInp, Set<String> usecaseInp);
 
-	@Query(value=SQLConstants.GET_PD_CARD_IDS_BY_STUCPS_FILTER , nativeQuery=true)
-	Set<String> getCardIdsByPsUcStFilter(String successtrackInp, String usecaseInp, Set<String> pitstopInp, Set<String> learningItemIds);
+	@Query(value=SQLConstants.GET_PD_CARD_IDS_BY_STUC_FILTER , nativeQuery=true)
+	Set<String> getCardIdsByUcStFilter(String successtrackInp, Set<String> usecaseInp, Set<String> learningItemIds);
 
 	@Query(value = SQLConstants.GET_SORTED_BY_TITLE_ASC, nativeQuery = true)
 	List<NewLearningContentEntity> getSortedByTitleAsc(Set<String> learningItemIdsList);

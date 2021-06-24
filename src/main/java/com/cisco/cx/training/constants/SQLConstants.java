@@ -66,7 +66,10 @@ public class SQLConstants {
 			+ " where archetype in (:values) and id in (:learningItemIdsList)";
 
 	public static final String GET_CARD_IDs_PITSTOP_VIEW = "(SELECT learning_item_id,pitstop FROM cxpp_db.cxpp_learning_pitstop_temp\n" +
-			"UNION\n" +
+			"UNION \n" +
+			"SELECT learning_item_id, pitstop FROM cxpp_db.cxpp_learning_successtrack st,cxpp_db.cxpp_learning_usecase uc,cxpp_db.cxpp_learning_pitstop pt where \n" + 
+			"st.successtrack_id=uc.successtrack_id and uc.usecase_id=pt.usecase_id \n" +
+			"UNION \n" +
 			"SELECT learning_map_id as learning_item_id,pitstop from cxpp_db.cxpp_learning_pitstop_temp pt left join cxpp_db.cxpp_learning_item item on pt.learning_item_id=item.learning_item_id AND learning_map_id IS NOT NULL) \n" +
 			"as ptview ";
 
@@ -123,24 +126,20 @@ public class SQLConstants {
 	public static final String GET_CARD_IDs_LFC = "select distinct learning_item_id from " + GET_CARD_IDs_PITSTOP_VIEW 
 			+ " where ptview.pitstop in (:values) and ptview.learning_item_id in (:learningItemIds)";
 
-	public static final String GET_PD_ST_UC_PS_WITH_COUNT = "select count(*) as dbvalue ,  pitstop, usecase, successtrack "
+	public static final String GET_PD_ST_UC_WITH_COUNT = "select count(*) as dbvalue , usecase, successtrack "
 			+ "	from cxpp_db.cxpp_learning_successtrack st  "
 			+ "	inner join cxpp_db.cxpp_learning_usecase uc  "
-			+ "	on uc.successtrack_id = st.successtrack_id  "
-			+ "	inner join cxpp_db.cxpp_learning_pitstop ps  "
-			+ "	on ps.usecase_id = uc.usecase_id where st.learning_item_id in (:learningItemIds)"
-			+ " group by pitstop,usecase,successtrack "
-			+ " order by successtrack,usecase,pitstop ";
+			+ "	on uc.successtrack_id = st.successtrack_id where st.learning_item_id in (:learningItemIds) "
+			+ " group by usecase,successtrack "
+			+ " order by successtrack,usecase ";
 
-	public static final String GET_PD_CARD_IDS_BY_STUCPS = "select learning_item_id "
+	public static final String GET_PD_CARD_IDS_BY_STUC = "select learning_item_id "
 			+ " from cxpp_db.cxpp_learning_successtrack st "
 			+ " inner join cxpp_db.cxpp_learning_usecase uc"
 			+ " on uc.successtrack_id = st.successtrack_id "
-			+ " inner join cxpp_db.cxpp_learning_pitstop ps "
-			+ " on ps.usecase_id = uc.usecase_id "
-			+ " where ps.pitstop in (:pitstopInp) and uc.usecase = :usecaseInp and st.successtrack = :successtrackInp";
+			+ " where  uc.usecase in (:usecaseInp) and st.successtrack = :successtrackInp";
 
-	public static final String GET_PD_CARD_IDS_BY_STUCPS_FILTER = GET_PD_CARD_IDS_BY_STUCPS + " and st.learning_item_id in (:learningItemIds)";
+	public static final String GET_PD_CARD_IDS_BY_STUC_FILTER = GET_PD_CARD_IDS_BY_STUC + " and st.learning_item_id in (:learningItemIds)";
 
 	public static final String GET_SUCCESSTRACKS_COUNT = "select count(*) FROM cxpp_db.cxpp_learning_successtrack";
 	

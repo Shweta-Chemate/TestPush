@@ -72,7 +72,7 @@ public class FilterCountsDaoTest {
 		when(learningContentRepo.getAllTechCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningContentRepo.getDocFilterCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningContentRepo.getAllLFCWithCountByCards((Mockito.any()))).thenReturn(dbList);
-		when(learningContentRepo.getAllStUcPsWithCount((Mockito.any()))).thenReturn(dbList);
+		when(learningContentRepo.getAllStUcWithCount((Mockito.any()))).thenReturn(dbList);
 		when(learningContentRepo.findNewFilteredIds(Mockito.any())).thenReturn(cardIds);
 		when(learningContentRepo.getRecentlyViewedContentFilteredIds(Mockito.anyString(), Mockito.any()))
 				.thenReturn(cardIds);
@@ -110,7 +110,7 @@ public class FilterCountsDaoTest {
 		when(learningContentRepo.getAllTechCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningContentRepo.getDocFilterCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningContentRepo.getAllLFCWithCountByCards((Mockito.any()))).thenReturn(dbList);
-		when(learningContentRepo.getAllStUcPsWithCount((Mockito.any()))).thenReturn(dbList);
+		when(learningContentRepo.getAllStUcWithCount((Mockito.any()))).thenReturn(dbList);
 		when(learningContentRepo.findNewFilteredIds(Mockito.any())).thenReturn(cardIds);
 		when(learningContentRepo.getRecentlyViewedContentFilteredIds(Mockito.anyString(), Mockito.any()))
 				.thenReturn(cardIds);
@@ -147,7 +147,7 @@ public class FilterCountsDaoTest {
 		when(learningContentRepo.getAllTechCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningContentRepo.getDocFilterCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningContentRepo.getAllLFCWithCountByCards((Mockito.any()))).thenReturn(dbList);
-		when(learningContentRepo.getAllStUcPsWithCount((Mockito.any()))).thenReturn(dbList);
+		when(learningContentRepo.getAllStUcWithCount((Mockito.any()))).thenReturn(dbList);
 		when(learningContentRepo.findNewFilteredIds(Mockito.any())).thenReturn(cardIds);
 		when(learningContentRepo.getRecentlyViewedContentFilteredIds(Mockito.anyString(), Mockito.any()))
 				.thenReturn(cardIds);
@@ -189,7 +189,7 @@ public class FilterCountsDaoTest {
 		when(learningContentRepo.getAllTechCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningContentRepo.getDocFilterCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningContentRepo.getAllLFCWithCountByCards((Mockito.any()))).thenReturn(dbList);
-		when(learningContentRepo.getAllStUcPsWithCount((Mockito.any()))).thenReturn(dbList);
+		when(learningContentRepo.getAllStUcWithCount((Mockito.any()))).thenReturn(dbList);
 		when(learningContentRepo.findNewFilteredIds(Mockito.any())).thenReturn(learningItemIdsList);
 		when(learningContentRepo.getRecentlyViewedContentFilteredIds(Mockito.anyString(), Mockito.any()))
 				.thenReturn(learningItemIdsList);
@@ -230,7 +230,7 @@ public class FilterCountsDaoTest {
 		when(learningContentRepo.getAllTechCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningContentRepo.getDocFilterCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningContentRepo.getAllLFCWithCountByCards((Mockito.any()))).thenReturn(dbList);
-		when(learningContentRepo.getAllStUcPsWithCount((Mockito.any()))).thenReturn(dbList);
+		when(learningContentRepo.getAllStUcWithCount((Mockito.any()))).thenReturn(dbList);
 		when(learningContentRepo.findNewFilteredIds(Mockito.any())).thenReturn(learningItemIdsList);
 		when(learningContentRepo.getRecentlyViewedContentFilteredIds(Mockito.anyString(), Mockito.any()))
 				.thenReturn(learningItemIdsList);

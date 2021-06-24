@@ -345,6 +345,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		specification = specification.and(builder.filter(queryMap));
 		specification = specification.and(builder.buildSearchSpecification(searchToken));
 		specification = specification.and(builder.filterById(learningItemIdsListCXInsights));
+		specification = specification.and(CustomSpecifications.notEqual(Constants.LEARNING_TYPE, Constants.DOCUMENTATION));
 		if(sortField.equals(Constants.TITLE))
 		{
 			result=learningContentRepo.findAll(specification);
@@ -465,29 +466,21 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 
 	@SuppressWarnings("unchecked")
 	private Set<String> getSTFilteredIDs(Object stMap) {
-		Set<String> cardIdsStUcPs = new HashSet<String>();
+		Set<String> cardIdsStUc = new HashSet<String>();
 		//LOG.info("ST="+((Map) v).keySet());
-		((Map) stMap).keySet().forEach(ik->{
-			Object iv = ((Map)stMap).get(ik);
-			List<String> ilist;
-			if(iv instanceof Map) {
-				//LOG.info("UC="+((Map) iv).keySet());
-				((Map)iv).keySet().forEach(ivk -> {
-					Object ivv = ((Map)iv).get(ivk);
-					List<String> ivlist;
-					if(ivv instanceof List)
-					{
-						ivlist= (List<String>)ivv;
-						LOG.info("PS={} uc={} st={}",ivlist,ivk,ik);
-						Set<String> pitStops = new HashSet<String>(ivlist);
-						String usecase = ivk.toString();
-						String successtrack = ik.toString();
-						cardIdsStUcPs.addAll(learningContentRepo.getCardIdsByPsUcSt(successtrack,usecase,pitStops));
-					}
-				});
+		((Map) stMap).keySet().forEach(st->{
+			Object ucObject = ((Map)stMap).get(st);
+			List<String> uclist;
+			if(ucObject instanceof List)
+			{
+				uclist= (List<String>)ucObject;
+				LOG.info("uc={} st={}",uclist,st);
+				Set<String> usecases = new HashSet<String>(uclist);
+				String successtrack = st.toString();
+				cardIdsStUc.addAll(learningContentRepo.getCardIdsByUcSt(successtrack, usecases));
 			}
 		});
-		return cardIdsStUcPs;
+		return cardIdsStUc;
 	}
 
 	List<String> getBookMarkedIds(String userId){
