@@ -83,12 +83,6 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 			((Map<String, String>) filterCountsMap.get(Constants.TECHNOLOGY)).putAll(listToMap(dbListTech));
 		}
 
-		if(filterCountsMap.containsKey(Constants.DOCUMENTATION_FILTER) && !filterGroup.equals(Constants.DOCUMENTATION_FILTER)) {
-			List<Map<String,Object>> dbListDoc = learningContentRepo
-					.getDocFilterCountByCards(cardIds);
-			((Map<String, String>) filterCountsMap.get(Constants.DOCUMENTATION_FILTER)).putAll(listToMap(dbListDoc));
-		}
-
 		if(filterCountsMap.containsKey(Constants.LIFECYCLE) && !filterGroup.equals(Constants.LIFECYCLE)) {
 			List<Map<String,Object>> dbListLFC = learningContentRepo
 					.getAllLFCWithCountByCards(cardIds);
@@ -158,13 +152,6 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 			List<Map<String,Object>> dbListTech = learningContentRepo
 					.getAllTechCountByCards(cardIds);
 			((Map<String, String>) filterCountsMap.get(Constants.TECHNOLOGY)).putAll(listToMap(dbListTech));
-		}
-
-		if(filterCountsMap.containsKey(Constants.DOCUMENTATION_FILTER)) {
-			Set<String> cardIds = andFiltersWithExcludeKey(filteredCardsMap,Constants.DOCUMENTATION_FILTER);
-			List<Map<String,Object>> dbListDoc = learningContentRepo
-					.getDocFilterCountByCards(cardIds);
-			((Map<String, String>) filterCountsMap.get(Constants.DOCUMENTATION_FILTER)).putAll(listToMap(dbListDoc));
 		}
 
 		if(filterCountsMap.containsKey(Constants.LIFECYCLE)) {
@@ -244,7 +231,6 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 				case Constants.LIVE_EVENTS : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByReg(new HashSet<String>(list),learningItemIdsList));break;
 				case Constants.ROLE : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByRole(new HashSet<String>(list),learningItemIdsList));break;
 				case Constants.TECHNOLOGY : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByTech(new HashSet<String>(list),learningItemIdsList));break;
-				case Constants.DOCUMENTATION_FILTER : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByDoc(new HashSet<String>(list),learningItemIdsList));break;
 				case Constants.LIFECYCLE : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByLFC(new HashSet<String>(list),learningItemIdsList));break;
 				case Constants.FOR_YOU_FILTER : {
 					Set<String> cardIds=new HashSet<>();
@@ -345,18 +331,6 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 				countFilters.put(Constants.TECHNOLOGY, allContentsTech);
 				filters.put(Constants.TECHNOLOGY, techFilter);
 				allContentsTech.keySet().forEach(k -> techFilter.put(k, "0"));
-			}
-		}
-
-		if(filterGroups.contains(Constants.DOCUMENTATION_FILTER)) {
-			Map<String, String> docFilter = new LinkedHashMap<>();
-			List<Map<String,Object>> dbListDoc =   learningContentRepo
-					.getDocFilterCountByCards(learningItemIdsList);
-			Map<String,String> allContentsDoc = listToMap(dbListDoc);
-			if(!allContentsDoc.isEmpty()) {
-				countFilters.put(Constants.DOCUMENTATION_FILTER, allContentsDoc);
-				filters.put(Constants.DOCUMENTATION_FILTER, docFilter);
-				allContentsDoc.keySet().forEach(k -> docFilter.put(k, "0"));
 			}
 		}
 
