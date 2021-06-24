@@ -222,11 +222,6 @@ public class LearningContentServiceImpl implements LearningContentService {
 			indexCounts.add(successTrackCount);
 			
 			requestStartTime = System.currentTimeMillis();	
-			CountSchema lifecycleCount = getLifecycleCount();
-			LOG.info("Received lifecycle count in {} ", (System.currentTimeMillis() - requestStartTime));
-			indexCounts.add(lifecycleCount);
-			
-			requestStartTime = System.currentTimeMillis();	
 			CountSchema technologyCount = getTechnologyCount();
 			LOG.info("Received technology count in {} ", (System.currentTimeMillis() - requestStartTime));
 			indexCounts.add(technologyCount);
@@ -269,16 +264,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 
 		CountSchema documentationCount = new CountSchema();
 		documentationCount.setLabel("Success Tracks");
-		documentationCount.setCount(new Long(learningContentDAO.getSuccessTracksCount()));
-		return documentationCount;
-
-	}
-	
-	private CountSchema getLifecycleCount() {
-
-		CountSchema documentationCount = new CountSchema();
-		documentationCount.setLabel("Lifecycle");
-		documentationCount.setCount(new Long(learningContentDAO.getLifecycleCount()));
+		documentationCount.setCount(new Long(learningContentDAO.getSuccessTracksCount()+learningContentDAO.getLifecycleCount()));
 		return documentationCount;
 
 	}
