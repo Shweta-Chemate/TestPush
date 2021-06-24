@@ -51,6 +51,8 @@ public class LearningContentServiceImpl implements LearningContentService {
 
 	public static final List<String> cxInsightsFilterOrder= getCXInsightsFilterOrder();
 
+	public static final List<String> lfcFilterOrder= getLFCFilterOrder();
+
 	private static HashMap<String, String> getMappings() {
 		HashMap<String, String> filterGroupMappings=new HashMap<String, String>();
 		filterGroupMappings.put(Constants.LANGUAGE, Constants.LANGUAGE_PRM);
@@ -87,6 +89,19 @@ public class LearningContentServiceImpl implements LearningContentService {
 		order.add(Constants.FOR_YOU_FILTER);
 		order.add(Constants.CONTENT_TYPE);
 		order.add(Constants.LANGUAGE);
+		return order;
+	}
+
+	private static List<String> getLFCFilterOrder() {
+		List<String> order = new ArrayList<>();
+		order.add("Accelerate"); order.add("Need");
+		order.add("Evaluate"); order.add("Select");
+		order.add("Align"); order.add("Purchase");
+		order.add("Onboard"); order.add("Implement");
+		order.add("Use");  order.add("Engage");
+		order.add("Adopt"); order.add("Optmize");
+		order.add("Renew"); order.add("Recommend");
+		order.add("Advocate");
 		return order;
 	}
 
@@ -712,10 +727,22 @@ public class LearningContentServiceImpl implements LearningContentService {
 		return learningMap;
 	}
 
+	@SuppressWarnings("unchecked")
 	private Map<String, Object> orderFilters(HashMap<String, Object> filters, List<String> order) {
 		LinkedHashMap<String, Object> result=new LinkedHashMap<>();
 		for(String filterGroup : order) {
 			if(filters.containsKey(filterGroup))
+				if(filterGroup.equals(Constants.LIFECYCLE))
+				{
+					LinkedHashMap<String, Object> lfcFilterNew=new LinkedHashMap<>();
+					Map<String, String> lfcOld = (Map<String, String>) filters.get(filterGroup);
+					List<String> lfcFilterOrder = LearningContentServiceImpl.getLFCFilterOrder();
+					for(String filter : lfcFilterOrder) {
+						if(lfcOld.containsKey(filter))
+							lfcFilterNew.put(filter, lfcOld.get(filter));
+					}
+					filters.put(filterGroup, lfcFilterNew);
+				}
 				result.put(filterGroup, filters.get(filterGroup));
 		}
 		return result;
