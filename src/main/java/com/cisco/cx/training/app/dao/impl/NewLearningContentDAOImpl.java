@@ -241,7 +241,9 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		HashMap<String, Object> countFilters = new HashMap<>();
 
 		List<String> filterGroups=NewLearningContentDAOImpl.APIFilterGroupMappings.get(Constants.CX_INSIGHTS);
-		learningItemIdsList = learningContentRepo.getPitstopTaggedContent().stream().collect(Collectors.toSet());
+		filteredList = fetchCXInsightsContent(userId, new HashMap<String,List<String>>(), null, null, Constants.SORTDATE, Constants.DESC);
+		learningItemIdsList = filteredList.stream().map(learningItem -> learningItem.getId())
+				.collect(Collectors.toSet());
 
 		filterCountsDAO.initializeFiltersWithCounts(filterGroups, filters, countFilters, learningItemIdsList, userId);
 
