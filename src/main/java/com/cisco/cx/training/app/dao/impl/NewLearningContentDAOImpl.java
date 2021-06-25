@@ -51,14 +51,14 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	private static HashMap<String, List<String>> getAPIFilterGroupMappings() {
 		HashMap<String, List<String>> APIFilterGroupMappings=new HashMap<>();
 		APIFilterGroupMappings.put(Constants.NEW, Arrays.asList(Constants.LANGUAGE,Constants.LIVE_EVENTS,Constants.CONTENT_TYPE
-				,Constants.DOCUMENTATION_FILTER,Constants.SUCCESS_TRACK,Constants.ROLE,Constants.LIFECYCLE,Constants.TECHNOLOGY));
+				,Constants.SUCCESS_TRACK,Constants.ROLE,Constants.LIFECYCLE,Constants.TECHNOLOGY));
 		APIFilterGroupMappings.put(Constants.UPCOMING_EVENTS, Arrays.asList(Constants.LANGUAGE,Constants.LIVE_EVENTS,Constants.CONTENT_TYPE));
 		APIFilterGroupMappings.put(Constants.BOOKMARKED, Arrays.asList(Constants.LANGUAGE,Constants.LIVE_EVENTS,Constants.CONTENT_TYPE
-				,Constants.DOCUMENTATION_FILTER,Constants.SUCCESS_TRACK,Constants.ROLE,Constants.LIFECYCLE,Constants.TECHNOLOGY));
+				,Constants.SUCCESS_TRACK,Constants.ROLE,Constants.LIFECYCLE,Constants.TECHNOLOGY));
 		APIFilterGroupMappings.put(Constants.RECENTLY_VIEWED, Arrays.asList(Constants.LANGUAGE,Constants.LIVE_EVENTS,Constants.CONTENT_TYPE
-				,Constants.DOCUMENTATION_FILTER,Constants.SUCCESS_TRACK,Constants.ROLE,Constants.LIFECYCLE,Constants.TECHNOLOGY));
+				,Constants.SUCCESS_TRACK,Constants.ROLE,Constants.LIFECYCLE,Constants.TECHNOLOGY));
 		APIFilterGroupMappings.put(Constants.CX_INSIGHTS, Arrays.asList(Constants.LANGUAGE,Constants.LIVE_EVENTS,Constants.CONTENT_TYPE
-				,Constants.DOCUMENTATION_FILTER,Constants.SUCCESS_TRACK,Constants.ROLE,Constants.LIFECYCLE,Constants.TECHNOLOGY,Constants.FOR_YOU_FILTER));
+				,Constants.SUCCESS_TRACK,Constants.ROLE,Constants.LIFECYCLE,Constants.TECHNOLOGY,Constants.FOR_YOU_FILTER));
 		return APIFilterGroupMappings;
 	}
 	
@@ -347,6 +347,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		specification = specification.and(builder.filter(queryMap));
 		specification = specification.and(builder.buildSearchSpecification(searchToken));
 		specification = specification.and(builder.filterById(learningItemIdsListCXInsights));
+		specification = specification.and(CustomSpecifications.notEqual(Constants.LEARNING_TYPE, Constants.DOCUMENTATION));
 		if(sortField.equals(Constants.TITLE))
 		{
 			result=learningContentRepo.findAll(specification);
@@ -446,8 +447,6 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 			}
 			if(key.equals(Constants.FOR_YOU_FILTER)) {
 				List<String> learningItemIdsListForYouFiltered=new ArrayList<>();
-				if(values.contains(Constants.NEW))
-					learningItemIdsListForYouFiltered.addAll(fetchNewLearningContent(new HashMap<String, List<String>>(), null).stream().map(learningItem -> learningItem.getId()).collect(Collectors.toSet()));
 				if(values.contains(Constants.BOOKMARKED_FOR_YOU))
 					learningItemIdsListForYouFiltered.addAll(getBookMarkedIds(userId));
 				if(values.contains(Constants.RECENTLY_VIEWED))
@@ -469,29 +468,21 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 
 	@SuppressWarnings("unchecked")
 	private Set<String> getSTFilteredIDs(Object stMap) {
-		Set<String> cardIdsStUcPs = new HashSet<String>();
+		Set<String> cardIdsStUc = new HashSet<String>();
 		//LOG.info("ST="+((Map) v).keySet());
-		((Map) stMap).keySet().forEach(ik->{
-			Object iv = ((Map)stMap).get(ik);
-			List<String> ilist;
-			if(iv instanceof Map) {
-				//LOG.info("UC="+((Map) iv).keySet());
-				((Map)iv).keySet().forEach(ivk -> {
-					Object ivv = ((Map)iv).get(ivk);
-					List<String> ivlist;
-					if(ivv instanceof List)
-					{
-						ivlist= (List<String>)ivv;
-						LOG.info("PS={} uc={} st={}",ivlist,ivk,ik);
-						Set<String> pitStops = new HashSet<String>(ivlist);
-						String usecase = ivk.toString();
-						String successtrack = ik.toString();
-						cardIdsStUcPs.addAll(learningContentRepo.getCardIdsByPsUcSt(successtrack,usecase,pitStops));
-					}
-				});
+		((Map) stMap).keySet().forEach(st->{
+			Object ucObject = ((Map)stMap).get(st);
+			List<String> uclist;
+			if(ucObject instanceof List)
+			{
+				uclist= (List<String>)ucObject;
+				LOG.info("uc={} st={}",uclist,st);
+				Set<String> usecases = new HashSet<String>(uclist);
+				String successtrack = st.toString();
+				cardIdsStUc.addAll(learningContentRepo.getCardIdsByUcSt(successtrack, usecases));
 			}
 		});
-		return cardIdsStUcPs;
+		return cardIdsStUc;
 	}
 
 	List<String> getBookMarkedIds(String userId){
