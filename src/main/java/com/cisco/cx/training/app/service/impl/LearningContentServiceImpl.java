@@ -49,6 +49,10 @@ public class LearningContentServiceImpl implements LearningContentService {
 
 	public static final List<String> defaultFilterOrder= getDefaultFilterOrder();
 
+	public static final List<String> cxInsightsFilterOrder= getCXInsightsFilterOrder();
+
+	public static final List<String> lfcFilterOrder= getLFCFilterOrder();
+
 	private static HashMap<String, String> getMappings() {
 		HashMap<String, String> filterGroupMappings=new HashMap<String, String>();
 		filterGroupMappings.put(Constants.LANGUAGE, Constants.LANGUAGE_PRM);
@@ -57,7 +61,6 @@ public class LearningContentServiceImpl implements LearningContentService {
 		filterGroupMappings.put(Constants.ROLE, Constants.ROLE);
 		filterGroupMappings.put(Constants.MODEL, Constants.MODEL);
 		filterGroupMappings.put(Constants.TECHNOLOGY, Constants.TECHNOLOGY);
-		filterGroupMappings.put(Constants.DOCUMENTATION_FILTER, Constants.DOCUMENTATION_FILTER_PRM);
 		filterGroupMappings.put(Constants.SUCCESS_TRACK, Constants.SUCCESS_TRACK);
 		filterGroupMappings.put(Constants.LIFECYCLE, Constants.LIFECYCLE);
 		filterGroupMappings.put(Constants.FOR_YOU_FILTER, Constants.FOR_YOU_FILTER);
@@ -67,10 +70,21 @@ public class LearningContentServiceImpl implements LearningContentService {
 	private static List<String> getDefaultFilterOrder() {
 		List<String> order = new ArrayList<>();
 		order.add(Constants.ROLE);
+		order.add(Constants.SUCCESS_TRACK);
+		order.add(Constants.LIFECYCLE);
+		order.add(Constants.TECHNOLOGY);
+		order.add(Constants.LIVE_EVENTS);
+		order.add(Constants.CONTENT_TYPE);
+		order.add(Constants.LANGUAGE);
+		return order;
+	}
+
+	private static List<String> getCXInsightsFilterOrder() {
+		List<String> order = new ArrayList<>();
+		order.add(Constants.LIFECYCLE);
+		order.add(Constants.ROLE);
 		order.add(Constants.TECHNOLOGY);
 		order.add(Constants.SUCCESS_TRACK);
-		order.add(Constants.DOCUMENTATION_FILTER);
-		order.add(Constants.LIFECYCLE);
 		order.add(Constants.LIVE_EVENTS);
 		order.add(Constants.FOR_YOU_FILTER);
 		order.add(Constants.CONTENT_TYPE);
@@ -78,6 +92,18 @@ public class LearningContentServiceImpl implements LearningContentService {
 		return order;
 	}
 
+	private static List<String> getLFCFilterOrder() {
+		List<String> order = new ArrayList<>();
+		order.add("Accelerate"); order.add("Need");
+		order.add("Evaluate"); order.add("Select");
+		order.add("Align"); order.add("Purchase");
+		order.add("Onboard"); order.add("Implement");
+		order.add("Use");  order.add("Engage");
+		order.add("Adopt"); order.add("Optmize");
+		order.add("Renew"); order.add("Recommend");
+		order.add("Advocate");
+		return order;
+	}
 
 	@Autowired
 	private NewLearningContentDAO learningContentDAO;
@@ -364,7 +390,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 			LOG.error("There was a problem in fetching new filter counts", e);
 			throw new GenericException("There was a problem in fetching new filter counts");
 		}
-		result=orderFilters(viewMoreNewCounts, null);
+		result=orderFilters(viewMoreNewCounts, LearningContentServiceImpl.getDefaultFilterOrder());
 		return result;
 	}
 
@@ -478,7 +504,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 			LOG.error("There was a problem in fetching recently viewed filter counts", e);
 			throw new GenericException("There was a problem in fetching recently viewed filter counts");
 		}
-		result=orderFilters(recentlyViewedCounts, null);
+		result=orderFilters(recentlyViewedCounts, LearningContentServiceImpl.getDefaultFilterOrder());
 		return result;
 	}
 
@@ -545,7 +571,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 			LOG.error("There was a problem in fetching bookmarked filter counts", e);
 			throw new GenericException("There was a problem in fetching bookmarked filter counts");
 		}
-		result=orderFilters(bookmarkedCounts, null);
+		result=orderFilters(bookmarkedCounts, LearningContentServiceImpl.getDefaultFilterOrder());
 		return result;
 	}
 	
@@ -609,7 +635,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 			LOG.error("There was a problem in fetching upcoming filter counts", e);
 			throw new GenericException("There was a problem in fetching upcoming filter counts");
 		}
-		result=orderFilters(upcomingContentCounts, null);
+		result=orderFilters(upcomingContentCounts, LearningContentServiceImpl.getDefaultFilterOrder());
 		return result;
 	}
 
@@ -665,7 +691,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 			LOG.error("There was a problem in fetching cx insights filters", e);
 			throw new GenericException("There was a problem in fetching cx insights filters");
 		}
-		result=orderFilters(cxInsightsContentCounts, Constants.LIFECYCLE);
+		result=orderFilters(cxInsightsContentCounts, LearningContentServiceImpl.getCXInsightsFilterOrder());
 		return result;
 	}
 	
@@ -687,16 +713,22 @@ public class LearningContentServiceImpl implements LearningContentService {
 		return learningMap;
 	}
 
-	private Map<String, Object> orderFilters(HashMap<String, Object> filters, String curatedFilter) {
+	@SuppressWarnings("unchecked")
+	private Map<String, Object> orderFilters(HashMap<String, Object> filters, List<String> order) {
 		LinkedHashMap<String, Object> result=new LinkedHashMap<>();
-		if(curatedFilter!=null) {
-			if(filters.get(curatedFilter)!=null) {
-				result.put(curatedFilter, filters.get(curatedFilter));
-				filters.remove(curatedFilter);
-			}
-		}
-		for(String filterGroup : LearningContentServiceImpl.defaultFilterOrder) {
+		for(String filterGroup : order) {
 			if(filters.containsKey(filterGroup))
+				if(filterGroup.equals(Constants.LIFECYCLE))
+				{
+					LinkedHashMap<String, Object> lfcFilterNew=new LinkedHashMap<>();
+					Map<String, String> lfcOld = (Map<String, String>) filters.get(filterGroup);
+					List<String> lfcFilterOrder = LearningContentServiceImpl.getLFCFilterOrder();
+					for(String filter : lfcFilterOrder) {
+						if(lfcOld.containsKey(filter))
+							lfcFilterNew.put(filter, lfcOld.get(filter));
+					}
+					filters.put(filterGroup, lfcFilterNew);
+				}
 				result.put(filterGroup, filters.get(filterGroup));
 		}
 		return result;
