@@ -1,6 +1,7 @@
 
 package com.cisco.cx.training.app.rest;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,23 +28,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cisco.cx.training.app.config.PropertyConfiguration;
-import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.exception.ErrorResponse;
 import com.cisco.cx.training.app.exception.HealthCheckException;
-import com.cisco.cx.training.app.exception.NotFoundException;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
 import com.cisco.cx.training.models.BookmarkRequestSchema;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.cisco.cx.training.models.Community;
 import com.cisco.cx.training.models.CountResponseSchema;
-import com.cisco.cx.training.models.LearningContentItem;
 import com.cisco.cx.training.models.LearningRecordsAndFiltersModel;
-import com.cisco.cx.training.models.MasheryObject;
 import com.cisco.cx.training.models.SuccessAcademyFilter;
 import com.cisco.cx.training.models.SuccessAcademyLearning;
 import com.cisco.cx.training.models.SuccessTalkResponseSchema;
 import com.cisco.cx.training.models.SuccesstalkUserRegEsSchema;
+import com.cisco.cx.training.models.UserLearningPreference;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -262,10 +260,6 @@ public class TrainingAndEnablementController {
 			@ApiParam(value = "learningTab - Technology, Skill") @PathVariable(value = "learningTab", required = true) String learningTab
 			)
 			throws Exception {
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException("API Not Found.");
-		}
 		LearningRecordsAndFiltersModel learningCardsAndFilters = trainingAndEnablementService.
 				getAllLearningInfoPost(xMasheryHandshake,search,filters,sortBy,sortOrder,learningTab);
 		return new ResponseEntity<LearningRecordsAndFiltersModel>(learningCardsAndFilters, HttpStatus.OK);
@@ -283,12 +277,142 @@ public class TrainingAndEnablementController {
 			@ApiParam(value = "Filters") @RequestBody(required = false) HashMap<String, Object> filters
 			)
 			throws Exception {
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException("API Not Found.");
-		}
 		Map<String, Object> learningFilters = trainingAndEnablementService.getAllLearningFiltersPost(searchToken,filters,learningTab);
 		return new ResponseEntity<Map<String, Object>>(learningFilters, HttpStatus.OK);
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/myLearningPreferences")
+	@ApiOperation(value = "Fetch All Learnings Filters", response = String.class, nickname = "fetchMyLearningPreferences")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
+			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
+			@ApiResponse(code = 404, message = "Entity Not Found"),
+			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
+	public ResponseEntity<Map<String, List<UserLearningPreference>>> getMyLearningPreferences(
+			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake" , required=false) String xMasheryHandshake
+			)
+			throws Exception {
+		Map<String,List<UserLearningPreference>> userPreference= new HashMap<>();
+		UserLearningPreference userPref1 = new UserLearningPreference();
+		userPref1.setName("Customer Success Manager");
+		userPref1.setSelected(true);		
+		
+		UserLearningPreference userPref2 = new UserLearningPreference();
+		userPref2.setName("Customer Success Specialist");
+		userPref2.setSelected(true);
+		
+		UserLearningPreference userPref3 = new UserLearningPreference();
+		userPref3.setName("Renewals Manager");
+		userPref3.setSelected(false);
+		
+		UserLearningPreference userPref4 = new UserLearningPreference();
+		userPref4.setName("Customer Success Practice Leads");
+		userPref4.setSelected(false);
+		
+		UserLearningPreference userPref5 = new UserLearningPreference();
+		userPref5.setName("Partner Executive");
+		userPref5.setSelected(true);
+		
+		List<UserLearningPreference> userPrefList = new ArrayList<>();
+		userPrefList.add(userPref1);
+		userPrefList.add(userPref2);
+		userPrefList.add(userPref3);
+		userPrefList.add(userPref4);
+		userPrefList.add(userPref5);
+		
+		userPreference.put("role", userPrefList);
+		
+		UserLearningPreference userPref6 = new UserLearningPreference();
+		userPref6.setName("Enterprise Networks");
+		userPref6.setSelected(true);		
+		
+		UserLearningPreference userPref7 = new UserLearningPreference();
+		userPref7.setName("Security");
+		userPref7.setSelected(true);
+		
+		UserLearningPreference userPref8 = new UserLearningPreference();
+		userPref8.setName("Data Center");
+		userPref8.setSelected(false);
+		
+		UserLearningPreference userPref9 = new UserLearningPreference();
+		userPref9.setName("Mobility");
+		userPref9.setSelected(false);
+		
+		UserLearningPreference userPref10 = new UserLearningPreference();
+		userPref10.setName("Collaboration");
+		userPref10.setSelected(true);
+		
+		List<UserLearningPreference> userPrefList2 = new ArrayList<>();
+		userPrefList2.add(userPref6);
+		userPrefList2.add(userPref7);
+		userPrefList2.add(userPref8);
+		userPrefList2.add(userPref9);
+		userPrefList2.add(userPref10);
+		
+		userPreference.put("technology", userPrefList2);
+		
+		UserLearningPreference userPref11 = new UserLearningPreference();
+		userPref11.setName("English");
+		userPref11.setSelected(true);		
+		
+		UserLearningPreference userPref12 = new UserLearningPreference();
+		userPref12.setName("Spanish");
+		userPref12.setSelected(true);
+		
+		UserLearningPreference userPref13 = new UserLearningPreference();
+		userPref13.setName("Portuguese");
+		userPref13.setSelected(false);
+		
+		UserLearningPreference userPref14 = new UserLearningPreference();
+		userPref14.setName("Korean");
+		userPref14.setSelected(false);
+		
+		UserLearningPreference userPref15 = new UserLearningPreference();
+		userPref15.setName("Japanese");
+		userPref15.setSelected(false);
+		
+		List<UserLearningPreference> userPrefList3 = new ArrayList<>();
+		userPrefList3.add(userPref11);
+		userPrefList3.add(userPref12);
+		userPrefList3.add(userPref13);
+		userPrefList3.add(userPref14);
+		userPrefList3.add(userPref15);
+		
+		userPreference.put("language", userPrefList3);
+		
+		UserLearningPreference userPref16 = new UserLearningPreference();
+		userPref16.setName("AMER");
+		userPref16.setSelected(true);		
+		
+		UserLearningPreference userPref17 = new UserLearningPreference();
+		userPref17.setName("EMEAR");
+		userPref17.setSelected(true);
+		
+		UserLearningPreference userPref18 = new UserLearningPreference();
+		userPref18.setName("APJC");
+		userPref18.setSelected(false);
+		
+		List<UserLearningPreference> userPrefList4 = new ArrayList<>();
+		userPrefList4.add(userPref16);
+		userPrefList4.add(userPref17);
+		userPrefList4.add(userPref18);
+		
+		userPreference.put("language", userPrefList2);
+		
+		return new ResponseEntity<Map<String, List<UserLearningPreference>>>(userPreference, HttpStatus.OK);
+	}
+	
+	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/myLearningPreferences")
+	@ApiOperation(value = "Fetch All Learnings Filters", response = String.class, nickname = "fetchMyLearningPreferences")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
+			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
+			@ApiResponse(code = 404, message = "Entity Not Found"),
+			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
+	public ResponseEntity updateMyLearningPreferences(
+			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake" , required=false) String xMasheryHandshake,
+			@ApiParam(value = "preferences") @RequestBody(required = false) Map<String, List<UserLearningPreference>> userPreferences
+			)
+			throws Exception {
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
 }
