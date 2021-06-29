@@ -63,7 +63,8 @@ public class ProductDocumentationService{
 				case CONTENT_TYPE_FILTER : filteredCards.put(k, productDocumentationDAO.getLearningsByContentType(contentTab,new HashSet<String>(list)));break;
 				case LANGUAGE_FILTER : filteredCards.put(k, productDocumentationDAO.getCardIdsByLanguage(contentTab,new HashSet<String>(list)));break;
 				case FOR_YOU_FILTER : filteredCards.put(k, getCardIdsByYou(contentTab,new HashSet<String>(list)));break;
-				case ROLE_FILTER : filteredCards.put(k, productDocumentationDAO.getCardIdsByRole(new HashSet<String>(list)));break;
+				case ROLE_FILTER : filteredCards.put(k, productDocumentationDAO.getCardIdsByRole(contentTab, new HashSet<String>(list)));break;
+				case LIFECYCLE_FILTER : filteredCards.put(k, productDocumentationDAO.getCardIdsByPsUcSt(contentTab,new HashSet<String>(list)));break;
 				default : LOG.info("other {}={}",k,list);
 				};
 			}
@@ -73,22 +74,24 @@ public class ProductDocumentationService{
 				((Map) v).keySet().forEach(ik->{
 					Object iv = ((Map)v).get(ik);
 					List<String> ilist;
-					if(iv instanceof Map) {
-						//LOG.info("UC="+((Map) iv).keySet());
-						((Map)iv).keySet().forEach(ivk -> {
-							Object ivv = ((Map)iv).get(ivk);
-							List<String> ivlist;
-							if(ivv instanceof List) 
-							{
-								ivlist= (List<String>)ivv;
-								LOG.info("PS={} uc={} st={}",ivlist,ivk,ik);
-								Set<String> pitStops = new HashSet<String>(ivlist);
-								String usecase = ivk.toString();
-								String successtrack = ik.toString();
-								cardIdsStUcPs.addAll(productDocumentationDAO.getCardIdsByPsUcSt(contentTab,successtrack,usecase,pitStops));
-							}						
-						});
-					}
+					if(iv instanceof List) 
+					{
+						ilist= (List<String>)iv;
+						LOG.info("uc={} st={}",ilist,ik);
+						Set<String> usecaseS = new HashSet<String>(ilist);
+						String successtrack = ik.toString();
+						cardIdsStUcPs.addAll(productDocumentationDAO.getCardIdsByPsUcSt(contentTab,successtrack,usecaseS));
+					}	
+					/*
+					 * if(iv instanceof Map) { //LOG.info("UC="+((Map) iv).keySet());
+					 * ((Map)iv).keySet().forEach(ivk -> { Object ivv = ((Map)iv).get(ivk);
+					 * List<String> ivlist; if(ivv instanceof List) { ivlist= (List<String>)ivv;
+					 * LOG.info("PS={} uc={} st={}",ivlist,ivk,ik); Set<String> pitStops = new
+					 * HashSet<String>(ivlist); String usecase = ivk.toString(); String successtrack
+					 * = ik.toString();
+					 * cardIdsStUcPs.addAll(productDocumentationDAO.getCardIdsByPsUcSt(contentTab,
+					 * successtrack,usecase,pitStops)); } }); }
+					 */
 				});
 				filteredCards.put(k,cardIdsStUcPs);
 			}
@@ -209,14 +212,14 @@ public class ProductDocumentationService{
 			distinctPSForUC.get(uc).add(ps);
 			
 			if(!stMap.keySet().contains(st)) stMap.put(st, new HashMap<String,Map<String,String>>()) ;
-			if(!((Map)stMap.get(st)).keySet().contains(uc)) ((Map)stMap.get(st)).put(uc, new HashMap<String,String>());
-			if(!((Map)((Map)stMap.get(st)).get(uc)).keySet().contains(ps)) ((Map)((Map)stMap.get(st)).get(uc)).put(ps, dbValue);
+			if(!((Map)stMap.get(st)).keySet().contains(uc)) ((Map)stMap.get(st)).put(uc, dbValue);//.put(uc, new HashMap<String,String>());
+			//if(!((Map)((Map)stMap.get(st)).get(uc)).keySet().contains(ps)) ((Map)((Map)stMap.get(st)).get(uc)).put(ps, dbValue);
 			
 			if(stFilter!=null)
 			{
 				if(!stAllKeysMap.keySet().contains(st)) stAllKeysMap.put(st, new HashMap<String,Map<String,String>>()) ;
-				if(!((Map)stAllKeysMap.get(st)).keySet().contains(uc)) ((Map)stAllKeysMap.get(st)).put(uc, new HashMap<String,String>());
-				if(!((Map)((Map)stAllKeysMap.get(st)).get(uc)).keySet().contains(ps)) ((Map)((Map)stAllKeysMap.get(st)).get(uc)).put(ps, "0");
+				if(!((Map)stAllKeysMap.get(st)).keySet().contains(uc)) ((Map)stAllKeysMap.get(st)).put(uc, "0");//.put(uc, new HashMap<String,String>());
+				//if(!((Map)((Map)stAllKeysMap.get(st)).get(uc)).keySet().contains(ps)) ((Map)((Map)stAllKeysMap.get(st)).get(uc)).put(ps, "0");
 			}					
 		}		
 		stCountMap.putAll(stMap);if(stFilter!=null)stFilter.putAll(stAllKeysMap);		
@@ -236,12 +239,17 @@ public class ProductDocumentationService{
 	private static final String LANGUAGE_FILTER = "Language";
 	private static final String LIVE_EVENTS_FILTER = "Live Events";
 	private static final String DOCUMENTATION_FILTER = "Documentation";
-	private static final String SUCCESS_TRACKS_FILTER = "Success Tracks";
+	private static final String SUCCESS_TRACKS_FILTER = "Success Tracks";  
+	private static final String LIFECYCLE_FILTER="Lifecycle";
 	private static final String TECHNOLOGY_FILTER = "Technology";
 	private static final String FOR_YOU_FILTER = "For You";
 	private static final String ROLE_FILTER = "Role";
 	private static final String[] FILTER_CATEGORIES = new String[]{ 
-			ROLE_FILTER, TECHNOLOGY_FILTER, SUCCESS_TRACKS_FILTER, DOCUMENTATION_FILTER, 
+			SUCCESS_TRACKS_FILTER, LIFECYCLE_FILTER, TECHNOLOGY_FILTER, DOCUMENTATION_FILTER,ROLE_FILTER, 
+			LIVE_EVENTS_FILTER, FOR_YOU_FILTER, CONTENT_TYPE_FILTER, LANGUAGE_FILTER };
+	
+	private static final String[] FILTER_CATEGORIES_ROLE = new String[]{ 
+			ROLE_FILTER, SUCCESS_TRACKS_FILTER, LIFECYCLE_FILTER, TECHNOLOGY_FILTER, //DOCUMENTATION_FILTER, 
 			LIVE_EVENTS_FILTER, FOR_YOU_FILTER, CONTENT_TYPE_FILTER, LANGUAGE_FILTER };
 	
 	private static final String[] FOR_YOU_KEYS = new String[]{"New","Top Picks","Based on Your Customers",
@@ -289,12 +297,18 @@ public class ProductDocumentationService{
 		Map<String,String> allContentsLE = listToMap(dbListLE);countFilters.put(LIVE_EVENTS_FILTER, allContentsLE);
 		allContentsLE.keySet().forEach(k -> regionFilter.put(k, "0"));
 		
-		if(contentTab.equals(TECHNOLOGY_DB_TABLE))
+		//if(contentTab.equals(TECHNOLOGY_DB_TABLE))
 		{
 		HashMap<String, Object> stFilter = new HashMap<>();
 		filters.put(SUCCESS_TRACKS_FILTER, stFilter);
-		List<Map<String,Object>> dbListST = productDocumentationDAO.getAllStUcPsWithCount(contentTab);
+		List<Map<String,Object>> dbListST = productDocumentationDAO.getAllStUcWithCount(contentTab);//productDocumentationDAO.getAllStUcPsWithCount(contentTab);
 		Map<String,Object> allContentsST = listToSTMap(dbListST,stFilter);countFilters.put(SUCCESS_TRACKS_FILTER, allContentsST);
+		
+		HashMap<String, Object> lcFilter = new HashMap<>();
+		filters.put(LIFECYCLE_FILTER, lcFilter);
+		List<Map<String,Object>> dbListLC = productDocumentationDAO.getAllPsWithCount(contentTab);
+		Map<String,String> allContentsLC = listToMap(dbListLC);countFilters.put(LIFECYCLE_FILTER, allContentsLC);
+		allContentsLC.keySet().forEach(k -> lcFilter.put(k, "0"));
 		}
 		
 		HashMap<String, Object> youFilter = new HashMap<>();
@@ -302,11 +316,11 @@ public class ProductDocumentationService{
 		Map<String,String> allContentsYou = getForYouCounts(contentTab,null);countFilters.put(FOR_YOU_FILTER, allContentsYou);
 		allContentsYou.keySet().forEach(k -> youFilter.put(k, "0"));		
 		
-		if(contentTab.equals(ROLE_DB_TABLE))
+		//if(contentTab.equals(ROLE_DB_TABLE))
 		{
 		HashMap<String, String> roleFilter = new HashMap<>();
 		filters.put(ROLE_FILTER, roleFilter);		
-		List<Map<String,Object>> dbListRole = productDocumentationDAO.getAllRoleWithCount();
+		List<Map<String,Object>> dbListRole = productDocumentationDAO.getAllRoleWithCount(contentTab);
 		Map<String,String> allContentsRole = listToMap(dbListRole);countFilters.put(ROLE_FILTER, allContentsRole);
 		allContentsRole.keySet().forEach(k -> roleFilter.put(k, "0"));
 		}
@@ -402,22 +416,27 @@ public class ProductDocumentationService{
 			List<Map<String,Object>> dbListLE = productDocumentationDAO.getAllLiveEventsWithCountByCards(contentTab,cardIds);		
 			((Map<String,String>)filters.get(LIVE_EVENTS_FILTER)).putAll(listToMap(dbListLE));	
 			
-			if(contentTab.equals(TECHNOLOGY_DB_TABLE))
+			//if(contentTab.equals(TECHNOLOGY_DB_TABLE))
 			{
 			cardIds = andFiltersWithExcludeKey(filteredCardsMap,SUCCESS_TRACKS_FILTER,cardIdsInp,search);
-			List<Map<String,Object>> dbListST = productDocumentationDAO.getAllStUcPsWithCountByCards(contentTab,cardIds);
+			List<Map<String,Object>> dbListST = productDocumentationDAO.getAllStUcWithCountByCards(contentTab,cardIds);//productDocumentationDAO.getAllStUcPsWithCountByCards(contentTab,cardIds);
 			Map<String,Object> filterAndCountsFromDb = listToSTMap(dbListST,null);
 			mergeSTFilterCounts(filters,filterAndCountsFromDb);
+			
+			cardIds = andFiltersWithExcludeKey(filteredCardsMap,LIFECYCLE_FILTER,cardIdsInp,search);
+			List<Map<String,Object>> dbListLC = productDocumentationDAO.getAllPitstopsWithCountByCards(contentTab,cardIds);		
+			((Map<String,String>)filters.get(LIFECYCLE_FILTER)).putAll(listToMap(dbListLC));
+			
 			}
 			
 			cardIds = andFiltersWithExcludeKey(filteredCardsMap,FOR_YOU_FILTER,cardIdsInp,search);
 			Map<String,String> dbMapYou = getForYouCounts(contentTab,cardIds);		
 			((Map<String,String>)filters.get(FOR_YOU_FILTER)).putAll(dbMapYou);				
 			
-			if(contentTab.equals(ROLE_DB_TABLE))
+			//if(contentTab.equals(ROLE_DB_TABLE))
 			{
 			cardIds = andFiltersWithExcludeKey(filteredCardsMap,ROLE_FILTER,cardIdsInp,search);
-			List<Map<String,Object>> dbListRole = productDocumentationDAO.getAllRoleWithCountByCards(cardIds);		
+			List<Map<String,Object>> dbListRole = productDocumentationDAO.getAllRoleWithCountByCards(contentTab, cardIds);		
 			((Map<String,String>)filters.get(ROLE_FILTER)).putAll(listToMap(dbListRole));
 			}
 		}		
@@ -476,22 +495,26 @@ public class ProductDocumentationService{
 		List<Map<String,Object>> dbListLE = productDocumentationDAO.getAllLiveEventsWithCountByCards(contentTab,cardIds);		
 		((Map<String,String>)filters.get(LIVE_EVENTS_FILTER)).putAll(listToMap(dbListLE));	
 		
-		if(contentTab.equals(TECHNOLOGY_DB_TABLE))
+		//if(contentTab.equals(TECHNOLOGY_DB_TABLE))
 		{
 		if(search && filteredCardsMap.containsKey(SUCCESS_TRACKS_FILTER)) cardIds = searchCardIds; else cardIds = cardIdsInp;
-		List<Map<String,Object>> dbListST = productDocumentationDAO.getAllStUcPsWithCountByCards(contentTab,cardIds);
+		List<Map<String,Object>> dbListST = productDocumentationDAO.getAllStUcWithCountByCards(contentTab,cardIds);//productDocumentationDAO.getAllStUcPsWithCountByCards(contentTab,cardIds);
 		Map<String,Object> filterAndCountsFromDb = listToSTMap(dbListST,null);
 		mergeSTFilterCounts(filters,filterAndCountsFromDb);
+		
+		if(search && filteredCardsMap.containsKey(LIFECYCLE_FILTER)) cardIds = searchCardIds; else cardIds = cardIdsInp;		
+		List<Map<String,Object>> dbListLC = productDocumentationDAO.getAllPitstopsWithCountByCards(contentTab,cardIds);		
+		((Map<String,String>)filters.get(LIFECYCLE_FILTER)).putAll(listToMap(dbListLC));		
 		}
 		
 		if(search && filteredCardsMap.containsKey(FOR_YOU_FILTER)) cardIds = searchCardIds; else cardIds = cardIdsInp;
 		Map<String,String> dbMapYou = getForYouCounts(contentTab,cardIds);		
 		((Map<String,String>)filters.get(FOR_YOU_FILTER)).putAll(dbMapYou);
 				
-		if(contentTab.equals(ROLE_DB_TABLE))
+		//if(contentTab.equals(ROLE_DB_TABLE))
 		{
 		if(search && filteredCardsMap.containsKey(ROLE_FILTER)) cardIds = searchCardIds; else cardIds = cardIdsInp;
-		List<Map<String,Object>> dbListRole = productDocumentationDAO.getAllRoleWithCountByCards(cardIds);		
+		List<Map<String,Object>> dbListRole = productDocumentationDAO.getAllRoleWithCountByCards(contentTab, cardIds);		
 		((Map<String,String>)filters.get(ROLE_FILTER)).putAll(listToMap(dbListRole));
 		}
 		
@@ -505,13 +528,15 @@ public class ProductDocumentationService{
 				Map<String,Object> stFilterFromDB = (Map<String,Object>)filterAndCountsFromDb.get(stkey);
 				for(String useCaseKey : stFilterFromDB.keySet()) {
 					if(stFilter.containsKey(useCaseKey)) {
-						Map<String,Object> useCaseFilter = (Map<String,Object>)stFilter.get(useCaseKey);
-						Map<String,Object> useCaseFilterFromDB = (Map<String,Object>)stFilterFromDB.get(useCaseKey);
-						for(String pitStopKey : useCaseFilterFromDB.keySet()) {
-							if(useCaseFilter.containsKey(pitStopKey)) {
-								useCaseFilter.put(pitStopKey, useCaseFilterFromDB.get(pitStopKey));							
-							}
-						}
+						stFilter.put(useCaseKey, stFilterFromDB.get(useCaseKey)); //addition
+						/*
+						 * Map<String,Object> useCaseFilter =
+						 * (Map<String,Object>)stFilter.get(useCaseKey); Map<String,Object>
+						 * useCaseFilterFromDB = (Map<String,Object>)stFilterFromDB.get(useCaseKey);
+						 * for(String pitStopKey : useCaseFilterFromDB.keySet()) {
+						 * if(useCaseFilter.containsKey(pitStopKey)) { useCaseFilter.put(pitStopKey,
+						 * useCaseFilterFromDB.get(pitStopKey)); } }
+						 */
 					}
 				}
 			}
@@ -566,7 +591,7 @@ public class ProductDocumentationService{
 		else 
 		{
 			cleanFilters(countFilters);
-			return orderFilters(countFilters);
+			return orderFilters(countFilters, contentTab);
 		}
 
 		if(applyFilters!=null && !applyFilters.isEmpty() && applyFilters.size()==1 && !search)
@@ -576,15 +601,18 @@ public class ProductDocumentationService{
 		setFilterCounts(cardIds,filters,filteredCardsMap,search,contentTab, searchCardIds);		
 		cleanFilters(filters);
 		
-		return orderFilters(filters);
+		return orderFilters(filters, contentTab);
 	}
 	
-	private Map<String, Object> orderFilters(final HashMap<String, Object> filters)
+	private Map<String, Object> orderFilters(final HashMap<String, Object> filters, String contentTab)
 	{
 		Map<String, Object> orderedFilters = new LinkedHashMap<String,Object>();
-		for(int i=0;i<FILTER_CATEGORIES.length;i++)
+		String [] orders = FILTER_CATEGORIES;
+		if(contentTab.equals(ROLE_DB_TABLE)) orders = FILTER_CATEGORIES_ROLE;
+			
+		for(int i=0;i<orders.length;i++)
 		{
-			String key = FILTER_CATEGORIES[i];
+			String key = orders[i];
 			if(filters.containsKey(key)) orderedFilters.put(key, filters.get(key));
 		}
 		return orderedFilters;
@@ -596,11 +624,11 @@ public class ProductDocumentationService{
 		if(filters.keySet().contains(SUCCESS_TRACKS_FILTER))//do 2 more times
 		{
 			HashMap<String, Object> stFilters = (HashMap<String, Object>)filters.get(SUCCESS_TRACKS_FILTER);//ST
-			stFilters.forEach((k,v) ->
-			{
-				HashMap<String, Object> ucFilters = (HashMap<String, Object>)v;//UC
-				removeNulls(ucFilters);  //this will remove null pts and parent uc if has only one null pt
-			});			
+			/*
+			 * stFilters.forEach((k,v) -> { HashMap<String, Object> ucFilters =
+			 * (HashMap<String, Object>)v;//UC removeNulls(ucFilters); //this will remove
+			 * null pts and parent uc if has only one null pt });
+			 */			
 			removeNulls(stFilters);  //this will remove null ucs and parent st if has only one null uc
 		}
 		Set<String> removeThese = removeNulls(filters);  //all top level

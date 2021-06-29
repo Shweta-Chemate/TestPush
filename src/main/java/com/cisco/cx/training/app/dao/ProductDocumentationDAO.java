@@ -1,5 +1,7 @@
 package com.cisco.cx.training.app.dao;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,7 +23,11 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 	
 	
 	public static final String CASE_CLAUSE = " ( "
-			+ " case when :joinTable='Technology' then learning_item_id in (select ct.learning_item_id from cxpp_db.cxpp_learning_technology ct) "
+			+ " case when :joinTable='Technology' then learning_item_id in ( "
+			+ " select ct.learning_item_id from cxpp_db.cxpp_learning_technology ct "
+			+ " union "
+			+ " select st.learning_item_id from cxpp_db.cxpp_learning_successtrack st "
+			+ " ) "
 			+ " when :joinTable='Skill' then learning_item_id in (select cr.learning_item_id from cxpp_db.cxpp_learning_roles cr) "
 			+ " else 1=1 end "
 			+ " ) ";
@@ -30,7 +36,11 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 	public static final String CASE_CLAUSE_AND = " and " + CASE_CLAUSE;
 	
 	public static final String CASE_CLAUSE_CL = " ( "
-			+ " case when :joinTable='Technology' then cl.learning_item_id in (select ct.learning_item_id from cxpp_db.cxpp_learning_technology ct) "
+			+ " case when :joinTable='Technology' then cl.learning_item_id in ( "
+			+ " select ct.learning_item_id from cxpp_db.cxpp_learning_technology ct"
+			+ " union "
+			+ " select st.learning_item_id from cxpp_db.cxpp_learning_successtrack st "
+			+ " ) "
 			+ " when :joinTable='Skill' then cl.learning_item_id in (select cr.learning_item_id from cxpp_db.cxpp_learning_roles cr) "
 			+ " else 1=1 end "
 			+ " ) ";
@@ -206,6 +216,26 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 			+ " where lmt.learning_map_id is not null"
 			+ ")";
 	
+	public static final String GET_LM_STUCPT_WITH_COUNT_BY_CARDS =" union (select distinct lmt.learning_map_id as learning_item_id , "
+			+ " pitstop, usecase, successtrack "
+			+ " from cxpp_db.cxpp_learning_successtrack st "
+			+ "	inner join cxpp_db.cxpp_learning_usecase uc  "
+			+ "	on uc.successtrack_id = st.successtrack_id  "
+			+ "	inner join cxpp_db.cxpp_learning_pitstop ps  "
+			+ "	on ps.usecase_id = uc.usecase_id  "
+			+ " left join "
+			+ " ( "
+			+ " select lm.learning_map_id, lm.title as learning_map, it.learning_item_id  "
+			+ " from cxpp_db.cxpp_learning_map lm "
+			+ " inner join cxpp_db.cxpp_learning_item it "
+			+ " on lm.learning_map_id=it.learning_map_id "
+			+ CASE_CLAUSE_WHERE
+			+ " ) lmt "
+			+ " on st.learning_item_id=lmt.learning_item_id "
+			+ " where lmt.learning_map_id is not null"
+			+ " and lmt.learning_item_id in (:cardIds) "
+			+ ")";
+	
 	public static final String GET_PD_CARD_IDS_BY_stUcPs = " select learning_item_id from ( "
 			+ " ( select learning_item_id , pitstop, usecase, successtrack "
 			+ " from cxpp_db.cxpp_learning_successtrack st "
@@ -236,6 +266,21 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 			+ " where lmt.learning_map_id is not null"
 			+ ")";	
 	
+	public static final String GET_LM_TECHNOLOGY_WITH_COUNT_BY_CARDS=" union (select distinct tc.technology, lmt.learning_map_id as learning_item_id "
+			+ " from cxpp_db.cxpp_learning_technology tc left join "
+			+ " ( "
+			+ " select lm.learning_map_id, lm.title as learning_map, it.learning_item_id  "
+			+ " from cxpp_db.cxpp_learning_map lm "
+			+ " inner join cxpp_db.cxpp_learning_item it "
+			+ " on lm.learning_map_id=it.learning_map_id "
+			+ CASE_CLAUSE_WHERE
+			+ " ) lmt "
+			+ " on tc.learning_item_id=lmt.learning_item_id "
+			+ " where lmt.learning_map_id is not null"
+			+ " and lmt.learning_item_id in (:cardIds) "
+			+ ")";
+			
+	
 	public static final String GET_LM_DOCUMENTATION_WITH_COUNT=" union (select  it.archetype, lm.learning_map_id as learning_item_id "
 			+ "		from cxpp_db.cxpp_learning_item it "
 			+ "		left join "
@@ -244,6 +289,16 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 			+ "		where it.learning_map_id is not null "
 			+ CASE_CLAUSE_AND
 			+ ")";	
+	
+	public static final String GET_LM_DOCUMENTATION_WITH_COUNT_BY_CARDS=" union (select  it.archetype, lm.learning_map_id as learning_item_id "
+			+ "		from cxpp_db.cxpp_learning_item it "
+			+ "		left join "
+			+ "		cxpp_db.cxpp_learning_map lm "
+			+ "		on lm.learning_map_id=it.learning_map_id "
+			+ "		where it.learning_map_id is not null "
+			+ CASE_CLAUSE_AND
+			+ " and learning_item_id in (:cardIds) "
+			+ ")";	
 
 	
 	/** count by cards **/	
@@ -251,9 +306,9 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 	public static final String GET_PD_TECHNOLOGY_WITH_COUNT_BY_CARD = " select technology as dbkey, count(*) as dbvalue "
 					+ " from ( select technology, learning_item_id "
 					+ " from cxpp_db.cxpp_learning_technology "
-					+ CASE_CLAUSE_WHERE 
-					+ GET_LM_TECHNOLOGY_WITH_COUNT + " ) as T "
 					+ " where learning_item_id in (:cardIds) "
+					+ CASE_CLAUSE_AND 
+					+ GET_LM_TECHNOLOGY_WITH_COUNT_BY_CARDS + " ) as T "					
 					+ " group by technology "
 					+ " order by technology;";
 			
@@ -281,10 +336,10 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 public static final String GET_PD_DOCUMENTATION_WITH_COUNT_BY_CARD = "select archetype as dbkey, count(*) as dbvalue "
 			+ " from ( select archetype, learning_item_id "
 			+ " from cxpp_db.cxpp_learning_item "
-			+ CASE_CLAUSE_WHERE
-			+ GET_LM_DOCUMENTATION_WITH_COUNT 
-			+ " ) as T "
-			+ " where learning_item_id in (:cardIds) "			 
+			+ " where learning_item_id in (:cardIds) "	
+			+ CASE_CLAUSE_AND
+			+ GET_LM_DOCUMENTATION_WITH_COUNT_BY_CARDS 
+			+ " ) as T "					 
 			+ " group by archetype "
 			+ " order by archetype ";
 	@Query(value=GET_PD_DOCUMENTATION_WITH_COUNT_BY_CARD , nativeQuery=true)
@@ -370,9 +425,9 @@ public static final String GET_PD_DOCUMENTATION_WITH_COUNT_BY_CARD = "select arc
 			+ "	on uc.successtrack_id = st.successtrack_id  "
 			+ "	inner join cxpp_db.cxpp_learning_pitstop ps  "
 			+ "	on ps.usecase_id = uc.usecase_id  "
-			+ CASE_CLAUSE_WHERE   // WHERE !
-			+ GET_LM_STUCPT_WITH_COUNT + " ) as T "
 			+ " where learning_item_id in (:cardIds) "	
+			+ CASE_CLAUSE_AND   // AND !
+			+ GET_LM_STUCPT_WITH_COUNT_BY_CARDS + " ) as T "			
 			+ " group by pitstop,usecase,successtrack "
 			+ " order by successtrack,usecase,pitstop ";	
 	@Query(value=GET_PD_ST_UC_PS_WITH_COUNT_BY_CARDS , nativeQuery=true)
@@ -389,42 +444,65 @@ public static final String GET_PD_DOCUMENTATION_WITH_COUNT_BY_CARD = "select arc
 			+ "from cxpp_db.cxpp_learning_map lm "
 			+ "inner join cxpp_db.cxpp_learning_item it "
 			+ "on lm.learning_map_id=it.learning_map_id "
+			+ CASE_CLAUSE_WHERE
 			+ ") lmt "
 			+ "on tc.learning_item_id=lmt.learning_item_id "
-			+ "where lmt.learning_map_id is not null )";
+			+ "where lmt.learning_map_id is not null "
+			+ ")";
+	
+	public static final String GET_LM_ROLE_WITH_COUNT_BY_CARDS = "union (  "
+			+ "select distinct tc.roles, lmt.learning_map_id as learning_item_id "
+			+ "from cxpp_db.cxpp_learning_roles tc left join "
+			+ "( "
+			+ "select lm.learning_map_id, lm.title as learning_map, it.learning_item_id  "
+			+ "from cxpp_db.cxpp_learning_map lm "
+			+ "inner join cxpp_db.cxpp_learning_item it "
+			+ "on lm.learning_map_id=it.learning_map_id "
+			+ CASE_CLAUSE_WHERE
+			+ ") lmt "
+			+ "on tc.learning_item_id=lmt.learning_item_id "
+			+ "where lmt.learning_map_id is not null "
+			+ " and lmt.learning_item_id in (:cardIds) "
+			+ ")";
+	
+	
 	
 	public static final String GET_PD_ROLE_WITH_COUNT = "select roles as dbkey, count(*) as dbvalue "
 			+ " from ( select roles, learning_item_id "
 			+ "	from cxpp_db.cxpp_learning_roles 		"
+			+ CASE_CLAUSE_WHERE 
 			+ GET_LM_ROLE_WITH_COUNT + " ) as T "
 			+ " group by roles order by roles ";	
 	@Query(value=GET_PD_ROLE_WITH_COUNT , nativeQuery=true)
-	List<Map<String, Object>> getAllRoleWithCount();
+	List<Map<String, Object>> getAllRoleWithCount(String joinTable);
 	
 	public static final String GET_PD_CARD_IDS_ROLE = " select learning_item_id from ( "
 			+ " ( select roles, learning_item_id from cxpp_db.cxpp_learning_roles  "
+			+ CASE_CLAUSE_WHERE
 			+ " ) "
 			+ " union "
 			+ " ( select roles, learning_map_id as learning_item_id from cxpp_db.cxpp_learning_item cl "
 			+ " inner join cxpp_db.cxpp_learning_roles tc "
 			+ " on cl.learning_item_id=tc.learning_item_id "
 			+ " where  cl.learning_map_id is not null "		
+			+ CASE_CLAUSE_AND_CL
 			+ " ) "
 			+ " ) as T"
 			+ " where roles in (:values) "
 			;										
 	@Query(value=GET_PD_CARD_IDS_ROLE , nativeQuery=true)
-	Set<String> getCardIdsByRole(Set<String> values);
+	Set<String> getCardIdsByRole(String joinTable, Set<String> values);
 	
 	public static final String GET_PD_ROLE_WITH_COUNT_BY_CARD = " select roles as dbkey, count(*) as dbvalue "
 			+ " from ( select roles, learning_item_id "
-			+ " from cxpp_db.cxpp_learning_roles "			
-			+ GET_LM_ROLE_WITH_COUNT + " ) as T "
+			+ " from cxpp_db.cxpp_learning_roles "	
 			+ " where learning_item_id in (:cardIds) "
+			+ CASE_CLAUSE_AND 
+			+ GET_LM_ROLE_WITH_COUNT_BY_CARDS + " ) as T "			
 			+ " group by roles "
 			+ " order by roles;";
 	@Query(value=GET_PD_ROLE_WITH_COUNT_BY_CARD , nativeQuery=true)	
-	List<Map<String, Object>> getAllRoleWithCountByCards(Set<String> cardIds);
+	List<Map<String, Object>> getAllRoleWithCountByCards(String joinTable, Set<String> cardIds);
 	
 	/** For You - New **/	
 	public static final String GET_PD_YOU_CARD_IDS_BY_CARD = "select learning_item_id "
@@ -444,6 +522,176 @@ public static final String GET_PD_DOCUMENTATION_WITH_COUNT_BY_CARD = "select arc
 			+ " group by mp.learning_map_id;";			
 	@Query(value=GET_PD_LEARNING_MAP_COUNTS , nativeQuery=true)
 	List<Map<String, Object>> getLearningMapCounts();
+	
+	
+	/** lifecycle **/
+	
+	public static final String GET_LM_STUC_WITH_COUNT =" union (select distinct lmt.learning_map_id as learning_item_id , "
+			+ " usecase, successtrack "
+			+ " from cxpp_db.cxpp_learning_successtrack st "
+			+ "	inner join cxpp_db.cxpp_learning_usecase uc  "
+			+ "	on uc.successtrack_id = st.successtrack_id  "
+			+ " left join "
+			+ " ( "
+			+ " select lm.learning_map_id, lm.title as learning_map, it.learning_item_id  "
+			+ " from cxpp_db.cxpp_learning_map lm "
+			+ " inner join cxpp_db.cxpp_learning_item it "
+			+ " on lm.learning_map_id=it.learning_map_id "
+			+ CASE_CLAUSE_WHERE
+			+ " ) lmt "
+			+ " on st.learning_item_id=lmt.learning_item_id "
+			+ " where lmt.learning_map_id is not null"
+			+ ")";
+	
+	public static final String GET_LM_STUC_WITH_COUNT_BY_CARDS =" union (select distinct lmt.learning_map_id as learning_item_id , "
+			+ " usecase, successtrack "
+			+ " from cxpp_db.cxpp_learning_successtrack st "
+			+ "	inner join cxpp_db.cxpp_learning_usecase uc  "
+			+ "	on uc.successtrack_id = st.successtrack_id  "
+			+ " left join "
+			+ " ( "
+			+ " select lm.learning_map_id, lm.title as learning_map, it.learning_item_id  "
+			+ " from cxpp_db.cxpp_learning_map lm "
+			+ " inner join cxpp_db.cxpp_learning_item it "
+			+ " on lm.learning_map_id=it.learning_map_id "
+			+ CASE_CLAUSE_WHERE
+			+ " ) lmt "
+			+ " on st.learning_item_id=lmt.learning_item_id "
+			+ " where lmt.learning_map_id is not null"
+			+ " and lmt.learning_item_id in (:cardIds) "
+			+ ")";
+	
+	public static final String GET_PD_ST_UC_WITH_COUNT = "select count(*) as dbvalue ,  usecase, successtrack "
+			+ " from ( select learning_item_id, usecase, successtrack "
+			+ "	from cxpp_db.cxpp_learning_successtrack st  "
+			+ "	inner join cxpp_db.cxpp_learning_usecase uc  "
+			+ "	on uc.successtrack_id = st.successtrack_id  "		
+			+ CASE_CLAUSE_WHERE   // WHERE !
+			+ GET_LM_STUC_WITH_COUNT + " ) as T "
+			+ " group by usecase,successtrack "
+			+ " order by successtrack,usecase ";	
+	@Query(value=GET_PD_ST_UC_WITH_COUNT , nativeQuery=true)
+	List<Map<String, Object>> getAllStUcWithCount(String joinTable);
+	
+	public static final String GET_LM_PT_WITH_COUNT =" union (select distinct lmt.learning_map_id as learning_item_id , "
+			+ " pitstop "
+			+ " from cxpp_db.cxpp_learning_successtrack st "
+			+ "	inner join cxpp_db.cxpp_learning_usecase uc  "
+			+ "	on uc.successtrack_id = st.successtrack_id  "
+			+ "	inner join cxpp_db.cxpp_learning_pitstop ps  "
+			+ "	on ps.usecase_id = uc.usecase_id  "
+			+ " left join "
+			+ " ( "
+			+ " select lm.learning_map_id, lm.title as learning_map, it.learning_item_id  "
+			+ " from cxpp_db.cxpp_learning_map lm "
+			+ " inner join cxpp_db.cxpp_learning_item it "
+			+ " on lm.learning_map_id=it.learning_map_id "
+			+ CASE_CLAUSE_WHERE
+			+ " ) lmt "
+			+ " on st.learning_item_id=lmt.learning_item_id "
+			+ " where lmt.learning_map_id is not null"
+			+ ")";
+	
+	public static final String GET_LM_PT_WITH_COUNT_BY_CARDS =" union (select distinct lmt.learning_map_id as learning_item_id , "
+			+ " pitstop "
+			+ " from cxpp_db.cxpp_learning_successtrack st "
+			+ "	inner join cxpp_db.cxpp_learning_usecase uc  "
+			+ "	on uc.successtrack_id = st.successtrack_id  "
+			+ "	inner join cxpp_db.cxpp_learning_pitstop ps  "
+			+ "	on ps.usecase_id = uc.usecase_id  "
+			+ " left join "
+			+ " ( "
+			+ " select lm.learning_map_id, lm.title as learning_map, it.learning_item_id  "
+			+ " from cxpp_db.cxpp_learning_map lm "
+			+ " inner join cxpp_db.cxpp_learning_item it "
+			+ " on lm.learning_map_id=it.learning_map_id "
+			+ CASE_CLAUSE_WHERE
+			+ " ) lmt "
+			+ " on st.learning_item_id=lmt.learning_item_id "
+			+ " where lmt.learning_map_id is not null"
+			+ " and lmt.learning_item_id in (:cardIds) "
+			+ ")";
+
+	public static final String GET_PD_PS_WITH_COUNT = "select count(*) as dbvalue ,  pitstop as dbkey "
+			+ " from ( select learning_item_id, pitstop "
+			+ "	from cxpp_db.cxpp_learning_successtrack st  "
+			+ "	inner join cxpp_db.cxpp_learning_usecase uc  "
+			+ "	on uc.successtrack_id = st.successtrack_id  "
+			+ "	inner join cxpp_db.cxpp_learning_pitstop ps  "
+			+ "	on ps.usecase_id = uc.usecase_id  "
+			+ CASE_CLAUSE_WHERE   // WHERE !
+			+ GET_LM_PT_WITH_COUNT + " ) as T "
+			+ " group by pitstop "
+			+ " order by pitstop ";	
+	@Query(value=GET_PD_PS_WITH_COUNT , nativeQuery=true)
+	List<Map<String, Object>> getAllPsWithCount(String joinTable);
+	
+	
+	
+	
+	public static final String GET_PD_CARD_IDS_BY_pitstop = " select learning_item_id from ( "
+			+ " ( select learning_item_id , pitstop, usecase, successtrack "
+			+ " from cxpp_db.cxpp_learning_successtrack st "
+			+ " inner join cxpp_db.cxpp_learning_usecase uc "
+			+ " on uc.successtrack_id = st.successtrack_id "
+			+ " inner join cxpp_db.cxpp_learning_pitstop ps "
+			+ " on ps.usecase_id = uc.usecase_id "
+			+ CASE_CLAUSE_WHERE  + " ) "
+			+ GET_LM_STUCPT_WITH_COUNT 
+			+ " ) as T "
+			+ " where pitstop in (:pitstopInp)  ";
+			//+ " where ps.pitstop in (:pitstopInp) and uc.usecase = :usecaseInp and st.successtrack = :successtrackInp"					
+	@Query(value=GET_PD_CARD_IDS_BY_pitstop , nativeQuery=true)	
+	Set<String> getCardIdsByPsUcSt(String joinTable, HashSet<String> pitstopInp);
+	
+	
+	
+	
+	public static final String GET_PD_CARD_IDS_BY_stUc = " select learning_item_id from ( "
+			+ " ( select learning_item_id , usecase, successtrack "
+			+ " from cxpp_db.cxpp_learning_successtrack st "
+			+ " inner join cxpp_db.cxpp_learning_usecase uc "
+			+ " on uc.successtrack_id = st.successtrack_id "
+			+ " inner join cxpp_db.cxpp_learning_pitstop ps "
+			+ " on ps.usecase_id = uc.usecase_id "
+			+ CASE_CLAUSE_WHERE  + " ) "
+			+ GET_LM_STUC_WITH_COUNT 
+			+ " ) as T "
+			+ " where usecase in (:usecaseInp) and successtrack = :successtrackInp ";
+			//+ " where ps.pitstop in (:pitstopInp) and uc.usecase = :usecaseInp and st.successtrack = :successtrackInp"					
+	@Query(value=GET_PD_CARD_IDS_BY_stUc , nativeQuery=true)	
+	Set<String> getCardIdsByPsUcSt(String joinTable, String successtrackInp, Set<String> usecaseInp);
+	
+	
+	public static final String GET_PD_ST_UC_WITH_COUNT_BY_CARDS = "select count(*) as dbvalue , usecase, successtrack "
+			+ " from ( select learning_item_id, usecase, successtrack "
+			+ "	from cxpp_db.cxpp_learning_successtrack st  "
+			+ "	inner join cxpp_db.cxpp_learning_usecase uc  "
+			+ "	on uc.successtrack_id = st.successtrack_id  "
+			+ " where learning_item_id in (:cardIds) "	
+			+ CASE_CLAUSE_AND   // AND !
+			+ GET_LM_STUC_WITH_COUNT_BY_CARDS + " ) as T "			
+			+ " group by usecase,successtrack "
+			+ " order by successtrack,usecase ";	
+	@Query(value=GET_PD_ST_UC_WITH_COUNT_BY_CARDS , nativeQuery=true)
+	List<Map<String, Object>> getAllStUcWithCountByCards(String joinTable,Set<String> cardIds);
+	
+	
+	public static final String GET_PD_PS_WITH_COUNT_BY_CARDS = "select count(*) as dbvalue ,  pitstop as dbkey "
+			+ " from ( select learning_item_id, pitstop "
+			+ "	from cxpp_db.cxpp_learning_successtrack st  "
+			+ "	inner join cxpp_db.cxpp_learning_usecase uc  "
+			+ "	on uc.successtrack_id = st.successtrack_id  "
+			+ "	inner join cxpp_db.cxpp_learning_pitstop ps  "
+			+ "	on ps.usecase_id = uc.usecase_id  "
+			+ " where learning_item_id in (:cardIds) "	
+			+ CASE_CLAUSE_AND   // AND !
+			+ GET_LM_PT_WITH_COUNT_BY_CARDS + " ) as T "			
+			+ " group by pitstop "
+			+ " order by pitstop ";	
+	@Query(value=GET_PD_PS_WITH_COUNT_BY_CARDS , nativeQuery=true)
+	List<Map<String, Object>> getAllPitstopsWithCountByCards(String joinTable, Set<String> cardIds);	
+	
 		
 }
 
