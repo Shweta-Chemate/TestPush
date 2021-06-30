@@ -74,24 +74,24 @@ public class ProductDocumentationService{
 				((Map) v).keySet().forEach(ik->{
 					Object iv = ((Map)v).get(ik);
 					List<String> ilist;
-					if(iv instanceof List) 
-					{
-						ilist= (List<String>)iv;
-						LOG.info("uc={} st={}",ilist,ik);
-						Set<String> usecaseS = new HashSet<String>(ilist);
-						String successtrack = ik.toString();
+					if(iv instanceof Map) {
+						//LOG.info("UC="+((Map) iv).keySet());
+						Set<String> usecaseS= ((Map) iv).keySet(); String successtrack = ik.toString();
 						cardIdsStUcPs.addAll(productDocumentationDAO.getCardIdsByPsUcSt(contentTab,successtrack,usecaseS));
-					}	
-					/*
-					 * if(iv instanceof Map) { //LOG.info("UC="+((Map) iv).keySet());
-					 * ((Map)iv).keySet().forEach(ivk -> { Object ivv = ((Map)iv).get(ivk);
-					 * List<String> ivlist; if(ivv instanceof List) { ivlist= (List<String>)ivv;
-					 * LOG.info("PS={} uc={} st={}",ivlist,ivk,ik); Set<String> pitStops = new
-					 * HashSet<String>(ivlist); String usecase = ivk.toString(); String successtrack
-					 * = ik.toString();
-					 * cardIdsStUcPs.addAll(productDocumentationDAO.getCardIdsByPsUcSt(contentTab,
-					 * successtrack,usecase,pitStops)); } }); }
-					 */
+					/*	((Map)iv).keySet().forEach(ivk -> {
+							Object ivv = ((Map)iv).get(ivk);
+							List<String> ivlist;
+							if(ivv instanceof List) 
+							{
+								ivlist= (List<String>)ivv;
+								LOG.info("PS={} uc={} st={}",ivlist,ivk,ik);
+								Set<String> pitStops = new HashSet<String>(ivlist);
+								String usecase = ivk.toString();
+								String successtrack = ik.toString();
+								cardIdsStUcPs.addAll(productDocumentationDAO.getCardIdsByPsUcSt(contentTab,successtrack,usecase,pitStops));
+							}						
+						}); */
+					}
 				});
 				filteredCards.put(k,cardIdsStUcPs);
 			}
