@@ -717,7 +717,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 	private Map<String, Object> orderFilters(HashMap<String, Object> filters, List<String> order) {
 		LinkedHashMap<String, Object> result=new LinkedHashMap<>();
 		for(String filterGroup : order) {
-			if(filters.containsKey(filterGroup))
+			if(filters.containsKey(filterGroup)) {
 				if(filterGroup.equals(Constants.LIFECYCLE))
 				{
 					LinkedHashMap<String, Object> lfcFilterNew=new LinkedHashMap<>();
@@ -730,6 +730,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 					filters.put(filterGroup, lfcFilterNew);
 				}
 				result.put(filterGroup, filters.get(filterGroup));
+			}
 		}
 		return result;
 	}
