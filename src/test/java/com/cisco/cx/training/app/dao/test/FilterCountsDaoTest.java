@@ -60,7 +60,6 @@ public class FilterCountsDaoTest {
 		filterCountsMap.put(Constants.LIVE_EVENTS, testValues);
 		filterCountsMap.put(Constants.ROLE, testValues);
 		filterCountsMap.put(Constants.TECHNOLOGY, testValues);
-		filterCountsMap.put(Constants.DOCUMENTATION_FILTER, testValues);
 		filterCountsMap.put(Constants.SUCCESS_TRACK, testValues);
 		filterCountsMap.put(Constants.LIFECYCLE, testValues);
 		filterCountsMap.put(Constants.FOR_YOU_FILTER, testValues);
@@ -95,7 +94,6 @@ public class FilterCountsDaoTest {
 		filterCountsMap.put(Constants.LIVE_EVENTS, testValues);
 		filterCountsMap.put(Constants.ROLE, testValues);
 		filterCountsMap.put(Constants.TECHNOLOGY, testValues);
-		filterCountsMap.put(Constants.DOCUMENTATION_FILTER, testValues);
 		filterCountsMap.put(Constants.SUCCESS_TRACK, testValues);
 		filterCountsMap.put(Constants.LIFECYCLE, testValues);
 		filterCountsMap.put(Constants.FOR_YOU_FILTER, testValues);
@@ -133,7 +131,6 @@ public class FilterCountsDaoTest {
 		filterCountsMap.put(Constants.LIVE_EVENTS, testValues);
 		filterCountsMap.put(Constants.ROLE, testValues);
 		filterCountsMap.put(Constants.TECHNOLOGY, testValues);
-		filterCountsMap.put(Constants.DOCUMENTATION_FILTER, testValues);
 		filterCountsMap.put(Constants.SUCCESS_TRACK, testValues);
 		filterCountsMap.put(Constants.LIFECYCLE, testValues);
 		filterCountsMap.put(Constants.FOR_YOU_FILTER, testValues);
@@ -173,7 +170,6 @@ public class FilterCountsDaoTest {
 		filtersSelected.put(Constants.LIVE_EVENTS, testValues);
 		filtersSelected.put(Constants.ROLE, testValues);
 		filtersSelected.put(Constants.TECHNOLOGY, testValues);
-		filtersSelected.put(Constants.DOCUMENTATION_FILTER, testValues);
 		filtersSelected.put(Constants.SUCCESS_TRACK, testValues);
 		filtersSelected.put(Constants.LIFECYCLE, testValues);
 		filtersSelected.put(Constants.FOR_YOU_FILTER, testValuesForYouFilter);
@@ -217,7 +213,6 @@ public class FilterCountsDaoTest {
 		filterGroups.add(Constants.LIVE_EVENTS);
 		filterGroups.add(Constants.ROLE);
 		filterGroups.add(Constants.TECHNOLOGY);
-		filterGroups.add(Constants.DOCUMENTATION_FILTER);
 		filterGroups.add(Constants.SUCCESS_TRACK);
 		filterGroups.add(Constants.LIFECYCLE);
 		filterGroups.add(Constants.FOR_YOU_FILTER);

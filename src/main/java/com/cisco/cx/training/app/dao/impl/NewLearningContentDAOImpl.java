@@ -470,15 +470,12 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	private Set<String> getSTFilteredIDs(Object stMap) {
 		Set<String> cardIdsStUc = new HashSet<String>();
 		//LOG.info("ST="+((Map) v).keySet());
-		((Map) stMap).keySet().forEach(st->{
-			Object ucObject = ((Map)stMap).get(st);
-			List<String> uclist;
-			if(ucObject instanceof List)
-			{
-				uclist= (List<String>)ucObject;
-				LOG.info("uc={} st={}",uclist,st);
-				Set<String> usecases = new HashSet<String>(uclist);
-				String successtrack = st.toString();
+		((Map) stMap).keySet().forEach(ik->{
+			Object iv = ((Map)stMap).get(ik);
+			List<String> ilist;
+			if(iv instanceof Map) {
+				//LOG.info("UC="+((Map) iv).keySet());
+				Set<String> usecases= ((Map) iv).keySet(); String successtrack = ik.toString();
 				cardIdsStUc.addAll(learningContentRepo.getCardIdsByUcSt(successtrack, usecases));
 			}
 		});
