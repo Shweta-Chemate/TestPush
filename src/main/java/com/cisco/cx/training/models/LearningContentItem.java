@@ -37,6 +37,9 @@ public class LearningContentItem {
 		this.contentType=entity.getContentType();
 		this.link=entity.getLink();
 		this.archetype=entity.getArchetype();
+		this.avgRatingPercentage=entity.getAvgRatingPercentage();
+		this.totalCompletions=entity.getTotalCompletions();
+		this.votesPercentage=entity.getVotesPercentage();
 	}
 
 	private String id;
@@ -104,6 +107,36 @@ public class LearningContentItem {
 	private String archetype;
 
 	private long bookmarkTimeStamp;
+
+	private Integer avgRatingPercentage;
+
+	private Integer totalCompletions;
+
+	private Integer votesPercentage;
+
+	public Integer getTotalCompletions() {
+		return totalCompletions;
+	}
+
+	public void setTotalCompletions(Integer totalCompletions) {
+		this.totalCompletions = totalCompletions;
+	}
+
+	public Integer getAvgRatingPercentage() {
+		return avgRatingPercentage;
+	}
+
+	public void setAvgRatingPercentage(Integer avgRatingPercentage) {
+		this.avgRatingPercentage = avgRatingPercentage;
+	}
+
+	public Integer getVotesPercentage() {
+		return votesPercentage;
+	}
+
+	public void setVotesPercentage(Integer votesPercentage) {
+		this.votesPercentage = votesPercentage;
+	}
 
 	public long getBookmarkTimeStamp() {
 		return bookmarkTimeStamp;
