@@ -17,9 +17,9 @@ import com.cisco.cx.training.app.entities.LearningItemEntity;
 public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntity,String>{
 	
 	
-	public static final String FIELDS_CL = " cl.learning_item_id, cl.learning_type, cl.title , cl.description, cl.status, "
-			+ " cl.registrationurl, cl.presentername, cl.recordingurl, cl.duration, cl.piw_region, "
-			+ " cl.piw_score, cl.piw_language, cl.sort_by_date, cl.learning_map_id ";
+	public static final String FIELDS_CL = " clI.learning_item_id, clI.learning_type, clI.title , clI.description, clI.status, "
+			+ " clI.registrationurl, clI.presentername, clI.recordingurl, clI.duration, clI.piw_region, "
+			+ " clI.piw_score, clI.piw_language, clI.sort_by_date, clI.learning_map_id ";
 	
 	
 	public static final String CASE_CLAUSE = " ( "
@@ -36,12 +36,12 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 	public static final String CASE_CLAUSE_AND = " and " + CASE_CLAUSE;
 	
 	public static final String CASE_CLAUSE_CL = " ( "
-			+ " case when :joinTable='Technology' then cl.learning_item_id in ( "
+			+ " case when :joinTable='Technology' then clI.learning_item_id in ( "
 			+ " select ct.learning_item_id from cxpp_db.cxpp_learning_technology ct"
 			+ " union "
 			+ " select st.learning_item_id from cxpp_db.cxpp_learning_successtrack st "
 			+ " ) "
-			+ " when :joinTable='Skill' then cl.learning_item_id in (select cr.learning_item_id from cxpp_db.cxpp_learning_roles cr) "
+			+ " when :joinTable='Skill' then clI.learning_item_id in (select cr.learning_item_id from cxpp_db.cxpp_learning_roles cr) "
 			+ " else 1=1 end "
 			+ " ) ";
 	
@@ -49,7 +49,7 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 	public static final String CASE_CLAUSE_AND_CL = " and " + CASE_CLAUSE_CL;
 	
 	public static final String DYNAMIC_FROM_SUBQUERY = " from ( select " + FIELDS_CL  //cl.* "
-			+ " from cxpp_db.cxpp_learning_item cl "
+			+ " from cxpp_db.cxpp_learning_item clI "
 			+ " where "
 			+ CASE_CLAUSE_CL
 			+ " ) as cl ";
@@ -65,8 +65,8 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 			+ " null as asset_types, link as asset_links, null as learning_map "
 			+ " from cxpp_db.cxpp_learning_map where learning_map_id in "
 			+ " ( "
-			+ " select distinct learning_map_id from cxpp_db.cxpp_learning_item cl "
-			+ " where cl.learning_map_id is not null and  "
+			+ " select distinct learning_map_id from cxpp_db.cxpp_learning_item clI "
+			+ " where clI.learning_map_id is not null and  "
 			+ CASE_CLAUSE_CL
 			+ " )  " 
 			+ " ) ";
@@ -84,7 +84,7 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 			+ " left join cxpp_db.cxpp_learning_map mp on cl.learning_map_id=mp.learning_map_id "
 			+ GET_LM_LEARNING_CARDS ;
 	
-	public static final String GET_PD_LEARNING_CARDS = "select * from ( " + ALL_CARDS + " ) as cl "
+	public static final String GET_PD_LEARNING_CARDS = "select * from ( " + ALL_CARDS + " ) as cards "
 			+ "  \n-- #sort\n";	
 	@Query(value=GET_PD_LEARNING_CARDS , nativeQuery=true )
 	List<LearningItemEntity> getAllLearningCards(String joinTable,Sort sort);
@@ -185,10 +185,10 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 			+ CASE_CLAUSE_WHERE
 			+ " ) "
 			+ " union "
-			+ " ( select technology, learning_map_id as learning_item_id from cxpp_db.cxpp_learning_item cl "
+			+ " ( select technology, learning_map_id as learning_item_id from cxpp_db.cxpp_learning_item clI "
 			+ " inner join cxpp_db.cxpp_learning_technology tc "
-			+ " on cl.learning_item_id=tc.learning_item_id "
-			+ " where  cl.learning_map_id is not null "
+			+ " on clI.learning_item_id=tc.learning_item_id "
+			+ " where  clI.learning_map_id is not null "
 			+ CASE_CLAUSE_AND_CL
 			+ " ) "
 			+ " ) as T"
@@ -481,10 +481,10 @@ public static final String GET_PD_DOCUMENTATION_WITH_COUNT_BY_CARD = "select arc
 			+ CASE_CLAUSE_WHERE
 			+ " ) "
 			+ " union "
-			+ " ( select roles, learning_map_id as learning_item_id from cxpp_db.cxpp_learning_item cl "
+			+ " ( select roles, learning_map_id as learning_item_id from cxpp_db.cxpp_learning_item clI "
 			+ " inner join cxpp_db.cxpp_learning_roles tc "
-			+ " on cl.learning_item_id=tc.learning_item_id "
-			+ " where  cl.learning_map_id is not null "		
+			+ " on clI.learning_item_id=tc.learning_item_id "
+			+ " where  clI.learning_map_id is not null "		
 			+ CASE_CLAUSE_AND_CL
 			+ " ) "
 			+ " ) as T"
