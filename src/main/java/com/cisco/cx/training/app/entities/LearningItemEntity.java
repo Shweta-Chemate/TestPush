@@ -58,7 +58,16 @@ public class LearningItemEntity {
 	
 	@Column(name = "sort_by_date")
 	private String sortByDate;
-	
+
+	@Column(name = "avg_rating_percentage")
+	private Integer avgRatingPercentage;
+
+	@Column(name = "total_completions")
+	private Integer totalCompletions;
+
+	@Column(name = "votes_percentage")
+	private Integer votesPercentage;
+
 	private String asset_types;	
 	private String asset_links;
 	private String learning_map;
@@ -189,6 +198,30 @@ public class LearningItemEntity {
 
 	public void setLearning_map(String learning_map) {
 		this.learning_map = learning_map;
+	}
+
+	public Integer getAvgRatingPercentage() {
+		return avgRatingPercentage;
+	}
+
+	public void setAvgRatingPercentage(Integer avgRatingPercentage) {
+		this.avgRatingPercentage = avgRatingPercentage;
+	}
+
+	public Integer getTotalCompletions() {
+		return totalCompletions;
+	}
+
+	public void setTotalCompletions(Integer totalCompletions) {
+		this.totalCompletions = totalCompletions;
+	}
+
+	public Integer getVotesPercentage() {
+		return votesPercentage;
+	}
+
+	public void setVotesPercentage(Integer votesPercentage) {
+		this.votesPercentage = votesPercentage;
 	}
 
 }

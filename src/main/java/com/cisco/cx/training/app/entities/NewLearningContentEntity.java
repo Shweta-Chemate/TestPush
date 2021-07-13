@@ -107,6 +107,39 @@ public class NewLearningContentEntity {
 	@Column(name = "archetype")
 	private String archetype;
 
+	@Column(name = "avg_rating_percentage")
+	private Integer avgRatingPercentage;
+
+	@Column(name = "total_completions")
+	private Integer totalCompletions;
+
+	@Column(name = "votes_percentage")
+	private Integer votesPercentage;
+
+	public Integer getTotalCompletions() {
+		return totalCompletions;
+	}
+
+	public void setTotalCompletions(Integer totalCompletions) {
+		this.totalCompletions = totalCompletions;
+	}
+
+	public Integer getAvgRatingPercentage() {
+		return avgRatingPercentage;
+	}
+
+	public void setAvgRatingPercentage(Integer avgRatingPercentage) {
+		this.avgRatingPercentage = avgRatingPercentage;
+	}
+
+	public Integer getVotesPercentage() {
+		return votesPercentage;
+	}
+
+	public void setVotesPercentage(Integer votesPercentage) {
+		this.votesPercentage = votesPercentage;
+	}
+
 	public String getArchetype() {
 		return archetype;
 	}
