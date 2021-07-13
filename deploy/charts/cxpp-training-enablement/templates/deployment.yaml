@@ -61,6 +61,12 @@ spec:
               value: {{ .Values.appDynamics.appdynamics_agent_application_name }}
             - name: APPDYNAMICS_CONTROLLER_HOST_NAME
               value: {{ .Values.appDynamics.appdynamics_controller_host_name }}
+            - name: APPDYNAMICS_NETVIZ_AGENT_HOST
+              valueFrom:
+               fieldRef:
+                 fieldPath: status.hostIP
+            - name: APPDYNAMICS_NETVIZ_AGENT_PORT
+              value: "3892"
           {{- end}}
             - name: HTTPS_PROXY
               valueFrom:
