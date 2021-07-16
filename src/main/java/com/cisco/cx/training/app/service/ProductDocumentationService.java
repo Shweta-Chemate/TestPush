@@ -705,7 +705,7 @@ public class ProductDocumentationService{
 		}			
 		
 		LOG.info("dbCards={}",dbCards);
-		learningCards.addAll(mapLearningEntityToCards(dbCards, null));
+		learningCards.addAll(mapLearningEntityToCards(dbCards, userBookmarks));
 		
 		sortSpecial(learningCards,sort,order);
 		
