@@ -19,7 +19,7 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 	
 	public static final String FIELDS_CL = " cl.learning_item_id, cl.learning_type, cl.title , cl.description, cl.status, "
 			+ " cl.registrationurl, cl.presentername, cl.recordingurl, cl.duration, cl.piw_region, "
-			+ " cl.piw_score, cl.piw_language, cl.sort_by_date, cl.learning_map_id ";
+			+ " cl.piw_score, cl.piw_language, cl.sort_by_date, cl.learning_map_id, cl.avg_rating_percentage, cl.total_completions, cl.votes_percentage ";
 	
 	
 	public static final String CASE_CLAUSE = " ( "
@@ -62,7 +62,8 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 			+ " null as status, null as registrationurl, null as presentername, "
 			+ " null as recordingurl, null as duration, null as piw_region, "
 			+ " null as piw_score, null as piw_language, null as sort_by_date, null as learning_map_id, "
-			+ " null as asset_types, link as asset_links, null as learning_map "
+			+ " null as avg_rating_percentage, null as total_completions, null as votes_percentage, "
+			+ " null as asset_types, link as asset_links, null as learning_map"
 			+ " from cxpp_db.cxpp_learning_map where learning_map_id in "
 			+ " ( "
 			+ " select distinct learning_map_id from cxpp_db.cxpp_learning_item cl "
