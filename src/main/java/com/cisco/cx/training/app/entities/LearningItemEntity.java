@@ -59,14 +59,14 @@ public class LearningItemEntity {
 	@Column(name = "sort_by_date")
 	private String sortByDate;
 
-	/*@Column(name = "avg_rating_percentage")
+	@Column(name = "avg_rating_percentage")
 	private Integer avgRatingPercentage;
 
 	@Column(name = "total_completions")
 	private Integer totalCompletions;
 
 	@Column(name = "votes_percentage")
-	private Integer votesPercentage;*/
+	private Integer votesPercentage;
 
 	private String asset_types;	
 	private String asset_links;
@@ -200,7 +200,7 @@ public class LearningItemEntity {
 		this.learning_map = learning_map;
 	}
 
-/*	public Integer getAvgRatingPercentage() {
+	public Integer getAvgRatingPercentage() {
 		return avgRatingPercentage;
 	}
 
@@ -223,5 +223,5 @@ public class LearningItemEntity {
 	public void setVotesPercentage(Integer votesPercentage) {
 		this.votesPercentage = votesPercentage;
 	}
-*/
+
 }

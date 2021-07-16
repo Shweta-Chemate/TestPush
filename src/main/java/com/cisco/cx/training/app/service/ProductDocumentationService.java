@@ -143,8 +143,8 @@ public class ProductDocumentationService{
 			card.setDescription(learning.getDescription());
 			card.setDuration(learning.getDuration());
 			
-			if(null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)	
-					&& userBookmarks.contains(learning.getLearning_item_id())) 
+			if(null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
+					&& userBookmarks.contains(learning.getLearning_item_id()))
 			card.setIsBookMarked(true);
 		
 			//card.setLink(learning.getRegistrationUrl());//learning.getLink()
@@ -161,6 +161,10 @@ public class ProductDocumentationService{
 			card.setLink(learning.getAsset_links());
 			card.setContentType(learning.getAsset_types());
 			
+			card.setAvgRatingPercentage(learning.getAvgRatingPercentage());
+			card.setTotalCompletions(learning.getTotalCompletions());
+			card.setVotesPercentage(learning.getVotesPercentage());
+
 			card.setLearning_map(learning.getLearning_map());
 			if(LEARNING_MAP_TYPE.equals(learning.getLearning_type())
 					&& lmCounts.containsKey(learning.getLearning_item_id()))
@@ -701,7 +705,7 @@ public class ProductDocumentationService{
 		}			
 		
 		LOG.info("dbCards={}",dbCards);
-		learningCards.addAll(mapLearningEntityToCards(dbCards, userBookmarks));
+		learningCards.addAll(mapLearningEntityToCards(dbCards, null));
 		
 		sortSpecial(learningCards,sort,order);
 		
