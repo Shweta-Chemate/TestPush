@@ -62,7 +62,7 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 			+ " null as status, null as registrationurl, null as presentername, "
 			+ " null as recordingurl, null as duration, null as piw_region, "
 			+ " null as piw_score, null as piw_language, null as sort_by_date, null as learning_map_id, "
-			+ " null as avg_rating_percentage, null as total_completions, null as votes_percentage, "
+			+ " avg_rating_percentage, total_completions, votes_percentage, "
 			+ " null as asset_types, link as asset_links, null as learning_map"
 			+ " from cxpp_db.cxpp_learning_map where learning_map_id in "
 			+ " ( "
