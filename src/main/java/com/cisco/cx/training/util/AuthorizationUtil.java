@@ -59,7 +59,7 @@ public class AuthorizationUtil {
 			headers.set(Constants.ACCESS_TOKEN, propertyConfiguration.createCxpBasicAuthToken());
 			HttpEntity requestEntity = new HttpEntity(null, headers);
 
-			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(propertyConfiguration.getAuthUrl())
+			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("http://cxpp-user-management:8080/cxpp-user-management/internal/v1/authorize/authz")
 					.queryParam("userId", userId).queryParam("puId", Integer.parseInt(puid));
 			ResponseEntity<String> result = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, requestEntity,
 					String.class);
@@ -67,7 +67,7 @@ public class AuthorizationUtil {
 			if (result.getStatusCode() == HttpStatus.OK)
 				response = result.getBody();
 			else {
-				logger.error("URL " + propertyConfiguration.getAuthUrl() + " Returned Status Code "
+				logger.error("URL " + "http://cxpp-user-management:8080/cxpp-user-management/internal/v1/authorize" + " Returned Status Code "
 						+ result.getStatusCode() + " Expected 200 ok Response :" + result.getBody());
 			}
 		} catch (Exception e) {
