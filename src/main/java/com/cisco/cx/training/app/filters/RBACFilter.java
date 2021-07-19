@@ -83,7 +83,7 @@ public class RBACFilter implements Filter {
 				String authResult;
 				if(StringUtils.indexOfAny(path,"v1/partner/training/communities")>0)
 				{
-					String accessToken = request.getHeader(Constants.JWT_TOKEN);
+					String accessToken = request.getHeader(Constants.ACCESS_TOKEN);
 					if (StringUtils.isBlank(accessToken)) {
 						throw new BadRequestException("JWT Token is missing in input request");
 					}
