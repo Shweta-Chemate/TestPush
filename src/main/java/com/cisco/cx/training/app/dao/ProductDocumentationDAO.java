@@ -233,7 +233,7 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 			+ " ) lmt "
 			+ " on st.learning_item_id=lmt.learning_item_id "
 			+ " where lmt.learning_map_id is not null"
-			+ " and lmt.learning_item_id in (:cardIds) "
+			+ " and lmt.learning_map_id in (:cardIds) "
 			+ ")";
 	
 	public static final String GET_PD_CARD_IDS_BY_stUcPs = " select learning_item_id from ( "
@@ -277,7 +277,7 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 			+ " ) lmt "
 			+ " on tc.learning_item_id=lmt.learning_item_id "
 			+ " where lmt.learning_map_id is not null"
-			+ " and lmt.learning_item_id in (:cardIds) "
+			+ " and lmt.learning_map_id in (:cardIds) "
 			+ ")";
 			
 	
@@ -462,7 +462,7 @@ public static final String GET_PD_DOCUMENTATION_WITH_COUNT_BY_CARD = "select arc
 			+ ") lmt "
 			+ "on tc.learning_item_id=lmt.learning_item_id "
 			+ "where lmt.learning_map_id is not null "
-			+ " and lmt.learning_item_id in (:cardIds) "
+			+ " and lmt.learning_map_id in (:cardIds) "
 			+ ")";
 	
 	
@@ -558,7 +558,7 @@ public static final String GET_PD_DOCUMENTATION_WITH_COUNT_BY_CARD = "select arc
 			+ " ) lmt "
 			+ " on st.learning_item_id=lmt.learning_item_id "
 			+ " where lmt.learning_map_id is not null"
-			+ " and lmt.learning_item_id in (:cardIds) "
+			+ " and lmt.learning_map_id in (:cardIds) "
 			+ ")";
 	
 	public static final String GET_PD_ST_UC_WITH_COUNT = "select count(*) as dbvalue ,  usecase, successtrack "
@@ -609,7 +609,7 @@ public static final String GET_PD_DOCUMENTATION_WITH_COUNT_BY_CARD = "select arc
 			+ " ) lmt "
 			+ " on st.learning_item_id=lmt.learning_item_id "
 			+ " where lmt.learning_map_id is not null"
-			+ " and lmt.learning_item_id in (:cardIds) "
+			+ " and lmt.learning_map_id in (:cardIds) "
 			+ ")";
 
 	public static final String GET_PD_PS_WITH_COUNT = "select count(*) as dbvalue ,  pitstop as dbkey "
