@@ -397,15 +397,15 @@ public class ProductDocumentationService{
 		}			
 		else
 		{
-			Set<String> cardIds = andFiltersWithExcludeKey(filteredCardsMap,CONTENT_TYPE_FILTER,cardIdsInp,search);
+			Set<String> cardIds = andFiltersWithExcludeKey(filteredCardsMap,CONTENT_TYPE_FILTER,searchCardIds,search);
 			List<Map<String,Object>> dbListCT = productDocumentationDAO.getAllContentTypeWithCountByCards(contentTab,cardIds);		
 			((Map<String,String>)filters.get(CONTENT_TYPE_FILTER)).putAll(listToMap(dbListCT));
 			
-			cardIds = andFiltersWithExcludeKey(filteredCardsMap,TECHNOLOGY_FILTER,cardIdsInp,search);
+			cardIds = andFiltersWithExcludeKey(filteredCardsMap,TECHNOLOGY_FILTER,searchCardIds,search);
 			List<Map<String,Object>> dbListTC = productDocumentationDAO.getAllTechnologyWithCountByCards(contentTab,cardIds);		
 			((Map<String,String>)filters.get(TECHNOLOGY_FILTER)).putAll(listToMap(dbListTC));
 			
-			cardIds = andFiltersWithExcludeKey(filteredCardsMap,LANGUAGE_FILTER,cardIdsInp,search);
+			cardIds = andFiltersWithExcludeKey(filteredCardsMap,LANGUAGE_FILTER,searchCardIds,search);
 			List<Map<String,Object>> dbListLG = productDocumentationDAO.getAllLanguageWithCountByCards(contentTab,cardIds);		
 			((Map<String,String>)filters.get(LANGUAGE_FILTER)).putAll(listToMap(dbListLG));
 			
@@ -416,30 +416,30 @@ public class ProductDocumentationService{
 			((Map<String,String>)filters.get(DOCUMENTATION_FILTER)).putAll(listToMap(dbListDC));
 			}*/
 			
-			cardIds = andFiltersWithExcludeKey(filteredCardsMap,LIVE_EVENTS_FILTER,cardIdsInp,search);
+			cardIds = andFiltersWithExcludeKey(filteredCardsMap,LIVE_EVENTS_FILTER,searchCardIds,search);
 			List<Map<String,Object>> dbListLE = productDocumentationDAO.getAllLiveEventsWithCountByCards(contentTab,cardIds);		
 			((Map<String,String>)filters.get(LIVE_EVENTS_FILTER)).putAll(listToMap(dbListLE));	
 			
 			//if(contentTab.equals(TECHNOLOGY_DB_TABLE))
 			{
-			cardIds = andFiltersWithExcludeKey(filteredCardsMap,SUCCESS_TRACKS_FILTER,cardIdsInp,search);
+			cardIds = andFiltersWithExcludeKey(filteredCardsMap,SUCCESS_TRACKS_FILTER,searchCardIds,search);
 			List<Map<String,Object>> dbListST = productDocumentationDAO.getAllStUcWithCountByCards(contentTab,cardIds);//productDocumentationDAO.getAllStUcPsWithCountByCards(contentTab,cardIds);
 			Map<String,Object> filterAndCountsFromDb = listToSTMap(dbListST,null);
 			mergeSTFilterCounts(filters,filterAndCountsFromDb);
 			
-			cardIds = andFiltersWithExcludeKey(filteredCardsMap,LIFECYCLE_FILTER,cardIdsInp,search);
+			cardIds = andFiltersWithExcludeKey(filteredCardsMap,LIFECYCLE_FILTER,searchCardIds,search);
 			List<Map<String,Object>> dbListLC = productDocumentationDAO.getAllPitstopsWithCountByCards(contentTab,cardIds);		
 			((Map<String,String>)filters.get(LIFECYCLE_FILTER)).putAll(listToMap(dbListLC));
 			
 			}
 			
-			cardIds = andFiltersWithExcludeKey(filteredCardsMap,FOR_YOU_FILTER,cardIdsInp,search);
+			cardIds = andFiltersWithExcludeKey(filteredCardsMap,FOR_YOU_FILTER,searchCardIds,search);
 			Map<String,String> dbMapYou = getForYouCounts(contentTab,cardIds);		
 			((Map<String,String>)filters.get(FOR_YOU_FILTER)).putAll(dbMapYou);				
 			
 			//if(contentTab.equals(ROLE_DB_TABLE))
 			{
-			cardIds = andFiltersWithExcludeKey(filteredCardsMap,ROLE_FILTER,cardIdsInp,search);
+			cardIds = andFiltersWithExcludeKey(filteredCardsMap,ROLE_FILTER,searchCardIds,search);
 			List<Map<String,Object>> dbListRole = productDocumentationDAO.getAllRoleWithCountByCards(contentTab, cardIds);		
 			((Map<String,String>)filters.get(ROLE_FILTER)).putAll(listToMap(dbListRole));
 			}
@@ -577,7 +577,7 @@ public class ProductDocumentationService{
 			Set<String> filteredCards = andFilters(filteredCardsMap);
 			cardIds = productDocumentationDAO.getAllLearningCardIdsByFilterSearch(contentTab,filteredCards,"%"+searchToken+"%");
 			
-			if(applyFilters.size()==1)
+			//if(applyFilters.size()==1)
 			{
 				searchCardIds = productDocumentationDAO.getAllLearningCardIdsBySearch(contentTab,"%"+searchToken+"%");	
 			}
