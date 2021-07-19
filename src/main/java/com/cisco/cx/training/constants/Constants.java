@@ -66,6 +66,5 @@ public final class Constants {
 	public static final String FILTER_KEY = "filter";
 	public static final String ST_FILTER_KEY = "Success Tracks";
 	public static final String ACCESS_TOKEN = "accessToken";
-	public static final String JWT_TOKEN = "jwtToken";
 
 }
