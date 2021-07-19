@@ -46,6 +46,35 @@ public class AuthorizationUtil {
 		}
 		return response;
 	}
+	
+	public static String invokeAuthzAPI(String userId, String puid, String accessToken,
+			PropertyConfiguration propertyConfiguration, RestTemplate restTemplate) {
+		logger.info("Input Param  {0} ,{1}  " + userId + " , " + puid);
+		String response = null;
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			if (propertyConfiguration.createCxpBasicAuthToken() != null)
+				headers.set("Authorization", "Basic " + propertyConfiguration.createCxpBasicAuthToken());
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			headers.set(Constants.ACCESS_TOKEN, propertyConfiguration.createCxpBasicAuthToken());
+			HttpEntity requestEntity = new HttpEntity(null, headers);
+
+			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("http://cxpp-user-management:8080/cxpp-user-management/internal/v1/authorize/authz")
+					.queryParam("userId", userId).queryParam("puId", Integer.parseInt(puid));
+			ResponseEntity<String> result = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, requestEntity,
+					String.class);
+			logger.info("result  " + result);
+			if (result.getStatusCode() == HttpStatus.OK)
+				response = result.getBody();
+			else {
+				logger.error("URL " + "http://cxpp-user-management:8080/cxpp-user-management/internal/v1/authorize" + " Returned Status Code "
+						+ result.getStatusCode() + " Expected 200 ok Response :" + result.getBody());
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+		}
+		return response;
+	}
 
 	public static boolean isRoleCheckRequired(String roleId, String roleIdsforCustomerCheck) {
 		if (roleIdsforCustomerCheck.indexOf(roleId) != -1)

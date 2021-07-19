@@ -80,8 +80,23 @@ public class RBACFilter implements Filter {
 			try {
 				
 				long apiStartTime = System.currentTimeMillis();
-				String authResult = AuthorizationUtil.invokeAuthAPI(userId, puId, xMasheryToken, propertyConfiguration,
-						restTemplate);
+				String authResult;
+				if(StringUtils.indexOfAny(path,"v1/partner/training/communities")>0)
+				{
+					String accessToken = request.getHeader(Constants.JWT_TOKEN);
+					if (StringUtils.isBlank(accessToken)) {
+						throw new BadRequestException("JWT Token is missing in input request");
+					}
+					logger.info("Invoking AuthZ API to authorize the user");
+					authResult = AuthorizationUtil.invokeAuthzAPI(userId, puId, accessToken, propertyConfiguration,
+							restTemplate);	
+				}
+				else
+				{
+					authResult = AuthorizationUtil.invokeAuthAPI(userId, puId, xMasheryToken, propertyConfiguration,
+							restTemplate);
+				}
+				
 				logger.info("TIME TAKEN | USER AUTHORIZE API RESPONSE = {}" , (System.currentTimeMillis() - apiStartTime));
 				if (authResult != null) {
 
