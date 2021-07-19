@@ -56,7 +56,7 @@ public class AuthorizationUtil {
 			if (propertyConfiguration.createCxpBasicAuthToken() != null)
 				headers.set("Authorization", "Basic " + propertyConfiguration.createCxpBasicAuthToken());
 			headers.setContentType(MediaType.APPLICATION_JSON);
-			headers.set(Constants.ACCESS_TOKEN, propertyConfiguration.createCxpBasicAuthToken());
+			headers.set(Constants.ACCESS_TOKEN, accessToken);
 			HttpEntity requestEntity = new HttpEntity(null, headers);
 
 			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("http://cxpp-user-management:8080/cxpp-user-management/internal/v1/authorize/authz")
