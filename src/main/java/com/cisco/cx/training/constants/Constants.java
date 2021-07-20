@@ -68,5 +68,6 @@ public final class Constants {
 	public static final String ACCESS_TOKEN = "accessToken";
 	public static final String RESOURCE_ID_PARAM = "resourceId";
 	public static final String RESOURCE_ID_LEARNING = "CXPP_LEARNING";
+	public static final String BE_SPLIT_IO_FLAG = "be_PXC-219_OKTA";
 
 }
