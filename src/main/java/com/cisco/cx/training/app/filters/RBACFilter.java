@@ -88,7 +88,7 @@ public class RBACFilter implements Filter {
 						throw new BadRequestException("JWT Token is missing in input request");
 					}
 					logger.info("Invoking AuthZ API to authorize the user");
-					authResult = AuthorizationUtil.invokeAuthzAPI(userId, puId, accessToken, propertyConfiguration,
+					authResult = AuthorizationUtil.invokeAuthzAPI(puId, accessToken, propertyConfiguration,
 							restTemplate);	
 				}
 				else
