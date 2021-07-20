@@ -47,9 +47,9 @@ public class AuthorizationUtil {
 		return response;
 	}
 	
-	public static String invokeAuthzAPI(String userId, String puid, String accessToken,
+	public static String invokeAuthzAPI(String puid, String accessToken,
 			PropertyConfiguration propertyConfiguration, RestTemplate restTemplate) {
-		logger.info("Input Param  {0} ,{1}  " + userId + " , " + puid);
+		logger.info("Input Param  {0} ,{1}  " + puid + " , " + Constants.RESOURCE_ID_LEARNING);
 		String response = null;
 		try {
 			HttpHeaders headers = new HttpHeaders();
@@ -60,14 +60,14 @@ public class AuthorizationUtil {
 			HttpEntity requestEntity = new HttpEntity(null, headers);
 
 			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("http://cxpp-user-management:8080/cxpp-user-management/internal/v1/authorize/authz")
-					.queryParam("userId", userId).queryParam("puId", Integer.parseInt(puid));
+					.queryParam("puId", Integer.parseInt(puid)).queryParam(Constants.RESOURCE_ID_PARAM, Constants.RESOURCE_ID_LEARNING);
 			ResponseEntity<String> result = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, requestEntity,
 					String.class);
 			logger.info("result  " + result);
 			if (result.getStatusCode() == HttpStatus.OK)
 				response = result.getBody();
 			else {
-				logger.error("URL " + "http://cxpp-user-management:8080/cxpp-user-management/internal/v1/authorize" + " Returned Status Code "
+				logger.error("URL " + "http://cxpp-user-management:8080/cxpp-user-management/internal/v1/authorize/authz" + " Returned Status Code "
 						+ result.getStatusCode() + " Expected 200 ok Response :" + result.getBody());
 			}
 		} catch (Exception e) {
