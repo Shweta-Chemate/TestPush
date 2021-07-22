@@ -16,28 +16,29 @@ public class SplitConfig {
 
     private final static Logger LOG = LoggerFactory.getLogger(SplitConfig.class);
 
-    private String squidProxyHost;
-    private String squidProxyPort;
 
     @Value("${authorization.split.io.key}")
     private String apiKey;
+    
+    @Value("${squid.proxy.host}")
+    private String squidProxyHost;
+    
+    @Value("${squid.proxy.port}")
+    private String squidProxyPort;
 
     @Bean
     public SplitClient splitClient() {
         SplitClient client = null;
         SplitClientConfig config = null;
-        if (StringUtils.isNotBlank(squidProxyHost)) {
+        
+		if (StringUtils.isNotEmpty(squidProxyHost) && StringUtils.isNotEmpty(squidProxyPort)) {
             LOG.info("Connecting to split io through squid");
-            config = SplitClientConfig.builder()
-                    .proxyHost(squidProxyHost)
-                    .proxyPort(Integer.parseInt(squidProxyPort))
-                    .setBlockUntilReadyTimeout(10000)
-                    .enableDebug()
-                    .build();
-        } else {
+			config = SplitClientConfig.builder().proxyHost(squidProxyHost).proxyPort(Integer.parseInt(squidProxyPort)).setBlockUntilReadyTimeout(10000).enableDebug()
+					.build();
+		} else {
             LOG.info("Connecting to split io without squid");
-            config = SplitClientConfig.builder().setBlockUntilReadyTimeout(10000).enableDebug().build();
-        }
+			config = SplitClientConfig.builder().setBlockUntilReadyTimeout(10000).enableDebug().build();
+		}
         try {
             if (config != null) {
                 SplitFactory splitFactory = SplitFactoryBuilder.build(apiKey, config);
