@@ -86,18 +86,19 @@ public class RBACFilter implements Filter {
 				long apiStartTime = System.currentTimeMillis();
 				String authResult;
 				oktaFeatureEnabled = splitService.useAuthZ();
-				if(path.compareTo("/cxpp-training-enablement/training/v1/partner/training/communities")==0 && oktaFeatureEnabled)
+				if(oktaFeatureEnabled)
 				{
 					String accessToken = request.getHeader(Constants.ACCESS_TOKEN);
 					if (StringUtils.isBlank(accessToken)) {
 						throw new BadRequestException("JWT Token is missing in input request");
 					}
-					logger.info("Invoking AuthZ API to authorize the user");
+					logger.info("Split IO is on. Invoking AuthZ API to authorize the user");
 					authResult = AuthorizationUtil.invokeAuthzAPI(puId, accessToken, propertyConfiguration,
 							restTemplate);	
 				}
 				else
 				{
+					logger.info("Split IO is off. Invoking Old Auth API to authorize the user");
 					authResult = AuthorizationUtil.invokeAuthAPI(userId, puId, xMasheryToken, propertyConfiguration,
 							restTemplate);
 				}
