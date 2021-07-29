@@ -10,8 +10,8 @@ import javax.persistence.IdClass;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "cxpp_learning_status")
-@IdClass(LearningStatusEntityPK.class)
+@Table(name = "cxpp_learning_bookmark_count")
+@IdClass(BookmarkCountsEntityPK.class)
 public class BookmarkCountsEntity implements Serializable {
 
 	private static final long serialVersionUID = 1L;
