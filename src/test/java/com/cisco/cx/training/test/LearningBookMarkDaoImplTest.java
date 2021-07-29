@@ -15,10 +15,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.dao.impl.LearningBookmarkDAOImpl;
+import com.cisco.cx.training.app.entities.BookmarkCountsEntity;
+import com.cisco.cx.training.app.repo.BookmarkCountsRepo;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
 
 import software.amazon.awssdk.http.SdkHttpResponse;
@@ -37,6 +40,9 @@ public class LearningBookMarkDaoImplTest {
 	
 	@Mock
 	private PropertyConfiguration propertyConfig;
+
+	@Mock
+	private BookmarkCountsRepo bookmarkCountsRepo;
 	
 	@InjectMocks
 	private LearningBookmarkDAOImpl learningBookMarkImpl = new LearningBookmarkDAOImpl();
@@ -81,8 +87,7 @@ public class LearningBookMarkDaoImplTest {
 		PutItemResponse response = Mockito.mock(PutItemResponse.class);
 		when(response.sdkHttpResponse()).thenReturn(httpResponse);
 		when(dbClient.putItem(Mockito.any(PutItemRequest.class))).thenReturn(response);
-
-		learningBookMarkImpl.createOrUpdate(responseSchema);
+		learningBookMarkImpl.createOrUpdate(responseSchema, "test");
 	}
 
 	@Test
@@ -105,7 +110,7 @@ public class LearningBookMarkDaoImplTest {
 		when(response.sdkHttpResponse()).thenReturn(httpResponse);
 		when(dbClient.putItem(Mockito.any(PutItemRequest.class))).thenReturn(response);
 
-		learningBookMarkImpl.createOrUpdate(responseSchema);
+		learningBookMarkImpl.createOrUpdate(responseSchema, "test");
 	}
 
 	
@@ -127,6 +132,6 @@ public class LearningBookMarkDaoImplTest {
 		Mockito.when(response.sdkHttpResponse()).thenReturn(httpResponse);
 		Mockito.when(dbClient.putItem(Mockito.any(PutItemRequest.class))).thenReturn(response);
 		
-		BookmarkResponseSchema bookmarkResponseSchema = learningBookMarkImpl.createOrUpdate(responseSchema);
+		BookmarkResponseSchema bookmarkResponseSchema = learningBookMarkImpl.createOrUpdate(responseSchema, "test");
 	}
 }

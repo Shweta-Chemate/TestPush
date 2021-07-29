@@ -368,7 +368,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	@Override
 	public BookmarkResponseSchema bookmarkLearningForUser(
 			BookmarkRequestSchema bookmarkRequestSchema,
-			String xMasheryHandshake) {
+			String xMasheryHandshake, String puid) {
 		LOG.info("Entering the getSuccessAcademyFilters");
 		long requestStartTime = System.currentTimeMillis();	
 		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
@@ -381,7 +381,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 			bookmarkResponseSchema.setLearningid(bookmarkRequestSchema.getLearningid());
 			bookmarkResponseSchema.setBookmark(bookmarkRequestSchema.isBookmark());
 			requestStartTime = System.currentTimeMillis();
-			learningDAO.createOrUpdate(bookmarkResponseSchema);	
+			learningDAO.createOrUpdate(bookmarkResponseSchema, puid);
 			LOG.info("Updated bookmark in {} ", (System.currentTimeMillis() - requestStartTime));
 			return bookmarkResponseSchema;
 		}

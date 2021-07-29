@@ -14,6 +14,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -33,6 +34,7 @@ import com.cisco.cx.training.app.config.Swagger2Config;
 import com.cisco.cx.training.app.dao.CommunityDAO;
 import com.cisco.cx.training.app.filters.AuthFilter;
 import com.cisco.cx.training.app.filters.RBACFilter;
+import com.cisco.cx.training.app.repo.BookmarkCountsRepo;
 import com.cisco.cx.training.app.rest.TrainingAndEnablementController;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
 import com.cisco.cx.training.models.BookmarkRequestSchema;
@@ -68,6 +70,9 @@ public class TrainingAndEnablementControllerTest {
 	
 	@MockBean
 	private TrainingAndEnablementService trainingAndEnablementService;
+
+	@Mock
+	private BookmarkCountsRepo bookmarkCountsRepo;
 
 	private String XMasheryHeader;
 	
@@ -276,7 +281,7 @@ public class TrainingAndEnablementControllerTest {
 		bookMark.setId("1");
 		bookMark.setLearningid("1");
 		bookMark.setTitle("title");
-		Mockito.when(trainingAndEnablementService.bookmarkLearningForUser(Mockito.any(BookmarkRequestSchema.class), Mockito.anyString())).thenReturn(new BookmarkResponseSchema());
+		Mockito.when(trainingAndEnablementService.bookmarkLearningForUser(Mockito.any(BookmarkRequestSchema.class), Mockito.anyString(), Mockito.anyString())).thenReturn(new BookmarkResponseSchema());
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
 		ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
