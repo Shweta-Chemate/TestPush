@@ -693,6 +693,21 @@ public static final String GET_PD_DOCUMENTATION_WITH_COUNT_BY_CARD = "select arc
 	@Query(value=GET_PD_PS_WITH_COUNT_BY_CARDS , nativeQuery=true)
 	List<Map<String, Object>> getAllPitstopsWithCountByCards(String joinTable, Set<String> cardIds);	
 	
+
+	/** for preferences **/
+	
+	@Query(value="select distinct roles from cxpp_db.cxpp_learning_roles where roles is not null order by roles", nativeQuery=true)
+	List<String> getAllRolesForPreferences();
+
+	@Query(value="select distinct technology from cxpp_db.cxpp_learning_technology where technology is not null order by technology", nativeQuery=true)
+	List<String> getAllTechnologyForPreferences();
+
+	@Query(value="select distinct piw_region from cxpp_db.cxpp_learning_item where piw_region is not null order by piw_region", nativeQuery=true)
+	List<String> getAllRegionForPreferences();
+
+	@Query(value="select distinct piw_language from cxpp_db.cxpp_learning_item where piw_language is not null order by piw_language", nativeQuery=true)
+	List<String> getAllLanguagesForPreferences();
+	
 		
 }
 
