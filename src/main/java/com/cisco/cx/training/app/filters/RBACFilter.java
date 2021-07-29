@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -24,8 +23,8 @@ import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.exception.ErrorResponse;
 import com.cisco.cx.training.app.exception.NotAllowedException;
 import com.cisco.cx.training.app.exception.RestResponseStatusExceptionResolver;
+import com.cisco.cx.training.app.service.SplitClientService;
 import com.cisco.cx.training.constants.Constants;
-import com.cisco.cx.training.constants.LoggerConstants;
 import com.cisco.cx.training.models.MasheryObject;
 import com.cisco.cx.training.util.AuthorizationUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,11 +49,16 @@ public class RBACFilter implements Filter {
 
 	@Autowired
 	private RestTemplate restTemplate;
+	
+	@Autowired
+	private SplitClientService splitService;
 
 	@Override
 	public void init(final FilterConfig filterConfig) throws ServletException {
 		logger.debug("Initializing RBAC Filter");
 	}
+	
+	boolean oktaFeatureEnabled = false;
 
 	@Override
 	public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse,
@@ -80,8 +84,25 @@ public class RBACFilter implements Filter {
 			try {
 				
 				long apiStartTime = System.currentTimeMillis();
-				String authResult = AuthorizationUtil.invokeAuthAPI(userId, puId, xMasheryToken, propertyConfiguration,
-						restTemplate);
+				String authResult;
+				oktaFeatureEnabled = splitService.useAuthZ();
+				if(oktaFeatureEnabled)
+				{
+					String accessToken = request.getHeader(Constants.AUTHORIZATION);
+					if (StringUtils.isBlank(accessToken)) {
+						throw new BadRequestException("JWT Token is missing in input request");
+					}
+					logger.info("Split IO is on. Invoking AuthZ API to authorize the user");
+					authResult = AuthorizationUtil.invokeAuthzAPI(puId, accessToken, propertyConfiguration,
+							restTemplate);	
+				}
+				else
+				{
+					logger.info("Split IO is off. Invoking Old Auth API to authorize the user");
+					authResult = AuthorizationUtil.invokeAuthAPI(userId, puId, xMasheryToken, propertyConfiguration,
+							restTemplate);
+				}
+				
 				logger.info("TIME TAKEN | USER AUTHORIZE API RESPONSE = {}" , (System.currentTimeMillis() - apiStartTime));
 				if (authResult != null) {
 
