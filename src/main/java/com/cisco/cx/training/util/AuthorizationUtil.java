@@ -53,8 +53,10 @@ public class AuthorizationUtil {
 		String response = null;
 		try {
 			HttpHeaders headers = new HttpHeaders();
+			if (propertyConfiguration.createCxpBasicAuthToken() != null)
+				headers.set("Authorization", "Basic " + propertyConfiguration.createCxpBasicAuthToken());
 			headers.setContentType(MediaType.APPLICATION_JSON);
-			headers.set(Constants.AUTHORIZATION, accessToken);
+			headers.set(Constants.ACCESS_TOKEN, accessToken);
 			HttpEntity requestEntity = new HttpEntity(null, headers);
 
 			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(propertyConfiguration.getAuthUrl())

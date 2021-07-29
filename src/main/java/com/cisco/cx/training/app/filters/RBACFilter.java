@@ -88,7 +88,7 @@ public class RBACFilter implements Filter {
 				oktaFeatureEnabled = splitService.useAuthZ();
 				if(oktaFeatureEnabled)
 				{
-					String accessToken = request.getHeader(Constants.AUTHORIZATION);
+					String accessToken = request.getHeader(Constants.ACCESS_TOKEN);
 					if (StringUtils.isBlank(accessToken)) {
 						throw new BadRequestException("JWT Token is missing in input request");
 					}
