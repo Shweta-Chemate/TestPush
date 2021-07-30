@@ -141,7 +141,8 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 					bookMarkCountsEntity.setCount(1);
 				}
 			}
-			bookmarkCountsRepo.save(bookMarkCountsEntity);
+			if(bookMarkCountsEntity!=null)
+				bookmarkCountsRepo.save(bookMarkCountsEntity);
 
 			BookmarkResponseSchema responseSchema = new BookmarkResponseSchema();
 			responseSchema.setId(bookmarkResponseSchema.getId());
