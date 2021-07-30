@@ -65,5 +65,6 @@ public final class Constants {
 	public static final String CX_INSIGHTS = "CX Insights";
 	public static final String FILTER_KEY = "filter";
 	public static final String ST_FILTER_KEY = "Success Tracks";
+	public static final String POPULAR_ACROSS_PARTNERS = "Popular Across Partners";
 
 }
