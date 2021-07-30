@@ -33,6 +33,7 @@ import com.cisco.cx.training.app.dao.PartnerPortalLookupDAO;
 import com.cisco.cx.training.app.dao.SmartsheetDAO;
 import com.cisco.cx.training.app.dao.SuccessAcademyDAO;
 import com.cisco.cx.training.app.dao.SuccessTalkDAO;
+import com.cisco.cx.training.app.dao.UserLearningPreferencesDAO;
 import com.cisco.cx.training.app.entities.LearningStatusEntity;
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.app.entities.PartnerPortalLookUpEntity;
@@ -62,6 +63,7 @@ import com.cisco.cx.training.models.SuccessTalkSession;
 import com.cisco.cx.training.models.SuccesstalkUserRegEsSchema;
 import com.cisco.cx.training.models.UserDetails;
 import com.cisco.cx.training.models.UserDetailsWithCompanyList;
+import com.cisco.cx.training.models.UserLearningPreference;
 import com.cisco.cx.training.models.UserProfile;
 import com.cisco.cx.training.util.SuccessAcademyMapper;
 
@@ -111,6 +113,9 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	
 	@Autowired
 	private LearningStatusRepo learningStatusRepo;
+	
+	@Autowired
+	UserLearningPreferencesDAO userLearningPreferencesDAO;
 
 	
 	private static final String CXPP_UI_TAB_PREFIX = "CXPP_UI_TAB_";
@@ -407,6 +412,19 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	@Override
 	public Map<String, Object> getAllLearningFiltersPost(String searchToken, HashMap<String, Object> filters, String contentTab) {
 		return productDocumentationService.getAllLearningFilters(searchToken,filters,contentTab);
+	}
+
+	@Override
+	public Map<String, List<UserLearningPreference>> postUserLearningPreferences(String xMasheryHandshake,
+			Map<String, List<UserLearningPreference>> userPreferences) {
+		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);		
+		return userLearningPreferencesDAO.createOrUpdateULP(userDetails.getCecId(), userPreferences);
+	}
+
+	@Override
+	public Map<String, List<UserLearningPreference>> getUserLearningPreferences(String xMasheryHandshake) {
+		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);		
+		return userLearningPreferencesDAO.fetchUserLearningPreferences(userDetails.getCecId());
 	}
 }
 

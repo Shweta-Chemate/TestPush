@@ -66,7 +66,10 @@ public class PropertyConfiguration {
 	private SealedObject partnerUserDetails;
 	
 	@Value("${0.9.5.learning.feature}")
-	private boolean newLearningFeature;
+	private boolean newLearningFeature;	
+	
+	@Value("${cxpp.user.learning.preferences.table}")
+	private String ulPreferencesTableName;
 
 	public String getPartnerUserDetails() {
 		return cryptoAccess.unseal(partnerUserDetails);
@@ -279,6 +282,14 @@ public class PropertyConfiguration {
 
 	public void setNewLearningFeature(boolean newLearningFeature) {
 		this.newLearningFeature = newLearningFeature;
+	}
+
+	public String getUlPreferencesTableName() {
+		return ulPreferencesTableName;
+	}
+
+	public void setUlPreferencesTableName(String ulPreferencesTableName) {
+		this.ulPreferencesTableName = ulPreferencesTableName;
 	}
 	
 }

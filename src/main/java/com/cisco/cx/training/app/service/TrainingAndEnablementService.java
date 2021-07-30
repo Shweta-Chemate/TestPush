@@ -18,6 +18,7 @@ import com.cisco.cx.training.models.SuccessAcademyFilter;
 import com.cisco.cx.training.models.SuccessAcademyLearning;
 import com.cisco.cx.training.models.SuccessTalkResponseSchema;
 import com.cisco.cx.training.models.SuccesstalkUserRegEsSchema;
+import com.cisco.cx.training.models.UserLearningPreference;
 import com.cisco.cx.training.models.UserProfile;
 
 public interface TrainingAndEnablementService {
@@ -52,6 +53,11 @@ public interface TrainingAndEnablementService {
 			String sortBy, String sortOrder, String contentTab);
 	
 	Map<String, Object> getAllLearningFiltersPost(String searchToken, HashMap<String, Object> filters, String contentTab);
+
+	Map<String, List<UserLearningPreference>> postUserLearningPreferences(String xMasheryHandshake,
+			Map<String, List<UserLearningPreference>> userPreferences);
+
+	Map<String, List<UserLearningPreference>> getUserLearningPreferences(String xMasheryHandshake);
 
 
 

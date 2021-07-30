@@ -36,6 +36,7 @@ import com.cisco.cx.training.app.filters.AuthFilter;
 import com.cisco.cx.training.app.filters.RBACFilter;
 import com.cisco.cx.training.app.repo.BookmarkCountsRepo;
 import com.cisco.cx.training.app.rest.TrainingAndEnablementController;
+import com.cisco.cx.training.app.service.SplitClientService;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
 import com.cisco.cx.training.models.BookmarkRequestSchema;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
@@ -56,6 +57,9 @@ public class TrainingAndEnablementControllerTest {
 	
 	@Autowired
 	RBACFilter rbacFilter;
+	
+	@MockBean
+	private SplitClientService splitService;
 	
 	@Autowired
 	AuthFilter authFilter;

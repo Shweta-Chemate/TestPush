@@ -34,6 +34,7 @@ import com.cisco.cx.training.app.filters.AuthFilter;
 import com.cisco.cx.training.app.filters.RBACFilter;
 import com.cisco.cx.training.app.rest.NewLearningContentController;
 import com.cisco.cx.training.app.service.LearningContentService;
+import com.cisco.cx.training.app.service.SplitClientService;
 import com.cisco.cx.training.models.LearningStatusSchema;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -53,6 +54,9 @@ public class NewLearningContentControllerTest {
 
 	@Autowired
 	AuthFilter authFilter;
+	
+	@MockBean
+	private SplitClientService splitService;
 
 	@Autowired
 	private WebApplicationContext context;

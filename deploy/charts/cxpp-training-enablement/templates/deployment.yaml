@@ -93,6 +93,11 @@ spec:
                 secretKeyRef:
                   name: squid
                   key: non_proxy
+            - name: cxpp_authorization_split_io_key
+              valueFrom:
+                secretKeyRef:
+                  name: cxpp-common
+                  key: cxpp_authorization_split_io_key
             - name: cxpp_elasticsearch_username
               valueFrom:
                 secretKeyRef:
