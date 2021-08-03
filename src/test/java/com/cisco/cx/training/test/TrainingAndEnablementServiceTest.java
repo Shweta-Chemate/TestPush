@@ -37,6 +37,7 @@ import com.cisco.cx.training.app.dao.PartnerPortalLookupDAO;
 import com.cisco.cx.training.app.dao.SmartsheetDAO;
 import com.cisco.cx.training.app.dao.SuccessAcademyDAO;
 import com.cisco.cx.training.app.dao.SuccessTalkDAO;
+import com.cisco.cx.training.app.dao.UserLearningPreferencesDAO;
 import com.cisco.cx.training.app.entities.LearningStatusEntity;
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.app.entities.PartnerPortalLookUpEntity;
@@ -65,6 +66,7 @@ import com.cisco.cx.training.models.SuccessTalkSession;
 import com.cisco.cx.training.models.SuccesstalkUserRegEsSchema;
 import com.cisco.cx.training.models.UserDetails;
 import com.cisco.cx.training.models.UserDetailsWithCompanyList;
+import com.cisco.cx.training.models.UserLearningPreference;
 import com.cisco.cx.training.models.UserProfile;
 
 @ExtendWith(SpringExtension.class)
@@ -111,6 +113,9 @@ public class TrainingAndEnablementServiceTest {
 	
 	@Mock
 	private LearningStatusRepo learningStatusRepo;
+	
+	@Mock 
+	UserLearningPreferencesDAO userLearningPreferencesDAO;
 
 	@InjectMocks
 	private TrainingAndEnablementService trainingAndEnablementService = new TrainingAndEnablementServiceImpl();	
@@ -526,6 +531,28 @@ public class TrainingAndEnablementServiceTest {
 		learningStatusEntity.setRegStatus("REGISTERED_T");
 		return learningStatusEntity;
 		
+	}
+	
+	@Test
+	public void testULP() {
+		UserDetails userDetails = new UserDetails();
+		userDetails.setCecId("email");
+		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(userDetails);
+		String email = "email";
+		Map<String, List<UserLearningPreference>> ulps = new HashMap<String, List<UserLearningPreference>>();
+		List<UserLearningPreference> roleList = new ArrayList<UserLearningPreference>();
+		UserLearningPreference roleUP = new UserLearningPreference ();
+		roleUP.setName("Customer Success manager");roleList.add(roleUP);
+		ulps.put("role", roleList);
+		List<UserLearningPreference> tiList = new ArrayList<UserLearningPreference>();
+		UserLearningPreference tiUP = new UserLearningPreference ();
+		tiUP.setTimeMap(new HashMap<String,String>());tiList.add(tiUP);
+		ulps.put("timeinterval", tiList);
+		when(userLearningPreferencesDAO.createOrUpdateULP(userDetails.getCecId(), ulps)).thenReturn(ulps);
+		trainingAndEnablementService.postUserLearningPreferences("mashery", ulps);
+		
+		when(userLearningPreferencesDAO.fetchUserLearningPreferences(userDetails.getCecId())).thenReturn(ulps);
+		trainingAndEnablementService.getUserLearningPreferences("mashery");
 	}
 	
 }
