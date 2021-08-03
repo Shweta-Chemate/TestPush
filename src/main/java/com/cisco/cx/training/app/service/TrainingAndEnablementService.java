@@ -47,7 +47,7 @@ public interface TrainingAndEnablementService {
 	
 	List<SuccessAcademyFilter> getSuccessAcademyFilters();
 	
-	BookmarkResponseSchema bookmarkLearningForUser(BookmarkRequestSchema bookmarkRequestSchema , String xMasheryHandshake);
+	BookmarkResponseSchema bookmarkLearningForUser(BookmarkRequestSchema bookmarkRequestSchema , String xMasheryHandshake, String puid);
 
 	LearningRecordsAndFiltersModel getAllLearningInfoPost(String xMasheryHandshake, String searchToken, HashMap<String, Object> filters,
 			String sortBy, String sortOrder, String contentTab);

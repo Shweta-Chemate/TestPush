@@ -45,6 +45,7 @@ import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.exception.GenericException;
 import com.cisco.cx.training.app.exception.NotAllowedException;
 import com.cisco.cx.training.app.exception.NotFoundException;
+import com.cisco.cx.training.app.repo.BookmarkCountsRepo;
 import com.cisco.cx.training.app.repo.LearningStatusRepo;
 import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.app.service.ProductDocumentationService;
@@ -113,6 +114,9 @@ public class TrainingAndEnablementServiceTest {
 
 	@InjectMocks
 	private TrainingAndEnablementService trainingAndEnablementService = new TrainingAndEnablementServiceImpl();	
+
+	@Mock
+	private BookmarkCountsRepo bookmarkCountsRepo;
 	
 	String learningTab = "Technology";
 
@@ -463,8 +467,8 @@ public class TrainingAndEnablementServiceTest {
 		BookmarkRequestSchema request = new BookmarkRequestSchema();
 		request.setLearningid("1");
 		request.setBookmark(true);
-		when(learningDAO.createOrUpdate(Mockito.any(BookmarkResponseSchema.class))).thenReturn(null);
-		BookmarkResponseSchema response = trainingAndEnablementService.bookmarkLearningForUser(null, "");
+		when(learningDAO.createOrUpdate(Mockito.any(BookmarkResponseSchema.class), "test")).thenReturn(null);
+		BookmarkResponseSchema response = trainingAndEnablementService.bookmarkLearningForUser(null, "", "test");
 		
 		assertEquals(response.getLearningid(),"1");
 		assertEquals(response.getCcoid(),"ccoid");		
@@ -474,7 +478,7 @@ public class TrainingAndEnablementServiceTest {
 	public void testFailureBookmarkLearningForUser(){		
 		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(null);
 		assertThrows(BadRequestException.class, () -> {
-			trainingAndEnablementService.bookmarkLearningForUser(null, "");
+			trainingAndEnablementService.bookmarkLearningForUser(null, "", "test");
 		});
 	}
 	

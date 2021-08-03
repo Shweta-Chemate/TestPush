@@ -7,7 +7,7 @@ import com.cisco.cx.training.models.BookmarkResponseSchema;
 
 public interface LearningBookmarkDAO {
 
-	BookmarkResponseSchema createOrUpdate(BookmarkResponseSchema bookmarkResponseSchema);
+	BookmarkResponseSchema createOrUpdate(BookmarkResponseSchema bookmarkResponseSchema, String puid);
 
 	Set<String> getBookmarks(String email);
 
