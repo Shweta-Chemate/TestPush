@@ -341,4 +341,18 @@ public class TrainingAndEnablementControllerTest {
 				.andDo(print()).andExpect(status().isOk());
 	}
 	
+	@Test
+	public void testLearningPreferences() throws Exception {
+		this.mockMvc
+				.perform(get("/v1/partner/training/myLearningPreferences").contentType(MediaType.APPLICATION_JSON_VALUE)
+						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
+				.andDo(print()).andExpect(status().isOk());
+		
+		this.mockMvc
+		.perform(post("/v1/partner/training/myLearningPreferences").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
+		.andDo(print()).andExpect(status().isOk());
+	}
+
+	
 }
