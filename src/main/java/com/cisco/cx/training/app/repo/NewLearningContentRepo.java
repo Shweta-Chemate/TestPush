@@ -129,4 +129,10 @@ public interface NewLearningContentRepo
 	@Query(value = SQLConstants.GET_ROLES_COUNT, nativeQuery = true)
 	Integer getRolesCount();
 
+	@Query(value = SQLConstants.GET_POPULAR_ACCROSS_PARTNERS, nativeQuery = true)
+	List<NewLearningContentEntity> getPopularAcrossPartners();
+
+	@Query(value = SQLConstants.GET_POPULAR_ACCROSS_PARTNERS_FILTERED, nativeQuery = true)
+	List<NewLearningContentEntity> getPopularAcrossPartnersFiltered(Set<String> learningItemIds);
+
 }

@@ -65,6 +65,8 @@ public final class Constants {
 	public static final String CX_INSIGHTS = "CX Insights";
 	public static final String FILTER_KEY = "filter";
 	public static final String ST_FILTER_KEY = "Success Tracks";
+	public static final String POPULAR_ACROSS_PARTNERS = "Popular Across Partners";
+	public static final String ACCESS_TOKEN = "accessToken";
 	public static final String RESOURCE_ID_PARAM = "resourceId";
 	public static final String RESOURCE_ID_LEARNING = "CXPP_LEARNING";
 	public static final String BE_SPLIT_IO_FLAG = "be_PXC-219_OKTA";
