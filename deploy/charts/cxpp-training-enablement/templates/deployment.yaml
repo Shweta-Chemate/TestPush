@@ -97,7 +97,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: cxpp-common
-                  key: cxpp_authorization_split_io_key
+                  key: splitio_api_key
             - name: cxpp_elasticsearch_username
               valueFrom:
                 secretKeyRef:
