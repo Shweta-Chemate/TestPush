@@ -319,6 +319,7 @@ public class TrainingAndEnablementController {
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
 	public ResponseEntity<LearningRecordsAndFiltersModel> getAllLearningsInfoPost(
+			@ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = true) String xMasheryHandshake,
 			@ApiParam(value = "Search - tiltle, description, author") @RequestParam(value = "searchToken", required = false) String search,
 			@ApiParam(value = "sortBy - date, title ") @RequestParam(value = "sortBy", required = false) String sortBy,
@@ -326,16 +327,11 @@ public class TrainingAndEnablementController {
 			@ApiParam(value = "limit - Number of cards") @RequestParam(value = "limit", required = false) Integer limit			
 			)
 			throws Exception {
-		String learningTab = "Skill";HashMap<String, Object> filters = new HashMap<String, Object>();
-		LearningRecordsAndFiltersModel learningCardsAndFilters = trainingAndEnablementService.
-				getAllLearningInfoPost(xMasheryHandshake,search,filters,sortBy,sortOrder,learningTab);
-		if(limit!=null)
-		{
-			if(limit<0) throw new BadRequestException("Invalid limit.");
-			List<GenericLearningModel> preferredCards = learningCardsAndFilters.getLearningData().subList(0, limit);
-			learningCardsAndFilters.setLearningData(preferredCards);
-		}
-		return new ResponseEntity<LearningRecordsAndFiltersModel>(learningCardsAndFilters, HttpStatus.OK);
+		HashMap<String, Object> filters = new HashMap<String, Object>();
+		LearningRecordsAndFiltersModel learningCards = trainingAndEnablementService.
+				getMyPreferredLearnings(xMasheryHandshake,search,filters,sortBy,sortOrder,puid, limit);
+		if(limit!=null && limit < 0) throw new BadRequestException("Invalid limit.");
+		return new ResponseEntity<LearningRecordsAndFiltersModel>(learningCards, HttpStatus.OK);
 	}
 	
 }

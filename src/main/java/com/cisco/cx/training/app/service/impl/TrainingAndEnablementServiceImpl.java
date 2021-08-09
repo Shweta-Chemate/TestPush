@@ -417,7 +417,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	@Override
 	public Map<String, List<UserLearningPreference>> postUserLearningPreferences(String xMasheryHandshake,
 			Map<String, List<UserLearningPreference>> userPreferences) {
-		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);		
+		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
 		return userLearningPreferencesDAO.createOrUpdateULP(userDetails.getCecId(), userPreferences);
 	}
 
@@ -425,6 +425,15 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	public Map<String, List<UserLearningPreference>> getUserLearningPreferences(String xMasheryHandshake) {
 		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);		
 		return userLearningPreferencesDAO.fetchUserLearningPreferences(userDetails.getCecId());
+	}
+
+	@Override
+	public LearningRecordsAndFiltersModel getMyPreferredLearnings(String xMasheryHandshake, String search,
+			HashMap<String, Object> filters, String sortBy, String sortOrder, String puid,Integer limit) {
+		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);		
+		HashMap<String, Object> preferences = userLearningPreferencesDAO.getULPPreferencesDDB(userDetails.getCecId());
+		return productDocumentationService.fetchMyPreferredLearnings(userDetails.getCecId(),search,filters,sortBy, sortOrder,puid,preferences,limit);
+		
 	}
 }
 

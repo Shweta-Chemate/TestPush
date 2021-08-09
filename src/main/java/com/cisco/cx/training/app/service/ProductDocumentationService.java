@@ -26,6 +26,8 @@ import com.cisco.cx.training.app.repo.NewLearningContentRepo;
 import com.cisco.cx.training.models.GenericLearningModel;
 import com.cisco.cx.training.models.LearningRecordsAndFiltersModel;
 import com.cisco.cx.training.models.UserDetails;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 @Service
@@ -744,6 +746,142 @@ public class ProductDocumentationService{
 	
 	private static final String TECHNOLOGY_DB_TABLE = "Technology";
 	private static final String ROLE_DB_TABLE = "Skill";
+	
+	/** Preferences **/
+	private static final String TIME_INTERVAL_FILTER = "Time Interval";
+	private static final Map<String,String>PREFERENCE_FILTER_MAPPING = new HashMap<String,String>(); 
+	static {
+		PREFERENCE_FILTER_MAPPING.put("role", ROLE_FILTER);
+		PREFERENCE_FILTER_MAPPING.put("technology", TECHNOLOGY_FILTER);
+		PREFERENCE_FILTER_MAPPING.put("language", LANGUAGE_FILTER);
+		PREFERENCE_FILTER_MAPPING.put("region", LIVE_EVENTS_FILTER);
+		PREFERENCE_FILTER_MAPPING.put("timeinterval", TIME_INTERVAL_FILTER);
+	}
+	private static Integer TOPPICKS_LIMIT = 25;
+	
+	/** TOP Picks = my role + my preferences  
+	 * @param limit **/
+	public LearningRecordsAndFiltersModel fetchMyPreferredLearnings(String userId, String search,
+			HashMap<String, Object> filters, String sortBy, String sortOrder, String puid,
+			HashMap<String, Object> preferences, Integer limit) {
+		String userRole = productDocumentationDAO.getUserRole(userId,puid);
+		LOG.info("Role found {}.",userRole);
+		HashMap<String, Object> prefFilters = new HashMap<String,Object>();	
+		if(preferences!=null && preferences.size()>0)
+		{
+			PREFERENCE_FILTER_MAPPING.keySet().forEach(prefKey ->{
+				if(preferences.keySet().contains(prefKey))
+				{	
+					prefFilters.put(PREFERENCE_FILTER_MAPPING.get(prefKey), preferences.get(prefKey));
+				}				
+			});			
+		}
+		if(prefFilters.containsKey(ROLE_FILTER))
+		{
+			if(!((List)prefFilters.get(ROLE_FILTER)).contains(userRole))((List)prefFilters.get(ROLE_FILTER)).add(userRole);
+		}
+		else
+		{
+			List<Object> prefList = new ArrayList<Object>();prefList.add(userRole);
+			prefFilters.put(ROLE_FILTER, prefList);
+		}
+		//LOG.info("prefFilters3:{}",prefFilters);
+		@SuppressWarnings("unchecked")
+		List<String> timeInterval =  (List<String>)prefFilters.remove(TIME_INTERVAL_FILTER);
+		LearningRecordsAndFiltersModel allCards= getCards(userId, search, prefFilters, sortBy, sortOrder, userRole);//getPreferredLearningInfo(userId,search,prefFilters,sortBy,sortOrder,"Other");
+		
+		limitCards(allCards, limit);
+		
+		return allCards;
+		
+	}	
+	
+	/** ["{\"endTime\":\"4:00 PM\",\"startTime\":\"9:00 AM\",\"timeZone\":\"PDT(UTC-7)\"}"] **/
+	private void andWebinarTimeinterval(LearningRecordsAndFiltersModel learningCards, List<String> timeInterval)
+	{
+		//TODO
+		if(timeInterval !=null && timeInterval.size()==1)
+		{
+			String tiStr = timeInterval.get(0);
+			try {
+				Map<String,String> ddbTimeinterval= new ObjectMapper().readValue(tiStr, Map.class);
+			} catch (JsonProcessingException e) {
+				LOG.error("Invalid time interval",e);
+			}
+		}
+	}
+	
+	private void peerViewCards(LearningRecordsAndFiltersModel learningCards)
+	{
+		//TODO
+	}
+	
+	private void prioratizeCards(LearningRecordsAndFiltersModel learningCards)
+	{
+		//TODO
+	}
+	
+	private void randomizeCards(LearningRecordsAndFiltersModel learningCards)
+	{
+		
+	}
+	
+	private void limitCards(LearningRecordsAndFiltersModel learningCards, Integer limit)
+	{
+		int limitEnd = (limit==null || limit<0)?TOPPICKS_LIMIT:limit; //25?
+		if(learningCards!=null && learningCards.getLearningData()!=null && learningCards.getLearningData().size()>0)
+		{		
+			if(limit > learningCards.getLearningData().size()) limitEnd = learningCards.getLearningData().size();
+			List<GenericLearningModel> preferredCards = learningCards.getLearningData().subList(0, limitEnd);
+			learningCards.setLearningData(preferredCards);
+		}
+	}
+	
+	private LearningRecordsAndFiltersModel getCards(String userId, String searchToken,
+			HashMap<String, Object> applyFilters, String sortBy, String sortOrder, String contentTab)
+	{		
+		String sort = DEFAULT_SORT_FIELD ; 
+		Direction order = DEFAULT_SORT_ORDER ; 		
+		if(sortBy!=null  && !sortBy.equalsIgnoreCase("date")) sort = sortBy;
+		if(sortOrder!=null && sortOrder.equalsIgnoreCase("asc")) order = Sort.Direction.ASC;		
+		LOG.info("sort={} {}",sort, order);
+				
+		Set<String> userBookmarks = null;//learningDAO.getBookmarks(userId);
+		LearningRecordsAndFiltersModel responseModel = new LearningRecordsAndFiltersModel();
+		List<GenericLearningModel> learningCards = new ArrayList<>();
+		responseModel.setLearningData(learningCards);
+				
+		List<LearningItemEntity> dbCards = new ArrayList<LearningItemEntity>();
+		if( searchToken!=null && !searchToken.trim().isEmpty() &&
+				applyFilters!=null && !applyFilters.isEmpty()	)
+		{
+			Set<String> filteredCards = andFilters(filterCards(applyFilters,contentTab));
+			if(filteredCards!=null && !filteredCards.isEmpty())
+				dbCards = productDocumentationDAO.getAllLearningCardsByFilterSearch(contentTab,filteredCards,"%"+searchToken+"%",Sort.by(order, sort));			
+		}
+		else if(searchToken!=null && !searchToken.trim().isEmpty())
+		{
+			dbCards = productDocumentationDAO.getAllLearningCardsBySearch(contentTab,"%"+searchToken+"%",Sort.by(order, sort));
+		}			
+		else if(applyFilters!=null && !applyFilters.isEmpty())
+		{
+			Set<String> filteredCards = andFilters(filterCards(applyFilters,contentTab));
+			if(filteredCards!=null && !filteredCards.isEmpty())
+				dbCards = productDocumentationDAO.getAllLearningCardsByFilter(contentTab,filteredCards,Sort.by(order, sort)); 
+		}			
+		else 
+		{
+			dbCards=productDocumentationDAO.getAllLearningCards(contentTab,Sort.by(order, sort));
+		}			
+		
+		LOG.info("dbCards={}",dbCards);
+		learningCards.addAll(mapLearningEntityToCards(dbCards, userBookmarks));
+		
+		sortSpecial(learningCards,sort,order);
+		
+		
+		return responseModel;
+	}
 	
 }
 
