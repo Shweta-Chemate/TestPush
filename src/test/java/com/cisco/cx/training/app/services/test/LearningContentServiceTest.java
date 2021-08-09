@@ -283,6 +283,26 @@ public class LearningContentServiceTest {
 	}
 
 	@Test
+	public void testFetchPopularAcrossPartnersContent()
+	{
+		HashMap<String, Object> testFilter = getTestFiltersSelected();
+		String testUserId = "testUserId";
+		List<NewLearningContentEntity> learningEntityList = new ArrayList<>();
+		learningEntityList.add(getLearningEntity());
+		when(learningContentDAO.fetchPopularAcrossPartnersContent(Mockito.any(), Mockito.any())).thenReturn(learningEntityList);
+		Set<String> userBookmarks=getBookmarks();
+		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(userBookmarks);
+		List<LearningStatusEntity> learningStatusList = new ArrayList<>();
+		learningStatusList.add(getLearningStatusEntity());
+		when(learningStatusRepo.findByUserId(testUserId)).thenReturn(learningStatusList);
+		learningContentService.fetchPopularAcrossPartnersContent(testUserId, testFilter);
+		when(learningContentDAO.fetchPopularAcrossPartnersContent(Mockito.any(), Mockito.any())).thenThrow(new GenericException("There was a problem in fetching CX Insights learning content"));
+		assertThrows(Exception.class, () -> {
+			learningContentService.fetchPopularAcrossPartnersContent(testUserId, testFilter);
+		});
+	}
+
+	@Test
 	public void testGetCXInsightsFiltersWithCount()
 	{
 		HashMap<String, Object> testFilter = getTestFiltersSelected();
