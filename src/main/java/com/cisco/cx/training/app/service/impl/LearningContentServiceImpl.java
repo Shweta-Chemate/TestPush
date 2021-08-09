@@ -19,6 +19,7 @@ import org.springframework.util.CollectionUtils;
 
 import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
 import com.cisco.cx.training.app.dao.NewLearningContentDAO;
+import com.cisco.cx.training.app.dao.UserLearningPreferencesDAO;
 import com.cisco.cx.training.app.entities.LearningStatusEntity;
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.app.exception.GenericException;
@@ -116,6 +117,9 @@ public class LearningContentServiceImpl implements LearningContentService {
 
 	@Autowired
 	private LearningStatusRepo learningStatusRepo;
+	
+	@Autowired
+	private UserLearningPreferencesDAO ulpDAO;
 
 	@Override
 	public SuccessTalkResponseSchema fetchSuccesstalks(String ccoid, String sortField, String sortType,
@@ -398,8 +402,9 @@ public class LearningContentServiceImpl implements LearningContentService {
 	public LearningStatusEntity updateUserStatus(String userId, String puid, LearningStatusSchema learningStatusSchema,
 			String xMasheryHandshake) {
 		Registration regStatus=learningStatusSchema.getRegStatus();
+		UserDetailsWithCompanyList userDetails=null;
 		if(regStatus!=null) {
-			UserDetailsWithCompanyList userDetails = partnerProfileService.fetchUserDetailsWithCompanyList(xMasheryHandshake);
+			userDetails = partnerProfileService.fetchUserDetailsWithCompanyList(xMasheryHandshake);
 			List<Company> companies = userDetails.getCompanyList();
 			Optional<Company> matchingObject = companies.stream()
 					.filter(c -> (c.getPuid().equals(puid) && c.isDemoAccount())).findFirst();
@@ -408,6 +413,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 				throw new NotAllowedException("Not Allowed for DemoAccount");
 		}
 		try {
+			ulpDAO.addLearningsViewedForRole(userDetails,learningStatusSchema);
 			LearningStatusEntity learning_status_existing = learningStatusRepo.findByLearningItemIdAndUserIdAndPuid(learningStatusSchema.getLearningItemId(), userId, puid);
 			// record already exists in the table
 			if (learning_status_existing != null) {
@@ -436,6 +442,8 @@ public class LearningContentServiceImpl implements LearningContentService {
 				}
 				return learningStatusRepo.save(learning_status_new);
 			}
+			
+			
 
 		} catch (Exception e) {
 			LOG.error("There was a problem in registering user to the PIW", e);

@@ -59,6 +59,9 @@ public interface TrainingAndEnablementService {
 
 	Map<String, List<UserLearningPreference>> getUserLearningPreferences(String xMasheryHandshake);
 
+	LearningRecordsAndFiltersModel getMyPreferredLearnings(String xMasheryHandshake, String search,
+			HashMap<String, Object> filters, String sortBy, String sortOrder, String puid, Integer limit);
+
 
 
 }

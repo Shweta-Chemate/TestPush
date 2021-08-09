@@ -707,6 +707,9 @@ public static final String GET_PD_DOCUMENTATION_WITH_COUNT_BY_CARD = "select arc
 
 	@Query(value="select distinct piw_language from cxpp_db.cxpp_learning_item where piw_language is not null order by piw_language", nativeQuery=true)
 	List<String> getAllLanguagesForPreferences();
+
+	@Query(value="select role from cxpp_db_um.managed_screen_details where ccoid=:cecId and puid=:puid and role<> 'PSS role1' limit 1", nativeQuery=true)
+	String getUserRole(String cecId, String puid);
 	
 		
 }

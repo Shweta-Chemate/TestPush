@@ -40,6 +40,8 @@ import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
 import com.cisco.cx.training.app.dao.ProductDocumentationDAO;
 import com.cisco.cx.training.app.dao.UserLearningPreferencesDAO;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
+import com.cisco.cx.training.models.LearningStatusSchema;
+import com.cisco.cx.training.models.UserDetailsWithCompanyList;
 import com.cisco.cx.training.models.UserLearningPreference;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -91,10 +93,14 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
 		LOG.info("Entering the createOrUpdateULP");
 		long requestStartTime = System.currentTimeMillis();		
 		Map<String, List<UserLearningPreference>> currentULPs = ulPreferences;//getULPs not required
-		if(currentULPs==null || currentULPs.isEmpty()) return ulPreferences;
+		
 		Map<String, AttributeValue> itemValue = new HashMap<String, AttributeValue>();
 		itemValue.put(USERID_KEY, AttributeValue.builder().s(userId.concat(USERID_SUFFIX)).build());
-		Arrays.asList(PREFERENCES_KEYS.values()).forEach( preferenceKey ->{
+		if(currentULPs==null || currentULPs.isEmpty())
+		{
+			LOG.info("User cleared prefs.");
+		}
+		else Arrays.asList(PREFERENCES_KEYS.values()).forEach( preferenceKey ->{
 			if(ulPreferences.containsKey(preferenceKey.name()) )
 			{
 				Set<String> preferenceNames = new HashSet<String>();
@@ -133,12 +139,11 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
 			return null;
 		}
 	}
-
-	@Override
-	public Map<String, List<UserLearningPreference>> fetchUserLearningPreferences(String userId) {
-		LOG.info("Entering the fetch ULPs");
-		Map<String, List<UserLearningPreference>> ulpMap = new HashMap<String, List<UserLearningPreference>>();
-		ulpMap.putAll(getAllLatestPreferencesCategories());
+	
+	
+	public QueryResponse fetchULPPreferencesDDB(String userId) 
+	{			
+		LOG.info("Entering DDB ULPs");
 		long requestStartTime = System.currentTimeMillis();		
 		Map<String,String> expressionAttributesNames = new HashMap<>();
 		expressionAttributesNames.put("#userid",USERID_KEY);	    
@@ -149,11 +154,41 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
 				.keyConditionExpression("#userid = :useridValue")
 				.expressionAttributeNames(expressionAttributesNames)
 				.expressionAttributeValues(expressionAttributeValues).build();
-		LOG.info("Preprocessing done in {} ", (System.currentTimeMillis() - requestStartTime));
+		LOG.info("ULP Preprocessing done in {} ", (System.currentTimeMillis() - requestStartTime));
 		requestStartTime = System.currentTimeMillis();	
 		QueryResponse queryResult = dbClient.query(queryRequest);
-		LOG.info("response received in {} ", (System.currentTimeMillis() - requestStartTime));
-		requestStartTime = System.currentTimeMillis();	
+		LOG.info("ULP response received in {} ", (System.currentTimeMillis() - requestStartTime));	
+		return queryResult;
+	}
+	
+	@Override
+	public HashMap<String, Object> getULPPreferencesDDB(String userId) 
+	{			
+		LOG.info("Entering get DDB ULPs");
+		HashMap<String, Object> prefFilters = new HashMap<String,Object>();	
+		QueryResponse queryResult = fetchULPPreferencesDDB(userId);		
+		List<Map<String,AttributeValue>> attributeValues = queryResult.items();		
+		if(attributeValues.size()>0) {
+			Map<String,AttributeValue> userLearningPreferences = attributeValues.get(0);			
+			Arrays.asList(PREFERENCES_KEYS.values()).forEach( preferenceKey ->{
+				AttributeValue preferenceSet = userLearningPreferences.get(preferenceKey.name());				
+				if(preferenceSet != null)
+				{
+					List<Object> ulps = new ArrayList<Object>(preferenceSet.ss());	
+					prefFilters.put(preferenceKey.name(), ulps);
+				}
+			});
+		}		
+		return prefFilters;
+	}
+
+	@Override
+	public Map<String, List<UserLearningPreference>> fetchUserLearningPreferences(String userId) {
+		LOG.info("Entering the fetch ULPs");
+		Map<String, List<UserLearningPreference>> ulpMap = new HashMap<String, List<UserLearningPreference>>();
+		ulpMap.putAll(getAllLatestPreferencesCategories());
+		QueryResponse queryResult = fetchULPPreferencesDDB(userId);		
+		long requestStartTime = System.currentTimeMillis();	
 		List<Map<String,AttributeValue>> attributeValues = queryResult.items();		
 		//LOG.info("attributeValues {} , {}", attributeValues, attributeValues.size());
 		if(attributeValues.size()>0) {
@@ -216,5 +251,12 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
 			dbPrefs.add(ulp);
 		});
 		return dbPrefs;
+	}
+
+	@Override
+	public void addLearningsViewedForRole(UserDetailsWithCompanyList userDetails,
+			LearningStatusSchema learningStatusSchema) {
+		// TODO Auto-generated method stub
+		
 	}
 }
