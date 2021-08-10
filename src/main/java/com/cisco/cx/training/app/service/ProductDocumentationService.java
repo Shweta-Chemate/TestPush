@@ -1,16 +1,23 @@
 package com.cisco.cx.training.app.service;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
+import java.util.TimeZone;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -757,7 +764,10 @@ public class ProductDocumentationService{
 		PREFERENCE_FILTER_MAPPING.put("region", LIVE_EVENTS_FILTER);
 		PREFERENCE_FILTER_MAPPING.put("timeinterval", TIME_INTERVAL_FILTER);
 	}
-	private static Integer TOPPICKS_LIMIT = 25;
+	private static Integer TOP_PICKS_LIMIT = 25;
+	private static final String TI_START_TIME = "startTime";
+	private static final String TI_END_TIME = "endTime";
+	private static final String TI_TIME_ZONE = "timeZone";
 	
 	/** TOP Picks = my role + my preferences  
 	 * @param limit **/
@@ -790,48 +800,204 @@ public class ProductDocumentationService{
 		List<String> timeInterval =  (List<String>)prefFilters.remove(TIME_INTERVAL_FILTER);
 		LearningRecordsAndFiltersModel allCards= getCards(userId, search, prefFilters, sortBy, sortOrder, userRole);//getPreferredLearningInfo(userId,search,prefFilters,sortBy,sortOrder,"Other");
 		
-		limitCards(allCards, limit);
+		int limitEnd = (limit==null || limit<0)?TOP_PICKS_LIMIT:limit; //25?
+		getMoreCards(allCards,limitEnd);
+		addPeerViewedCards(allCards, limit);
+		andWebinarTimeinterval(allCards,timeInterval,limitEnd);
+		prioratizeCards(allCards);
+		randomizeCards(allCards,limitEnd);
+		limitCards(allCards, limitEnd);
 		
 		return allCards;
 		
 	}	
 	
-	/** ["{\"endTime\":\"4:00 PM\",\"startTime\":\"9:00 AM\",\"timeZone\":\"PDT(UTC-7)\"}"] **/
-	private void andWebinarTimeinterval(LearningRecordsAndFiltersModel learningCards, List<String> timeInterval)
+	private void getMoreCards(LearningRecordsAndFiltersModel allCards, Integer limitEnd)
 	{
-		//TODO
-		if(timeInterval !=null && timeInterval.size()==1)
-		{
-			String tiStr = timeInterval.get(0);
-			try {
-				Map<String,String> ddbTimeinterval= new ObjectMapper().readValue(tiStr, Map.class);
-			} catch (JsonProcessingException e) {
-				LOG.error("Invalid time interval",e);
-			}
-		}
+		//TODO if less cards then reset prefs to include other non-pref lang and region
 	}
 	
-	private void peerViewCards(LearningRecordsAndFiltersModel learningCards)
+
+	private void addPeerViewedCards(LearningRecordsAndFiltersModel learningCards,Integer limitEnd)
 	{
-		//TODO
+		//TODO if less cards then include peer cards
+	}
+	
+	private Date getNowDateUTC()
+	{
+		try
+		{
+			Date nowDate = new Date();
+			SimpleDateFormat sdf1 = new SimpleDateFormat();
+			sdf1.applyPattern("yyyy-MM-dd HH:mm:ss");
+			sdf1.setTimeZone(TimeZone.getTimeZone("UTC"));
+			String nowStr = sdf1.format(nowDate);
+			LOG.info("sdf1:{} ",nowStr);
+			Date nowDateUTC = sdf1.parse(nowStr);	
+			return nowDateUTC;
+		}
+		catch(Exception e)
+		{
+			LOG.info("Err in nowUTC",e);
+		}
+		return null;
+	}
+	
+	private boolean isFutureLW(GenericLearningModel card, Date nowDateUTC) 
+	{
+		boolean isFutureCard=false;
+		if(nowDateUTC==null || card.getCreatedTimeStamp()==null) return isFutureCard;		
+		String cardTime = card.getCreatedTimeStamp().toString();
+		SimpleDateFormat sdf2 = new SimpleDateFormat();
+		sdf2.applyPattern("yyyy-MM-dd HH:mm:ss");
+		sdf2.setTimeZone(TimeZone.getTimeZone("UTC"));
+		Date dbDateUTC;
+		try {
+			//LOG.info("sdf2:{} ",cardTime);
+			dbDateUTC = sdf2.parse(cardTime);					
+			isFutureCard= dbDateUTC.after(nowDateUTC);	
+		} catch (ParseException e) {
+			LOG.warn("isFutureCard is false by default.",e);
+		}		
+		return isFutureCard;		
+	}
+	
+	private List<String> getRangeLW(List<GenericLearningModel> onlyFutureLW, Map<String, String> ddbTI)
+	{
+		List<GenericLearningModel> rangeCards = new ArrayList<GenericLearningModel>();List<String> rangeCardsIds = new ArrayList<String>();
+		String startTime = ddbTI.get(TI_START_TIME).trim();
+		String endTime = ddbTI.get(TI_END_TIME).trim();
+		String timeZone = ddbTI.get(TI_TIME_ZONE).trim();
+		LOG.info("TI:{},{},{}",startTime,endTime, timeZone);
+	
+		int hrs1 = Integer.parseInt(startTime.substring(0, startTime.indexOf(":")));
+		int min1 = Integer.parseInt(startTime.substring(startTime.indexOf(":")+1, startTime.indexOf(" ")));
+		if(startTime.contains("PM")) hrs1=hrs1+12;		
+		
+		int hrs2 = Integer.parseInt(endTime.substring(0, endTime.indexOf(":")));
+		int min2 = Integer.parseInt(endTime.substring(endTime.indexOf(":")+1, endTime.indexOf(" ")));
+		if(endTime.contains("PM")) hrs2=hrs2+12;		
+		//LOG.info("{} {} {} {}",hrs1,min1,hrs2,min2);
+		int hrs3 = Integer.parseInt(timeZone.substring(timeZone.indexOf("UTC")+3, timeZone.indexOf(":")));
+		int min3 = Integer.parseInt(timeZone.substring(timeZone.indexOf(":")+1, timeZone.indexOf(")")));
+		if(timeZone.contains("UTC-")) min3 = min3 * -1;		
+		
+		for(GenericLearningModel futureCard : onlyFutureLW)
+		{
+			Date date4 = futureCard.getCreatedTimeStamp();					
+			int finalHrs = date4.getHours() + hrs3; if(finalHrs<0) finalHrs = finalHrs*-1 -1;
+			int finalMin = date4.getMinutes() + min3; if(finalMin<0) finalMin = 60+finalMin;
+			//LOG.info("{} {} {} finalHrs {}  finalMin {} ", hrs3, min3, date4 , finalHrs, finalMin); 
+			if( (finalHrs>hrs1 && finalHrs<hrs2 ) ||
+					(finalHrs==hrs1 && finalMin>=min1 ) ||
+					(finalHrs==hrs2 && finalMin <= min2 )
+				)
+			 { rangeCards.add(futureCard); rangeCardsIds.add(futureCard.getRowId());} 
+		}
+		LOG.info("rangeCardsIds ={}", rangeCardsIds);
+		return rangeCardsIds; //rangeCards
+	}
+	
+	/** ["{\"endTime\":\"4:00 PM\",\"startTime\":\"9:00 AM\",\"timeZone\":\"PDT(UTC-7)\"}"] 
+	 * @param limit **/
+	@SuppressWarnings("unchecked")
+	private void andWebinarTimeinterval(LearningRecordsAndFiltersModel learningCards, List<String> timeInterval, Integer limit)
+	{
+		LOG.info("other pref based cards {} ",learningCards.getLearningData().size());
+		try
+		{
+			Map<String,String> ddbTI = new HashMap<String,String>();
+			if(timeInterval !=null && timeInterval.size()==1)
+			{
+				String tiStr = timeInterval.get(0);
+				try {					
+					Map<String,String> ddbTimeinterval= new ObjectMapper().readValue(tiStr, Map.class);
+					ddbTI.putAll(ddbTimeinterval);
+				} catch (JsonProcessingException e) {
+					LOG.error("Invalid time interval",e);
+				}
+				if(	ddbTI.get(TI_START_TIME)!=null && !ddbTI.get(TI_START_TIME).trim().isEmpty() &&
+						ddbTI.get(TI_END_TIME)!=null && !ddbTI.get(TI_END_TIME).trim().isEmpty() &&
+						ddbTI.get(TI_TIME_ZONE)!=null && !ddbTI.get(TI_TIME_ZONE).trim().isEmpty()						
+						)
+				{					
+					List<String> onlyLWIds = new ArrayList<String>();List<String> onlyFutureLWIds = new ArrayList<String>();
+					List<GenericLearningModel> onlyLW = new ArrayList<GenericLearningModel>();
+					List<GenericLearningModel> onlyFutureLW = new ArrayList<GenericLearningModel>();
+					Date nowUTC = getNowDateUTC();
+					learningCards.getLearningData().forEach(card ->{ 
+						if(card.getContentType()!=null && card.getContentType().toLowerCase().contains("live webinar") && card.getCreatedTimeStamp()!=null)
+						{
+							onlyLW.add(card); onlyLWIds.add(card.getRowId());
+							if(isFutureLW(card,nowUTC)) { onlyFutureLW.add(card);onlyFutureLWIds.add(card.getRowId());}
+						}						
+					});				
+					LOG.info(" onlyLWIds : {}  onlyFutureLWIds: {} " , onlyLWIds , onlyFutureLWIds );
+					List<String> onlyFutureLWInRange = getRangeLW(onlyFutureLW,ddbTI);
+					List<String> notInRange = new ArrayList<String>();
+					onlyFutureLW.forEach(card-> { if(!onlyFutureLWInRange.contains(card.getRowId())) notInRange.add(card.getRowId());});
+					List<GenericLearningModel> newList = new ArrayList<GenericLearningModel>();					
+					learningCards.getLearningData().forEach(card ->{ 
+						if(!notInRange.contains(card.getRowId()))newList.add(card);
+					});
+					LOG.info(" org {} new {} limit {}",learningCards.getLearningData().size(), newList.size() , limit);
+					if(newList.size() >= limit)//if sufficient cards then remove
+					{	
+						learningCards.setLearningData(newList);
+					}					
+				}
+			}
+
+		}
+		catch(Exception e)
+		{
+			LOG.error("Error occurred processing TI.",e);
+		}
+
+		LOG.info("and TI based cards {}",learningCards.getLearningData().size());
 	}
 	
 	private void prioratizeCards(LearningRecordsAndFiltersModel learningCards)
 	{
-		//TODO
+		LOG.info("Already prioratize by newer."); //sort date desc
 	}
 	
-	private void randomizeCards(LearningRecordsAndFiltersModel learningCards)
+	private void randomizeCards(LearningRecordsAndFiltersModel learningCards, Integer limitEnd)
 	{
-		
+		int orgSize = learningCards.getLearningData().size();
+		if(orgSize > limitEnd) //25
+		{
+			int randomNums = orgSize>= limitEnd*2 ? limitEnd/2 : orgSize-limitEnd-1;  //12 or less			
+			int boundry = orgSize>= limitEnd*2 ? limitEnd*2 : orgSize; //50 or less
+			Set<Integer> randomIndexes = new HashSet<Integer>();
+			Random r = new Random();
+			//while(randomIndexes.size()<randomNums) ---may take more time
+			for(int i=0;i<=randomNums;i++)
+			{
+				int randomNum = r.nextInt(boundry);
+				randomIndexes.add(randomNum);
+			}
+			LOG.info("Randomly removed {}", randomIndexes);
+			
+			List<String> allCardIds = new ArrayList<String>();
+			List<String> newListCardIds = new ArrayList<String>();
+			List<GenericLearningModel> orgList =learningCards.getLearningData();
+			List<GenericLearningModel> newList = new ArrayList<GenericLearningModel>();
+			for(int i=0;i<orgList.size();i++ )
+			{
+				allCardIds.add(orgList.get(i).getRowId());
+				if(!randomIndexes.contains(i)) { newList.add(orgList.get(i)); newListCardIds.add(orgList.get(i).getRowId()); }
+			}
+			learningCards.setLearningData(newList);
+			LOG.info(" random org {} , new {}", allCardIds , newListCardIds );
+		}
 	}
 	
-	private void limitCards(LearningRecordsAndFiltersModel learningCards, Integer limit)
-	{
-		int limitEnd = (limit==null || limit<0)?TOPPICKS_LIMIT:limit; //25?
+	private void limitCards(LearningRecordsAndFiltersModel learningCards, Integer limitEnd)
+	{		
 		if(learningCards!=null && learningCards.getLearningData()!=null && learningCards.getLearningData().size()>0)
 		{		
-			if(limit > learningCards.getLearningData().size()) limitEnd = learningCards.getLearningData().size();
+			if(limitEnd > learningCards.getLearningData().size()) limitEnd = learningCards.getLearningData().size();
 			List<GenericLearningModel> preferredCards = learningCards.getLearningData().subList(0, limitEnd);
 			learningCards.setLearningData(preferredCards);
 		}
@@ -874,7 +1040,7 @@ public class ProductDocumentationService{
 			dbCards=productDocumentationDAO.getAllLearningCards(contentTab,Sort.by(order, sort));
 		}			
 		
-		LOG.info("dbCards={}",dbCards);
+		LOG.info("all dbCards={}",dbCards);
 		learningCards.addAll(mapLearningEntityToCards(dbCards, userBookmarks));
 		
 		sortSpecial(learningCards,sort,order);
