@@ -6,6 +6,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class GenericLearningModel {
 	
+	@JsonProperty("id")
+    private String id; //for TP UI
+	
 	@JsonProperty("rowId")
     private String rowId;
 
@@ -200,6 +203,14 @@ public class GenericLearningModel {
 
 	public void setLearning_map(String learning_map) {
 		this.learning_map = learning_map;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 	
 
