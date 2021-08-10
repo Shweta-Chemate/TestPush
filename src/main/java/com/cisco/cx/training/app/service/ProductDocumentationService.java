@@ -764,7 +764,7 @@ public class ProductDocumentationService{
 		PREFERENCE_FILTER_MAPPING.put("region", LIVE_EVENTS_FILTER);
 		PREFERENCE_FILTER_MAPPING.put("timeinterval", TIME_INTERVAL_FILTER);
 	}
-	private static Integer TOPPICKS_LIMIT = 25;
+	private static Integer TOP_PICKS_LIMIT = 25;
 	private static final String TI_START_TIME = "startTime";
 	private static final String TI_END_TIME = "endTime";
 	private static final String TI_TIME_ZONE = "timeZone";
@@ -800,7 +800,7 @@ public class ProductDocumentationService{
 		List<String> timeInterval =  (List<String>)prefFilters.remove(TIME_INTERVAL_FILTER);
 		LearningRecordsAndFiltersModel allCards= getCards(userId, search, prefFilters, sortBy, sortOrder, userRole);//getPreferredLearningInfo(userId,search,prefFilters,sortBy,sortOrder,"Other");
 		
-		int limitEnd = (limit==null || limit<0)?TOPPICKS_LIMIT:limit; //25?
+		int limitEnd = (limit==null || limit<0)?TOP_PICKS_LIMIT:limit; //25?
 		getMoreCards(allCards,limitEnd);
 		addPeerViewedCards(allCards, limit);
 		andWebinarTimeinterval(allCards,timeInterval,limitEnd);
@@ -823,30 +823,43 @@ public class ProductDocumentationService{
 		//TODO if less cards then include peer cards
 	}
 	
-	
-	private boolean isFutureLW(GenericLearningModel card) 
+	private Date getNowDateUTC()
 	{
-		String cardTime = card.getCreatedTimeStamp().toString();
-		SimpleDateFormat sdf2 = new SimpleDateFormat();
-		sdf2.applyPattern("yyyy-MM-dd HH:mm:ss");
-		sdf2.setTimeZone(TimeZone.getTimeZone("UTC"));
-		Date dbDateUTC;
-		Date nowDateUTC ;
-		try {
-			LOG.info("sdf2:{} ",cardTime);
-			dbDateUTC = sdf2.parse(cardTime);
+		try
+		{
 			Date nowDate = new Date();
 			SimpleDateFormat sdf1 = new SimpleDateFormat();
 			sdf1.applyPattern("yyyy-MM-dd HH:mm:ss");
 			sdf1.setTimeZone(TimeZone.getTimeZone("UTC"));
 			String nowStr = sdf1.format(nowDate);
 			LOG.info("sdf1:{} ",nowStr);
-			nowDateUTC = sdf1.parse(nowStr);			
-			return dbDateUTC.after(nowDateUTC);	
+			Date nowDateUTC = sdf1.parse(nowStr);	
+			return nowDateUTC;
+		}
+		catch(Exception e)
+		{
+			LOG.info("Err in nowUTC",e);
+		}
+		return null;
+	}
+	
+	private boolean isFutureLW(GenericLearningModel card, Date nowDateUTC) 
+	{
+		boolean isFutureCard=false;
+		if(nowDateUTC==null || card.getCreatedTimeStamp()==null) return isFutureCard;		
+		String cardTime = card.getCreatedTimeStamp().toString();
+		SimpleDateFormat sdf2 = new SimpleDateFormat();
+		sdf2.applyPattern("yyyy-MM-dd HH:mm:ss");
+		sdf2.setTimeZone(TimeZone.getTimeZone("UTC"));
+		Date dbDateUTC;
+		try {
+			//LOG.info("sdf2:{} ",cardTime);
+			dbDateUTC = sdf2.parse(cardTime);					
+			isFutureCard= dbDateUTC.after(nowDateUTC);	
 		} catch (ParseException e) {
-			LOG.warn("isFuture is false by default.",e);
+			LOG.warn("isFutureCard is false by default.",e);
 		}		
-		return false;		
+		return isFutureCard;		
 	}
 	
 	private List<String> getRangeLW(List<GenericLearningModel> onlyFutureLW, Map<String, String> ddbTI)
@@ -864,7 +877,7 @@ public class ProductDocumentationService{
 		int hrs2 = Integer.parseInt(endTime.substring(0, endTime.indexOf(":")));
 		int min2 = Integer.parseInt(endTime.substring(endTime.indexOf(":")+1, endTime.indexOf(" ")));
 		if(endTime.contains("PM")) hrs2=hrs2+12;		
-		LOG.info("{} {} {} {}",hrs1,min1,hrs2,min2);
+		//LOG.info("{} {} {} {}",hrs1,min1,hrs2,min2);
 		int hrs3 = Integer.parseInt(timeZone.substring(timeZone.indexOf("UTC")+3, timeZone.indexOf(":")));
 		int min3 = Integer.parseInt(timeZone.substring(timeZone.indexOf(":")+1, timeZone.indexOf(")")));
 		if(timeZone.contains("UTC-")) min3 = min3 * -1;		
@@ -874,7 +887,7 @@ public class ProductDocumentationService{
 			Date date4 = futureCard.getCreatedTimeStamp();					
 			int finalHrs = date4.getHours() + hrs3; if(finalHrs<0) finalHrs = finalHrs*-1 -1;
 			int finalMin = date4.getMinutes() + min3; if(finalMin<0) finalMin = 60+finalMin;
-			LOG.info("{} {} {} finalHrs {}  finalMin {} ", hrs3, min3, date4 , finalHrs, finalMin); 
+			//LOG.info("{} {} {} finalHrs {}  finalMin {} ", hrs3, min3, date4 , finalHrs, finalMin); 
 			if( (finalHrs>hrs1 && finalHrs<hrs2 ) ||
 					(finalHrs==hrs1 && finalMin>=min1 ) ||
 					(finalHrs==hrs2 && finalMin <= min2 )
@@ -911,18 +924,19 @@ public class ProductDocumentationService{
 					List<String> onlyLWIds = new ArrayList<String>();List<String> onlyFutureLWIds = new ArrayList<String>();
 					List<GenericLearningModel> onlyLW = new ArrayList<GenericLearningModel>();
 					List<GenericLearningModel> onlyFutureLW = new ArrayList<GenericLearningModel>();
+					Date nowUTC = getNowDateUTC();
 					learningCards.getLearningData().forEach(card ->{ 
 						if(card.getContentType()!=null && card.getContentType().toLowerCase().contains("live webinar") && card.getCreatedTimeStamp()!=null)
 						{
 							onlyLW.add(card); onlyLWIds.add(card.getRowId());
-							if(isFutureLW(card)) { onlyFutureLW.add(card);onlyFutureLWIds.add(card.getRowId());}
+							if(isFutureLW(card,nowUTC)) { onlyFutureLW.add(card);onlyFutureLWIds.add(card.getRowId());}
 						}						
 					});				
 					LOG.info(" onlyLWIds : {}  onlyFutureLWIds: {} " , onlyLWIds , onlyFutureLWIds );
 					List<String> onlyFutureLWInRange = getRangeLW(onlyFutureLW,ddbTI);
 					List<String> notInRange = new ArrayList<String>();
 					onlyFutureLW.forEach(card-> { if(!onlyFutureLWInRange.contains(card.getRowId())) notInRange.add(card.getRowId());});
-					List<GenericLearningModel> newList = new ArrayList<GenericLearningModel>();
+					List<GenericLearningModel> newList = new ArrayList<GenericLearningModel>();					
 					learningCards.getLearningData().forEach(card ->{ 
 						if(!notInRange.contains(card.getRowId()))newList.add(card);
 					});
