@@ -801,7 +801,7 @@ public class ProductDocumentationService{
 		LearningRecordsAndFiltersModel allCards= getCards(userId, search, prefFilters, sortBy, sortOrder, userRole);//getPreferredLearningInfo(userId,search,prefFilters,sortBy,sortOrder,"Other");
 		
 		int limitEnd = (limit==null || limit<0)?TOP_PICKS_LIMIT:limit; //25?
-		getMoreCards(userId, search, prefFilters, sortBy, sortOrder, userRole,allCards,limitEnd, prefFilters, true);
+		//getMoreCards(userId, search, prefFilters, sortBy, sortOrder, userRole,allCards,limitEnd, prefFilters, true);
 		addPeerViewedCards(allCards, limit);
 		andWebinarTimeinterval(allCards,timeInterval,limitEnd);
 		prioratizeCards(allCards);
@@ -950,7 +950,7 @@ public class ProductDocumentationService{
 						if(!notInRange.contains(card.getRowId()))newList.add(card);
 					});
 					LOG.info(" org {} new {} limit {}",learningCards.getLearningData().size(), newList.size() , limit);
-					if(newList.size() >= limit)//if sufficient cards then remove
+					//if(newList.size() >= limit)//if sufficient cards then remove  -- can be less or zero cards
 					{	
 						learningCards.setLearningData(newList);
 					}					
@@ -1021,7 +1021,7 @@ public class ProductDocumentationService{
 		if(sortOrder!=null && sortOrder.equalsIgnoreCase("asc")) order = Sort.Direction.ASC;		
 		LOG.info("sort={} {}",sort, order);
 				
-		Set<String> userBookmarks = null;//learningDAO.getBookmarks(userId);
+		Set<String> userBookmarks = learningDAO.getBookmarks(userId);
 		LearningRecordsAndFiltersModel responseModel = new LearningRecordsAndFiltersModel();
 		List<GenericLearningModel> learningCards = new ArrayList<>();
 		responseModel.setLearningData(learningCards);
