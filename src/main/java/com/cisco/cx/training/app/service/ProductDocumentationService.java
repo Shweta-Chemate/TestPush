@@ -801,7 +801,7 @@ public class ProductDocumentationService{
 		LearningRecordsAndFiltersModel allCards= getCards(userId, search, prefFilters, sortBy, sortOrder, userRole);//getPreferredLearningInfo(userId,search,prefFilters,sortBy,sortOrder,"Other");
 		
 		int limitEnd = (limit==null || limit<0)?TOP_PICKS_LIMIT:limit; //25?
-		getMoreCards(allCards,limitEnd);
+		getMoreCards(userId, search, prefFilters, sortBy, sortOrder, userRole,allCards,limitEnd, prefFilters, true);
 		addPeerViewedCards(allCards, limit);
 		andWebinarTimeinterval(allCards,timeInterval,limitEnd);
 		prioratizeCards(allCards);
@@ -811,10 +811,19 @@ public class ProductDocumentationService{
 		return allCards;
 		
 	}	
-	
-	private void getMoreCards(LearningRecordsAndFiltersModel allCards, Integer limitEnd)
+
+	//if less cards then reset prefs to include other non-pref lang and region or all cards irrespective of lang/reg
+	private void getMoreCards(String userId, String search, HashMap<String, Object> prefFilters2, String sortBy, String sortOrder, String userRole, 
+			LearningRecordsAndFiltersModel allCards, Integer limitEnd, HashMap<String, Object> prefFilters,	boolean addNull)
 	{
-		//TODO if less cards then reset prefs to include other non-pref lang and region
+		if(allCards.getLearningData().size()==0 || (allCards.getLearningData().size()<limitEnd))
+		{
+			LOG.info("Consider cards with no lang/reg but with other prefs. {} ",allCards.getLearningData().size());
+			if(prefFilters.get(LIVE_EVENTS_FILTER)!=null)prefFilters.remove(LIVE_EVENTS_FILTER);
+			if(prefFilters.get(LANGUAGE_FILTER)!=null)prefFilters.remove(LANGUAGE_FILTER);
+			LearningRecordsAndFiltersModel lrCards = getCards(userId, search, prefFilters, sortBy, sortOrder, userRole);
+			allCards.setLearningData(lrCards.getLearningData());;
+		}
 	}
 	
 
