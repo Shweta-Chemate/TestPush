@@ -52,4 +52,8 @@ public interface NewLearningContentDAO {
 	Integer getTechnologyCount();
 	
 	Integer getRolesCount();
+
+	List<NewLearningContentEntity> fetchPopularAcrossPartnersContent(Map<String, List<String>> queryMap, Object stMap);
+
+	HashMap<String, Object> getPopularAcrossPartnersFiltersWithCount(HashMap<String, Object> filtersSelected);
 }

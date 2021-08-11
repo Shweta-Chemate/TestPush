@@ -148,4 +148,24 @@ public class SQLConstants {
 	public static final String GET_ROLES_COUNT = "select count(*) FROM cxpp_db.cxpp_learning_roles";
 	
 	public static final String GET_TECHNOLOGY_COUNT= "select count(*) FROM cxpp_db.cxpp_learning_technology";
+
+	public static final String GET_POPULAR_ACCROSS_PARTNERS = "select * from\n" +
+			"((select learning_item_id from cxpp_db.cxpp_learning_popularity where learning_type='learningmodule' or learning_type=\"learningmap\" and popularity_weight > 0 order by popularity_weight desc limit 10)\n" +
+			"UNION\n" +
+			"(select learning_item_id from cxpp_db.cxpp_learning_popularity where learning_type='piw' or learning_type=\"st\" and popularity_weight > 0 order by popularity_weight desc limit 10)\n" +
+			"UNION\n" +
+			"(select learning_item_id from cxpp_db.cxpp_learning_popularity where learning_type='product_documentation' and popularity_weight > 0 order by popularity_weight desc limit 10)) as idView\n" +
+			"left join\n" +
+			"cxpp_db.cxpp_learning_content\n" +
+			"on idView.learning_item_id = id order by sort_by_date desc";
+
+	public static final String GET_POPULAR_ACCROSS_PARTNERS_FILTERED = "select * from\n" +
+			"((select learning_item_id from cxpp_db.cxpp_learning_popularity where learning_type='learningmodule' or learning_type=\"learningmap\" and popularity_weight > 0 order by popularity_weight desc limit 10)\n" +
+			"UNION\n" +
+			"(select learning_item_id from cxpp_db.cxpp_learning_popularity where learning_type='piw' or learning_type=\"st\" and popularity_weight > 0 order by popularity_weight desc limit 10)\n" +
+			"UNION\n" +
+			"(select learning_item_id from cxpp_db.cxpp_learning_popularity where learning_type='product_documentation' and popularity_weight > 0 order by popularity_weight desc limit 10)) as idView \n" +
+			" join\n" +
+			"cxpp_db.cxpp_learning_content \n" +
+			"on idView.learning_item_id = id and idView.learning_item_id in (:learningItemIds) order by sort_by_date desc";
 }

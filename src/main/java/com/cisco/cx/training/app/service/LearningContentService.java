@@ -45,4 +45,8 @@ public interface LearningContentService {
 	Map<String, Object> getCXInsightsFiltersWithCount(String userId, String searchToken, HashMap<String, Object> filtersSelected);
 
 	LearningMap getLearningMap(String id, String title);
+
+	List<LearningContentItem> fetchPopularAcrossPartnersContent(String ccoid, HashMap<String, Object> filtersSelected);
+
+	Map<String, Object> getPopularAcrossPartnersFiltersWithCount(HashMap<String, Object> filtersSelected);
 }

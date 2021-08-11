@@ -333,6 +333,35 @@ public class NewLearningContentControllerTest {
 	}
 
 	@Test
+	public void testGetPopularAcrossPartners() throws Exception {
+		this.mockMvc
+		.perform(post("/v1/partner/learning/popularAcrossPartners").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.header("X-Mashery-Handshake", this.XMasheryHeader)
+				.header("puid", this.puid)
+				.characterEncoding("utf-8"))
+		.andDo(print()).andExpect(status().isOk());
+
+		assertThrows(Exception.class, () -> {
+			this.mockMvc
+			.perform(post("/v1/partner/learning/popularAcrossPartners").contentType(MediaType.APPLICATION_JSON_VALUE)
+					.header("puid", this.puid)
+					.characterEncoding("utf-8"))
+			.andDo(print()).andExpect(status().isOk());
+		});
+	}
+
+	@Test
+	public void testGetPopularAcrossPartnersFilters() throws Exception {
+		this.mockMvc
+		.perform(post("/v1/partner/learning/viewmore/popularAcrossPartners/filters").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.header("X-Mashery-Handshake", this.XMasheryHeader)
+				.header("puid", this.puid)
+				.characterEncoding("utf-8"))
+		.andDo(print()).andExpect(status().isOk());
+
+	}
+
+	@Test
 	public void testGetLearningMap() throws Exception {
 		this.mockMvc
 		.perform(get("/v1/partner/learning/learningmap").contentType(MediaType.APPLICATION_JSON_VALUE)
