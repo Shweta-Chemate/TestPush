@@ -798,38 +798,26 @@ public class ProductDocumentationService{
 		//LOG.info("prefFilters3:{}",prefFilters);
 		@SuppressWarnings("unchecked")
 		List<String> timeInterval =  (List<String>)prefFilters.remove(TIME_INTERVAL_FILTER);
-		LearningRecordsAndFiltersModel allCards= getCards(userId, search, prefFilters, sortBy, sortOrder, userRole);//getPreferredLearningInfo(userId,search,prefFilters,sortBy,sortOrder,"Other");
+		LearningRecordsAndFiltersModel allCards= getCards(prefFilters,userRole);//getPreferredLearningInfo(userId,search,prefFilters,sortBy,sortOrder,"Other");
 		
 		int limitEnd = (limit==null || limit<0)?TOP_PICKS_LIMIT:limit; //25?
-		//getMoreCards(userId, search, prefFilters, sortBy, sortOrder, userRole,allCards,limitEnd, prefFilters, true);
-		addPeerViewedCards(allCards, limit);
 		andWebinarTimeinterval(allCards,timeInterval,limitEnd);
-		prioratizeCards(allCards);
+		
+		// sort on final list
+		prioratizeCards(allCards,DEFAULT_SORT_ORDER);
 		randomizeCards(allCards,limitEnd);
 		limitCards(allCards, limitEnd);
 		
-		return allCards;
-		
+		return allCards;		
 	}	
 
-	//if less cards then reset prefs to include other non-pref lang and region or all cards irrespective of lang/reg
-	private void getMoreCards(String userId, String search, HashMap<String, Object> prefFilters2, String sortBy, String sortOrder, String userRole, 
-			LearningRecordsAndFiltersModel allCards, Integer limitEnd, HashMap<String, Object> prefFilters,	boolean addNull)
-	{
-		if(allCards.getLearningData().size()==0 || (allCards.getLearningData().size()<limitEnd))
-		{
-			LOG.info("Consider cards with no lang/reg but with other prefs. {} ",allCards.getLearningData().size());
-			if(prefFilters.get(LIVE_EVENTS_FILTER)!=null)prefFilters.remove(LIVE_EVENTS_FILTER);
-			if(prefFilters.get(LANGUAGE_FILTER)!=null)prefFilters.remove(LANGUAGE_FILTER);
-			LearningRecordsAndFiltersModel lrCards = getCards(userId, search, prefFilters, sortBy, sortOrder, userRole);
-			allCards.setLearningData(lrCards.getLearningData());;
-		}
-	}
-	
 
-	private void addPeerViewedCards(LearningRecordsAndFiltersModel learningCards,Integer limitEnd)
+	private Set<String> addPeerViewedCards(String userRole)
 	{
-		//TODO if less cards then include peer cards
+		Set<String> peerViewed = new HashSet<String>();
+		peerViewed.addAll(productDocumentationDAO.fetchLearningsViewedForRole(userRole));
+		LOG.info("peer viewed {}",peerViewed);
+		return peerViewed;
 	}
 	
 	private Date getNowDateUTC()
@@ -910,7 +898,7 @@ public class ProductDocumentationService{
 	/** ["{\"endTime\":\"4:00 PM\",\"startTime\":\"9:00 AM\",\"timeZone\":\"PDT(UTC-7)\"}"] 
 	 * @param limit **/
 	@SuppressWarnings("unchecked")
-	private void andWebinarTimeinterval(LearningRecordsAndFiltersModel learningCards, List<String> timeInterval, Integer limit)
+	private void andWebinarTimeinterval(LearningRecordsAndFiltersModel learningCards, List<String> timeInterval, Integer limitEnd)
 	{
 		LOG.info("other pref based cards {} ",learningCards.getLearningData().size());
 		try
@@ -949,7 +937,7 @@ public class ProductDocumentationService{
 					learningCards.getLearningData().forEach(card ->{ 
 						if(!notInRange.contains(card.getRowId()))newList.add(card);
 					});
-					LOG.info(" org {} new {} limit {}",learningCards.getLearningData().size(), newList.size() , limit);
+					LOG.info(" org {} new {} limit {}",learningCards.getLearningData().size(), newList.size() , limitEnd);
 					//if(newList.size() >= limit)//if sufficient cards then remove  -- can be less or zero cards
 					{	
 						learningCards.setLearningData(newList);
@@ -966,9 +954,22 @@ public class ProductDocumentationService{
 		LOG.info("and TI based cards {}",learningCards.getLearningData().size());
 	}
 	
-	private void prioratizeCards(LearningRecordsAndFiltersModel learningCards)
+	private void prioratizeCards(LearningRecordsAndFiltersModel learningCards,Direction order)
 	{
-		LOG.info("Already prioratize by newer."); //sort date desc
+		LOG.info("Already prioratize by newer."); //sort date desc		
+		sortDateRating(learningCards.getLearningData(),order);		
+	}
+	
+
+	/** cards already sorted by date add rating **/
+	void sortDateRating(List<GenericLearningModel> learningCards, Direction order)
+	{
+		Collections.sort(learningCards, Comparator.comparing(
+				GenericLearningModel::getCreatedTimeStamp,Comparator.nullsFirst(Comparator.naturalOrder()))
+				.thenComparing(
+				GenericLearningModel::getRating, Comparator.nullsFirst(Comparator.naturalOrder()))
+				);
+		if(order.isDescending()) Collections.reverse(learningCards);
 	}
 	
 	private void randomizeCards(LearningRecordsAndFiltersModel learningCards, Integer limitEnd)
@@ -1012,50 +1013,45 @@ public class ProductDocumentationService{
 		}
 	}
 	
-	private LearningRecordsAndFiltersModel getCards(String userId, String searchToken,
-			HashMap<String, Object> applyFilters, String sortBy, String sortOrder, String contentTab)
-	{		
+	private Set<String> orPreferences(Map<String, Set<String>> filteredCards)
+	{
+		Set<String> cardIds =  new HashSet<String>();
+		
+		/** OR **/
+		if(!filteredCards.isEmpty())
+		{
+			filteredCards.forEach((k,v)->{
+				cardIds.addAll(v);
+			});			
+		}
+		LOG.info("OR mapped = {} ",cardIds);	
+		
+		return cardIds;
+	}
+	
+	/** all prefs are OR no anding **/ 
+	private LearningRecordsAndFiltersModel getCards(HashMap<String, Object> applyFilters, String userRole)
+	{
+		String contentTab = "Preference";
 		String sort = DEFAULT_SORT_FIELD ; 
-		Direction order = DEFAULT_SORT_ORDER ; 		
-		if(sortBy!=null  && !sortBy.equalsIgnoreCase("date")) sort = sortBy;
-		if(sortOrder!=null && sortOrder.equalsIgnoreCase("asc")) order = Sort.Direction.ASC;		
-		LOG.info("sort={} {}",sort, order);
-				
+		Direction order = DEFAULT_SORT_ORDER ;				
 		Set<String> userBookmarks = learningDAO.getBookmarks(userId);
 		LearningRecordsAndFiltersModel responseModel = new LearningRecordsAndFiltersModel();
 		List<GenericLearningModel> learningCards = new ArrayList<>();
 		responseModel.setLearningData(learningCards);
 				
 		List<LearningItemEntity> dbCards = new ArrayList<LearningItemEntity>();
-		if( searchToken!=null && !searchToken.trim().isEmpty() &&
-				applyFilters!=null && !applyFilters.isEmpty()	)
+		if(applyFilters!=null && !applyFilters.isEmpty())
 		{
-			Set<String> filteredCards = andFilters(filterCards(applyFilters,contentTab));
-			if(filteredCards!=null && !filteredCards.isEmpty())
-				dbCards = productDocumentationDAO.getAllLearningCardsByFilterSearch(contentTab,filteredCards,"%"+searchToken+"%",Sort.by(order, sort));			
-		}
-		else if(searchToken!=null && !searchToken.trim().isEmpty())
-		{
-			dbCards = productDocumentationDAO.getAllLearningCardsBySearch(contentTab,"%"+searchToken+"%",Sort.by(order, sort));
-		}			
-		else if(applyFilters!=null && !applyFilters.isEmpty())
-		{
-			Set<String> filteredCards = andFilters(filterCards(applyFilters,contentTab));
+			Map<String, Set<String>> prefCards = filterCards(applyFilters,contentTab);
+			prefCards.put("peerCards",addPeerViewedCards(userRole));
+			Set<String> filteredCards = orPreferences(prefCards);
 			if(filteredCards!=null && !filteredCards.isEmpty())
 				dbCards = productDocumentationDAO.getAllLearningCardsByFilter(contentTab,filteredCards,Sort.by(order, sort)); 
-		}			
-		else 
-		{
-			dbCards=productDocumentationDAO.getAllLearningCards(contentTab,Sort.by(order, sort));
-		}			
-		
-		LOG.info("all dbCards={}",dbCards);
-		learningCards.addAll(mapLearningEntityToCards(dbCards, userBookmarks));
-		
-		sortSpecial(learningCards,sort,order);
-		
-		
-		return responseModel;
+		}		
+		LOG.info("all OR dbCards={}",dbCards);
+		learningCards.addAll(mapLearningEntityToCards(dbCards, userBookmarks));		
+		return responseModel;	
 	}
 	
 }
