@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.TimeZone;
@@ -29,10 +30,16 @@ import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
 import com.cisco.cx.training.app.dao.ProductDocumentationDAO;
 import com.cisco.cx.training.app.entities.LearningItemEntity;
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
+import com.cisco.cx.training.app.entities.PeerViewedEntity;
+import com.cisco.cx.training.app.entities.PeerViewedEntityPK;
 import com.cisco.cx.training.app.repo.NewLearningContentRepo;
+import com.cisco.cx.training.app.repo.PeerViewedRepo;
+import com.cisco.cx.training.models.Company;
 import com.cisco.cx.training.models.GenericLearningModel;
 import com.cisco.cx.training.models.LearningRecordsAndFiltersModel;
+import com.cisco.cx.training.models.LearningStatusSchema;
 import com.cisco.cx.training.models.UserDetails;
+import com.cisco.cx.training.models.UserDetailsWithCompanyList;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -52,6 +59,9 @@ public class ProductDocumentationService{
 	
 	@Autowired
 	private NewLearningContentRepo learningContentRepo;
+	
+	@Autowired
+	private PeerViewedRepo peerViewedRepo;
 	
 	private Map<String, Set<String>> filterCards(HashMap<String, Object> applyFilters, String contentTab)
 	{	
@@ -798,7 +808,7 @@ public class ProductDocumentationService{
 		//LOG.info("prefFilters3:{}",prefFilters);
 		@SuppressWarnings("unchecked")
 		List<String> timeInterval =  (List<String>)prefFilters.remove(TIME_INTERVAL_FILTER);
-		LearningRecordsAndFiltersModel allCards= getCards(prefFilters,userRole);//getPreferredLearningInfo(userId,search,prefFilters,sortBy,sortOrder,"Other");
+		LearningRecordsAndFiltersModel allCards= getCards(userId,prefFilters,userRole);//getPreferredLearningInfo(userId,search,prefFilters,sortBy,sortOrder,"Other");
 		
 		int limitEnd = (limit==null || limit<0)?TOP_PICKS_LIMIT:limit; //25?
 		andWebinarTimeinterval(allCards,timeInterval,limitEnd);
@@ -815,9 +825,57 @@ public class ProductDocumentationService{
 	private Set<String> addPeerViewedCards(String userRole)
 	{
 		Set<String> peerViewed = new HashSet<String>();
-		peerViewed.addAll(productDocumentationDAO.fetchLearningsViewedForRole(userRole));
-		LOG.info("peer viewed {}",peerViewed);
+		try
+		{
+			List<PeerViewedEntity> peerCards = peerViewedRepo.findByRoleName(userRole);
+			peerCards.forEach(pv -> peerViewed.add(pv.getCardId()));	
+			LOG.info("peer viewed {}",peerViewed);
+		}
+		catch(Exception e)
+		{
+			LOG.error("Error occurred get peer view",e);
+		}
+
 		return peerViewed;
+	}
+	
+	public void addLearningsViewedForRole(UserDetailsWithCompanyList userDetails,
+			LearningStatusSchema learningStatusSchema, String puid) {		
+		try
+		{
+			List<Company> companies = userDetails.getCompanyList();
+			Optional<Company> matchingObject = companies.stream()
+					.filter(c -> (c.getPuid().equals(puid))).findFirst();
+			Company company = matchingObject.isPresent() ? matchingObject.get() : null;
+			if (company != null)
+			{
+				String userRole = company.getRoleList().get(0).getRoleName();
+				PeerViewedEntityPK pvPK = new PeerViewedEntityPK();
+				pvPK.setCardId(learningStatusSchema.getLearningItemId());
+				pvPK.setRoleName(userRole);
+				Optional<PeerViewedEntity> peerViewExist = peerViewedRepo.findById(pvPK);
+				// record already exists in the table
+				if (peerViewExist != null && peerViewExist.isPresent()) {
+					PeerViewedEntity dbEntry = peerViewExist.get();
+					if(dbEntry!=null){
+						dbEntry.setUpdatedTime(Timestamp.valueOf(getNowDateUTCStr()));
+					}				
+					peerViewedRepo.save(dbEntry);
+				}
+				else
+				{
+					PeerViewedEntity newEntry = new PeerViewedEntity();
+					newEntry.setCardId(learningStatusSchema.getLearningItemId());
+					newEntry.setRole_name(userRole);
+					newEntry.setUpdatedTime(Timestamp.valueOf(getNowDateUTCStr()));
+					peerViewedRepo.save(newEntry);
+				}
+			}
+		}
+		catch(Exception e)
+		{
+			LOG.error("Error occurred save peer view",e);
+		}	
 	}
 	
 	private Date getNowDateUTC()
@@ -836,6 +894,25 @@ public class ProductDocumentationService{
 		catch(Exception e)
 		{
 			LOG.info("Err in nowUTC",e);
+		}
+		return null;
+	}
+	
+	private String getNowDateUTCStr()
+	{
+		try
+		{
+			Date nowDate = new Date();
+			SimpleDateFormat sdf1 = new SimpleDateFormat();
+			sdf1.applyPattern("yyyy-MM-dd HH:mm:ss");
+			sdf1.setTimeZone(TimeZone.getTimeZone("UTC"));
+			String nowStr = sdf1.format(nowDate);
+			LOG.info("sdf1 str:{} ",nowStr);
+			return nowStr;
+		}
+		catch(Exception e)
+		{
+			LOG.info("Err in nowUTC str",e);
 		}
 		return null;
 	}
@@ -1030,7 +1107,7 @@ public class ProductDocumentationService{
 	}
 	
 	/** all prefs are OR no anding **/ 
-	private LearningRecordsAndFiltersModel getCards(HashMap<String, Object> applyFilters, String userRole)
+	private LearningRecordsAndFiltersModel getCards(String userId, HashMap<String, Object> applyFilters, String userRole)
 	{
 		String contentTab = "Preference";
 		String sort = DEFAULT_SORT_FIELD ; 
