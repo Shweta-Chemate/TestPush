@@ -22,6 +22,7 @@ import java.util.TimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
@@ -34,15 +35,11 @@ import com.cisco.cx.training.app.entities.PeerViewedEntity;
 import com.cisco.cx.training.app.entities.PeerViewedEntityPK;
 import com.cisco.cx.training.app.repo.NewLearningContentRepo;
 import com.cisco.cx.training.app.repo.PeerViewedRepo;
-import com.cisco.cx.training.models.Company;
 import com.cisco.cx.training.models.GenericLearningModel;
 import com.cisco.cx.training.models.LearningRecordsAndFiltersModel;
-import com.cisco.cx.training.models.LearningStatusSchema;
 import com.cisco.cx.training.models.UserDetails;
-import com.cisco.cx.training.models.UserDetailsWithCompanyList;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 
 @Service
 public class ProductDocumentationService{
@@ -62,6 +59,9 @@ public class ProductDocumentationService{
 	
 	@Autowired
 	private PeerViewedRepo peerViewedRepo;
+	
+	@Value("${top.picks.learnings.display.limit}")
+	public Integer topicksLimit;
 	
 	private Map<String, Set<String>> filterCards(HashMap<String, Object> applyFilters, String contentTab)
 	{	
@@ -810,7 +810,8 @@ public class ProductDocumentationService{
 		List<String> timeInterval =  (List<String>)prefFilters.remove(TIME_INTERVAL_FILTER);
 		LearningRecordsAndFiltersModel allCards= getCards(userId,prefFilters,userRole);//getPreferredLearningInfo(userId,search,prefFilters,sortBy,sortOrder,"Other");
 		
-		int limitEnd = (limit==null || limit<0)?TOP_PICKS_LIMIT:limit; //25?
+		int limitEnd = (topicksLimit == null || topicksLimit < 0)?TOP_PICKS_LIMIT:topicksLimit; 
+		//int limitEnd = (limit==null || limit<0)?TOP_PICKS_LIMIT:limit; //25?
 		andWebinarTimeinterval(allCards,timeInterval,limitEnd);
 		
 		// sort on final list
@@ -839,38 +840,31 @@ public class ProductDocumentationService{
 		return peerViewed;
 	}
 	
-	public void addLearningsViewedForRole(UserDetailsWithCompanyList userDetails,
-			LearningStatusSchema learningStatusSchema, String puid) {		
+	public void addLearningsViewedForRole(String userId,String cardId, String puid) {		
 		try
 		{
-			List<Company> companies = userDetails.getCompanyList();
-			Optional<Company> matchingObject = companies.stream()
-					.filter(c -> (c.getPuid().equals(puid))).findFirst();
-			Company company = matchingObject.isPresent() ? matchingObject.get() : null;
-			if (company != null)
-			{
-				String userRole = company.getRoleList().get(0).getRoleName();
-				PeerViewedEntityPK pvPK = new PeerViewedEntityPK();
-				pvPK.setCardId(learningStatusSchema.getLearningItemId());
-				pvPK.setRoleName(userRole);
-				Optional<PeerViewedEntity> peerViewExist = peerViewedRepo.findById(pvPK);
-				// record already exists in the table
-				if (peerViewExist != null && peerViewExist.isPresent()) {
-					PeerViewedEntity dbEntry = peerViewExist.get();
-					if(dbEntry!=null){
-						dbEntry.setUpdatedTime(Timestamp.valueOf(getNowDateUTCStr()));
-					}				
-					peerViewedRepo.save(dbEntry);
-				}
-				else
-				{
-					PeerViewedEntity newEntry = new PeerViewedEntity();
-					newEntry.setCardId(learningStatusSchema.getLearningItemId());
-					newEntry.setRole_name(userRole);
-					newEntry.setUpdatedTime(Timestamp.valueOf(getNowDateUTCStr()));
-					peerViewedRepo.save(newEntry);
-				}
+			String userRole = productDocumentationDAO.getUserRole(userId,puid);
+			PeerViewedEntityPK pvPK = new PeerViewedEntityPK();
+			pvPK.setCardId(cardId);
+			pvPK.setRoleName(userRole);
+			Optional<PeerViewedEntity> peerViewExist = peerViewedRepo.findById(pvPK);
+			// record already exists in the table
+			if (peerViewExist != null && peerViewExist.isPresent()) {
+				PeerViewedEntity dbEntry = peerViewExist.get();
+				if(dbEntry!=null){
+					dbEntry.setUpdatedTime(Timestamp.valueOf(getNowDateUTCStr()));
+				}				
+				peerViewedRepo.save(dbEntry);
 			}
+			else
+			{
+				PeerViewedEntity newEntry = new PeerViewedEntity();
+				newEntry.setCardId(cardId);
+				newEntry.setRole_name(userRole);
+				newEntry.setUpdatedTime(Timestamp.valueOf(getNowDateUTCStr()));
+				peerViewedRepo.save(newEntry);
+			}
+
 		}
 		catch(Exception e)
 		{
@@ -1044,7 +1038,7 @@ public class ProductDocumentationService{
 		Collections.sort(learningCards, Comparator.comparing(
 				GenericLearningModel::getCreatedTimeStamp,Comparator.nullsFirst(Comparator.naturalOrder()))
 				.thenComparing(
-				GenericLearningModel::getRating, Comparator.nullsFirst(Comparator.naturalOrder()))
+				GenericLearningModel::getAvgRatingPercentage, Comparator.nullsFirst(Comparator.naturalOrder()))
 				);
 		if(order.isDescending()) Collections.reverse(learningCards);
 	}

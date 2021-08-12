@@ -402,9 +402,8 @@ public class LearningContentServiceImpl implements LearningContentService {
 	public LearningStatusEntity updateUserStatus(String userId, String puid, LearningStatusSchema learningStatusSchema,
 			String xMasheryHandshake) {
 		Registration regStatus=learningStatusSchema.getRegStatus();
-		UserDetailsWithCompanyList userDetails=null;
 		if(regStatus!=null) {
-			userDetails = partnerProfileService.fetchUserDetailsWithCompanyList(xMasheryHandshake);
+			UserDetailsWithCompanyList userDetails = partnerProfileService.fetchUserDetailsWithCompanyList(xMasheryHandshake);
 			List<Company> companies = userDetails.getCompanyList();
 			Optional<Company> matchingObject = companies.stream()
 					.filter(c -> (c.getPuid().equals(puid) && c.isDemoAccount())).findFirst();
@@ -413,7 +412,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 				throw new NotAllowedException("Not Allowed for DemoAccount");
 		}
 		try {
-			productDocumentationService.addLearningsViewedForRole(userDetails,learningStatusSchema,puid);
+			productDocumentationService.addLearningsViewedForRole(userId,learningStatusSchema.getLearningItemId(),puid);
 			LearningStatusEntity learning_status_existing = learningStatusRepo.findByLearningItemIdAndUserIdAndPuid(learningStatusSchema.getLearningItemId(), userId, puid);
 			// record already exists in the table
 			if (learning_status_existing != null) {
