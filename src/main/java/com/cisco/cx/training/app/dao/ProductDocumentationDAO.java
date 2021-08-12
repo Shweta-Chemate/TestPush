@@ -710,8 +710,7 @@ public static final String GET_PD_DOCUMENTATION_WITH_COUNT_BY_CARD = "select arc
 
 	@Query(value="select role from cxpp_db_um.managed_screen_details where ccoid=:cecId and puid=:puid and role<> 'PSS role1' limit 1", nativeQuery=true)
 	String getUserRole(String cecId, String puid);
-	
-		
+
 }
 
 

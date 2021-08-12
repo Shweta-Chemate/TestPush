@@ -19,7 +19,6 @@ import org.springframework.util.CollectionUtils;
 
 import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
 import com.cisco.cx.training.app.dao.NewLearningContentDAO;
-import com.cisco.cx.training.app.dao.UserLearningPreferencesDAO;
 import com.cisco.cx.training.app.entities.LearningStatusEntity;
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.app.exception.GenericException;
@@ -27,6 +26,7 @@ import com.cisco.cx.training.app.exception.NotAllowedException;
 import com.cisco.cx.training.app.repo.LearningStatusRepo;
 import com.cisco.cx.training.app.service.LearningContentService;
 import com.cisco.cx.training.app.service.PartnerProfileService;
+import com.cisco.cx.training.app.service.ProductDocumentationService;
 import com.cisco.cx.training.constants.Constants;
 import com.cisco.cx.training.models.Company;
 import com.cisco.cx.training.models.CountResponseSchema;
@@ -119,7 +119,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 	private LearningStatusRepo learningStatusRepo;
 	
 	@Autowired
-	private UserLearningPreferencesDAO ulpDAO;
+	ProductDocumentationService productDocumentationService;
 
 	@Override
 	public SuccessTalkResponseSchema fetchSuccesstalks(String ccoid, String sortField, String sortType,
@@ -413,7 +413,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 				throw new NotAllowedException("Not Allowed for DemoAccount");
 		}
 		try {
-			ulpDAO.addLearningsViewedForRole(userDetails,learningStatusSchema);
+			productDocumentationService.addLearningsViewedForRole(userDetails,learningStatusSchema,puid);
 			LearningStatusEntity learning_status_existing = learningStatusRepo.findByLearningItemIdAndUserIdAndPuid(learningStatusSchema.getLearningItemId(), userId, puid);
 			// record already exists in the table
 			if (learning_status_existing != null) {
@@ -450,6 +450,8 @@ public class LearningContentServiceImpl implements LearningContentService {
 			throw new GenericException("There was a problem in registering user to the PIW");
 		}
 	}
+
+	
 
 	@Override
 	public List<LearningContentItem> fetchRecentlyViewedContent(String ccoid, HashMap<String, Object> filtersSelected) {

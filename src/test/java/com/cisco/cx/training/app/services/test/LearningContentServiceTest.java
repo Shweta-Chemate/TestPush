@@ -28,13 +28,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
 import com.cisco.cx.training.app.dao.NewLearningContentDAO;
 import com.cisco.cx.training.app.dao.SuccessAcademyDAO;
-import com.cisco.cx.training.app.dao.UserLearningPreferencesDAO;
 import com.cisco.cx.training.app.entities.LearningStatusEntity;
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.app.exception.GenericException;
 import com.cisco.cx.training.app.repo.LearningStatusRepo;
 import com.cisco.cx.training.app.service.LearningContentService;
 import com.cisco.cx.training.app.service.PartnerProfileService;
+import com.cisco.cx.training.app.service.ProductDocumentationService;
 import com.cisco.cx.training.app.service.impl.LearningContentServiceImpl;
 import com.cisco.cx.training.constants.Constants;
 import com.cisco.cx.training.models.Company;
@@ -63,7 +63,7 @@ public class LearningContentServiceTest {
 	private LearningStatusRepo learningStatusRepo;
 	
 	@Mock
-	private UserLearningPreferencesDAO ulpDAO;
+	private ProductDocumentationService productDocumentationService;
 
 	@Autowired
 	ResourceLoader resourceLoader;
