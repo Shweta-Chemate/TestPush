@@ -22,6 +22,7 @@ import java.util.TimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
@@ -34,15 +35,11 @@ import com.cisco.cx.training.app.entities.PeerViewedEntity;
 import com.cisco.cx.training.app.entities.PeerViewedEntityPK;
 import com.cisco.cx.training.app.repo.NewLearningContentRepo;
 import com.cisco.cx.training.app.repo.PeerViewedRepo;
-import com.cisco.cx.training.models.Company;
 import com.cisco.cx.training.models.GenericLearningModel;
 import com.cisco.cx.training.models.LearningRecordsAndFiltersModel;
-import com.cisco.cx.training.models.LearningStatusSchema;
 import com.cisco.cx.training.models.UserDetails;
-import com.cisco.cx.training.models.UserDetailsWithCompanyList;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 
 @Service
 public class ProductDocumentationService{
@@ -62,6 +59,9 @@ public class ProductDocumentationService{
 	
 	@Autowired
 	private PeerViewedRepo peerViewedRepo;
+	
+	@Value("${top.picks.learnings.display.limit}")
+	public Integer topicksLimit;
 	
 	private Map<String, Set<String>> filterCards(HashMap<String, Object> applyFilters, String contentTab)
 	{	
@@ -116,7 +116,7 @@ public class ProductDocumentationService{
 			}
 		});
 		
-		LOG.info("filteredCards = {} ",filteredCards);	
+		LOG.info("filteredCards = {} {} ",filteredCards.size(), filteredCards);	
 		return filteredCards;
 	
 	}
@@ -779,13 +779,19 @@ public class ProductDocumentationService{
 	private static final String TI_END_TIME = "endTime";
 	private static final String TI_TIME_ZONE = "timeZone";
 	
+	private String getUserRole(String userId, String puId)
+	{
+		String userRole = productDocumentationDAO.getUserRole(userId,puId);
+		LOG.info("Role found {}.",userRole);
+		return userRole;
+	}
+	
 	/** TOP Picks = my role + my preferences  
 	 * @param limit **/
 	public LearningRecordsAndFiltersModel fetchMyPreferredLearnings(String userId, String search,
 			HashMap<String, Object> filters, String sortBy, String sortOrder, String puid,
 			HashMap<String, Object> preferences, Integer limit) {
-		String userRole = productDocumentationDAO.getUserRole(userId,puid);
-		LOG.info("Role found {}.",userRole);
+		String userRole = getUserRole(userId,puid);		
 		HashMap<String, Object> prefFilters = new HashMap<String,Object>();	
 		if(preferences!=null && preferences.size()>0)
 		{
@@ -804,16 +810,10 @@ public class ProductDocumentationService{
 		{
 			List<Object> prefList = new ArrayList<Object>();prefList.add(userRole);
 			prefFilters.put(ROLE_FILTER, prefList);
-		}
-		//LOG.info("prefFilters3:{}",prefFilters);
-		@SuppressWarnings("unchecked")
-		List<String> timeInterval =  (List<String>)prefFilters.remove(TIME_INTERVAL_FILTER);
-		LearningRecordsAndFiltersModel allCards= getCards(userId,prefFilters,userRole);//getPreferredLearningInfo(userId,search,prefFilters,sortBy,sortOrder,"Other");
+		}	
+		LearningRecordsAndFiltersModel allCards= getCards(userId,prefFilters,userRole);
 		
-		int limitEnd = (limit==null || limit<0)?TOP_PICKS_LIMIT:limit; //25?
-		andWebinarTimeinterval(allCards,timeInterval,limitEnd);
-		
-		// sort on final list
+		int limitEnd = (topicksLimit == null || topicksLimit < 0)?TOP_PICKS_LIMIT:topicksLimit; 
 		prioratizeCards(allCards,DEFAULT_SORT_ORDER);
 		randomizeCards(allCards,limitEnd);
 		limitCards(allCards, limitEnd);
@@ -822,14 +822,14 @@ public class ProductDocumentationService{
 	}	
 
 
-	private Set<String> addPeerViewedCards(String userRole)
+	private Set<String> getPeerViewedCards(String userRole)
 	{
 		Set<String> peerViewed = new HashSet<String>();
 		try
 		{
 			List<PeerViewedEntity> peerCards = peerViewedRepo.findByRoleName(userRole);
 			peerCards.forEach(pv -> peerViewed.add(pv.getCardId()));	
-			LOG.info("peer viewed {}",peerViewed);
+			LOG.info("peer viewed {} {}",peerViewed.size(), peerViewed);
 		}
 		catch(Exception e)
 		{
@@ -839,65 +839,38 @@ public class ProductDocumentationService{
 		return peerViewed;
 	}
 	
-	public void addLearningsViewedForRole(UserDetailsWithCompanyList userDetails,
-			LearningStatusSchema learningStatusSchema, String puid) {		
+	public void addLearningsViewedForRole(String userId,String cardId, String puid) {		
 		try
 		{
-			List<Company> companies = userDetails.getCompanyList();
-			Optional<Company> matchingObject = companies.stream()
-					.filter(c -> (c.getPuid().equals(puid))).findFirst();
-			Company company = matchingObject.isPresent() ? matchingObject.get() : null;
-			if (company != null)
-			{
-				String userRole = company.getRoleList().get(0).getRoleName();
-				PeerViewedEntityPK pvPK = new PeerViewedEntityPK();
-				pvPK.setCardId(learningStatusSchema.getLearningItemId());
-				pvPK.setRoleName(userRole);
-				Optional<PeerViewedEntity> peerViewExist = peerViewedRepo.findById(pvPK);
-				// record already exists in the table
-				if (peerViewExist != null && peerViewExist.isPresent()) {
-					PeerViewedEntity dbEntry = peerViewExist.get();
-					if(dbEntry!=null){
-						dbEntry.setUpdatedTime(Timestamp.valueOf(getNowDateUTCStr()));
-					}				
-					peerViewedRepo.save(dbEntry);
-				}
-				else
-				{
-					PeerViewedEntity newEntry = new PeerViewedEntity();
-					newEntry.setCardId(learningStatusSchema.getLearningItemId());
-					newEntry.setRole_name(userRole);
-					newEntry.setUpdatedTime(Timestamp.valueOf(getNowDateUTCStr()));
-					peerViewedRepo.save(newEntry);
-				}
+			String userRole = getUserRole(userId,puid);
+			PeerViewedEntityPK pvPK = new PeerViewedEntityPK();
+			pvPK.setCardId(cardId);
+			pvPK.setRoleName(userRole);
+			Optional<PeerViewedEntity> peerViewExist = peerViewedRepo.findById(pvPK);
+			// record already exists in the table
+			if (peerViewExist != null && peerViewExist.isPresent()) {
+				PeerViewedEntity dbEntry = peerViewExist.get();
+				if(dbEntry!=null){
+					dbEntry.setUpdatedTime(Timestamp.valueOf(getNowDateUTCStr()));
+				}				
+				peerViewedRepo.save(dbEntry);
 			}
+			else
+			{
+				PeerViewedEntity newEntry = new PeerViewedEntity();
+				newEntry.setCardId(cardId);
+				newEntry.setRole_name(userRole);
+				newEntry.setUpdatedTime(Timestamp.valueOf(getNowDateUTCStr()));
+				peerViewedRepo.save(newEntry);
+			}
+
 		}
 		catch(Exception e)
 		{
 			LOG.error("Error occurred save peer view",e);
 		}	
 	}
-	
-	private Date getNowDateUTC()
-	{
-		try
-		{
-			Date nowDate = new Date();
-			SimpleDateFormat sdf1 = new SimpleDateFormat();
-			sdf1.applyPattern("yyyy-MM-dd HH:mm:ss");
-			sdf1.setTimeZone(TimeZone.getTimeZone("UTC"));
-			String nowStr = sdf1.format(nowDate);
-			LOG.info("sdf1:{} ",nowStr);
-			Date nowDateUTC = sdf1.parse(nowStr);	
-			return nowDateUTC;
-		}
-		catch(Exception e)
-		{
-			LOG.info("Err in nowUTC",e);
-		}
-		return null;
-	}
-	
+
 	private String getNowDateUTCStr()
 	{
 		try
@@ -908,6 +881,7 @@ public class ProductDocumentationService{
 			sdf1.setTimeZone(TimeZone.getTimeZone("UTC"));
 			String nowStr = sdf1.format(nowDate);
 			LOG.info("sdf1 str:{} ",nowStr);
+			//Date nowDateUTC = sdf1.parse(nowStr);return nowDateUTC;			
 			return nowStr;
 		}
 		catch(Exception e)
@@ -917,67 +891,50 @@ public class ProductDocumentationService{
 		return null;
 	}
 	
-	private boolean isFutureLW(GenericLearningModel card, Date nowDateUTC) 
+	private List<String> getRangeLW(List<LearningItemEntity> onlyFutureLWIds, Map<String, String> ddbTI)
 	{
-		boolean isFutureCard=false;
-		if(nowDateUTC==null || card.getCreatedTimeStamp()==null) return isFutureCard;		
-		String cardTime = card.getCreatedTimeStamp().toString();
-		SimpleDateFormat sdf2 = new SimpleDateFormat();
-		sdf2.applyPattern("yyyy-MM-dd HH:mm:ss");
-		sdf2.setTimeZone(TimeZone.getTimeZone("UTC"));
-		Date dbDateUTC;
-		try {
-			//LOG.info("sdf2:{} ",cardTime);
-			dbDateUTC = sdf2.parse(cardTime);					
-			isFutureCard= dbDateUTC.after(nowDateUTC);	
-		} catch (ParseException e) {
-			LOG.warn("isFutureCard is false by default.",e);
-		}		
-		return isFutureCard;		
-	}
-	
-	private List<String> getRangeLW(List<GenericLearningModel> onlyFutureLW, Map<String, String> ddbTI)
-	{
-		List<GenericLearningModel> rangeCards = new ArrayList<GenericLearningModel>();List<String> rangeCardsIds = new ArrayList<String>();
+		List<String> rangeCardsIds = new ArrayList<String>();
 		String startTime = ddbTI.get(TI_START_TIME).trim();
 		String endTime = ddbTI.get(TI_END_TIME).trim();
 		String timeZone = ddbTI.get(TI_TIME_ZONE).trim();
-		LOG.info("TI:{},{},{}",startTime,endTime, timeZone);
+		//LOG.info("TI:{},{},{}",startTime,endTime, timeZone);
 	
 		int hrs1 = Integer.parseInt(startTime.substring(0, startTime.indexOf(":")));
 		int min1 = Integer.parseInt(startTime.substring(startTime.indexOf(":")+1, startTime.indexOf(" ")));
-		if(startTime.contains("PM")) hrs1=hrs1+12;		
+		if(startTime.contains("PM")) hrs1=hrs1+12;
+		else if (hrs1 == 12) hrs1=0;
 		
 		int hrs2 = Integer.parseInt(endTime.substring(0, endTime.indexOf(":")));
 		int min2 = Integer.parseInt(endTime.substring(endTime.indexOf(":")+1, endTime.indexOf(" ")));
-		if(endTime.contains("PM")) hrs2=hrs2+12;		
+		if(endTime.contains("PM")) hrs2=hrs2+12;
+		else if (hrs2 == 12) hrs2=0;
 		//LOG.info("{} {} {} {}",hrs1,min1,hrs2,min2);
+		
 		int hrs3 = Integer.parseInt(timeZone.substring(timeZone.indexOf("UTC")+3, timeZone.indexOf(":")));
 		int min3 = Integer.parseInt(timeZone.substring(timeZone.indexOf(":")+1, timeZone.indexOf(")")));
 		if(timeZone.contains("UTC-")) min3 = min3 * -1;		
 		
-		for(GenericLearningModel futureCard : onlyFutureLW)
-		{
-			Date date4 = futureCard.getCreatedTimeStamp();					
-			int finalHrs = date4.getHours() + hrs3; if(finalHrs<0) finalHrs = finalHrs*-1 -1;
-			int finalMin = date4.getMinutes() + min3; if(finalMin<0) finalMin = 60+finalMin;
-			//LOG.info("{} {} {} finalHrs {}  finalMin {} ", hrs3, min3, date4 , finalHrs, finalMin); 
+		for(LearningItemEntity futureCard : onlyFutureLWIds)
+		{			
+			Date date4 = Timestamp.valueOf(futureCard.getSortByDate());	
+			int finalHrs = date4.getHours() + hrs3; if(finalHrs<0) finalHrs = finalHrs*-1 -1; if(finalHrs>=24) finalHrs-=24;
+			int finalMin = date4.getMinutes() + min3; if(finalMin<0) {finalMin += 60; finalHrs-=1; } if(finalMin>=60) { finalMin-=60;finalHrs+=1;}
+			LOG.info("finalHrs {} {} {} {} {} {} {} {} {} {}",futureCard.getLearning_item_id(),hrs1,min1,hrs2,min2, hrs3, min3, date4 , finalHrs, finalMin); 
 			if( (finalHrs>hrs1 && finalHrs<hrs2 ) ||
 					(finalHrs==hrs1 && finalMin>=min1 ) ||
 					(finalHrs==hrs2 && finalMin <= min2 )
 				)
-			 { rangeCards.add(futureCard); rangeCardsIds.add(futureCard.getRowId());} 
-		}
-		LOG.info("rangeCardsIds ={}", rangeCardsIds);
+			 { rangeCardsIds.add(futureCard.getLearning_item_id());} 
+		}		
 		return rangeCardsIds; //rangeCards
 	}
 	
 	/** ["{\"endTime\":\"4:00 PM\",\"startTime\":\"9:00 AM\",\"timeZone\":\"PDT(UTC-7)\"}"] 
 	 * @param limit **/
 	@SuppressWarnings("unchecked")
-	private void andWebinarTimeinterval(LearningRecordsAndFiltersModel learningCards, List<String> timeInterval, Integer limitEnd)
+	private Set<String> getWebinarTimeinterval(List<String> timeInterval)
 	{
-		LOG.info("other pref based cards {} ",learningCards.getLearningData().size());
+		Set<String> onlyFutureLWInRange  = new HashSet<String>();
 		try
 		{
 			Map<String,String> ddbTI = new HashMap<String,String>();
@@ -994,41 +951,24 @@ public class ProductDocumentationService{
 						ddbTI.get(TI_END_TIME)!=null && !ddbTI.get(TI_END_TIME).trim().isEmpty() &&
 						ddbTI.get(TI_TIME_ZONE)!=null && !ddbTI.get(TI_TIME_ZONE).trim().isEmpty()						
 						)
-				{					
-					List<String> onlyLWIds = new ArrayList<String>();List<String> onlyFutureLWIds = new ArrayList<String>();
-					List<GenericLearningModel> onlyLW = new ArrayList<GenericLearningModel>();
-					List<GenericLearningModel> onlyFutureLW = new ArrayList<GenericLearningModel>();
-					Date nowUTC = getNowDateUTC();
-					learningCards.getLearningData().forEach(card ->{ 
-						if(card.getContentType()!=null && card.getContentType().toLowerCase().contains("live webinar") && card.getCreatedTimeStamp()!=null)
-						{
-							onlyLW.add(card); onlyLWIds.add(card.getRowId());
-							if(isFutureLW(card,nowUTC)) { onlyFutureLW.add(card);onlyFutureLWIds.add(card.getRowId());}
-						}						
-					});				
-					LOG.info(" onlyLWIds : {}  onlyFutureLWIds: {} " , onlyLWIds , onlyFutureLWIds );
-					List<String> onlyFutureLWInRange = getRangeLW(onlyFutureLW,ddbTI);
-					List<String> notInRange = new ArrayList<String>();
-					onlyFutureLW.forEach(card-> { if(!onlyFutureLWInRange.contains(card.getRowId())) notInRange.add(card.getRowId());});
-					List<GenericLearningModel> newList = new ArrayList<GenericLearningModel>();					
-					learningCards.getLearningData().forEach(card ->{ 
-						if(!notInRange.contains(card.getRowId()))newList.add(card);
-					});
-					LOG.info(" org {} new {} limit {}",learningCards.getLearningData().size(), newList.size() , limitEnd);
-					//if(newList.size() >= limit)//if sufficient cards then remove  -- can be less or zero cards
-					{	
-						learningCards.setLearningData(newList);
-					}					
+				{
+					List<LearningItemEntity>  onlyFutureLWs = new ArrayList<LearningItemEntity>();
+					Set<String> onlyFutureLWIds= new HashSet<String>();
+					String contentTab = "Preference";
+					onlyFutureLWs.addAll(productDocumentationDAO.getUpcomingWebinars(contentTab));
+					onlyFutureLWs.forEach(card->onlyFutureLWIds.add(card.getLearning_item_id()));
+					LOG.info("onlyFutureLWIds: {} " , onlyFutureLWIds );
+					onlyFutureLWInRange.addAll(getRangeLW(onlyFutureLWs,ddbTI));					
+					LOG.info("onlyFutureLWInRange {}",onlyFutureLWInRange);									
 				}
 			}
-
 		}
 		catch(Exception e)
 		{
 			LOG.error("Error occurred processing TI.",e);
 		}
 
-		LOG.info("and TI based cards {}",learningCards.getLearningData().size());
+		return onlyFutureLWInRange;
 	}
 	
 	private void prioratizeCards(LearningRecordsAndFiltersModel learningCards,Direction order)
@@ -1044,7 +984,7 @@ public class ProductDocumentationService{
 		Collections.sort(learningCards, Comparator.comparing(
 				GenericLearningModel::getCreatedTimeStamp,Comparator.nullsFirst(Comparator.naturalOrder()))
 				.thenComparing(
-				GenericLearningModel::getRating, Comparator.nullsFirst(Comparator.naturalOrder()))
+				GenericLearningModel::getAvgRatingPercentage, Comparator.nullsFirst(Comparator.naturalOrder()))
 				);
 		if(order.isDescending()) Collections.reverse(learningCards);
 	}
@@ -1064,19 +1004,19 @@ public class ProductDocumentationService{
 				int randomNum = r.nextInt(boundry);
 				randomIndexes.add(randomNum);
 			}
-			LOG.info("Randomly removed {}", randomIndexes);
+			LOG.info("Randomly removed {} {}", randomIndexes.size(),randomIndexes);
 			
 			List<String> allCardIds = new ArrayList<String>();
 			List<String> newListCardIds = new ArrayList<String>();
-			List<GenericLearningModel> orgList =learningCards.getLearningData();
+			List<GenericLearningModel> orgList = learningCards.getLearningData();
 			List<GenericLearningModel> newList = new ArrayList<GenericLearningModel>();
-			for(int i=0;i<orgList.size();i++ )
+			for(int i=0;i<boundry;i++ )
 			{
 				allCardIds.add(orgList.get(i).getRowId());
 				if(!randomIndexes.contains(i)) { newList.add(orgList.get(i)); newListCardIds.add(orgList.get(i).getRowId()); }
 			}
 			learningCards.setLearningData(newList);
-			LOG.info(" random org {} , new {}", allCardIds , newListCardIds );
+			LOG.info(" random org {} {}, new {}{}", allCardIds.size(),allCardIds , newListCardIds.size(), newListCardIds );
 		}
 	}
 	
@@ -1101,12 +1041,12 @@ public class ProductDocumentationService{
 				cardIds.addAll(v);
 			});			
 		}
-		LOG.info("OR mapped = {} ",cardIds);	
+		LOG.info("OR mapped = {} {}",cardIds.size(), cardIds);	
 		
 		return cardIds;
 	}
 	
-	/** all prefs are OR no anding **/ 
+	/** all prefs are OR , no anding **/ 
 	private LearningRecordsAndFiltersModel getCards(String userId, HashMap<String, Object> applyFilters, String userRole)
 	{
 		String contentTab = "Preference";
@@ -1115,18 +1055,19 @@ public class ProductDocumentationService{
 		Set<String> userBookmarks = learningDAO.getBookmarks(userId);
 		LearningRecordsAndFiltersModel responseModel = new LearningRecordsAndFiltersModel();
 		List<GenericLearningModel> learningCards = new ArrayList<>();
-		responseModel.setLearningData(learningCards);
-				
+		responseModel.setLearningData(learningCards);				
 		List<LearningItemEntity> dbCards = new ArrayList<LearningItemEntity>();
+		Map<String, Set<String>> prefCards = new HashMap<String,Set<String>>();
 		if(applyFilters!=null && !applyFilters.isEmpty())
 		{
-			Map<String, Set<String>> prefCards = filterCards(applyFilters,contentTab);
-			prefCards.put("peerCards",addPeerViewedCards(userRole));
-			Set<String> filteredCards = orPreferences(prefCards);
-			if(filteredCards!=null && !filteredCards.isEmpty())
-				dbCards = productDocumentationDAO.getAllLearningCardsByFilter(contentTab,filteredCards,Sort.by(order, sort)); 
-		}		
-		LOG.info("all OR dbCards={}",dbCards);
+			prefCards.putAll(filterCards(applyFilters,contentTab));
+		}
+		prefCards.put("peerCards",getPeerViewedCards(userRole));
+		prefCards.put("tiCards",getWebinarTimeinterval((List<String>) applyFilters.get(TIME_INTERVAL_FILTER)));
+		Set<String> filteredCards = orPreferences(prefCards);
+		if(filteredCards!=null && !filteredCards.isEmpty())
+			dbCards.addAll(productDocumentationDAO.getAllLearningCardsByFilter(contentTab,filteredCards,Sort.by(order, sort)));			
+		LOG.info("all OR dbCards= {} {}",dbCards.size());
 		learningCards.addAll(mapLearningEntityToCards(dbCards, userBookmarks));		
 		return responseModel;	
 	}
