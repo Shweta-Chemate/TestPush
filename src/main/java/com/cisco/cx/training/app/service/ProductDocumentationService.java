@@ -891,6 +891,24 @@ public class ProductDocumentationService{
 		return null;
 	}
 	
+	private Integer[] getHrsMins(String timeZone)
+	{
+		int utcStartInd = timeZone.indexOf("UTC");
+		Integer hrMin []= new Integer[] {0,0};
+		if(utcStartInd>-1)
+		{
+			int utcTimeHrsStart = utcStartInd+3;
+			int utcTimeHrsEnd = timeZone.indexOf(":",utcTimeHrsStart);
+			int utcTimeMinuteStart=-1,utcTimeMinuteEnd=-1;
+			if(utcTimeHrsEnd == -1) utcTimeHrsEnd = timeZone.length();
+			else { utcTimeMinuteStart = utcTimeHrsEnd+1; utcTimeMinuteEnd = timeZone.length();}			
+			int hrs3 = Integer.parseInt(timeZone.substring(utcTimeHrsStart, utcTimeHrsEnd));			
+			int min3 = utcTimeMinuteStart==-1?0:Integer.parseInt(timeZone.substring(utcTimeMinuteStart, utcTimeMinuteEnd));		
+			hrMin[0]=hrs3; hrMin[1]=min3;			
+		}
+		return hrMin;
+	}
+	
 	private List<String> getRangeLW(List<LearningItemEntity> onlyFutureLWIds, Map<String, String> ddbTI)
 	{
 		List<String> rangeCardsIds = new ArrayList<String>();
@@ -910,8 +928,9 @@ public class ProductDocumentationService{
 		else if (hrs2 == 12) hrs2=0;
 		//LOG.info("{} {} {} {}",hrs1,min1,hrs2,min2);
 		
-		int hrs3 = Integer.parseInt(timeZone.substring(timeZone.indexOf("UTC")+3, timeZone.indexOf(":")));
-		int min3 = Integer.parseInt(timeZone.substring(timeZone.indexOf(":")+1, timeZone.indexOf(")")));
+		Integer hrMin[] = getHrsMins(timeZone);
+		int hrs3 = hrMin[0];
+		int min3 = hrMin[1];
 		if(timeZone.contains("UTC-")) min3 = min3 * -1;		
 		
 		for(LearningItemEntity futureCard : onlyFutureLWIds)
