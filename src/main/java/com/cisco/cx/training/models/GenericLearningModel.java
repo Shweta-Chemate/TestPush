@@ -6,6 +6,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class GenericLearningModel {
 	
+	@JsonProperty("id")
+    private String id; //for TP UI
+	
 	@JsonProperty("rowId")
     private String rowId;
 
@@ -42,6 +45,37 @@ public class GenericLearningModel {
 	private String registrationUrl;
 	private String recordingUrl;
 	private String contentType;
+	
+	private String modulecount;
+	private String learning_map;
+
+	private Integer avgRatingPercentage;
+	private Integer votesPercentage;
+	private Integer totalCompletions;
+
+	public Integer getAvgRatingPercentage() {
+		return avgRatingPercentage;
+	}
+
+	public void setAvgRatingPercentage(Integer avgRatingPercentage) {
+		this.avgRatingPercentage = avgRatingPercentage;
+	}
+
+	public Integer getVotesPercentage() {
+		return votesPercentage;
+	}
+
+	public void setVotesPercentage(Integer votesPercentage) {
+		this.votesPercentage = votesPercentage;
+	}
+
+	public Integer getTotalCompletions() {
+		return totalCompletions;
+	}
+
+	public void setTotalCompletions(Integer totalCompletions) {
+		this.totalCompletions = totalCompletions;
+	}
 
 	public String getRowId() {
 		return rowId;
@@ -153,6 +187,30 @@ public class GenericLearningModel {
 
 	public void setContentType(String contentType) {
 		this.contentType = contentType;
+	}
+
+	public String getModulecount() {
+		return modulecount;
+	}
+
+	public void setModulecount(String modulecount) {
+		this.modulecount = modulecount;
+	}
+
+	public String getLearning_map() {
+		return learning_map;
+	}
+
+	public void setLearning_map(String learning_map) {
+		this.learning_map = learning_map;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 	
 

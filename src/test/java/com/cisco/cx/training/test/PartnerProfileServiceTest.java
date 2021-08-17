@@ -56,7 +56,7 @@ public class PartnerProfileServiceTest {
 		HttpHeaders headers = new HttpHeaders();
 		String xMasheryHandshake = new String(Base64.encodeBase64(loadFromFile("mock/auth-mashery-user1.json").getBytes()));
 		headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
-		headers.set("Authorization", "Basic " + "");
+		//headers.set("Authorization", "Basic " + "");
 		HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
 
 		ResponseEntity<String> result = new ResponseEntity<>(getUserDetails(), HttpStatus.OK);
@@ -88,7 +88,7 @@ public class PartnerProfileServiceTest {
 		HttpHeaders headers = new HttpHeaders();
 		String xMasheryHandshake = new String(Base64.encodeBase64(loadFromFile("mock/auth-mashery-user1.json").getBytes()));
 		headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
-		headers.set("Authorization", "Basic " + "");
+		//headers.set("Authorization", "Basic " + "");
 		HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
 
 		ResponseEntity<String> result = new ResponseEntity<>("", HttpStatus.OK);
@@ -104,7 +104,7 @@ public class PartnerProfileServiceTest {
 		HttpHeaders headers = new HttpHeaders();
 		String xMasheryHandshake = new String(Base64.encodeBase64(loadFromFile("mock/auth-mashery-user1.json").getBytes()));
 		headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
-		headers.set("Authorization", "Basic " + "");
+		//headers.set("Authorization", "Basic " + "");
 		HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
 
 		ResponseEntity<String> result = new ResponseEntity<>("some @ data", HttpStatus.OK);

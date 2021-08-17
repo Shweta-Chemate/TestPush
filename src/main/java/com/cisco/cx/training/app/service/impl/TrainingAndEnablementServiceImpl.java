@@ -33,6 +33,7 @@ import com.cisco.cx.training.app.dao.PartnerPortalLookupDAO;
 import com.cisco.cx.training.app.dao.SmartsheetDAO;
 import com.cisco.cx.training.app.dao.SuccessAcademyDAO;
 import com.cisco.cx.training.app.dao.SuccessTalkDAO;
+import com.cisco.cx.training.app.dao.UserLearningPreferencesDAO;
 import com.cisco.cx.training.app.entities.LearningStatusEntity;
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.app.entities.PartnerPortalLookUpEntity;
@@ -62,6 +63,7 @@ import com.cisco.cx.training.models.SuccessTalkSession;
 import com.cisco.cx.training.models.SuccesstalkUserRegEsSchema;
 import com.cisco.cx.training.models.UserDetails;
 import com.cisco.cx.training.models.UserDetailsWithCompanyList;
+import com.cisco.cx.training.models.UserLearningPreference;
 import com.cisco.cx.training.models.UserProfile;
 import com.cisco.cx.training.util.SuccessAcademyMapper;
 
@@ -111,6 +113,9 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	
 	@Autowired
 	private LearningStatusRepo learningStatusRepo;
+	
+	@Autowired
+	UserLearningPreferencesDAO userLearningPreferencesDAO;
 
 	
 	private static final String CXPP_UI_TAB_PREFIX = "CXPP_UI_TAB_";
@@ -368,7 +373,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	@Override
 	public BookmarkResponseSchema bookmarkLearningForUser(
 			BookmarkRequestSchema bookmarkRequestSchema,
-			String xMasheryHandshake) {
+			String xMasheryHandshake, String puid) {
 		LOG.info("Entering the getSuccessAcademyFilters");
 		long requestStartTime = System.currentTimeMillis();	
 		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
@@ -381,7 +386,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 			bookmarkResponseSchema.setLearningid(bookmarkRequestSchema.getLearningid());
 			bookmarkResponseSchema.setBookmark(bookmarkRequestSchema.isBookmark());
 			requestStartTime = System.currentTimeMillis();
-			learningDAO.createOrUpdate(bookmarkResponseSchema);	
+			learningDAO.createOrUpdate(bookmarkResponseSchema, puid);
 			LOG.info("Updated bookmark in {} ", (System.currentTimeMillis() - requestStartTime));
 			return bookmarkResponseSchema;
 		}
@@ -398,59 +403,37 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	}
 
 	@Override
-	public List<LearningContentItem> fetchNewLearningContent(String ccoid, String filter, String puid) {
-		List<NewLearningContentEntity> learningContentList = new ArrayList<>();
-		List<LearningContentItem> result = new ArrayList<>();
-		Map<String, String> query_map = new LinkedHashMap<>();
-		if (!StringUtils.isBlank(filter)) {
-			filter = filter.replaceAll("%3B", ";");
-			filter = filter.replaceAll("%3A", ":");
-			String[] columnFilter = filter.split(";");
-			for (int colFilterIndex = 0; colFilterIndex < columnFilter.length; colFilterIndex++) {
-				String[] valueFilter = columnFilter[colFilterIndex].split(":");
-				String fieldName = valueFilter[0];
-				String fieldValue = valueFilter[1];
-				query_map.put(fieldName, fieldValue);
-			}
-		}
-		learningContentList = learningContentDAO.fetchNewLearningContent(query_map);
-		// populate bookmark and registration info
-		Set<String> userBookmarks = null;
-		if (null != ccoid) {
-			userBookmarks = learningBookmarkDAO.getBookmarks(ccoid);
-		}
-		List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserIdAndPuid(ccoid, puid);
-		for (NewLearningContentEntity entity : learningContentList) {
-			LearningContentItem learningItem = new LearningContentItem(entity);
-			learningItem.setBookmark(false);
-			if (null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
-					&& userBookmarks.contains(learningItem.getId())) {
-				learningItem.setBookmark(true);
-			}
-			LearningStatusEntity userRegistration = userRegistrations.stream()
-					.filter(userRegistrationInStream -> userRegistrationInStream.getLearningItemId()
-							.equalsIgnoreCase(learningItem.getId()))
-					.findFirst().orElse(null);
-			if (userRegistration != null && userRegistration.getRegStatus() != null) {
-				learningItem.setStatus(userRegistration.getRegStatus());
-				learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp());
-			}
-			result.add(learningItem);
-		}
-
-		return result;
-	}
-
-	@Override
 	public LearningRecordsAndFiltersModel getAllLearningInfoPost(String xMasheryHandshake, String searchToken,
-			HashMap<String, Object> filters, String sortBy, String sortOrder) {
+			HashMap<String, Object> filters, String sortBy, String sortOrder, String contentTab) {
 		
-		return productDocumentationService.getAllLearningInfo(xMasheryHandshake,searchToken,filters,sortBy, sortOrder);
+		return productDocumentationService.getAllLearningInfo(xMasheryHandshake,searchToken,filters,sortBy, sortOrder,contentTab);
 	}
 
 	@Override
-	public Map<String, Object> getAllLearningFiltersPost(String searchToken, HashMap<String, Object> filters) {
-		return productDocumentationService.getAllLearningFilters(searchToken,filters);
+	public Map<String, Object> getAllLearningFiltersPost(String searchToken, HashMap<String, Object> filters, String contentTab) {
+		return productDocumentationService.getAllLearningFilters(searchToken,filters,contentTab);
+	}
+
+	@Override
+	public Map<String, List<UserLearningPreference>> postUserLearningPreferences(String xMasheryHandshake,
+			Map<String, List<UserLearningPreference>> userPreferences) {
+		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
+		return userLearningPreferencesDAO.createOrUpdateULP(userDetails.getCecId(), userPreferences);
+	}
+
+	@Override
+	public Map<String, List<UserLearningPreference>> getUserLearningPreferences(String xMasheryHandshake) {
+		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);		
+		return userLearningPreferencesDAO.fetchUserLearningPreferences(userDetails.getCecId());
+	}
+
+	@Override
+	public LearningRecordsAndFiltersModel getMyPreferredLearnings(String xMasheryHandshake, String search,
+			HashMap<String, Object> filters, String sortBy, String sortOrder, String puid,Integer limit) {
+		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);		
+		HashMap<String, Object> preferences = userLearningPreferencesDAO.getULPPreferencesDDB(userDetails.getCecId());
+		return productDocumentationService.fetchMyPreferredLearnings(userDetails.getCecId(),search,filters,sortBy, sortOrder,puid,preferences,limit);
+		
 	}
 }
 

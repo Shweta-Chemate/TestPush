@@ -14,6 +14,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -33,7 +34,9 @@ import com.cisco.cx.training.app.config.Swagger2Config;
 import com.cisco.cx.training.app.dao.CommunityDAO;
 import com.cisco.cx.training.app.filters.AuthFilter;
 import com.cisco.cx.training.app.filters.RBACFilter;
+import com.cisco.cx.training.app.repo.BookmarkCountsRepo;
 import com.cisco.cx.training.app.rest.TrainingAndEnablementController;
+import com.cisco.cx.training.app.service.SplitClientService;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
 import com.cisco.cx.training.models.BookmarkRequestSchema;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
@@ -55,6 +58,9 @@ public class TrainingAndEnablementControllerTest {
 	@Autowired
 	RBACFilter rbacFilter;
 	
+	@MockBean
+	private SplitClientService splitService;
+	
 	@Autowired
 	AuthFilter authFilter;
 
@@ -68,6 +74,9 @@ public class TrainingAndEnablementControllerTest {
 	
 	@MockBean
 	private TrainingAndEnablementService trainingAndEnablementService;
+
+	@Mock
+	private BookmarkCountsRepo bookmarkCountsRepo;
 
 	private String XMasheryHeader;
 	
@@ -276,7 +285,7 @@ public class TrainingAndEnablementControllerTest {
 		bookMark.setId("1");
 		bookMark.setLearningid("1");
 		bookMark.setTitle("title");
-		Mockito.when(trainingAndEnablementService.bookmarkLearningForUser(Mockito.any(BookmarkRequestSchema.class), Mockito.anyString())).thenReturn(new BookmarkResponseSchema());
+		Mockito.when(trainingAndEnablementService.bookmarkLearningForUser(Mockito.any(BookmarkRequestSchema.class), Mockito.anyString(), Mockito.anyString())).thenReturn(new BookmarkResponseSchema());
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
 		ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
@@ -319,7 +328,7 @@ public class TrainingAndEnablementControllerTest {
 	@Test
 	public void getAllLearningsInfoPost() throws Exception {
 		this.mockMvc
-				.perform(post("/v1/partner/training/getAllLearningInfo").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.perform(post("/v1/partner/training/getAllLearningInfo/Technology").contentType(MediaType.APPLICATION_JSON_VALUE)
 						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
 				.andDo(print()).andExpect(status().isOk());
 	}
@@ -327,9 +336,23 @@ public class TrainingAndEnablementControllerTest {
 	@Test
 	public void getAllLearningFiltersPost() throws Exception {
 		this.mockMvc
-				.perform(post("/v1/partner/training/getAllLearningFilters").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.perform(post("/v1/partner/training/getAllLearningFilters/Technology").contentType(MediaType.APPLICATION_JSON_VALUE)
 						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
 				.andDo(print()).andExpect(status().isOk());
 	}
+	
+	@Test
+	public void testLearningPreferences() throws Exception {
+		this.mockMvc
+				.perform(get("/v1/partner/training/myLearningPreferences").contentType(MediaType.APPLICATION_JSON_VALUE)
+						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
+				.andDo(print()).andExpect(status().isOk());
+		
+		this.mockMvc
+		.perform(post("/v1/partner/training/myLearningPreferences").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
+		.andDo(print()).andExpect(status().isOk());
+	}
+
 	
 }

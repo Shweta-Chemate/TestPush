@@ -4,9 +4,12 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,281 +21,393 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.cisco.cx.training.app.builders.SpecificationBuilderPIW;
+import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
 import com.cisco.cx.training.app.dao.NewLearningContentDAO;
+import com.cisco.cx.training.app.dao.impl.FilterCountsDAOImpl;
 import com.cisco.cx.training.app.dao.impl.NewLearningContentDAOImpl;
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.app.repo.NewLearningContentRepo;
 import com.cisco.cx.training.constants.Constants;
 import com.cisco.cx.training.models.LearningContentItem;
 
-
 @ExtendWith(SpringExtension.class)
 public class LearningContentDaoTest {
 
 	@Mock
 	private NewLearningContentRepo learningContentRepo;
-	
+
+	@Mock
+	private FilterCountsDAOImpl filterCountsDao;
+
+	@Mock
+	private LearningBookmarkDAO learningBookmarkDAO;
+
 	@InjectMocks
-	private NewLearningContentDAO learningContentDAO=new NewLearningContentDAOImpl();
-	
+	private NewLearningContentDAO learningContentDAO = new NewLearningContentDAOImpl();
+
 	@Test
 	public void testListPIWs() {
 		List<NewLearningContentEntity> piwList = new ArrayList<>();
 		LinkedHashMap<String, String> filter = new LinkedHashMap();
 		filter.put("testKey", "testValue");
-		Specification<NewLearningContentEntity> specification = new SpecificationBuilderPIW().filter(filter,"testSearch","testRegion");
-		when(learningContentRepo.findAll(specification, Sort.by(Sort.Direction.fromString("asc"), "testField"))).thenReturn(piwList);
+		Specification<NewLearningContentEntity> specification = new SpecificationBuilderPIW().filter(filter,
+				"testSearch", "testRegion");
+		when(learningContentRepo.findAll(specification, Sort.by(Sort.Direction.fromString("asc"), "testField")))
+				.thenReturn(piwList);
 		learningContentDAO.listPIWs("testRegion", "testField", "asc", filter, "testSearch");
 	}
-	
+
 	@Test
 	public void testFetchSuccesstalks() {
 		List<NewLearningContentEntity> successtalkList = new ArrayList<>();
 		LinkedHashMap<String, String> filter = new LinkedHashMap();
 		filter.put("testKey", "testValue");
-		Specification<NewLearningContentEntity> specification = new SpecificationBuilderPIW().filter(filter,"testSearch","testRegion");
-		when(learningContentRepo.findAll(specification, Sort.by(Sort.Direction.fromString("asc"), "testField"))).thenReturn(successtalkList);
+		Specification<NewLearningContentEntity> specification = new SpecificationBuilderPIW().filter(filter,
+				"testSearch", "testRegion");
+		when(learningContentRepo.findAll(specification, Sort.by(Sort.Direction.fromString("asc"), "testField")))
+				.thenReturn(successtalkList);
 		learningContentDAO.fetchSuccesstalks("testField", "asc", filter, "testSearch");
 	}
-	
+
 	@Test
 	public void testFetchNewLearningContentWithoutFilter() {
-		Map<String, String> filterParams = new HashMap<String, String>();
+		Map<String, List<String>> filterParams = new HashMap<>();
 		List<NewLearningContentEntity> newContentList = new ArrayList<>();
 		when(learningContentRepo.findNew()).thenReturn(newContentList);
-		learningContentDAO.fetchNewLearningContent(filterParams);
+		Map stMapTest = new HashMap<>();
+		learningContentDAO.fetchNewLearningContent(filterParams, stMapTest);
 	}
-	
+
 	@Test
 	public void testFetchNewLearningContentWithFilter() {
-		Map<String, String> filterParams = new HashMap<String, String>();
-		filterParams.put("testkey", "testvalue");
+		Map<String, List<String>> filterParams = new HashMap<>();
+		List<String> testValues = new ArrayList<>();
+		testValues.add("testvalue");
+		testValues.add(Constants.CAMPUS_NETWORK);
+		filterParams.put("testkey", testValues);
+		filterParams.put(Constants.SUCCESS_TRACK, testValues);
 		List<NewLearningContentEntity> newContentList = new ArrayList<>();
 		newContentList.add(getLearningEntity());
 		when(learningContentRepo.findAll()).thenReturn(newContentList);
 		when(learningContentRepo.findNewFiltered(Mockito.any())).thenReturn(newContentList);
-		learningContentDAO.fetchNewLearningContent(filterParams);
+		Map stMapTest = new HashMap<>();
+		learningContentDAO.fetchNewLearningContent(filterParams, stMapTest);
 	}
-	
+
 	@Test
 	public void testGetSuccessTalkCount() {
 		when(learningContentRepo.countByLearningType(Constants.SUCCESSTALK)).thenReturn(1);
 		learningContentDAO.getSuccessTalkCount();
 	}
-	
+
 	@Test
 	public void testGetPIWCount() {
 		when(learningContentRepo.countByLearningType(Constants.PIW)).thenReturn(1);
 		learningContentDAO.getPIWCount();
 	}
-	
+
 	@Test
 	public void testGetProductDocumentationCount() {
 		when(learningContentRepo.countByLearningType(Constants.DOCUMENTATION)).thenReturn(1);
 		learningContentDAO.getDocumentationCount();
 	}
-	
+
 	@Test
 	public void testGetViewMoreNewFiltersWithCount() {
-		Map<String, String> filterParams = new HashMap<String, String>();
-		List<NewLearningContentEntity> newContentList = new ArrayList<>();
-		newContentList.add(getLearningEntity());
-		when(learningContentRepo.findNew()).thenReturn(newContentList);
-		learningContentDAO.getViewMoreNewFiltersWithCount(filterParams, null, null);
+		HashMap<String, Object> filterSelected = new HashMap<>();
+		learningContentDAO.getViewMoreNewFiltersWithCount(filterSelected);
 	}
-	
+
 	@Test
-	public void testGetViewMoreNewFiltersWithCountAndFilter() {
-		HashMap<String, HashMap<String, String>> filterCounts = new HashMap<>();
-		HashMap<String, String> testRegionCount = new HashMap<>();
-		testRegionCount.put("AMER", "1");
-		filterCounts.put("Live Events" , testRegionCount);
-		HashMap<String, String> testContentCount = new HashMap<>();
-		testContentCount.put("PDF", "1");
-		filterCounts.put("Content Type" , testContentCount);
-		HashMap<String, String> testLanguageCount = new HashMap<>();
-		testLanguageCount.put("English", "1");
-		filterCounts.put("Language" , testLanguageCount);
-		Map<String, String> filterParams = new HashMap<String, String>();
-		List<NewLearningContentEntity> newContentList = new ArrayList<>();
-		newContentList.add(getLearningEntity());
-		when(learningContentRepo.findNew()).thenReturn(newContentList);
-		learningContentDAO.getViewMoreNewFiltersWithCount(filterParams, filterCounts, "test");
+	public void testGetViewMoreNewFiltersWithCountAndFilterAndNoCards() {
+		HashMap<String, Object> filterSelected = new HashMap<>();
+		List<String> testValues = new ArrayList<>();
+		testValues.add("testValue");
+		filterSelected.put("testKey", testValues);
+		learningContentDAO.getViewMoreNewFiltersWithCount(filterSelected);
 	}
-	
+
 	@Test
-	public void testFetchRecentlyViewedContentWithoutFilter() {
-		Map<String, String> filterParams = new HashMap<String, String>();
-		List<NewLearningContentEntity> newContentList = new ArrayList<>();
-		when(learningContentRepo.getRecentlyViewedContent("101","testuserid")).thenReturn(newContentList);
-		learningContentDAO.fetchRecentlyViewedContent("101", "testuserid", filterParams);
+	public void testGetViewMoreNewFiltersWithCountAndFilterAndCards() {
+		HashMap<String, Object> filterSelected = new HashMap<>();
+		List<String> testValues = new ArrayList<>();
+		Set<String> testCardIds = new HashSet<>();
+		testCardIds.add("testString");
+		testValues.add("testValue");
+		filterSelected.put("testKey", testValues);
+		when(filterCountsDao.andFilters(Mockito.any())).thenReturn(testCardIds);
+		learningContentDAO.getViewMoreNewFiltersWithCount(filterSelected);
 	}
-	
+
 	@Test
-	public void testFetchRecentlyViewedContentWithFilter() {
-		Map<String, String> filterParams = new HashMap<String, String>();
-		filterParams.put("testkey", "testvalue");
+	public void testGetViewMoreRecentlyFiltersWithCount() {
+		String userId = "testUserId";
+		HashMap<String, Object> filterSelected = new HashMap<>();
+		learningContentDAO.getRecentlyViewedFiltersWithCount(userId, filterSelected);
+	}
+
+	@Test
+	public void testGetViewMoreRecentlyFiltersWithCountAndNoCards() {
+		String userId = "testUserId";
+		HashMap<String, Object> filterSelected = new HashMap<>();
+		List<String> testValues = new ArrayList<>();
+		testValues.add("testValue");
+		filterSelected.put("testKey", testValues);
+		learningContentDAO.getRecentlyViewedFiltersWithCount(userId, filterSelected);
+	}
+
+	@Test
+	public void testGetViewMoreRecentlyFiltersWithCountAndFilterAndCards() {
+		String userId = "testUserId";
+		HashMap<String, Object> filterSelected = new HashMap<>();
+		List<String> testValues = new ArrayList<>();
+		Set<String> testCardIds = new HashSet<>();
+		testCardIds.add("testString");
+		testValues.add("testValue");
+		filterSelected.put("testKey", testValues);
+		when(filterCountsDao.andFilters(Mockito.any())).thenReturn(testCardIds);
+		learningContentDAO.getRecentlyViewedFiltersWithCount(userId, filterSelected);
+	}
+
+	@Test
+	public void testGetViewMoreUpcomingFiltersWithCount() {
+		HashMap<String, Object> filterSelected = new HashMap<>();
+		learningContentDAO.getUpcomingFiltersWithCount(filterSelected);
+	}
+
+	@Test
+	public void testGetViewMoreUpcomingFiltersWithCountAndNoCards() {
+		HashMap<String, Object> filterSelected = new HashMap<>();
+		List<String> testValues = new ArrayList<>();
+		testValues.add("testValue");
+		filterSelected.put("testKey", testValues);
+		learningContentDAO.getUpcomingFiltersWithCount(filterSelected);
+	}
+
+	@Test
+	public void testGetViewMoreUpcomingFiltersWithCountAndFilterAndCards() {
+		HashMap<String, Object> filterSelected = new HashMap<>();
+		List<String> testValues = new ArrayList<>();
+		Set<String> testCardIds = new HashSet<>();
+		testCardIds.add("testString");
+		testValues.add("testValue");
+		filterSelected.put("testKey", testValues);
+		when(filterCountsDao.andFilters(Mockito.any())).thenReturn(testCardIds);
+		learningContentDAO.getUpcomingFiltersWithCount(filterSelected);
+	}
+
+	@Test
+	public void testGetViewMoreBookmarkedFiltersWithCount() {
+		List<LearningContentItem> bookmarkedList = new ArrayList<>();
+		bookmarkedList.add(getLearningItem());
+		HashMap<String, Object> filterSelected = new HashMap<>();
+		learningContentDAO.getBookmarkedFiltersWithCount(filterSelected, bookmarkedList);
+	}
+
+	@Test
+	public void testGetViewMoreBookmarkedFiltersWithCountAndNoCards() {
+		List<LearningContentItem> bookmarkedList = new ArrayList<>();
+		bookmarkedList.add(getLearningItem());
+		HashMap<String, Object> filterSelected = new HashMap<>();
+		List<String> testValues = new ArrayList<>();
+		testValues.add("testValue");
+		filterSelected.put("testKey", testValues);
+		learningContentDAO.getBookmarkedFiltersWithCount(filterSelected, bookmarkedList);
+	}
+
+	@Test
+	public void testGetViewMoreBookmarkedFiltersWithCountAndFilterAndCards() {
+		List<LearningContentItem> bookmarkedList = new ArrayList<>();
+		bookmarkedList.add(getLearningItem());
+		HashMap<String, Object> filterSelected = new HashMap<>();
+		List<String> testValues = new ArrayList<>();
+		Set<String> testCardIds = new HashSet<>();
+		testCardIds.add("testString");
+		testValues.add("testValue");
+		filterSelected.put("testKey", testValues);
+		when(filterCountsDao.andFilters(Mockito.any())).thenReturn(testCardIds);
+		learningContentDAO.getBookmarkedFiltersWithCount(filterSelected, bookmarkedList);
+	}
+
+	@Test
+	public void testGetViewMoreCXInsightsFiltersWithCount() {
+		String userId = "testUserId";
+		String searchToken = "testSearchToken";
+		HashMap<String, Object> filterSelected = new HashMap<>();
+		learningContentDAO.getCXInsightsFiltersWithCount(userId, searchToken, filterSelected);
+	}
+
+	@Test
+	public void testGetViewMoreCXInsightsFiltersWithCountAndNoCards() {
+		String userId = "testUserId";
+		String searchToken = "testSearchToken";
+		HashMap<String, Object> filterSelected = new HashMap<>();
+		List<String> testValues = new ArrayList<>();
+		testValues.add("testValue");
+		filterSelected.put("testKey", testValues);
+		learningContentDAO.getCXInsightsFiltersWithCount(userId, searchToken, filterSelected);
+	}
+
+	@Test
+	public void testGetViewMoreCXInsightsFiltersWithCountAndFilterAndCards() {
+		String userId = "testUserId";
+		String searchToken = "testSearchToken";
+		HashMap<String, Object> filterSelected = new HashMap<>();
+		List<String> testValues = new ArrayList<>();
+		Set<String> testCardIds = new HashSet<>();
+		testCardIds.add("testString");
+		testValues.add("testValue");
+		filterSelected.put("testKey", testValues);
+		when(filterCountsDao.andFilters(Mockito.any())).thenReturn(testCardIds);
+		learningContentDAO.getCXInsightsFiltersWithCount(userId, searchToken, filterSelected);
+	}
+
+	@Test
+	public void testFetchRecentlyViewedLearningContentWithoutFilter() {
+		String userId = "testUserId";
+		Map<String, List<String>> filterParams = new HashMap<>();
+		List<NewLearningContentEntity> newContentList = new ArrayList<>();
+		when(learningContentRepo.getRecentlyViewedContent(Mockito.anyString())).thenReturn(newContentList);
+		Map stMapTest = new HashMap<>();
+		learningContentDAO.fetchRecentlyViewedContent(userId, filterParams, stMapTest);
+	}
+
+	@Test
+	public void testFetchRecentlyViewedLearningContentWithFilter() {
+		String userId = "testUserId";
+		Map<String, List<String>> filterParams = new HashMap<>();
+		List<String> testValues = new ArrayList<>();
+		List<String> testValuesForYouFilter = new ArrayList<>();
+		testValuesForYouFilter.add(Constants.NEW);
+		testValuesForYouFilter.add(Constants.BOOKMARKED_FOR_YOU);
+		testValuesForYouFilter.add(Constants.RECENTLY_VIEWED);
+		testValues.add("testvalue");
+		testValues.add(Constants.CAMPUS_NETWORK);
+		filterParams.put("testkey", testValues);
+		filterParams.put(Constants.ROLE, testValues);
+		filterParams.put(Constants.TECHNOLOGY, testValues);
+		filterParams.put(Constants.LIFECYCLE, testValues);
+		filterParams.put(Constants.FOR_YOU_FILTER, testValuesForYouFilter);
+		filterParams.put(Constants.SUCCESS_TRACK, testValues);
+		Set<String> testCardIds = new HashSet<>();
+		testCardIds.add("testString");
 		List<NewLearningContentEntity> newContentList = new ArrayList<>();
 		newContentList.add(getLearningEntity());
 		when(learningContentRepo.findAll()).thenReturn(newContentList);
-		when(learningContentRepo.getRecentlyViewedContentFiltered(Mockito.anyString(), Mockito.anyString(),Mockito.any())).thenReturn(newContentList);
-		learningContentDAO.fetchRecentlyViewedContent("101","testuserid",filterParams);
+		when(learningContentRepo.getRecentlyViewedContentFiltered(Mockito.anyString(), Mockito.any()))
+				.thenReturn(newContentList);
+		when(learningContentRepo.findNew()).thenReturn(newContentList);
+		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(testCardIds);
+		when(learningContentRepo.getRecentlyViewedContent(Mockito.anyString())).thenReturn(newContentList);
+		Map stMapTest = new HashMap<>();
+		learningContentDAO.fetchRecentlyViewedContent(userId, filterParams, stMapTest);
 	}
-	
+
 	@Test
-	public void testGetViewMoreRecentlyViewedFiltersWithCount() {
-		Map<String, String> filterParams = new HashMap<String, String>();
+	public void testFetchCXInsightsContent() {
+		String userId = "testUserId";
+		String searchToken = "testSearchToken";
+		String sortField = "title";
+		String sortType = "asc";
+		Map<String, List<String>> filterParams = new HashMap<>();
 		List<NewLearningContentEntity> newContentList = new ArrayList<>();
-		newContentList.add(getLearningEntity());
-		when(learningContentRepo.getRecentlyViewedContent("101","testuserid")).thenReturn(newContentList);
-		learningContentDAO.getRecentlyViewedFiltersWithCount("101","testuserid",filterParams, null, null);
+		when(learningContentRepo.getRecentlyViewedContent(Mockito.anyString())).thenReturn(newContentList);
+		Map stMapTest = new HashMap<>();
+		learningContentDAO.fetchCXInsightsContent(userId, filterParams, stMapTest, searchToken, sortField, sortType);
 	}
-	
-	@Test
-	public void testGetViewMoreRecentlyViewedFiltersWithCountAndFilter() {
-		HashMap<String, HashMap<String, String>> filterCounts = new HashMap<>();
-		HashMap<String, String> testRegionCount = new HashMap<>();
-		testRegionCount.put("AMER", "1");
-		filterCounts.put("Live Events" , testRegionCount);
-		HashMap<String, String> testContentCount = new HashMap<>();
-		testContentCount.put("PDF", "1");
-		filterCounts.put("Content Type" , testContentCount);
-		HashMap<String, String> testLanguageCount = new HashMap<>();
-		testLanguageCount.put("English", "1");
-		filterCounts.put("Language" , testLanguageCount);
-		Map<String, String> filterParams = new HashMap<String, String>();
-		List<NewLearningContentEntity> newContentList = new ArrayList<>();
-		newContentList.add(getLearningEntity());
-		when(learningContentRepo.getRecentlyViewedContent("101","testuserid")).thenReturn(newContentList);
-		learningContentDAO.getRecentlyViewedFiltersWithCount("101","testuserid",filterParams, filterCounts, "test");
-	}
-	
+
 	@Test
 	public void testFetchFilteredContent() {
-		learningContentDAO.fetchFilteredContent("101", "userid", new HashMap<String,String>());
+		Map<String, List<String>> filterParams = new HashMap<>();
+		Map stMapTest = new HashMap<>();
+		learningContentDAO.fetchFilteredContent(filterParams, stMapTest);
 	}
-	
+
 	@Test
-	public void testGetBookmarkedFiltersWithCount() {
-		Map<String, String> filterParams = new HashMap<String, String>();
-		List<LearningContentItem> newContentList = new ArrayList<>();
-		newContentList.add(getLearningItem());
-		learningContentDAO.getBookmarkedFiltersWithCount(filterParams, null, newContentList, null);
-	}
-	
-	@Test
-	public void testGetBookmarkedFiltersWithCountAndFilter() {
-		HashMap<String, HashMap<String, String>> filterCounts = new HashMap<>();
-		HashMap<String, String> testRegionCount = new HashMap<>();
-		testRegionCount.put("AMER", "1");
-		filterCounts.put("Live Events" , testRegionCount);
-		HashMap<String, String> testContentCount = new HashMap<>();
-		testContentCount.put("PDF", "1");
-		filterCounts.put("Content Type" , testContentCount);
-		HashMap<String, String> testLanguageCount = new HashMap<>();
-		testLanguageCount.put("English", "1");
-		filterCounts.put("Language" , testLanguageCount);
-		Map<String, String> filterParams = new HashMap<String, String>();
-		List<LearningContentItem> newContentList = new ArrayList<>();
-		newContentList.add(getLearningItem());
-		learningContentDAO.getBookmarkedFiltersWithCount(filterParams, filterCounts, newContentList, "test");
-	}
-	
-	@Test
-	public void testFetchUpcomingContentWithoutFilter() {
-		Map<String, String> filterParams = new HashMap<String, String>();
+	public void testUpcomingContent() {
+		Map<String, List<String>> filterParams = new HashMap<>();
 		List<NewLearningContentEntity> newContentList = new ArrayList<>();
-		when(learningContentRepo.findUpcoming()).thenReturn(newContentList);
-		learningContentDAO.fetchUpcomingContent(filterParams);
-	}
-	
-	@Test
-	public void testFetchUpocmingContentWithFilter() {
-		Map<String, String> filterParams = new HashMap<String, String>();
-		filterParams.put("testkey", "testvalue");
-		List<NewLearningContentEntity> newContentList = new ArrayList<>();
-		newContentList.add(getLearningEntity());
-		when(learningContentRepo.findAll()).thenReturn(newContentList);
 		when(learningContentRepo.findUpcomingFiltered(Mockito.any())).thenReturn(newContentList);
-		learningContentDAO.fetchUpcomingContent(filterParams);
+		Map stMapTest = new HashMap<>();
+		learningContentDAO.fetchUpcomingContent(filterParams, stMapTest);
 	}
-	
+
 	@Test
-	public void testGeUpcomingFiltersWithCount() {
-		Map<String, String> filterParams = new HashMap<String, String>();
+	public void testFetchPopularAcrossPartnersContent() {
+		Map<String, List<String>> filterParams = new HashMap<>();
 		List<NewLearningContentEntity> newContentList = new ArrayList<>();
-		newContentList.add(getLearningEntity());
-		when(learningContentRepo.findUpcoming()).thenReturn(newContentList);
-		learningContentDAO.getUpcomingFiltersWithCount(filterParams, null, null);
+		when(learningContentRepo.getPopularAcrossPartnersFiltered(Mockito.any())).thenReturn(newContentList);
+		Map stMapTest = new HashMap<>();
+		learningContentDAO.fetchPopularAcrossPartnersContent(filterParams, stMapTest);
 	}
-	
+
 	@Test
-	public void testGeUpcomingFiltersWithCountAndFilter() {
-		HashMap<String, HashMap<String, String>> filterCounts = new HashMap<>();
-		HashMap<String, String> testRegionCount = new HashMap<>();
-		testRegionCount.put("AMER", "1");
-		filterCounts.put("Live Events" , testRegionCount);
-		HashMap<String, String> testContentCount = new HashMap<>();
-		testContentCount.put("PDF", "1");
-		filterCounts.put("Content Type" , testContentCount);
-		HashMap<String, String> testLanguageCount = new HashMap<>();
-		testLanguageCount.put("English", "1");
-		filterCounts.put("Language" , testLanguageCount);
-		Map<String, String> filterParams = new HashMap<String, String>();
-		List<NewLearningContentEntity> newContentList = new ArrayList<>();
-		newContentList.add(getLearningEntity());
-		when(learningContentRepo.findUpcoming()).thenReturn(newContentList);
-		learningContentDAO.getUpcomingFiltersWithCount(filterParams, filterCounts, "test");
+	public void testGetPopularAcrossPartnersFiltersWithCount() {
+		String userId = "testUserId";
+		String searchToken = "testSearchToken";
+		HashMap<String, Object> filterSelected = new HashMap<>();
+		learningContentDAO.getCXInsightsFiltersWithCount(userId, searchToken, filterSelected);
 	}
-	
-	
+
 	@Test
-	public void testFetchSuccessAcademyContentWithoutFilter() {
-		Map<String, String> filterParams = new HashMap<String, String>();
-		learningContentDAO.fetchSuccessAcademyContent(filterParams);
+	public void testGetLearningMap() {
+		String id = "testId";
+		String title = "testTitle";
+		List<NewLearningContentEntity> learningEntityList = new ArrayList<>();
+		learningEntityList.add(getLearningEntity());
+		when(learningContentRepo.findById(id)).thenReturn(Optional.of(getLearningEntity()));
+		when(learningContentRepo.findByLearningTypeAndLearningMap(Constants.LEARNINGMODULE,
+				getLearningEntity().getTitle())).thenReturn(learningEntityList);
+		learningContentDAO.getLearningMap(id, title);
+
 	}
-	
+
 	@Test
-	public void testGetSuccessAcademyFiltersWithCount() {
-		Map<String, String> filterParams = new HashMap<String, String>();
-		List<NewLearningContentEntity> newContentList = new ArrayList<>();
-		newContentList.add(getLearningEntity());
-		learningContentDAO.getSuccessAcademyFiltersWithCount(filterParams, null, null);
+	public void testGetLearningMapIDNull() {
+		String title = "testTitle";
+		List<NewLearningContentEntity> learningEntityList = new ArrayList<>();
+		learningEntityList.add(getLearningEntity());
+		when(learningContentRepo.findByLearningTypeAndLearningMap(Constants.LEARNINGMODULE,
+				getLearningEntity().getTitle())).thenReturn(learningEntityList);
+		learningContentDAO.getLearningMap(null, title);
+
 	}
-	
+
 	@Test
-	public void testGetSuccessAcademyFiltersWithCountAndFilter() {
-		HashMap<String, HashMap<String, String>> filterCounts = new HashMap<>();
-		HashMap<String, String> testRoleCount = new HashMap<>();
-		testRoleCount.put("Renewals Manager", "1");
-		filterCounts.put("Role" , testRoleCount);
-		HashMap<String, String> testTechnologyCount = new HashMap<>();
-		testTechnologyCount.put("Security", "1");
-		filterCounts.put("Technology" , testTechnologyCount);
-		HashMap<String, String> testModelCount = new HashMap<>();
-		testModelCount.put("Operate", "1");
-		filterCounts.put("Model" , testModelCount);
-		HashMap<String, String> testSuccessTrackCount = new HashMap<>();
-		testSuccessTrackCount.put("Campus", "1");
-		filterCounts.put("Success Track" , testSuccessTrackCount);
-		Map<String, String> filterParams = new HashMap<String, String>();
-		List<NewLearningContentEntity> newContentList = new ArrayList<>();
-		newContentList.add(getLearningEntity());
-		learningContentDAO.getSuccessAcademyFiltersWithCount(filterParams, filterCounts, "test");
+	public void testGetSuccessTrackCount() {
+		when(learningContentRepo.getSuccessTracksCount()).thenReturn(1);
+		learningContentDAO.getSuccessTracksCount();
 	}
-	
-	NewLearningContentEntity getLearningEntity()
-	{
+
+	@Test
+	public void testGetLifecycleCount() {
+		when(learningContentRepo.getLifecycleCount()).thenReturn(1);
+		learningContentDAO.getLifecycleCount();
+	}
+
+	@Test
+	public void testGetTechnologyCount() {
+		when(learningContentRepo.getTechnologyount()).thenReturn(1);
+		learningContentDAO.getTechnologyCount();
+	}
+
+	@Test
+	public void testGetRoleCount() {
+		when(learningContentRepo.getRolesCount()).thenReturn(1);
+		learningContentDAO.getRolesCount();
+	}
+
+	NewLearningContentEntity getLearningEntity() {
 		NewLearningContentEntity learning = new NewLearningContentEntity();
 		learning.setId("testid");
+		learning.setTitle("testTitle");
+		learning.setSequence("1");
 		return learning;
 	}
-	
-	LearningContentItem getLearningItem()
-	{
+
+	LearningContentItem getLearningItem() {
 		LearningContentItem learning = new LearningContentItem(getLearningEntity());
 		learning.setId("testid");
 		return learning;
 	}
 }
-

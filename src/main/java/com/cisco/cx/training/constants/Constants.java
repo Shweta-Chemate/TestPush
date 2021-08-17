@@ -32,6 +32,7 @@ public final class Constants {
 	public static final String REGION = "region";
 	public static final String MOST_POPULAR = "mostpopular";
 	public static final String BOOKMARKED = "bookmarked";
+	public static final String BOOKMARKED_FOR_YOU = "Bookmarked";
 	public static final String REGISTERED = "registered";
 	public static final int MINIMUM_SCORE = 4;
 	public static final String SCORE_COLUMN = "score";
@@ -46,22 +47,28 @@ public final class Constants {
 	public static final String LANGUAGE_PRM = "language";
 	public static final String CONTENT_TYPE_FIELD = "contentType";
 	public static final String LIVE_WEBINAR= "Live Webinar";
-	public static final String SUCCESS_ACADEMY = "successacademy";
 	public static final String ROLE = "Role";
 	public static final String MODEL = "Model";
-	public static final String SUCCESS_TRACK = "Success Track";
+	public static final String SUCCESS_TRACK = "Success Tracks";
 	public static final String TECHNOLOGY = "Technology";
 	public static final String CAMPUS = "CAMPUS";
 	public static final String CAMPUS_NETWORK = "Campus Network";
-	public static final String DOCUMENTATION_FILTER = "Documentation";
-	public static final String DOCUMENTATION_FILTER_PRM = "archetype";
 	public static final String ASSET_FACET = "assetFacet";
-	public static final Object FOR_YOU_FILTER = "For You";
+	public static final String FOR_YOU_FILTER = "For You";
 	public static final String NEW = "New";
 	public static final String ID = "id";
 	public static final String UPCOMING_EVENTS = "Upcoming Events";
 	public static final String RECENTLY_VIEWED = "Recently Viewed";
-	public static final String CX_COLLECTION = "CX Collection";
 	public static final String DESCRIPTION = "description";
+	public static final String LIFECYCLE = "Lifecycle";
+	public static final String LEARNINGMODULE = "learningmodule";
+	public static final String CX_INSIGHTS = "CX Insights";
+	public static final String FILTER_KEY = "filter";
+	public static final String ST_FILTER_KEY = "Success Tracks";
+	public static final String POPULAR_ACROSS_PARTNERS = "Popular Across Partners";
+	public static final String ACCESS_TOKEN = "accessToken";
+	public static final String RESOURCE_ID_PARAM = "resourceId";
+	public static final String RESOURCE_ID_LEARNING = "CXPP_LEARNING";
+	public static final String BE_SPLIT_IO_FLAG = "be_PXC-219_OKTA";
 
 }
