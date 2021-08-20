@@ -72,8 +72,8 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 	public void init() {
 		LOG.info("Initializing LearningBookmarkDAOImpl for table :: {}", propertyConfig.getBookmarkTableName());
 		SdkHttpClient httpClient = ApacheHttpClient.builder().
-                connectionTimeout(Duration.ofSeconds(100))
-                .socketTimeout(Duration.ofSeconds(100))
+                connectionTimeout(Duration.ofSeconds(20))
+                .socketTimeout(Duration.ofSeconds(20))
                 .build();
 		
 		Region region = Region.of(propertyConfig.getAwsRegion());

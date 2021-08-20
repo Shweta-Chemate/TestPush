@@ -72,17 +72,17 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
 	}
 
 	@PostConstruct
-	public void init() //throws URISyntaxException
+	public void init() throws URISyntaxException
 	{
 		LOG.info("Initializing ULP for table :: {}", propertyConfig.getUlPreferencesTableName());
 		SdkHttpClient httpClient = ApacheHttpClient.builder().
-                connectionTimeout(Duration.ofSeconds(100))
-                .socketTimeout(Duration.ofSeconds(100))
+                connectionTimeout(Duration.ofSeconds(20))
+                .socketTimeout(Duration.ofSeconds(20))
                 .build();
 		
 		Region region = Region.of(propertyConfig.getAwsRegion());
-		DynamoDbClientBuilder dDbClientBuilder = DynamoDbClient.builder().httpClient(httpClient);
-				//.endpointOverride(new URI("http://localhost:8000"));
+		DynamoDbClientBuilder dDbClientBuilder = DynamoDbClient.builder().httpClient(httpClient)//;
+				.endpointOverride(new URI("http://localhost:8000"));
 		dDbClientBuilder.region(region);
 		dbClient = dDbClientBuilder.build();
 	}
