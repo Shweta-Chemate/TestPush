@@ -135,4 +135,10 @@ public interface NewLearningContentRepo
 	@Query(value = SQLConstants.GET_POPULAR_ACCROSS_PARTNERS_FILTERED, nativeQuery = true)
 	List<NewLearningContentEntity> getPopularAcrossPartnersFiltered(Set<String> learningItemIds);
 
+	@Query(value = SQLConstants.GET_POPULAR_AT_PARTNER, nativeQuery = true)
+	List<NewLearningContentEntity> getPopularAtPartner(String puid);
+
+	@Query(value = SQLConstants.GET_POPULAR_AT_PARTNER_FILTERED, nativeQuery = true)
+	List<NewLearningContentEntity> getPopularAtPartnerFiltered(String puid, Set<String> learningItemIds);
+
 }

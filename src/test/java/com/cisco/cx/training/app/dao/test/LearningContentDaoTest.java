@@ -343,10 +343,23 @@ public class LearningContentDaoTest {
 
 	@Test
 	public void testGetPopularAcrossPartnersFiltersWithCount() {
-		String userId = "testUserId";
-		String searchToken = "testSearchToken";
 		HashMap<String, Object> filterSelected = new HashMap<>();
-		learningContentDAO.getCXInsightsFiltersWithCount(userId, searchToken, filterSelected);
+		learningContentDAO.getPopularAcrossPartnersFiltersWithCount(filterSelected);
+	}
+
+	@Test
+	public void testFetchPopularAtPartnerContent() {
+		Map<String, List<String>> filterParams = new HashMap<>();
+		List<NewLearningContentEntity> newContentList = new ArrayList<>();
+		when(learningContentRepo.getPopularAtPartnerFiltered(Mockito.any(), Mockito.any())).thenReturn(newContentList);
+		Map stMapTest = new HashMap<>();
+		learningContentDAO.fetchPopularAtPartnerContent(filterParams, stMapTest, "puid");
+	}
+
+	@Test
+	public void testGetPopularAtPartnerFiltersWithCount() {
+		HashMap<String, Object> filterSelected = new HashMap<>();
+		learningContentDAO.getPopularAtPartnerFiltersWithCount(filterSelected, "test");
 	}
 
 	@Test

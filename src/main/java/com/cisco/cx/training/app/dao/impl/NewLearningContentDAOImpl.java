@@ -268,6 +268,41 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	}
 
 	@Override
+	public HashMap<String, Object> getPopularAtPartnerFiltersWithCount(HashMap<String, Object> filtersSelected,
+			String puid) {
+		Map<String, Set<String>> filteredCardsMap = new HashMap<String, Set<String>>();
+		List<NewLearningContentEntity> filteredList = new ArrayList<>();
+		Set<String> learningItemIdsList = new HashSet<String>();
+		Set<String> cardIds =  new HashSet<String>();
+		HashMap<String, Object> filters = new HashMap<>();
+		HashMap<String, Object> countFilters = new HashMap<>();
+
+		List<String> filterGroups=NewLearningContentDAOImpl.APIFilterGroupMappings.get(Constants.POPULAR_ACROSS_PARTNERS);
+		filteredList = fetchPopularAtPartnerContent(new HashMap<String,List<String>>(), null, puid);
+		learningItemIdsList = filteredList.stream().map(learningItem -> learningItem.getId())
+				.collect(Collectors.toSet());
+
+		filterCountsDAO.initializeFiltersWithCounts(filterGroups, filters, countFilters, learningItemIdsList, null);
+
+		if(filtersSelected==null || filtersSelected.isEmpty())
+		{
+			return countFilters;
+		}else {
+			filteredCardsMap = filterCountsDAO.filterCards(filtersSelected, learningItemIdsList, null);
+			cardIds = filterCountsDAO.andFilters(filteredCardsMap);
+			if(cardIds.isEmpty())
+				return filters;
+			if(filtersSelected!=null && !filtersSelected.isEmpty() && filtersSelected.size()==1)
+			{
+				filtersSelected.keySet().forEach(filterGroup -> filters.put(filterGroup, countFilters.get(filterGroup)));
+
+			}
+			filterCountsDAO.setFilterCounts(cardIds, filters, filteredCardsMap, null);
+			return filters;
+		}
+	}
+
+	@Override
 	public HashMap<String, Object> getCXInsightsFiltersWithCount(String userId, String searchToken, HashMap<String, Object> filtersSelected) {
 		Map<String, Set<String>> filteredCardsMap = new HashMap<String, Set<String>>();
 		List<NewLearningContentEntity> filteredList = new ArrayList<>();
@@ -386,6 +421,27 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 			learningItemIdsList = filteredList.stream().map(learningItem -> learningItem.getId())
 					.collect(Collectors.toSet());
 			result=learningContentRepo.getPopularAcrossPartnersFiltered(learningItemIdsList);
+		}
+		return result;
+	}
+
+	@Override
+	public List<NewLearningContentEntity> fetchPopularAtPartnerContent(Map<String, List<String>> queryMap,
+			Object stMap, String puid) {
+		List<NewLearningContentEntity> result;
+		if(queryMap.isEmpty() && stMap==null)
+			result= learningContentRepo.getPopularAtPartner(puid);
+		else {
+			List<NewLearningContentEntity> filteredList = new ArrayList<>();
+			Set<String> learningItemIdsList = new HashSet<String>();
+			SpecificationBuilder builder=new SpecificationBuilder();
+			Specification<NewLearningContentEntity> specification = Specification.where(null);
+			specification=getSpecificationForCuratedTags(queryMap ,stMap, null);
+			specification = specification.and(builder.filter(queryMap));
+			filteredList = learningContentRepo.findAll(specification);
+			learningItemIdsList = filteredList.stream().map(learningItem -> learningItem.getId())
+					.collect(Collectors.toSet());
+			result=learningContentRepo.getPopularAtPartnerFiltered(puid, learningItemIdsList);
 		}
 		return result;
 	}

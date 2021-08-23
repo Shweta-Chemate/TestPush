@@ -46,7 +46,7 @@ public interface LearningContentService {
 
 	LearningMap getLearningMap(String id, String title);
 
-	List<LearningContentItem> fetchPopularAcrossPartnersContent(String ccoid, HashMap<String, Object> filtersSelected);
+	List<LearningContentItem> fetchPopularContent(String ccoid, HashMap<String, Object> filtersSelected, String popularityType, String puid);
 
-	Map<String, Object> getPopularAcrossPartnersFiltersWithCount(HashMap<String, Object> filtersSelected);
+	Map<String, Object> getPopularContentFiltersWithCount(HashMap<String, Object> filtersSelected, String puid, String popularityType);
 }
