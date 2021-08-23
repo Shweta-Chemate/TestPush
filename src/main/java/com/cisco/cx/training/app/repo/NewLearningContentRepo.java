@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -130,15 +131,15 @@ public interface NewLearningContentRepo
 	Integer getRolesCount();
 
 	@Query(value = SQLConstants.GET_POPULAR_ACCROSS_PARTNERS, nativeQuery = true)
-	List<NewLearningContentEntity> getPopularAcrossPartners();
+	List<NewLearningContentEntity> getPopularAcrossPartners(Integer limit);
 
 	@Query(value = SQLConstants.GET_POPULAR_ACCROSS_PARTNERS_FILTERED, nativeQuery = true)
-	List<NewLearningContentEntity> getPopularAcrossPartnersFiltered(Set<String> learningItemIds);
+	List<NewLearningContentEntity> getPopularAcrossPartnersFiltered(Set<String> learningItemIds, Integer limit);
 
 	@Query(value = SQLConstants.GET_POPULAR_AT_PARTNER, nativeQuery = true)
-	List<NewLearningContentEntity> getPopularAtPartner(String puid);
+	List<NewLearningContentEntity> getPopularAtPartner(String puid, Integer limit);
 
 	@Query(value = SQLConstants.GET_POPULAR_AT_PARTNER_FILTERED, nativeQuery = true)
-	List<NewLearningContentEntity> getPopularAtPartnerFiltered(String puid, Set<String> learningItemIds);
+	List<NewLearningContentEntity> getPopularAtPartnerFiltered(String puid, Set<String> learningItemIds, Integer limit);
 
 }

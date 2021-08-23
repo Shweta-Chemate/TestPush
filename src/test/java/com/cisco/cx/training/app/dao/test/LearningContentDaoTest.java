@@ -336,7 +336,7 @@ public class LearningContentDaoTest {
 	public void testFetchPopularAcrossPartnersContent() {
 		Map<String, List<String>> filterParams = new HashMap<>();
 		List<NewLearningContentEntity> newContentList = new ArrayList<>();
-		when(learningContentRepo.getPopularAcrossPartnersFiltered(Mockito.any())).thenReturn(newContentList);
+		when(learningContentRepo.getPopularAcrossPartnersFiltered(Mockito.any(), Mockito.any())).thenReturn(newContentList);
 		Map stMapTest = new HashMap<>();
 		learningContentDAO.fetchPopularAcrossPartnersContent(filterParams, stMapTest);
 	}
@@ -351,7 +351,7 @@ public class LearningContentDaoTest {
 	public void testFetchPopularAtPartnerContent() {
 		Map<String, List<String>> filterParams = new HashMap<>();
 		List<NewLearningContentEntity> newContentList = new ArrayList<>();
-		when(learningContentRepo.getPopularAtPartnerFiltered(Mockito.any(), Mockito.any())).thenReturn(newContentList);
+		when(learningContentRepo.getPopularAtPartnerFiltered(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(newContentList);
 		Map stMapTest = new HashMap<>();
 		learningContentDAO.fetchPopularAtPartnerContent(filterParams, stMapTest, "puid");
 	}
