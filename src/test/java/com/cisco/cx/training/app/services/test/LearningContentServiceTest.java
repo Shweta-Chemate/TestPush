@@ -287,8 +287,9 @@ public class LearningContentServiceTest {
 	}
 
 	@Test
-	public void testFetchPopularAcrossPartnersContent()
+	public void testFetchPopularContent()
 	{
+		//popular across partners call
 		HashMap<String, Object> testFilter = getTestFiltersSelected();
 		String testUserId = "testUserId";
 		List<NewLearningContentEntity> learningEntityList = new ArrayList<>();
@@ -299,10 +300,18 @@ public class LearningContentServiceTest {
 		List<LearningStatusEntity> learningStatusList = new ArrayList<>();
 		learningStatusList.add(getLearningStatusEntity());
 		when(learningStatusRepo.findByUserId(testUserId)).thenReturn(learningStatusList);
-		learningContentService.fetchPopularAcrossPartnersContent(testUserId, testFilter);
-		when(learningContentDAO.fetchPopularAcrossPartnersContent(Mockito.any(), Mockito.any())).thenThrow(new GenericException("There was a problem in fetching CX Insights learning content"));
+		learningContentService.fetchPopularContent(testUserId, testFilter, "popularAcrossPartners", "puid");
+		when(learningContentDAO.fetchPopularAcrossPartnersContent(Mockito.any(), Mockito.any())).thenThrow(new GenericException("There was a problem in fetching popular across partners learning content"));
 		assertThrows(Exception.class, () -> {
-			learningContentService.fetchPopularAcrossPartnersContent(testUserId, testFilter);
+			learningContentService.fetchPopularContent(testUserId, testFilter, "popularAcrossPartners", "puid");
+		});
+
+		//popular at partner company call
+		when(learningContentDAO.fetchPopularAtPartnerContent(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(learningEntityList);
+		learningContentService.fetchPopularContent(testUserId, testFilter, "popularAtPartner", "puid");
+		when(learningContentDAO.fetchPopularAtPartnerContent(Mockito.any(), Mockito.any(), Mockito.any())).thenThrow(new GenericException("There was a problem in fetching popular at partner company learning content"));
+		assertThrows(Exception.class, () -> {
+			learningContentService.fetchPopularContent(testUserId, testFilter, "popularAtPartner", "puid");
 		});
 	}
 
@@ -313,9 +322,31 @@ public class LearningContentServiceTest {
 		HashMap<String, Object> filterCounts = getTestFilterCounts();
 		when(learningContentDAO.getCXInsightsFiltersWithCount(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(filterCounts);
 		learningContentService.getCXInsightsFiltersWithCount("test", "test", testFilter);
-		when(learningContentDAO.getCXInsightsFiltersWithCount(Mockito.any(), Mockito.any(), Mockito.any())).thenThrow(new GenericException("There was a problem in fetching CX Insights learning content"));
+		when(learningContentDAO.getCXInsightsFiltersWithCount(Mockito.any(), Mockito.any(), Mockito.any())).thenThrow(new GenericException("There was a problem in fetching CX Insights filters"));
 		assertThrows(Exception.class, () -> {
 			learningContentService.getCXInsightsFiltersWithCount("test", "test", testFilter);
+		});
+	}
+
+	@Test
+	public void testGetPopularContentFiltersWithCount()
+	{
+		//popular across partners test
+		HashMap<String, Object> testFilter = getTestFiltersSelected();
+		HashMap<String, Object> filterCounts = getTestFilterCounts();
+		when(learningContentDAO.getPopularAcrossPartnersFiltersWithCount(Mockito.any())).thenReturn(filterCounts);
+		learningContentService.getPopularContentFiltersWithCount(testFilter, "puid", "popularAcrossPartners");
+		when(learningContentDAO.getPopularAcrossPartnersFiltersWithCount(Mockito.any())).thenThrow(new GenericException("There was a problem in fetching popular across partners filters"));
+		assertThrows(Exception.class, () -> {
+			learningContentService.getPopularContentFiltersWithCount(testFilter, "puid", "popularAcrossPartners");
+		});
+
+		//populat at partner company test
+		when(learningContentDAO.getPopularAtPartnerFiltersWithCount(Mockito.any(), Mockito.any())).thenReturn(filterCounts);
+		learningContentService.getPopularContentFiltersWithCount(testFilter, "puid", "popularAtPartner");
+		when(learningContentDAO.getPopularAtPartnerFiltersWithCount(Mockito.any(), Mockito.any())).thenThrow(new GenericException("There was a problem in fetching popular at partner company filters"));
+		assertThrows(Exception.class, () -> {
+			learningContentService.getPopularContentFiltersWithCount(testFilter, "puid", "popularAtPartner");
 		});
 	}
 

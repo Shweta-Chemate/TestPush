@@ -649,7 +649,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 	}
 
 	@Override
-	public List<LearningContentItem> fetchPopularAcrossPartnersContent(String ccoid, HashMap<String, Object> filtersSelected) {
+	public List<LearningContentItem> fetchPopularContent(String ccoid, HashMap<String, Object> filtersSelected, String popularityType, String puid) {
 		List<NewLearningContentEntity> contentList = new ArrayList<>();
 		List<LearningContentItem> result = new ArrayList<>();
 		Map<String, List<String>> queryMap=new HashMap<>();
@@ -666,7 +666,10 @@ public class LearningContentServiceImpl implements LearningContentService {
 		}
 		try
 		{
-			contentList = learningContentDAO.fetchPopularAcrossPartnersContent(queryMap, stMap);
+			if(popularityType.equals(Constants.POPULAR_ACROSS_PARTNERS_PATH))
+				contentList = learningContentDAO.fetchPopularAcrossPartnersContent(queryMap, stMap);
+			if(popularityType.equals(Constants.POPULAR_AT_PARTNER_PATH))
+				contentList = learningContentDAO.fetchPopularAtPartnerContent(queryMap, stMap, puid);
 			// populate bookmark and registration info
 			Set<String> userBookmarks = null;
 			if (null != ccoid) {
@@ -698,12 +701,15 @@ public class LearningContentServiceImpl implements LearningContentService {
 	}
 
 	@Override
-	public Map<String, Object> getPopularAcrossPartnersFiltersWithCount(HashMap<String, Object> filtersSelected) {
+	public Map<String, Object> getPopularContentFiltersWithCount(HashMap<String, Object> filtersSelected, String puid, String popularityType) {
 		HashMap<String, Object> popularContentCounts = new HashMap<>();
 		Map<String, Object> result;
 		try
 		{
-			popularContentCounts = learningContentDAO.getPopularAcrossPartnersFiltersWithCount(filtersSelected);
+			if(popularityType.equals(Constants.POPULAR_ACROSS_PARTNERS_PATH))
+				popularContentCounts = learningContentDAO.getPopularAcrossPartnersFiltersWithCount(filtersSelected);
+			if(popularityType.equals(Constants.POPULAR_AT_PARTNER_PATH))
+				popularContentCounts = learningContentDAO.getPopularAtPartnerFiltersWithCount(filtersSelected, puid);
 		}catch (Exception e) {
 			LOG.error("There was a problem in fetching popular across partners filter counts", e);
 			throw new GenericException("There was a problem in fetching popular across partners filter counts");
