@@ -142,4 +142,9 @@ public interface NewLearningContentRepo
 	@Query(value = SQLConstants.GET_POPULAR_AT_PARTNER_FILTERED, nativeQuery = true)
 	List<NewLearningContentEntity> getPopularAtPartnerFiltered(String puid, Set<String> learningItemIds, Integer limit);
 
+	@Query(value = SQLConstants.GET_FEATURED_CONTENT_BASE, nativeQuery = true)
+	List<NewLearningContentEntity> findFeatured();
+	
+	@Query(value = SQLConstants.GET_FEATURED_CONTENT, nativeQuery = true)
+	List<NewLearningContentEntity> findFeaturedFiltered(Set<String> learningItemIds);
 }
