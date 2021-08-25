@@ -90,7 +90,7 @@ public class NewLearningContentEntity {
 	private String modulecount;
 	
 	@Column(name = "learning_map")
-	private String learning_map;
+	private String learningMap;
 	
 	@Column(name = "roles")
 	private String roles;
@@ -107,14 +107,38 @@ public class NewLearningContentEntity {
 	@Column(name = "archetype")
 	private String archetype;
 
-	@Column(name = "asset_model")
-	private String assetModel;
+	@Column(name = "avg_rating_percentage")
+	private Integer avgRatingPercentage;
 
-	@Column(name = "asset_facet")
-	private String assetFacet;
+	@Column(name = "total_completions")
+	private Integer totalCompletions;
 
-	@Column(name = "asset_group")
-	private String assetGroup;
+	@Column(name = "votes_percentage")
+	private Integer votesPercentage;
+
+	public Integer getTotalCompletions() {
+		return totalCompletions;
+	}
+
+	public void setTotalCompletions(Integer totalCompletions) {
+		this.totalCompletions = totalCompletions;
+	}
+
+	public Integer getAvgRatingPercentage() {
+		return avgRatingPercentage;
+	}
+
+	public void setAvgRatingPercentage(Integer avgRatingPercentage) {
+		this.avgRatingPercentage = avgRatingPercentage;
+	}
+
+	public Integer getVotesPercentage() {
+		return votesPercentage;
+	}
+
+	public void setVotesPercentage(Integer votesPercentage) {
+		this.votesPercentage = votesPercentage;
+	}
 
 	public String getArchetype() {
 		return archetype;
@@ -122,30 +146,6 @@ public class NewLearningContentEntity {
 
 	public void setArchetype(String archetype) {
 		this.archetype = archetype;
-	}
-
-	public String getAssetModel() {
-		return assetModel;
-	}
-
-	public void setAssetModel(String assetModel) {
-		this.assetModel = assetModel;
-	}
-
-	public String getAssetFacet() {
-		return assetFacet;
-	}
-
-	public void setAssetFacet(String assetFacet) {
-		this.assetFacet = assetFacet;
-	}
-
-	public String getAssetGroup() {
-		return assetGroup;
-	}
-
-	public void setAssetGroup(String assetGroup) {
-		this.assetGroup = assetGroup;
 	}
 
 	public String getId() {
@@ -300,12 +300,12 @@ public class NewLearningContentEntity {
 		this.modulecount = modulecount;
 	}
 
-	public String getLearning_map() {
-		return learning_map;
+	public String getLearningMap() {
+		return learningMap;
 	}
 
-	public void setLearning_map(String learning_map) {
-		this.learning_map = learning_map;
+	public void setLearningMap(String learningMap) {
+		this.learningMap = learningMap;
 	}
 
 	public String getRoles() {

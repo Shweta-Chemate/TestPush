@@ -8,8 +8,10 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,7 +29,6 @@ import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.app.repo.NewLearningContentRepo;
 import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.app.service.ProductDocumentationService;
-import com.cisco.cx.training.models.GenericLearningModel;
 import com.cisco.cx.training.models.LearningRecordsAndFiltersModel;
 
 @ExtendWith(SpringExtension.class)
@@ -49,39 +50,42 @@ public class ProductDocumentationServiceTest {
 	
 	@InjectMocks
 	private ProductDocumentationService productDocumentationService;
+	
+	String learningTab = "Technology";
 
 	
 	@Test
 	public void getAllLearningInfo()
 	{		
-		LearningRecordsAndFiltersModel a1 = productDocumentationService.getAllLearningInfo("mashery",null,null,"sortBy","sortOrder");		
+		LearningRecordsAndFiltersModel a1 = productDocumentationService.getAllLearningInfo("mashery",null,null,"sortBy","sortOrder",learningTab);		
 		assertEquals(0, a1.getLearningData().size());
 		
-		LearningRecordsAndFiltersModel a2 = productDocumentationService.getAllLearningInfo("mashery","searchToken",null,"sortBy","sortOrder");		
+		LearningRecordsAndFiltersModel a2 = productDocumentationService.getAllLearningInfo("mashery","searchToken",null,"sortBy","sortOrder",learningTab);		
 		assertEquals(0, a2.getLearningData().size());
 		
 		HashMap<String, Object> aMock = new HashMap<String, Object>();	
 		aMock.put("For You", Arrays.asList(new String[]{"New"}));
 		
-		LearningRecordsAndFiltersModel a3 = productDocumentationService.getAllLearningInfo("mashery",null,aMock,"sortBy","sortOrder");		
+		LearningRecordsAndFiltersModel a3 = productDocumentationService.getAllLearningInfo("mashery",null,aMock,"sortBy","sortOrder",learningTab);		
 		assertEquals(0, a3.getLearningData().size());
 		
-		LearningRecordsAndFiltersModel a4 = productDocumentationService.getAllLearningInfo("mashery","searchToken",aMock,"sortBy","sortOrder");		
+		LearningRecordsAndFiltersModel a4 = productDocumentationService.getAllLearningInfo("mashery","searchToken",aMock,"sortBy","sortOrder",learningTab);		
 		assertEquals(0, a4.getLearningData().size());
 		
 		NewLearningContentEntity n1 = new NewLearningContentEntity(); n1.setId("101");
 		List<NewLearningContentEntity> result = new ArrayList<NewLearningContentEntity>();result.add(n1);
-		when(learningContentRepo.findNew()).thenReturn(result);
+		when(learningContentRepo.findNew()).thenReturn(result); Set<String> hs = new HashSet<String>();hs.add("101");
+		when(productDocumentationDAO.getAllNewCardIdsByCards(Mockito.anyString(),Mockito.anySet())).thenReturn(hs);
 		
-		LearningRecordsAndFiltersModel a5 = productDocumentationService.getAllLearningInfo("mashery","searchToken",aMock,"sortBy","sortOrder");		
+		LearningRecordsAndFiltersModel a5 = productDocumentationService.getAllLearningInfo("mashery","searchToken",aMock,"sortBy","sortOrder",learningTab);		
 		assertEquals(0, a5.getLearningData().size());
 		
 		List<LearningItemEntity> dbCards = new ArrayList<LearningItemEntity>();
 		LearningItemEntity learningItemEntity = new LearningItemEntity();
 		learningItemEntity.setSortByDate("2016-02-03 00:00:00.0");
 		dbCards.add(learningItemEntity);
-		when(productDocumentationDAO.getAllLearningCardsByFilter(Mockito.anySet(),Mockito.any(Sort.class))).thenReturn(dbCards);
-		LearningRecordsAndFiltersModel a6 = productDocumentationService.getAllLearningInfo("mashery",null,aMock,"sortBy","sortOrder");		
+		when(productDocumentationDAO.getAllLearningCardsByFilter(Mockito.anyString(),Mockito.anySet(),Mockito.any(Sort.class))).thenReturn(dbCards);
+		LearningRecordsAndFiltersModel a6 = productDocumentationService.getAllLearningInfo("mashery",null,aMock,"sortBy","sortOrder",learningTab);		
 		assertEquals(1, a6.getLearningData().size());
 	}
 	
@@ -89,18 +93,18 @@ public class ProductDocumentationServiceTest {
 	public void getAllLearningFilters()
 	{
 		
-		Map<String, Object> a1 = productDocumentationService.getAllLearningFilters(null,null);			
+		Map<String, Object> a1 = productDocumentationService.getAllLearningFilters(null,null,learningTab);			
 		assertTrue(a1.size()>=1); //st=7
 		
-		Map<String, Object> a2 = productDocumentationService.getAllLearningFilters("searchToken",null);		
+		Map<String, Object> a2 = productDocumentationService.getAllLearningFilters("searchToken",null,learningTab);		
 		assertTrue(a2.size()>=1); //st=7		
 		
 		HashMap<String, Object> aMock = new HashMap<String, Object>();	
 		aMock.put("For You", Arrays.asList(new String[]{"New"}));
-		Map<String, Object> a3 = productDocumentationService.getAllLearningFilters(null,aMock);		
+		Map<String, Object> a3 = productDocumentationService.getAllLearningFilters(null,aMock,learningTab);		
 		assertTrue(a3.size()>=1); //st=7
 				
-		Map<String, Object> a4 = productDocumentationService.getAllLearningFilters("searchToken",aMock);		
+		Map<String, Object> a4 = productDocumentationService.getAllLearningFilters("searchToken",aMock,learningTab);		
 		assertTrue(a4.size()>=1); //st=7
 		
 	}
@@ -113,8 +117,8 @@ public class ProductDocumentationServiceTest {
 		 List<Map<String,Object>> dbListLG = new  ArrayList<Map<String,Object>>();
 		 Map<String,Object> lgMap = new HashMap<String,Object>();lgMap.put("dbkey", "English");lgMap.put("dbvalue", "2");
 		 dbListLG.add(lgMap);
-		when(productDocumentationDAO.getAllLanguageWithCount()).thenReturn(dbListLG);
-		Map<String, Object> a3 = productDocumentationService.getAllLearningFilters(null,aMock);		
+		when(productDocumentationDAO.getAllLanguageWithCount(learningTab)).thenReturn(dbListLG);
+		Map<String, Object> a3 = productDocumentationService.getAllLearningFilters(null,aMock,learningTab);		
 		assertTrue(a3.size()>=1);
 	}
 	
@@ -128,17 +132,17 @@ public class ProductDocumentationServiceTest {
 		List<NewLearningContentEntity> result = new ArrayList<NewLearningContentEntity>();result.add(n1);
 		when(learningContentRepo.findNew()).thenReturn(result);
 		
-		Map<String, Object> a3 = productDocumentationService.getAllLearningFilters(null,aMock);		
+		Map<String, Object> a3 = productDocumentationService.getAllLearningFilters(null,aMock,learningTab);		
 		assertTrue(a3.size()>=1); //st=7
 
 		
 		aMock.put("For You", Arrays.asList(new String[]{"New","Bookmarked","Sth"}));
-		Map<String, Object> a32 = productDocumentationService.getAllLearningFilters(null,aMock);		
+		Map<String, Object> a32 = productDocumentationService.getAllLearningFilters(null,aMock,learningTab);		
 		assertTrue(a32.size()>=1); //st=7
 		
 		
 		when(learningContentRepo.findNew()).thenReturn(null);		
-		Map<String, Object> a31 = productDocumentationService.getAllLearningFilters(null,null);		
+		Map<String, Object> a31 = productDocumentationService.getAllLearningFilters(null,null,learningTab);		
 		assertTrue(a31.size()>=1); //st=7
 	}
 	
@@ -157,10 +161,10 @@ public class ProductDocumentationServiceTest {
 		List<NewLearningContentEntity> result = new ArrayList<NewLearningContentEntity>();result.add(n1);
 		when(learningContentRepo.findNew()).thenReturn(result);
 		
-		when(productDocumentationDAO.getAllStUcPsWithCount()).thenReturn(mockDbST());
-		when(productDocumentationDAO.getAllStUcPsWithCountByCards(Mockito.anySet())).thenReturn(mockDbST());
+		when(productDocumentationDAO.getAllStUcPsWithCount(Mockito.anyString())).thenReturn(mockDbST());
+		when(productDocumentationDAO.getAllStUcPsWithCountByCards(Mockito.anyString(),Mockito.anySet())).thenReturn(mockDbST());
 		
-		Map<String, Object> a3 = productDocumentationService.getAllLearningFilters(null,aMock);		
+		Map<String, Object> a3 = productDocumentationService.getAllLearningFilters(null,aMock,learningTab);		
 		assertTrue(a3.size()>=1); //st=7
 	}
 	

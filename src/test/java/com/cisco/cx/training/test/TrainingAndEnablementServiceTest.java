@@ -37,6 +37,7 @@ import com.cisco.cx.training.app.dao.PartnerPortalLookupDAO;
 import com.cisco.cx.training.app.dao.SmartsheetDAO;
 import com.cisco.cx.training.app.dao.SuccessAcademyDAO;
 import com.cisco.cx.training.app.dao.SuccessTalkDAO;
+import com.cisco.cx.training.app.dao.UserLearningPreferencesDAO;
 import com.cisco.cx.training.app.entities.LearningStatusEntity;
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.app.entities.PartnerPortalLookUpEntity;
@@ -45,6 +46,7 @@ import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.exception.GenericException;
 import com.cisco.cx.training.app.exception.NotAllowedException;
 import com.cisco.cx.training.app.exception.NotFoundException;
+import com.cisco.cx.training.app.repo.BookmarkCountsRepo;
 import com.cisco.cx.training.app.repo.LearningStatusRepo;
 import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.app.service.ProductDocumentationService;
@@ -64,6 +66,7 @@ import com.cisco.cx.training.models.SuccessTalkSession;
 import com.cisco.cx.training.models.SuccesstalkUserRegEsSchema;
 import com.cisco.cx.training.models.UserDetails;
 import com.cisco.cx.training.models.UserDetailsWithCompanyList;
+import com.cisco.cx.training.models.UserLearningPreference;
 import com.cisco.cx.training.models.UserProfile;
 
 @ExtendWith(SpringExtension.class)
@@ -110,9 +113,17 @@ public class TrainingAndEnablementServiceTest {
 	
 	@Mock
 	private LearningStatusRepo learningStatusRepo;
+	
+	@Mock 
+	UserLearningPreferencesDAO userLearningPreferencesDAO;
 
 	@InjectMocks
 	private TrainingAndEnablementService trainingAndEnablementService = new TrainingAndEnablementServiceImpl();	
+
+	@Mock
+	private BookmarkCountsRepo bookmarkCountsRepo;
+	
+	String learningTab = "Technology";
 
 	@Test
 	public void testGetSuccessAcademy() {
@@ -461,8 +472,8 @@ public class TrainingAndEnablementServiceTest {
 		BookmarkRequestSchema request = new BookmarkRequestSchema();
 		request.setLearningid("1");
 		request.setBookmark(true);
-		when(learningDAO.createOrUpdate(Mockito.any(BookmarkResponseSchema.class))).thenReturn(null);
-		BookmarkResponseSchema response = trainingAndEnablementService.bookmarkLearningForUser(null, "");
+		when(learningDAO.createOrUpdate(Mockito.any(BookmarkResponseSchema.class), "test")).thenReturn(null);
+		BookmarkResponseSchema response = trainingAndEnablementService.bookmarkLearningForUser(null, "", "test");
 		
 		assertEquals(response.getLearningid(),"1");
 		assertEquals(response.getCcoid(),"ccoid");		
@@ -472,7 +483,7 @@ public class TrainingAndEnablementServiceTest {
 	public void testFailureBookmarkLearningForUser(){		
 		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(null);
 		assertThrows(BadRequestException.class, () -> {
-			trainingAndEnablementService.bookmarkLearningForUser(null, "");
+			trainingAndEnablementService.bookmarkLearningForUser(null, "", "test");
 		});
 	}
 	
@@ -482,8 +493,8 @@ public class TrainingAndEnablementServiceTest {
 		List<GenericLearningModel> cards = new ArrayList<GenericLearningModel>();
 		LearningRecordsAndFiltersModel aMock = new LearningRecordsAndFiltersModel();
 		aMock.setLearningData(cards);
-		when(productDocumentationService.getAllLearningInfo("mashery","searchToken",null,"sortBy","sortOrder")).thenReturn(aMock);
-		LearningRecordsAndFiltersModel a = trainingAndEnablementService.getAllLearningInfoPost("mashery","searchToken",null,"sortBy","sortOrder");		
+		when(productDocumentationService.getAllLearningInfo("mashery","searchToken",null,"sortBy","sortOrder",learningTab)).thenReturn(aMock);
+		LearningRecordsAndFiltersModel a = trainingAndEnablementService.getAllLearningInfoPost("mashery","searchToken",null,"sortBy","sortOrder",learningTab);		
 		assertEquals(0, a.getLearningData().size());
 	}
 	
@@ -491,26 +502,9 @@ public class TrainingAndEnablementServiceTest {
 	public void getAllLearningFiltersPost()
 	{
 		HashMap<String, Object> aMock = new HashMap<String, Object>();		
-		when(productDocumentationService.getAllLearningFilters("searchToken",null)).thenReturn(aMock);
-		Map<String, Object> a = trainingAndEnablementService.getAllLearningFiltersPost("searchToken",null);
+		when(productDocumentationService.getAllLearningFilters("searchToken",null,learningTab)).thenReturn(aMock);
+		Map<String, Object> a = trainingAndEnablementService.getAllLearningFiltersPost("searchToken",null,learningTab);
 		assertEquals(0, a.size());
-	}
-	
-	@Test
-	public void testFetchNewLearningContent()
-	{
-		String testUserId = "testUserId";
-		String testFilter = "test:test";
-		String testPuid = "101";
-		List<NewLearningContentEntity> learningEntityList = new ArrayList<>();
-		learningEntityList.add(getLearningEntity());
-		when(learningContentDAO.fetchNewLearningContent(Mockito.any())).thenReturn(learningEntityList);
-		Set<String> userBookmarks=getBookmarks();
-		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(userBookmarks);
-		List<LearningStatusEntity> learningStatusList = new ArrayList<>();
-		learningStatusList.add(getLearningStatusEntity());
-		when(learningStatusRepo.findByUserIdAndPuid(testUserId, testPuid)).thenReturn(learningStatusList);
-		trainingAndEnablementService.fetchNewLearningContent(testUserId, testFilter, testPuid);
 	}
 	
 	NewLearningContentEntity getLearningEntity()
@@ -537,6 +531,28 @@ public class TrainingAndEnablementServiceTest {
 		learningStatusEntity.setRegStatus("REGISTERED_T");
 		return learningStatusEntity;
 		
+	}
+	
+	@Test
+	public void testULP() {
+		UserDetails userDetails = new UserDetails();
+		userDetails.setCecId("email");
+		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(userDetails);
+		String email = "email";
+		Map<String, List<UserLearningPreference>> ulps = new HashMap<String, List<UserLearningPreference>>();
+		List<UserLearningPreference> roleList = new ArrayList<UserLearningPreference>();
+		UserLearningPreference roleUP = new UserLearningPreference ();
+		roleUP.setName("Customer Success manager");roleList.add(roleUP);
+		ulps.put("role", roleList);
+		List<UserLearningPreference> tiList = new ArrayList<UserLearningPreference>();
+		UserLearningPreference tiUP = new UserLearningPreference ();
+		tiUP.setTimeMap(new HashMap<String,String>());tiList.add(tiUP);
+		ulps.put("timeinterval", tiList);
+		when(userLearningPreferencesDAO.createOrUpdateULP(userDetails.getCecId(), ulps)).thenReturn(ulps);
+		trainingAndEnablementService.postUserLearningPreferences("mashery", ulps);
+		
+		when(userLearningPreferencesDAO.fetchUserLearningPreferences(userDetails.getCecId())).thenReturn(ulps);
+		trainingAndEnablementService.getUserLearningPreferences("mashery");
 	}
 	
 }

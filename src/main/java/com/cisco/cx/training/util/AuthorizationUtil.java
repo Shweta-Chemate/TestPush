@@ -46,6 +46,33 @@ public class AuthorizationUtil {
 		}
 		return response;
 	}
+	
+	public static String invokeAuthzAPI(String puid, String accessToken,
+			PropertyConfiguration propertyConfiguration, RestTemplate restTemplate) {
+		logger.info("Input Param  {0} ,{1}  " + puid + " , " + Constants.RESOURCE_ID_LEARNING);
+		String response = null;
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			headers.set(Constants.AUTHORIZATION, accessToken);
+			HttpEntity requestEntity = new HttpEntity(null, headers);
+
+			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(propertyConfiguration.getAuthUrl())
+					.queryParam("puId", Integer.parseInt(puid)).queryParam(Constants.RESOURCE_ID_PARAM, Constants.RESOURCE_ID_LEARNING);
+			ResponseEntity<String> result = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, requestEntity,
+					String.class);
+			logger.info("result  " + result);
+			if (result.getStatusCode() == HttpStatus.OK)
+				response = result.getBody();
+			else {
+				logger.error("URL " + propertyConfiguration.getAuthUrl() + " Returned Status Code "
+						+ result.getStatusCode() + " Expected 200 ok Response :" + result.getBody());
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+		}
+		return response;
+	}
 
 	public static boolean isRoleCheckRequired(String roleId, String roleIdsforCustomerCheck) {
 		if (roleIdsforCustomerCheck.indexOf(roleId) != -1)

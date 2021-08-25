@@ -47,7 +47,7 @@ public class PartnerProfileServiceImpl implements PartnerProfileService {
 		HttpHeaders headers = new HttpHeaders();
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
-		headers.set("Authorization", "Basic " + config.createCxpBasicAuthToken());
+		//headers.set("Authorization", "Basic " + config.createCxpBasicAuthToken());
 		addHeaders(headers);
 		HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
 		ResponseEntity<String> result = restTemplate.exchange(entitlementUrl + "/" + userId, HttpMethod.GET, requestEntity, String.class);

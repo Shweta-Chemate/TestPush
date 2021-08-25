@@ -33,6 +33,10 @@ import software.amazon.awssdk.services.dynamodb.model.QueryResponse;
 
 import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
+import com.cisco.cx.training.app.entities.BookmarkCountsEntity;
+import com.cisco.cx.training.app.entities.BookmarkCountsEntityPK;
+import com.cisco.cx.training.app.repo.BookmarkCountsRepo;
+import com.cisco.cx.training.app.repo.NewLearningContentRepo;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,7 +48,10 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 	
 	@Autowired
 	private PropertyConfiguration propertyConfig;
-	
+
+	@Autowired
+	private BookmarkCountsRepo bookmarkCountsRepo;
+
 	private static final String USERID_SUFFIX = "-academybookmark";
 	
 	private static final String BOOKMARK_KEY = "bookmarks";
@@ -84,7 +91,7 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 
 	@Override
 	public BookmarkResponseSchema createOrUpdate(
-			BookmarkResponseSchema bookmarkResponseSchema) {
+			BookmarkResponseSchema bookmarkResponseSchema, String puid) {
 		LOG.info("Entering the createOrUpdate");
 		long requestStartTime = System.currentTimeMillis();	
 		Map<String, AttributeValue> itemValue = new HashMap<String, AttributeValue>();
@@ -120,6 +127,23 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 		PutItemResponse response = dbClient.putItem(putItemReq.build());
 		LOG.info("response received in {} ", (System.currentTimeMillis() - requestStartTime));
 		if(response.sdkHttpResponse().isSuccessful()){
+			//update bookmark count in aurora
+			BookmarkCountsEntity bookMarkCountsEntity = bookmarkCountsRepo.findByLearningItemIdAndPuid(bookmarkResponseSchema.getLearningid(), puid);
+			if(bookMarkCountsEntity != null) {
+				int count = bookmarkResponseSchema.isBookmark()?bookMarkCountsEntity.getCount()+1:bookMarkCountsEntity.getCount()-1;
+				bookMarkCountsEntity.setCount(count);
+			}
+			else {
+				if(bookmarkResponseSchema.isBookmark()) {
+					bookMarkCountsEntity = new BookmarkCountsEntity();
+					bookMarkCountsEntity.setLearningItemId(bookmarkResponseSchema.getLearningid());
+					bookMarkCountsEntity.setPuid(puid);
+					bookMarkCountsEntity.setCount(1);
+				}
+			}
+			if(bookMarkCountsEntity!=null && bookMarkCountsEntity.getCount()>=0)
+				bookmarkCountsRepo.save(bookMarkCountsEntity);
+
 			BookmarkResponseSchema responseSchema = new BookmarkResponseSchema();
 			responseSchema.setId(bookmarkResponseSchema.getId());
 			return responseSchema;

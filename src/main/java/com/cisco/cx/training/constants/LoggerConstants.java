@@ -46,6 +46,8 @@ public class LoggerConstants {
 	
 	public static final String AUTHORIZATION = "authorization";
 	public static final String CUSTOMER_ID = "customerId";
+	
+	public static final String dummycommit = "test deploy";
 
 	/**
 	 * other : "policyName"; //privilege level
