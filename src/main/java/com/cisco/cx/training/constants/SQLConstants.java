@@ -173,6 +173,5 @@ public class SQLConstants {
 			"where bkcount.puid = :puid and bkcount.learning_item_id=learning.id and bkcount.count>0 order by count desc, sort_by_date desc limit :limit";
 
 
-	public static final String GET_POPULAR_AT_PARTNER_FILTERED = "select * from cxpp_db.cxpp_learning_bookmark_count bkcount, cxpp_db.cxpp_learning_content learning \n" +
-			"where bkcount.puid = :puid and bkcount.learning_item_id=learning.id and bkcount.count>0 and bkcount.learning_item_id in (:learningItemIds) order by count desc, sort_by_date desc limit :limit";
+	public static final String GET_POPULAR_AT_PARTNER_FILTERED = "select * from (\n" + GET_POPULAR_AT_PARTNER + ") base where base.learning_item_id in (:learningItemIds) order by base.count desc, base.sort_by_date desc ";
 }
