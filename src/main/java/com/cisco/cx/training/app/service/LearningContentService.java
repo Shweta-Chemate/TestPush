@@ -49,4 +49,8 @@ public interface LearningContentService {
 	List<LearningContentItem> fetchPopularContent(String ccoid, HashMap<String, Object> filtersSelected, String popularityType, String puid);
 
 	Map<String, Object> getPopularContentFiltersWithCount(HashMap<String, Object> filtersSelected, String puid, String popularityType);
+	
+	List<LearningContentItem> fetchFeaturedContent(String userId, HashMap<String, Object> filtersSelected);
+	
+	Map<String, Object> getFeaturedFiltersWithCount(HashMap<String, Object> filtersSelected);
 }

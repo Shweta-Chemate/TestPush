@@ -515,5 +515,52 @@ public class NewLearningContentController {
 		LOG.info("Received popular content filters counts in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<Map<String, Object>>(learningFilters, HttpStatus.OK);
 	}
+	
+	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/featured")
+	@ApiOperation(value = "Fetch bookmarked Learning Content", response = String.class, nickname = "fetchfeaturedlearningcontent")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
+			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
+			@ApiResponse(code = 404, message = "Entity Not Found"),
+			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
+	public ResponseEntity<List<LearningContentItem>> getFeaturedContent(
+			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
+            @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
+			@ApiParam(value = "Filters") @RequestBody(required = false) HashMap<String, Object> filtersSelected)
+					throws Exception {
+		LOG.info("Entering the getFeaturedContent method");
+		long requestStartTime = System.currentTimeMillis();
+		if (StringUtils.isBlank(xMasheryHandshake)) {
+			throw new BadRequestException("X-Mashery-Handshake header missing in request");
+		}
+		if(!config.isNewLearningFeature())
+		{
+			throw new NotFoundException("API Not Found.");
+		}
+		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
+		List<LearningContentItem> learningContentList = learningContentService.fetchFeaturedContent(userId, filtersSelected);
+		LOG.info("Received featured learning content in {} ", (System.currentTimeMillis() - requestStartTime));
+		return new ResponseEntity<List<LearningContentItem>>(learningContentList, HttpStatus.OK);
+	}
+	
+	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/featured/filters")
+	@ApiOperation(value = "Fetch All Learnings Filters for recently viewed section", response = String.class, nickname = "fetchallFeaturedFilters")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
+			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
+			@ApiResponse(code = 404, message = "Entity Not Found"),
+			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
+	public ResponseEntity<Map<String, Object>> getFiltersForFeatured(
+			@ApiParam(value = "JSON Body to update filters", required = false) @RequestBody(required=false) HashMap<String, Object> filtersSelected ,
+			@ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid)
+			throws Exception {
+		LOG.info("Entering the getFiltersForFeatured method");
+		long requestStartTime = System.currentTimeMillis();
+		if(!config.isNewLearningFeature())
+		{
+			throw new NotFoundException("API Not Found.");
+		}
+		Map<String, Object> learningFilters = learningContentService.getFeaturedFiltersWithCount(filtersSelected);
+		LOG.info("Received featured filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
+		return new ResponseEntity<Map<String, Object>>(learningFilters, HttpStatus.OK);
+	}
 
 }

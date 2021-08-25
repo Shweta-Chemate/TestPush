@@ -61,4 +61,9 @@ public interface NewLearningContentDAO {
 			String puid);
 
 	HashMap<String, Object> getPopularAtPartnerFiltersWithCount(HashMap<String, Object> filtersSelected, String puid);
+	
+	List<NewLearningContentEntity> fetchFeaturedContent(Map<String, List<String>> queryMap, Object stMap);
+	
+	HashMap<String, Object> getFeaturedFiltersWithCount(HashMap<String, Object> filtersSelected);
+
 }
