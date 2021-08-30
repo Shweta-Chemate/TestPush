@@ -198,6 +198,23 @@ public class ProductDocumentationServiceTest {
 		return st;
 	}
 	
+	@Test
+	public  void testSortSpecial()
+	{
+		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(null);
+		List<LearningItemEntity> aL = new ArrayList<LearningItemEntity>();
+		LearningItemEntity le1 = new LearningItemEntity();
+		LearningItemEntity le2 = new LearningItemEntity();
+		le1.setTitle("abc");le2.setTitle("xyz");aL.add(le1); aL.add(le2);
+		when(productDocumentationDAO.getAllLearningCards(Mockito.anyString(),Mockito.any(Sort.class))).thenReturn(aL);
+		
+		LearningRecordsAndFiltersModel a2t = productDocumentationService.getAllLearningInfo("mashery",null,null,"title","asc",learningTab);		
+		assertEquals("abc", a2t.getLearningData().get(0).getTitle());
+		
+		LearningRecordsAndFiltersModel a2t2 = productDocumentationService.getAllLearningInfo("mashery",null,null,"title","desc",learningTab);		
+		assertEquals("xyz", a2t2.getLearningData().get(0).getTitle());
+	}
+	
 }
 
 

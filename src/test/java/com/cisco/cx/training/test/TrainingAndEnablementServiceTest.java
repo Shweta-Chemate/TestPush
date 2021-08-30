@@ -555,6 +555,16 @@ public class TrainingAndEnablementServiceTest {
 		trainingAndEnablementService.getUserLearningPreferences("mashery");
 	}
 	
+	@Test
+	public void testTopPicks() {
+		UserDetails userDetails = new UserDetails();
+		userDetails.setCecId("email");
+		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(userDetails);
+		HashMap<String, Object> prefMap = new HashMap<String,Object>();
+		when(userLearningPreferencesDAO.getULPPreferencesDDB(Mockito.anyString())).thenReturn(prefMap);
+		trainingAndEnablementService.getMyPreferredLearnings("mashery", "search", null, "sortBy", "sortOrder", "puid" ,25);
+	}
+	
 }
 
 
