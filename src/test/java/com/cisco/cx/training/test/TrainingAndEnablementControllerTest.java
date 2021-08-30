@@ -355,4 +355,14 @@ public class TrainingAndEnablementControllerTest {
 	}
 
 	
+	@Test
+	public void testTopPicks() throws Exception {
+		
+		this.mockMvc
+		.perform(get("/v1/partner/training/myPreferredLearnings").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.header("X-Mashery-Handshake", this.XMasheryHeader).header("puid", this.puid).characterEncoding("utf-8"))
+		.andDo(print()).andExpect(status().isOk());
+	
+	}
+	
 }
