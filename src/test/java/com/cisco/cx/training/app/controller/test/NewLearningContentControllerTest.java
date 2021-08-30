@@ -404,6 +404,35 @@ public class NewLearningContentControllerTest {
 			.andDo(print()).andExpect(status().isOk());
 		});
 	}
+	
+	@Test
+	public void testGetFeaturedContent() throws Exception {
+		this.mockMvc
+		.perform(post("/v1/partner/learning/featured").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.header("X-Mashery-Handshake", this.XMasheryHeader)
+				.header("puid", this.puid)
+				.characterEncoding("utf-8"))
+		.andDo(print()).andExpect(status().isOk());
+
+		assertThrows(Exception.class, () -> {
+			this.mockMvc
+			.perform(post("/v1/partner/learning/featured").contentType(MediaType.APPLICATION_JSON_VALUE)
+					.header("puid", this.puid)
+					.characterEncoding("utf-8"))
+			.andDo(print()).andExpect(status().isOk());
+		});
+	}
+
+	@Test
+	public void testGetFiltersForFeatured() throws Exception {
+		this.mockMvc
+		.perform(post("/v1/partner/learning/featured/filters").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.header("X-Mashery-Handshake", this.XMasheryHeader)
+				.header("puid", this.puid)
+				.characterEncoding("utf-8"))
+		.andDo(print()).andExpect(status().isOk());
+
+	}
 
 	private String loadFromFile(String filePath) throws IOException {
 		return new String(Files.readAllBytes(resourceLoader.getResource("classpath:" + filePath).getFile().toPath()));
