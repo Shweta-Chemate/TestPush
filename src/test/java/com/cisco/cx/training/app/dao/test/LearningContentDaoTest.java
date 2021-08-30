@@ -3,6 +3,7 @@ package com.cisco.cx.training.app.dao.test;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -409,6 +410,36 @@ public class LearningContentDaoTest {
 		when(learningContentRepo.getRolesCount()).thenReturn(1);
 		learningContentDAO.getRolesCount();
 	}
+	
+	@Test
+	public void testFetchFeaturedContent() {
+		Map<String, List<String>> filterParams = new HashMap<>();
+		List<NewLearningContentEntity> featuredContentList = new ArrayList<>();
+		when(learningContentRepo.findFeatured()).thenReturn(featuredContentList);
+		Map stMapTest = new HashMap<>();
+		learningContentDAO.fetchFeaturedContent(filterParams, stMapTest);
+	}
+	
+	@Test
+	public void testFetchFeaturedContentWithoutFilter() {
+		List<NewLearningContentEntity> featuredContentList = new ArrayList<>();
+		when(learningContentRepo.findFeatured()).thenReturn(featuredContentList);
+		learningContentDAO.fetchFeaturedContent(Collections.emptyMap(), null);
+	}
+	
+	@Test
+	public void testGetFeaturedFiltersWithoutFilter() {
+		HashMap<String, Object> filterSelected = new HashMap<>();
+		learningContentDAO.getFeaturedFiltersWithCount(filterSelected);
+	}
+	
+	@Test
+	public void testGetFeaturedFiltersWithCount() {
+		HashMap<String, Object> filterSelected = new HashMap<>();
+		filterSelected.put("Content Type", "PDF");
+		learningContentDAO.getFeaturedFiltersWithCount(filterSelected);
+	}
+
 
 	NewLearningContentEntity getLearningEntity() {
 		NewLearningContentEntity learning = new NewLearningContentEntity();

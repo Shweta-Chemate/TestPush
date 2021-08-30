@@ -314,7 +314,7 @@ public class LearningContentServiceTest {
 			learningContentService.fetchPopularContent(testUserId, testFilter, "popularAtPartner", "puid");
 		});
 	}
-
+	
 	@Test
 	public void testGetCXInsightsFiltersWithCount()
 	{
@@ -362,6 +362,39 @@ public class LearningContentServiceTest {
 		});
 	}
 
+	@Test
+	public void testFetchFeaturedContent()
+	{
+		String testUserId = "testUserId";
+		HashMap<String, Object> testFilter = getTestFiltersSelected();
+		List<NewLearningContentEntity> learningEntityList = new ArrayList<>();
+		learningEntityList.add(getLearningEntity());
+		when(learningContentDAO.fetchFeaturedContent(Mockito.any(), Mockito.any())).thenReturn(learningEntityList);
+		Set<String> userBookmarks=getBookmarks();
+		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(userBookmarks);
+		List<LearningStatusEntity> learningStatusList = new ArrayList<>();
+		learningStatusList.add(getLearningStatusEntity());
+		when(learningStatusRepo.findByUserId(testUserId)).thenReturn(learningStatusList);
+		learningContentService.fetchFeaturedContent(testUserId, testFilter);
+		when(learningContentDAO.fetchFeaturedContent(Mockito.any(), Mockito.any())).thenThrow(new GenericException("There was a problem in fetching featured content"));
+		assertThrows(Exception.class, () -> {
+			learningContentService.fetchFeaturedContent(testUserId, testFilter);
+		});
+	}
+	
+	@Test
+	public void testGetFeaturedContentFiltersWithCount()
+	{
+		HashMap<String, Object> testFilter = getTestFiltersSelected();
+		HashMap<String, Object> filterCounts = getTestFilterCounts();
+		when(learningContentDAO.getFeaturedFiltersWithCount(Mockito.any())).thenReturn(filterCounts);
+		learningContentService.getFeaturedFiltersWithCount(testFilter);
+		when(learningContentDAO.getFeaturedFiltersWithCount(Mockito.any())).thenThrow(new GenericException("There was a problem in fetching featured filters"));
+		assertThrows(Exception.class, () -> {
+			learningContentService.getFeaturedFiltersWithCount(testFilter);
+		});
+	}
+	
 	private LearningMap getLearningMap() {
 		LearningMap learningMap = new LearningMap();
 		learningMap.setId("test");
