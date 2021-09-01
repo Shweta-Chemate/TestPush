@@ -28,7 +28,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.cisco.cx.training.app.TrainingAndEnablementApplication;
-import com.cisco.cx.training.app.config.ElasticSearchConfig;
 import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.config.Swagger2Config;
 import com.cisco.cx.training.app.dao.CommunityDAO;
@@ -49,7 +48,7 @@ import springfox.documentation.swagger2.web.Swagger2Controller;
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = { TrainingAndEnablementController.class, Swagger2Controller.class })
 @ContextConfiguration(classes = { TrainingAndEnablementApplication.class,
-		PropertyConfiguration.class, ElasticSearchConfig.class, Swagger2Config.class})
+		PropertyConfiguration.class, Swagger2Config.class})
 
 public class TrainingAndEnablementControllerTest {
 	@Autowired
@@ -131,16 +130,6 @@ public class TrainingAndEnablementControllerTest {
 	}
 	
 	@Test
-	public void testFetchIndexCounts() throws Exception {
-		this.mockMvc
-				.perform(get("/v1/partner/training/indexCounts").contentType(MediaType.APPLICATION_JSON_VALUE)
-						.header("X-Mashery-Handshake", this.XMasheryHeader)
-						.header("puid", this.puid)
-						.characterEncoding("utf-8"))
-				.andDo(print()).andExpect(status().isOk());
-	}
-
-	@Test
 	public void testCheckReady() throws Exception {
 		this.mockMvc
 				.perform(get("/v1/partner/training/ready").contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -161,94 +150,7 @@ public class TrainingAndEnablementControllerTest {
 				.andDo(print()).andExpect(status().isOk());
 	}
 	
-	@Test
-	public void getUserSuccessTalks() throws Exception {
-		this.mockMvc
-				.perform(get("/v1/partner/training/successTalks").contentType(MediaType.APPLICATION_JSON_VALUE)
-						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
-				.andDo(print()).andExpect(status().isOk());
-	}
-
-	@Test
-	public void registerToATX() throws Exception {
-		this.mockMvc.perform(post("/v1/partner/training/successTalk/registration")
-				.contentType(MediaType.APPLICATION_JSON_VALUE).param("title", "test").param("eventStartDate", "1234")
-				.param("email", "").header("X-Mashery-Handshake", this.XMasheryHeader)
-				.header("puid", this.puid)
-				.characterEncoding("utf-8"))
-				.andDo(print()).andExpect(status().isOk());
-	}
 	
-	@Test
-	public void registerToATXTitleError() throws Exception {
-		this.mockMvc.perform(post("/v1/partner/training/successTalk/registration")
-				.contentType(MediaType.APPLICATION_JSON_VALUE).param("title", "").param("eventStartDate", "1234")
-				.param("email", "").header("X-Mashery-Handshake", this.XMasheryHeader)
-				.header("puid", this.puid)
-				.characterEncoding("utf-8"))
-				.andDo(print()).andExpect(status().isBadRequest());
-	}
-	
-	@Test
-	public void registerToATXEventStartDateError() throws Exception {
-		this.mockMvc.perform(post("/v1/partner/training/successTalk/registration")
-				.contentType(MediaType.APPLICATION_JSON_VALUE).param("title", "test").param("eventStartDate", "")
-				.param("email", "").header("X-Mashery-Handshake", this.XMasheryHeader)
-				.header("puid", this.puid)
-				.characterEncoding("utf-8"))
-				.andDo(print()).andExpect(status().isBadRequest());
-	}
-
-	@Test
-	public void cancelUserAtxRegistration() throws Exception {
-		this.mockMvc.perform(delete("/v1/partner/training/successTalk/registration")
-				.contentType(MediaType.APPLICATION_JSON_VALUE).param("title", "test").param("eventStartDate", "1234")
-				.param("email", "").header("X-Mashery-Handshake", this.XMasheryHeader)
-				.header("puid", this.puid)
-				.characterEncoding("utf-8"))
-				.andDo(print()).andExpect(status().isOk());
-	}
-	
-	@Test
-	public void cancelUserAtxRegistrationTitleError() throws Exception {
-		this.mockMvc.perform(delete("/v1/partner/training/successTalk/registration")
-				.contentType(MediaType.APPLICATION_JSON_VALUE).param("title", "").param("eventStartDate", "1234")
-				.param("email", "").header("X-Mashery-Handshake", this.XMasheryHeader)
-				.header("puid", this.puid)
-				.characterEncoding("utf-8"))
-				.andDo(print()).andExpect(status().isBadRequest());
-	}
-	
-	@Test
-	public void cancelUserAtxRegistrationEventStartDateError() throws Exception {
-		this.mockMvc.perform(delete("/v1/partner/training/successTalk/registration")
-				.contentType(MediaType.APPLICATION_JSON_VALUE).param("title", "test").param("eventStartDate", "")
-				.param("email", "").header("X-Mashery-Handshake", this.XMasheryHeader)
-				.header("puid", this.puid)
-				.characterEncoding("utf-8"))
-				.andDo(print()).andExpect(status().isBadRequest());
-	}
-	
-	@Test
-	public void createorUpdateBookmark() throws Exception {
-		BookmarkRequestSchema bookMark = new BookmarkRequestSchema();
-		bookMark.setBookmark(true);
-		bookMark.setId("1");
-		bookMark.setTitle("title");
-
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-		ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
-		String requestJson = ow.writeValueAsString(bookMark);
-
-		this.mockMvc.perform(post("/v1/partner/training/successTalk/bookmarks")
-						.contentType(MediaType.APPLICATION_JSON_VALUE).content(requestJson).param("email", "")
-						.header("X-Mashery-Handshake", this.XMasheryHeader)
-						.header("puid", this.puid)
-						.characterEncoding("utf-8"))
-				.andDo(print()).andExpect(status().isOk());
-	}
-
 	/*@Test
 	public void testFetchSuccessTalks() throws Exception {
 		this.mockMvc
