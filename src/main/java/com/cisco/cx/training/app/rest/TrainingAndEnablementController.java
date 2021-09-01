@@ -1,15 +1,10 @@
 
 package com.cisco.cx.training.app.rest;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -27,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.exception.ErrorResponse;
 import com.cisco.cx.training.app.exception.HealthCheckException;
@@ -35,13 +29,9 @@ import com.cisco.cx.training.app.service.TrainingAndEnablementService;
 import com.cisco.cx.training.models.BookmarkRequestSchema;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.cisco.cx.training.models.Community;
-import com.cisco.cx.training.models.CountResponseSchema;
-import com.cisco.cx.training.models.GenericLearningModel;
 import com.cisco.cx.training.models.LearningRecordsAndFiltersModel;
 import com.cisco.cx.training.models.SuccessAcademyFilter;
 import com.cisco.cx.training.models.SuccessAcademyLearning;
-import com.cisco.cx.training.models.SuccessTalkResponseSchema;
-import com.cisco.cx.training.models.SuccesstalkUserRegEsSchema;
 import com.cisco.cx.training.models.UserLearningPreference;
 
 import io.swagger.annotations.Api;
@@ -66,9 +56,6 @@ public class TrainingAndEnablementController {
 	@Autowired
 	private TrainingAndEnablementService trainingAndEnablementService;
 	
-	@Autowired
-	private PropertyConfiguration config;
-
 	@RequestMapping(path = "/ready", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Template API Readiness probe", hidden = true)
 	public Map<String, String> checkReady() throws HealthCheckException {
@@ -110,106 +97,6 @@ public class TrainingAndEnablementController {
 		List<SuccessAcademyLearning> sucessAcademyList = trainingAndEnablementService.getAllSuccessAcademyLearnings(xMasheryHandshake);
 		LOG.info("Received learnings in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<List<SuccessAcademyLearning>>(sucessAcademyList, HttpStatus.OK);
-	}
-	
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalks")
-	@ApiOperation(value = "Fetch SuccessTalks For User", response = SuccessTalkResponseSchema.class, nickname = "fetchUserSuccessTalks")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
-			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
-			@ApiResponse(code = 404, message = "Entity Not Found"),
-			@ApiResponse(code = 500, message = "Error during retrieve", response = ErrorResponse.class) })
-	public ResponseEntity<SuccessTalkResponseSchema> getUserSuccessTalks(@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake" , required=false) String xMasheryHandshake)
-			throws Exception {
-		
-		if (StringUtils.isBlank(xMasheryHandshake)) {
-            throw new BadRequestException("X-Mashery-Handshake header missing in request");
-        }
-		SuccessTalkResponseSchema successTalkResponseSchema = trainingAndEnablementService.getUserSuccessTalks(xMasheryHandshake);
-		return new ResponseEntity<SuccessTalkResponseSchema>(successTalkResponseSchema, HttpStatus.OK);
-	}
-	
-    @RequestMapping(method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalk/registration")
-    @ApiOperation(value = "Request a cancellation for a scheduled Success Talk session", nickname = "cancelUserToSucessTalk")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully cancelled"),
-            @ApiResponse(code = 400, message = "Bad Request", response = ErrorResponse.class),
-            @ApiResponse(code = 403, message = "Operation forbidden due to business policies", response = ErrorResponse.class),
-            @ApiResponse(code = 500, message = "Internal server error occured", response = ErrorResponse.class)})
-    public SuccesstalkUserRegEsSchema cancelUserAtxRegistration(
-            @ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
-            @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
-            @ApiParam(value = "Event Name of selected session", required = true) @RequestParam(value = "title", required = true) @NotBlank @Size(max =1000) String title,
-            @ApiParam(value = "Event Date of selected session", required = true) @RequestParam(value = "eventStartDate") @NotNull Long eventStartDate) throws Exception {
-
-        if (StringUtils.isBlank(xMasheryHandshake)) {
-            throw new BadRequestException("X-Mashery-Handshake header missing in request");
-        }
-    	return trainingAndEnablementService.cancelUserSuccessTalkRegistration(title, eventStartDate, xMasheryHandshake,puid);
-    }
-
-    @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalk/registration")
-    @ApiOperation(value = "Create New Success Talk Registration", nickname = "registerUserToSuccessTalk", response = SuccesstalkUserRegEsSchema.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully registered"),
-            @ApiResponse(code = 400, message = "Bad Request", response = ErrorResponse.class),
-            @ApiResponse(code = 403, message = "Operation forbidden due to business policies", response = ErrorResponse.class),
-            @ApiResponse(code = 500, message = "Error during registration", response = ErrorResponse.class)})
-    public SuccesstalkUserRegEsSchema registerToAtx(
-    		@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
-            @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
-    		@ApiParam(value = "Event Name of selected session", required = true) @RequestParam(value = "title") @NotBlank @Size(max =1000) String title,
-            @ApiParam(value = "Event Date of selected session", required = true) @RequestParam(value = "eventStartDate") @NotNull Long eventStartDate) throws Exception {
-
-        if (StringUtils.isBlank(xMasheryHandshake)) {
-            throw new BadRequestException("X-Mashery-Handshake header missing in request");
-        }
-        return trainingAndEnablementService.registerUserToSuccessTalkRegistration(title, eventStartDate, xMasheryHandshake,puid);
-    }
-    
-    @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalk/bookmarks")
-    @ApiOperation(value = "Create or update bookmark for one of the lifecycle categories", response = BookmarkResponseSchema.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully updated", response = BookmarkResponseSchema.class),
-            @ApiResponse(code = 400, message = "Bad Request", response = ErrorResponse.class),
-            @ApiResponse(code = 403, message = "Operation forbidden due to business policies", response = ErrorResponse.class),
-            @ApiResponse(code = 500, message = "Internal server error occured", response = ErrorResponse.class)})
-    public BookmarkResponseSchema createOrUpdate(@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
-    											 
-                                                 @ApiParam(value = "JSON Body to Bookmark", required = true) @RequestBody BookmarkRequestSchema bookmarkRequestSchema) {
-
-        LOG.info("API_BOOKMARKS Call start");
-        long startTime = System.currentTimeMillis();
-
-        if (!bookmarkRequestSchema.isNotBlank()) {
-            throw new BadRequestException("Bad Request");
-        }
-        
-        if (StringUtils.isBlank(xMasheryHandshake)) {
-            throw new BadRequestException("X-Mashery-Handshake header missing in request");
-        }
-        BookmarkResponseSchema bookmarkResponseSchema = trainingAndEnablementService.createOrUpdateBookmark(bookmarkRequestSchema, xMasheryHandshake);
-
-        long endTime = System.currentTimeMillis() - startTime;
-        LOG.info("PERF_TIME_TAKEN | API_BOOKMARKS | " + endTime);
-        LOG.info("API_BOOKMARKS Call end");
-
-        return bookmarkResponseSchema;
-    }
-    
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/indexCounts")
-	@ApiOperation(value = "Fetch all index counts", response = SuccessTalkResponseSchema.class, nickname = "fetchIndexCounts")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
-			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
-			@ApiResponse(code = 404, message = "Entity Not Found"),
-			@ApiResponse(code = 500, message = "Error during retrieve", response = ErrorResponse.class) })
-	public ResponseEntity<CountResponseSchema> getIndexCounts(@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake" , required=false) String xMasheryHandshake)
-			throws Exception {
-		
-		if (StringUtils.isBlank(xMasheryHandshake)) {
-            throw new BadRequestException("X-Mashery-Handshake header missing in request");
-        }
-		CountResponseSchema countResponseSchema = trainingAndEnablementService.getIndexCounts();
-		return new ResponseEntity<CountResponseSchema>(countResponseSchema, HttpStatus.OK);
 	}
 	
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/getLearningFilters")
@@ -335,5 +222,3 @@ public class TrainingAndEnablementController {
 	}
 	
 }
-
-
