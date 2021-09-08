@@ -232,4 +232,47 @@ public class FilterCountsDaoTest {
 		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(learningItemIdsList);
 		filterCountsDao.initializeFiltersWithCounts(filterGroups, filters, countFilters, learningItemIdsList, userId);
 	}
+	
+	@Test
+	public void testDBList() {
+		List<String> filterGroups = new ArrayList<>();
+		HashMap<String, Object> filters = new HashMap<>();
+		HashMap<String, Object> countFilters = new HashMap<>();
+		Set<String> learningItemIdsList = new HashSet<>();
+		String userId = "testUserId";
+		learningItemIdsList.add("testId");
+		List<String> testValues = new ArrayList<>();
+		testValues.add("testValue");
+		List<String> testValuesForYouFilter = new ArrayList<>();
+		testValuesForYouFilter.add(Constants.NEW);
+		testValuesForYouFilter.add(Constants.RECENTLY_VIEWED);
+		testValuesForYouFilter.add(Constants.BOOKMARKED_FOR_YOU);
+		filterGroups.add(Constants.CONTENT_TYPE);
+		filterGroups.add(Constants.LANGUAGE);
+		filterGroups.add(Constants.LIVE_EVENTS);
+		filterGroups.add(Constants.ROLE);
+		filterGroups.add(Constants.TECHNOLOGY);
+		filterGroups.add(Constants.SUCCESS_TRACK);
+		filterGroups.add(Constants.LIFECYCLE);
+		filterGroups.add(Constants.FOR_YOU_FILTER);
+		filterGroups.add(Constants.SUCCESS_TRACK);
+		List<Map<String, Object>> dbList = new ArrayList<>();
+		
+		when(learningContentRepo.getAllLanguagesWithCountByCards(Mockito.any())).thenReturn(dbList);
+		when(learningContentRepo.getAllRegionsWithCountByCards(Mockito.any())).thenReturn(dbList);
+		when(learningContentRepo.getAllRoleCountByCards(Mockito.any())).thenReturn(dbList);
+		when(learningContentRepo.getAllTechCountByCards(Mockito.any())).thenReturn(dbList);
+		when(learningContentRepo.getDocFilterCountByCards(Mockito.any())).thenReturn(dbList);
+		when(learningContentRepo.getAllLFCWithCountByCards((Mockito.any()))).thenReturn(dbList);
+		when(learningContentRepo.getAllStUcWithCount((Mockito.any()))).thenReturn(dbList);
+		when(learningContentRepo.findNewFilteredIds(Mockito.any())).thenReturn(learningItemIdsList);
+		when(learningContentRepo.getRecentlyViewedContentFilteredIds(Mockito.anyString(), Mockito.any()))
+				.thenReturn(learningItemIdsList);
+		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(learningItemIdsList);
+		
+		Map<String,Object> ctMap = new HashMap<String,Object>();
+		dbList.add(ctMap); ctMap.put("label","PDF"); ctMap.put("count", 10);
+		when(learningContentRepo.getAllContentTypeWithCountByCards(Mockito.any())).thenReturn(dbList);
+		filterCountsDao.initializeFiltersWithCounts(filterGroups, filters, countFilters, learningItemIdsList, userId);
+	}
 }

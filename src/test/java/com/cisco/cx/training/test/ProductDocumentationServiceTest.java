@@ -5,12 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -26,10 +28,15 @@ import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
 import com.cisco.cx.training.app.dao.ProductDocumentationDAO;
 import com.cisco.cx.training.app.entities.LearningItemEntity;
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
+import com.cisco.cx.training.app.entities.PeerViewedEntity;
+import com.cisco.cx.training.app.entities.PeerViewedEntityPK;
 import com.cisco.cx.training.app.repo.NewLearningContentRepo;
+import com.cisco.cx.training.app.repo.PeerViewedRepo;
 import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.app.service.ProductDocumentationService;
 import com.cisco.cx.training.models.LearningRecordsAndFiltersModel;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ExtendWith(SpringExtension.class)
 public class ProductDocumentationServiceTest {	
@@ -47,6 +54,9 @@ public class ProductDocumentationServiceTest {
 	
 	@Mock
 	private PartnerProfileService partnerProfileService;
+	
+	@Mock
+	PeerViewedRepo peerViewedRepo;
 	
 	@InjectMocks
 	private ProductDocumentationService productDocumentationService;
@@ -196,6 +206,160 @@ public class ProductDocumentationServiceTest {
 		st.put("Security", ucSY);
 		
 		return st;
+	}
+	
+	@Test
+	public  void testSortSpecial()
+	{
+		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(null);
+		List<LearningItemEntity> aL = new ArrayList<LearningItemEntity>();
+		LearningItemEntity le1 = new LearningItemEntity();
+		LearningItemEntity le2 = new LearningItemEntity();
+		le1.setTitle("abc");le2.setTitle("xyz");aL.add(le1); aL.add(le2);
+		when(productDocumentationDAO.getAllLearningCards(Mockito.anyString(),Mockito.any(Sort.class))).thenReturn(aL);
+		
+		LearningRecordsAndFiltersModel a2t = productDocumentationService.getAllLearningInfo("mashery",null,null,"title","asc",learningTab);		
+		assertEquals("abc", a2t.getLearningData().get(0).getTitle());
+		
+		LearningRecordsAndFiltersModel a2t2 = productDocumentationService.getAllLearningInfo("mashery",null,null,"title","desc",learningTab);		
+		assertEquals("xyz", a2t2.getLearningData().get(0).getTitle());
+	}
+	
+	@Test
+	public void fetchMyPreferredLearnings() throws JsonProcessingException
+	{
+		HashMap<String, Object> preferences = new HashMap<String,Object>();
+		List<String> roles= new ArrayList<String>();preferences.put("role", roles);
+		roles.add("Customer Success Manager"); 
+		List<String> ti = new ArrayList<String>(); preferences.put("timeinterval", ti);		
+		Map<String,String> time = new HashMap<String,String>();
+		time.put("startTime", "9:00 AM");time.put("endTime", "4:00 PM");time.put("timeZone", "PDT(UTC-07:30)"); 
+		ti.add(new ObjectMapper().writeValueAsString(time));
+		productDocumentationService.fetchMyPreferredLearnings(
+				"userId", null, null, "sortBy", "sortOrder", "puid", preferences, 25);
+	}
+	
+	@Test
+	public void addPeerLearnings() throws JsonProcessingException
+	{
+		productDocumentationService.addLearningsViewedForRole("userId", "cardId", "puid");
+		PeerViewedEntity en = new PeerViewedEntity();
+		en.setCardId("cardId");en.setRole_name("role");en.setUpdatedTime(Timestamp.valueOf("2019-10-24 18:30:00"));
+		Optional<PeerViewedEntity> enOp = Optional.of(en);
+		when(peerViewedRepo.findById(Mockito.any(PeerViewedEntityPK.class))).thenReturn(enOp);
+		productDocumentationService.addLearningsViewedForRole("userId", "cardId", "puid");
+	}
+	
+	@Test
+	public void codeCoverTest() throws JsonProcessingException
+	{
+		when(peerViewedRepo.save(Mockito.any(PeerViewedEntity.class))).thenThrow(new RuntimeException("Some test Exc"));
+		productDocumentationService.addLearningsViewedForRole("userId", "cardId", "puid");
+		
+		HashMap<String, Object> preferences = new HashMap<String,Object>();
+		List<String> ti = new ArrayList<String>(); preferences.put("timeinterval", ti);		
+		Map<String,String> time = new HashMap<String,String>();
+		time.put("startTime", "9:00 AM");time.put("endTime", "4:00 PM");time.put("timeZone", "PDT(UTC-7)"); 
+		ti.add(new ObjectMapper().writeValueAsString(time));
+		productDocumentationService.fetchMyPreferredLearnings(
+				"userId", null, null, "sortBy", "sortOrder", "puid", preferences, 25);
+	}
+	
+	@Test
+	public void codeCovertest2()
+	{
+		
+		List<PeerViewedEntity> a = new ArrayList<PeerViewedEntity>();
+		for (int i=0;i<=55;i++)
+		{
+			PeerViewedEntity en = new PeerViewedEntity();
+			en.setCardId(100+i + "");en.setRole_name("role101");en.setUpdatedTime(Timestamp.valueOf("2019-10-24 18:30:00"));
+			a.add(en);
+		}		
+		List<LearningItemEntity> v= new ArrayList<LearningItemEntity>();
+		for (int i=0;i<=55;i++)
+		{
+			LearningItemEntity ln = new LearningItemEntity();
+			ln.setLearning_item_id(100+i + "");
+			v.add(ln);
+		}
+		
+		when(productDocumentationDAO.getUserRole(Mockito.anyString(),Mockito.anyString())).thenReturn("role101");
+		when(peerViewedRepo.findByRoleName(Mockito.anyString())).thenReturn(a);
+		when(productDocumentationDAO.getAllLearningCardsByFilter(Mockito.anyString(), Mockito.anySet(), Mockito.any(Sort.class)))
+		.thenReturn(v);
+		productDocumentationService.fetchMyPreferredLearnings(
+				"userId", null, null, "sortBy", "sortOrder", "puid", null, 5);
+
+	}
+	
+	
+	
+	private List mockDbSTUCOnly()
+	{
+		List<Map<String, Object>> value = new ArrayList<Map<String, Object>>();
+		Map<String, Object> oneRecord = new HashMap<String, Object>();
+		oneRecord.put("successtrack", "Campus Network");
+		oneRecord.put("usecase", "CSIM");		
+		oneRecord.put("dbvalue", "10");
+		value.add(oneRecord);
+		return value;
+	}
+	
+	private Map mockSTUCOnly()
+	{
+		Map<String,Map<String,List<String>>> st = new HashMap<String,Map<String,List<String>>>();
+		//map.put("Success Tracks", st);
+		
+		Map<String,List<String>> ucCN = new HashMap<String,List<String>>();   
+		List<String> csimPS = new ArrayList<String>(); csimPS.add("Onboard");csimPS.add("Implement");ucCN.put("CSIM", csimPS);
+		List<String> xyzPS = new ArrayList<String>(); xyzPS.add("Use");ucCN.put("XYZ", xyzPS);
+		st.put("Campus Network", ucCN);
+		
+		Map<String,List<String>> ucSY = new HashMap<String,List<String>>();
+		List<String> sy1PS = new ArrayList<String>(); sy1PS.add("Anti-Virus");sy1PS.add("Firewall");ucSY.put("Security1", sy1PS);
+		List<String> abcPS = new ArrayList<String>(); abcPS.add("Umbrella");ucSY.put("ABC", abcPS);
+		st.put("Security", ucSY);
+		
+		return st;
+	}
+	
+	@Test
+	public void testAllFiltersCount()
+	{	
+		NewLearningContentEntity n1 = new NewLearningContentEntity(); n1.setId("101");
+		List<NewLearningContentEntity> result = new ArrayList<NewLearningContentEntity>();result.add(n1);
+		when(learningContentRepo.findNew()).thenReturn(result);
+		
+		when(productDocumentationDAO.getAllStUcWithCount(Mockito.anyString())).thenReturn(mockDbSTUCOnly());
+		when(productDocumentationDAO.getAllStUcWithCountByCards(Mockito.anyString(),Mockito.anySet())).thenReturn(mockDbSTUCOnly());
+		
+		Map<String, Object> a3 = productDocumentationService.getAllLearningFilters(null,null,learningTab);		
+		assertTrue(a3.size()>=1); //st=7
+		
+		HashMap<String, Object> aMock = new HashMap<String, Object>();		
+		aMock.put("Success Tracks", mockSTUCOnly());
+		Map<String, Object> a4 = productDocumentationService.getAllLearningFilters(null,aMock,learningTab);		
+		assertTrue(a4.size()>=1); //st=7
+	}
+	
+	@Test
+	public void getRangeLWTest() throws JsonProcessingException
+	{
+		HashMap<String, Object> preferences = new HashMap<String,Object>();
+		List<String> ti = new ArrayList<String>(); preferences.put("timeinterval", ti);		
+		Map<String,String> time = new HashMap<String,String>();
+		time.put("startTime", "12:00 AM");time.put("endTime", "12:30 AM");time.put("timeZone", "PDT(UTC-7)"); 
+		ti.add(new ObjectMapper().writeValueAsString(time));
+		
+		List<LearningItemEntity> len = new ArrayList<LearningItemEntity>(); 
+		LearningItemEntity ln = new LearningItemEntity();len.add(ln);
+		ln.setLearning_item_id("101");ln.setSortByDate("2019-10-24 18:30:00");
+		
+		when(productDocumentationDAO.getUpcomingWebinars(Mockito.anyString())).thenReturn(len);
+		
+		productDocumentationService.fetchMyPreferredLearnings(
+				"userId", null, null, "sortBy", "sortOrder", "puid", preferences, 25);
 	}
 	
 }

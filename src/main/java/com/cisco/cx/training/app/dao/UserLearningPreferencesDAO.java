@@ -16,8 +16,6 @@ public interface UserLearningPreferencesDAO {
 
 	Map<String, List<UserLearningPreference>> fetchUserLearningPreferences(String userId);
 
-	void addLearningsViewedForRole(UserDetailsWithCompanyList userDetails, LearningStatusSchema learningStatusSchema);
-
 	HashMap<String, Object> getULPPreferencesDDB(String userId);	
 
 }

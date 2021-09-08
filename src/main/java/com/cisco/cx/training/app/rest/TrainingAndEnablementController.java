@@ -205,7 +205,7 @@ public class TrainingAndEnablementController {
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
-	public ResponseEntity<LearningRecordsAndFiltersModel> getAllLearningsInfoPost(
+	public ResponseEntity<LearningRecordsAndFiltersModel> getTopPicks(
 			@ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = true) String xMasheryHandshake,
 			@ApiParam(value = "Search - tiltle, description, author") @RequestParam(value = "searchToken", required = false) String search,

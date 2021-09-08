@@ -26,6 +26,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.util.NestedServletException;
 
 import com.cisco.cx.training.app.TrainingAndEnablementApplication;
 import com.cisco.cx.training.app.config.PropertyConfiguration;
@@ -255,6 +256,25 @@ public class TrainingAndEnablementControllerTest {
 				.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
 		.andDo(print()).andExpect(status().isOk());
 	}
+	
+	@Test
+	public void testTopPicks() throws Exception {
+		
+		this.mockMvc
+		.perform(get("/v1/partner/training/myPreferredLearnings").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.header("X-Mashery-Handshake", this.XMasheryHeader).header("puid", this.puid).characterEncoding("utf-8"))
+		.andDo(print()).andExpect(status().isOk());
+		
+		assertThrows(NestedServletException.class, () -> {
+		this.mockMvc
+		.perform(get("/v1/partner/training/myPreferredLearnings").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.header("X-Mashery-Handshake", this.XMasheryHeader).header("puid", this.puid).characterEncoding("utf-8")
+				.param("limit", "-10")
+				);
+		});
+		
+	
+	}	
 
 	
 }

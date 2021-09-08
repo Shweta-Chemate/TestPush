@@ -900,8 +900,8 @@ public class ProductDocumentationService{
 			int utcTimeHrsStart = utcStartInd+3;
 			int utcTimeHrsEnd = timeZone.indexOf(":",utcTimeHrsStart);
 			int utcTimeMinuteStart=-1,utcTimeMinuteEnd=-1;
-			if(utcTimeHrsEnd == -1) utcTimeHrsEnd = timeZone.length();
-			else { utcTimeMinuteStart = utcTimeHrsEnd+1; utcTimeMinuteEnd = timeZone.length();}			
+			if(utcTimeHrsEnd == -1) utcTimeHrsEnd = timeZone.length()-1;
+			else { utcTimeMinuteStart = utcTimeHrsEnd+1; utcTimeMinuteEnd = timeZone.length()-1;}			
 			int hrs3 = Integer.parseInt(timeZone.substring(utcTimeHrsStart, utcTimeHrsEnd));			
 			int min3 = utcTimeMinuteStart==-1?0:Integer.parseInt(timeZone.substring(utcTimeMinuteStart, utcTimeMinuteEnd));		
 			hrMin[0]=hrs3; hrMin[1]=min3;			
