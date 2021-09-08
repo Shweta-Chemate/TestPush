@@ -253,10 +253,4 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
 		return dbPrefs;
 	}
 
-	@Override
-	public void addLearningsViewedForRole(UserDetailsWithCompanyList userDetails,
-			LearningStatusSchema learningStatusSchema) {
-		// TODO Auto-generated method stub
-		
-	}
 }

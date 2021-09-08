@@ -119,5 +119,27 @@ public class UserLearningPreferencesDaoImplTest {
 		Mockito.when(dbClient.putItem(Mockito.any(PutItemRequest.class))).thenReturn(response);
 		
 		Map<String, List<UserLearningPreference>> ulpsDB = ulpDAOImpl.createOrUpdateULP("user123",ulps);
+		ulps.clear();
+		ulpsDB = ulpDAOImpl.createOrUpdateULP("user123",ulps);
+	}
+	
+	@Test
+	public void testGetULPPreferencesDDB(){
+		Map<String,AttributeValue> ulp = new HashMap<String, AttributeValue>();
+		Set<String> role = new HashSet<String>();
+		role.add("Customer Success manager");
+		AttributeValue attrValue = AttributeValue.builder().ss(role).build();
+		ulp.put("role", attrValue);
+		List<Map<String,AttributeValue>> attributeValues = new ArrayList<Map<String,AttributeValue>>();
+		attributeValues.add(ulp);		
+		Set<String> ti = new HashSet<String>();
+		ti.add("{\"startTime\":\"09:00\"}");
+		AttributeValue attrValueTI = AttributeValue.builder().ss(ti).build();
+		ulp.put("timeinterval", attrValueTI);
+		QueryResponse response = QueryResponse.builder().items(attributeValues).build();
+		Mockito.when(dbClient.query(Mockito.any(QueryRequest.class))).thenReturn(response);
+		
+		Map<String, Object> ulps = ulpDAOImpl.getULPPreferencesDDB("user123");
+	
 	}
 }
