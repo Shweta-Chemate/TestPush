@@ -76,8 +76,8 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
 	{
 		LOG.info("Initializing ULP for table :: {}", propertyConfig.getUlPreferencesTableName());
 		SdkHttpClient httpClient = ApacheHttpClient.builder().
-                connectionTimeout(Duration.ofSeconds(100))
-                .socketTimeout(Duration.ofSeconds(100))
+                connectionTimeout(Duration.ofSeconds(20))
+                .socketTimeout(Duration.ofSeconds(20))
                 .build();
 		
 		Region region = Region.of(propertyConfig.getAwsRegion());

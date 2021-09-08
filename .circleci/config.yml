@@ -1,3 +1,9 @@
+aliases:
+  - &remove_parent_pom_from_cache
+    name: "Remove parent pom from cache"
+    command: |
+      rm -rf ~/.m2/repository/com/cisco/services/cxe-parent-pom
+      
 # Java Maven CircleCI 2.0 configuration file
 version: 2
 jobs:
@@ -21,15 +27,20 @@ jobs:
             - v3-dependencies-{{ checksum "pom.xml" }}
             # fallback to using the latest cache if no exact match is found
             - v3-dependencies-
+      - run: *remove_parent_pom_from_cache
 
       - run: 
           name: "build_unit_test"
-          command: mvn clean install --settings settings.xml
-
+          command: mvn clean verify -B --settings settings.xml
+      - run:
+          name: "view_dependencies"
+          command: mvn -B -Dmaven.test.skip="true" dependency:tree -Dverbose --settings settings.xml
+      - run: *remove_parent_pom_from_cache
+      
       - save_cache:
           paths:
             - ~/.m2
-          key: v3-dependencies-{{ checksum "pom.xml" }}   
+          key: v3-dependencies-{{ checksum "pom.xml" }}
 
       ## Code coverage metrics
       - store_artifacts:
