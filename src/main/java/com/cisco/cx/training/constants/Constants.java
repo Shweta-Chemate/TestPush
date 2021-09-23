@@ -70,5 +70,10 @@ public final class Constants {
 	public static final String RESOURCE_ID_PARAM = "resourceId";
 	public static final String RESOURCE_ID_LEARNING = "CXPP_LEARNING";
 	public static final String BE_SPLIT_IO_FLAG = "be_PXC-219_OKTA";
+	public static final String POPULAR_ACROSS_PARTNERS_PATH = "popularAcrossPartners";
+	public static final String POPULAR_AT_PARTNER_PATH = "popularAtPartner";
+	public static final String FEATURED_CONTENT = "Featured";
+
+
 
 }

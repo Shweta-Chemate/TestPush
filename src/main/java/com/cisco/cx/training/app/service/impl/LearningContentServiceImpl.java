@@ -649,7 +649,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 	}
 
 	@Override
-	public List<LearningContentItem> fetchPopularAcrossPartnersContent(String ccoid, HashMap<String, Object> filtersSelected) {
+	public List<LearningContentItem> fetchPopularContent(String ccoid, HashMap<String, Object> filtersSelected, String popularityType, String puid) {
 		List<NewLearningContentEntity> contentList = new ArrayList<>();
 		List<LearningContentItem> result = new ArrayList<>();
 		Map<String, List<String>> queryMap=new HashMap<>();
@@ -666,7 +666,10 @@ public class LearningContentServiceImpl implements LearningContentService {
 		}
 		try
 		{
-			contentList = learningContentDAO.fetchPopularAcrossPartnersContent(queryMap, stMap);
+			if(popularityType.equals(Constants.POPULAR_ACROSS_PARTNERS_PATH))
+				contentList = learningContentDAO.fetchPopularAcrossPartnersContent(queryMap, stMap);
+			if(popularityType.equals(Constants.POPULAR_AT_PARTNER_PATH))
+				contentList = learningContentDAO.fetchPopularAtPartnerContent(queryMap, stMap, puid);
 			// populate bookmark and registration info
 			Set<String> userBookmarks = null;
 			if (null != ccoid) {
@@ -698,12 +701,15 @@ public class LearningContentServiceImpl implements LearningContentService {
 	}
 
 	@Override
-	public Map<String, Object> getPopularAcrossPartnersFiltersWithCount(HashMap<String, Object> filtersSelected) {
+	public Map<String, Object> getPopularContentFiltersWithCount(HashMap<String, Object> filtersSelected, String puid, String popularityType) {
 		HashMap<String, Object> popularContentCounts = new HashMap<>();
 		Map<String, Object> result;
 		try
 		{
-			popularContentCounts = learningContentDAO.getPopularAcrossPartnersFiltersWithCount(filtersSelected);
+			if(popularityType.equals(Constants.POPULAR_ACROSS_PARTNERS_PATH))
+				popularContentCounts = learningContentDAO.getPopularAcrossPartnersFiltersWithCount(filtersSelected);
+			if(popularityType.equals(Constants.POPULAR_AT_PARTNER_PATH))
+				popularContentCounts = learningContentDAO.getPopularAtPartnerFiltersWithCount(filtersSelected, puid);
 		}catch (Exception e) {
 			LOG.error("There was a problem in fetching popular across partners filter counts", e);
 			throw new GenericException("There was a problem in fetching popular across partners filter counts");
@@ -805,6 +811,68 @@ public class LearningContentServiceImpl implements LearningContentService {
 				result.put(filterGroup, filters.get(filterGroup));
 			}
 		}
+		return result;
+	}
+	
+	@Override
+	public List<LearningContentItem> fetchFeaturedContent(String ccoid, HashMap<String, Object> filtersSelected) {
+		List<NewLearningContentEntity> featuredContentList = new ArrayList<>();
+		List<LearningContentItem> result = new ArrayList<>();
+		Map<String, List<String>> queryMap = new HashMap<>();
+		Object stMap = null;
+		if (filtersSelected != null) {
+			filtersSelected.keySet().forEach(filterGroup -> {
+				if (!filterGroup.equals(Constants.ST_FILTER_KEY)) {
+					@SuppressWarnings("unchecked")
+					List<String> values = (List<String>) filtersSelected.get(filterGroup);
+					queryMap.put(LearningContentServiceImpl.filterNameMappings.get(filterGroup), values);
+				}
+			});
+			stMap = filtersSelected.get(Constants.ST_FILTER_KEY);
+		}
+		try {
+			featuredContentList = learningContentDAO.fetchFeaturedContent(queryMap, stMap);
+			// populate bookmark and registration info
+			Set<String> userBookmarks = null;
+			if (null != ccoid) {
+				userBookmarks = learningBookmarkDAO.getBookmarks(ccoid);
+			}
+			List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserId(ccoid);
+			for (NewLearningContentEntity entity : featuredContentList) {
+				LearningContentItem learningItem = new LearningContentItem(entity);
+				learningItem.setBookmark(false);
+				if (null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
+						&& userBookmarks.contains(learningItem.getId())) {
+					learningItem.setBookmark(true);
+				}
+				LearningStatusEntity userRegistration = userRegistrations.stream()
+						.filter(userRegistrationInStream -> userRegistrationInStream.getLearningItemId()
+								.equalsIgnoreCase(learningItem.getId()))
+						.findFirst().orElse(null);
+				if (userRegistration != null && userRegistration.getRegStatus() != null) {
+					learningItem.setStatus(userRegistration.getRegStatus());
+					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp());
+				}
+				result.add(learningItem);
+			}
+		} catch (Exception e) {
+			LOG.error("There was a problem in fetching featured learning content", e);
+			throw new GenericException("There was a problem in fetching featured learning content");
+		}
+		return result;
+	}
+
+	@Override
+	public Map<String, Object> getFeaturedFiltersWithCount(HashMap<String, Object> filtersSelected) {
+		HashMap<String, Object> featuredContentCounts = new HashMap<>();
+		Map<String, Object> result;
+		try {
+			featuredContentCounts = learningContentDAO.getFeaturedFiltersWithCount(filtersSelected);
+		} catch (Exception e) {
+			LOG.error("There was a problem in fetching featured filter counts", e);
+			throw new GenericException("There was a problem in fetching featured filter counts");
+		}
+		result = orderFilters(featuredContentCounts, LearningContentServiceImpl.getDefaultFilterOrder());
 		return result;
 	}
 
