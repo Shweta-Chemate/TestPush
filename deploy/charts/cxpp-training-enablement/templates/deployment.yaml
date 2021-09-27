@@ -98,21 +98,6 @@ spec:
                 secretKeyRef:
                   name: cxpp-common
                   key: splitio_api_key
-            - name: cxpp_elasticsearch_username
-              valueFrom:
-                secretKeyRef:
-                  name: cxpp-elasticsearch
-                  key: es_master_user
-            - name: cxpp_elasticsearch_password
-              valueFrom:
-                secretKeyRef:
-                  name: cxpp-elasticsearch
-                  key: es_master_password
-            - name: cxpp_es_hostname
-              valueFrom:
-                secretKeyRef:
-                  name: cxpp-elasticsearch
-                  key: domain_endpoint
             - name: cxpp_te_successtalk_registration_sheet
               valueFrom:
                 secretKeyRef:
