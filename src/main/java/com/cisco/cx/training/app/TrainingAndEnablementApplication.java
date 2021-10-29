@@ -49,4 +49,3 @@ public class TrainingAndEnablementApplication {
 		return new RestTemplate();
 	}
 }
-
