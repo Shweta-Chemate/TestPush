@@ -199,7 +199,7 @@ public class TrainingAndEnablementServiceTest {
 		session.setRegistrationUrl("");
 		session.setScheduled(false);
 		session.setSessionId("");
-		session.setSessionStartDate(00L);
+		session.setSessionStartDate("test");
 		sessions = Arrays.asList(session);
 		successTalk.setSessions(sessions);
 		return successTalk;
