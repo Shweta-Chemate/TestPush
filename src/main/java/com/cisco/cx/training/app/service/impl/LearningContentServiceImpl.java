@@ -153,7 +153,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 						.findFirst().orElse(null);
 				if (userRegistration != null && userRegistration.getRegStatus() != null) {
 					learningItem.setStatus(userRegistration.getRegStatus());
-					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp().toInstant().toString());
+					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp()!=null?userRegistration.getRegUpdatedTimestamp().toInstant().toString():null);
 				}
 				successtalkList.add(learningItem);
 			}
@@ -216,7 +216,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 						.findFirst().orElse(null);
 				if (userRegistration != null && userRegistration.getRegStatus() != null) {
 					learningItem.setStatus(userRegistration.getRegStatus());
-					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp().toInstant().toString());
+					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp()!=null?userRegistration.getRegUpdatedTimestamp().toInstant().toString():null);
 				}
 				piwItems.add(learningItem);
 			}
@@ -374,7 +374,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 						.findFirst().orElse(null);
 				if (userRegistration != null && userRegistration.getRegStatus() != null) {
 					learningItem.setStatus(userRegistration.getRegStatus());
-					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp().toInstant().toString());
+					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp()!=null?userRegistration.getRegUpdatedTimestamp().toInstant().toString():null);
 				}
 				result.add(learningItem);
 			}
@@ -493,7 +493,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 						.findFirst().orElse(null);
 				if (userRegistration != null && userRegistration.getRegStatus() != null) {
 					learningItem.setStatus(userRegistration.getRegStatus());
-					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp().toInstant().toString());
+					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp()!=null?userRegistration.getRegUpdatedTimestamp().toInstant().toString():null);
 				}
 				result.add(learningItem);
 			}			
@@ -556,7 +556,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 							.findFirst().orElse(null);
 					if (userRegistration != null && userRegistration.getRegStatus() != null) {
 						learningItem.setStatus(userRegistration.getRegStatus());
-						learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp().toInstant().toString());
+						learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp()!=null?userRegistration.getRegUpdatedTimestamp().toInstant().toString():null);
 					}
 				}
 			}			
@@ -624,7 +624,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 						.findFirst().orElse(null);
 				if (userRegistration != null && userRegistration.getRegStatus() != null) {
 					learningItem.setStatus(userRegistration.getRegStatus());
-					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp().toInstant().toString());
+					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp()!=null?userRegistration.getRegUpdatedTimestamp().toInstant().toString():null);
 				}
 				result.add(learningItem);
 			}			
@@ -691,7 +691,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 						.findFirst().orElse(null);
 				if (userRegistration != null && userRegistration.getRegStatus() != null) {
 					learningItem.setStatus(userRegistration.getRegStatus());
-					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp().toInstant().toString());
+					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp()!=null?userRegistration.getRegUpdatedTimestamp().toInstant().toString():null);
 				}
 				result.add(learningItem);
 			}
@@ -853,7 +853,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 						.findFirst().orElse(null);
 				if (userRegistration != null && userRegistration.getRegStatus() != null) {
 					learningItem.setStatus(userRegistration.getRegStatus());
-					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp().toInstant().toString());
+					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp()!=null?userRegistration.getRegUpdatedTimestamp().toInstant().toString():null);
 				}
 				result.add(learningItem);
 			}
