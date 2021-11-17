@@ -1,8 +1,5 @@
 package com.cisco.cx.training.models;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 
 public class LearningContentItem {
@@ -12,7 +9,7 @@ public class LearningContentItem {
 		this.learningType=entity.getLearningType();
 		this.title=entity.getTitle();
 		this.description=entity.getDescription();
-		this.sortByDate=entity.getSortByDate();
+		this.sortByDate=entity.getSortByDate()!=null?entity.getSortByDate().toInstant().toString():null;
 		this.status=entity.getStatus();
 		this.registrationUrl=entity.getRegistrationUrl();
 		this.presenterName=entity.getPresenterName();
@@ -27,9 +24,9 @@ public class LearningContentItem {
 		this.piw_timezone=entity.getPiw_timezone();
 		this.piw_ppt_url=entity.getPiw_ppt_url();
 		this.sequence=entity.getSequence();
-		this.published_date=entity.getPublished_date();
-		this.created_date=entity.getCreated_date();
-		this.updated_date=entity.getUpdated_date();
+		this.published_date=entity.getPublished_date()!=null?entity.getPublished_date().toInstant().toString():null;
+		this.created_date=entity.getCreated_date()!=null?entity.getCreated_date().toInstant().toString():null;
+		this.updated_date=entity.getUpdated_date()!=null?entity.getCreated_date().toInstant().toString():null;
 		this.modulecount=entity.getModulecount();
 		this.learning_map=entity.getLearningMap();
 		this.roles=entity.getRoles();
@@ -50,13 +47,13 @@ public class LearningContentItem {
 	
 	private String description;
 	
-	private Timestamp sessionStartDate;
+	private String sessionStartDate;
 	
-	private Timestamp sortByDate;
+	private String sortByDate;
 	
 	private String status;
 	
-	private LocalDateTime regTimestamp;
+	private String regTimestamp;
 	
 	private Boolean bookmark;
 	
@@ -86,11 +83,11 @@ public class LearningContentItem {
 	
 	private String sequence;
 	
-	private Timestamp published_date;
+	private String published_date;
 	
-	private Timestamp created_date;
+	private String created_date;
 
-	private Timestamp updated_date;
+	private String updated_date;
 	
 	private String modulecount;
 	
@@ -106,7 +103,7 @@ public class LearningContentItem {
 	
 	private String archetype;
 
-	private long bookmarkTimeStamp;
+	private String bookmarkTimeStamp;
 
 	private Integer avgRatingPercentage;
 
@@ -138,11 +135,11 @@ public class LearningContentItem {
 		this.votesPercentage = votesPercentage;
 	}
 
-	public long getBookmarkTimeStamp() {
+	public String getBookmarkTimeStamp() {
 		return bookmarkTimeStamp;
 	}
 
-	public void setBookmarkTimeStamp(long bookmarkTimeStamp) {
+	public void setBookmarkTimeStamp(String bookmarkTimeStamp) {
 		this.bookmarkTimeStamp = bookmarkTimeStamp;
 	}
 
@@ -186,19 +183,19 @@ public class LearningContentItem {
 		this.description = description;
 	}
 
-	public Timestamp getSessionStartDate() {
+	public String getSessionStartDate() {
 		return sessionStartDate;
 	}
 
-	public void setSessionStartDate(Timestamp sessionStartDate) {
+	public void setSessionStartDate(String sessionStartDate) {
 		this.sessionStartDate = sessionStartDate;
 	}
 
-	public Timestamp getSortByDate() {
+	public String getSortByDate() {
 		return sortByDate;
 	}
 
-	public void setSortByDate(Timestamp sortByDate) {
+	public void setSortByDate(String sortByDate) {
 		this.sortByDate = sortByDate;
 	}
 
@@ -322,27 +319,27 @@ public class LearningContentItem {
 		this.sequence = sequence;
 	}
 
-	public Timestamp getPublished_date() {
+	public String getPublished_date() {
 		return published_date;
 	}
 
-	public void setPublished_date(Timestamp published_date) {
+	public void setPublished_date(String published_date) {
 		this.published_date = published_date;
 	}
 
-	public Timestamp getCreated_date() {
+	public String getCreated_date() {
 		return created_date;
 	}
 
-	public void setCreated_date(Timestamp created_date) {
+	public void setCreated_date(String created_date) {
 		this.created_date = created_date;
 	}
 
-	public Timestamp getUpdated_date() {
+	public String getUpdated_date() {
 		return updated_date;
 	}
 
-	public void setUpdated_date(Timestamp updated_date) {
+	public void setUpdated_date(String updated_date) {
 		this.updated_date = updated_date;
 	}
 
@@ -394,11 +391,11 @@ public class LearningContentItem {
 		this.link = link;
 	}
 	
-	public LocalDateTime getRegTimestamp() {
+	public String getRegTimestamp() {
 		return regTimestamp;
 	}
 
-	public void setRegTimestamp(LocalDateTime regTimestamp) {
+	public void setRegTimestamp(String regTimestamp) {
 		this.regTimestamp = regTimestamp;
 	}
 
