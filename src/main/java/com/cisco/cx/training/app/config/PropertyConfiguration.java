@@ -25,16 +25,6 @@ public class PropertyConfiguration {
 	@Value("${partner.community.link.partnerresources}")
 	private String communityLink;
 	
-	private SealedObject elasticsearchHost;
-
-	private SealedObject elasticsearchPort;
-
-	private SealedObject elasticsearchScheme;
-
-	private SealedObject elasticsearchUsername;
-
-	private SealedObject elasticsearchPassword;
-
 	private SealedObject successTalkIndex;
 
 	private SealedObject successAcademyIndex;
@@ -108,51 +98,6 @@ public class PropertyConfiguration {
 
 	public String getApplicationName() {
 		return applicationName;
-	}
-
-	public String getElasticsearchHost() {
-		return cryptoAccess.unseal(elasticsearchHost);
-	}
-	
-	@Value("${cxpp.elasticsearch.host}")
-	public void setElasticsearchHost(String elasticsearchHost) {
-		this.elasticsearchHost = cryptoAccess.seal(elasticsearchHost);
-	}
-
-	public int getElasticsearchPort() {
-		return Integer.parseInt(cryptoAccess.unseal(elasticsearchPort));
-	}
-	
-	@Value("${elasticsearch.port}")
-	public void setElasticsearchPort(int elasticsearchPort) {
-		this.elasticsearchPort = cryptoAccess.seal(String.valueOf(elasticsearchPort));
-	}
-
-	public String getElasticsearchScheme() {
-		return cryptoAccess.unseal(elasticsearchScheme);
-	}
-	
-	@Value("${elasticsearch.scheme}")
-	public void setElasticsearchScheme(String elasticsearchScheme) {
-		this.elasticsearchScheme = cryptoAccess.seal(elasticsearchScheme);
-	}
-
-	public String getElasticsearchUsername() {
-		return cryptoAccess.unseal(elasticsearchUsername);
-	}
-	
-	@Value("${elasticsearch.username}")
-	public void setElasticsearchUsername(String elasticsearchUsername) {
-		this.elasticsearchUsername = cryptoAccess.seal(elasticsearchUsername);
-	}
-
-	public String getElasticsearchPassword() {
-		return cryptoAccess.unseal(elasticsearchPassword);
-	}
-	
-	@Value("${elasticsearch.password}")	
-	public void setElasticsearchPassword(String elasticsearchPassword) {
-		this.elasticsearchPassword = cryptoAccess.seal(elasticsearchPassword);
 	}
 
 	public String getSuccessTalkIndex() {

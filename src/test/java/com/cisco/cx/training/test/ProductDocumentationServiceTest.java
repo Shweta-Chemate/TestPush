@@ -361,7 +361,6 @@ public class ProductDocumentationServiceTest {
 		productDocumentationService.fetchMyPreferredLearnings(
 				"userId", null, null, "sortBy", "sortOrder", "puid", preferences, 25);
 	}
-	
 }
 
 

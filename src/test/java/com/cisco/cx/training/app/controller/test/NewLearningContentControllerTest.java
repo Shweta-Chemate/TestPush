@@ -332,9 +332,10 @@ public class NewLearningContentControllerTest {
 	}
 
 	@Test
-	public void testGetPopularAcrossPartners() throws Exception {
+	public void testGetPopularContent() throws Exception {
+		//popular across partners api
 		this.mockMvc
-		.perform(post("/v1/partner/learning/popularAcrossPartners").contentType(MediaType.APPLICATION_JSON_VALUE)
+		.perform(post("/v1/partner/learning/popular/popularAcrossPartners").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.header("X-Mashery-Handshake", this.XMasheryHeader)
 				.header("puid", this.puid)
 				.characterEncoding("utf-8"))
@@ -342,7 +343,23 @@ public class NewLearningContentControllerTest {
 
 		assertThrows(Exception.class, () -> {
 			this.mockMvc
-			.perform(post("/v1/partner/learning/popularAcrossPartners").contentType(MediaType.APPLICATION_JSON_VALUE)
+			.perform(post("/v1/partner/learning/popular/popularAcrossPartners").contentType(MediaType.APPLICATION_JSON_VALUE)
+					.header("puid", this.puid)
+					.characterEncoding("utf-8"))
+			.andDo(print()).andExpect(status().isOk());
+		});
+
+		//popular at partner company api
+		this.mockMvc
+		.perform(post("/v1/partner/learning/popular/popularAtPartner").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.header("X-Mashery-Handshake", this.XMasheryHeader)
+				.header("puid", this.puid)
+				.characterEncoding("utf-8"))
+		.andDo(print()).andExpect(status().isOk());
+
+		assertThrows(Exception.class, () -> {
+			this.mockMvc
+			.perform(post("/v1/partner/learning/popular/popularAtPartner").contentType(MediaType.APPLICATION_JSON_VALUE)
 					.header("puid", this.puid)
 					.characterEncoding("utf-8"))
 			.andDo(print()).andExpect(status().isOk());
@@ -352,7 +369,14 @@ public class NewLearningContentControllerTest {
 	@Test
 	public void testGetPopularAcrossPartnersFilters() throws Exception {
 		this.mockMvc
-		.perform(post("/v1/partner/learning/viewmore/popularAcrossPartners/filters").contentType(MediaType.APPLICATION_JSON_VALUE)
+		.perform(post("/v1/partner/learning/viewmore/popular/popularAcrossPartners/filters").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.header("X-Mashery-Handshake", this.XMasheryHeader)
+				.header("puid", this.puid)
+				.characterEncoding("utf-8"))
+		.andDo(print()).andExpect(status().isOk());
+
+		this.mockMvc
+		.perform(post("/v1/partner/learning/viewmore/popular/popularAtPartner/filters").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.header("X-Mashery-Handshake", this.XMasheryHeader)
 				.header("puid", this.puid)
 				.characterEncoding("utf-8"))
@@ -378,6 +402,35 @@ public class NewLearningContentControllerTest {
 					.characterEncoding("utf-8"))
 			.andDo(print()).andExpect(status().isOk());
 		});
+	}
+	
+	@Test
+	public void testGetFeaturedContent() throws Exception {
+		this.mockMvc
+		.perform(post("/v1/partner/learning/featured").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.header("X-Mashery-Handshake", this.XMasheryHeader)
+				.header("puid", this.puid)
+				.characterEncoding("utf-8"))
+		.andDo(print()).andExpect(status().isOk());
+
+		assertThrows(Exception.class, () -> {
+			this.mockMvc
+			.perform(post("/v1/partner/learning/featured").contentType(MediaType.APPLICATION_JSON_VALUE)
+					.header("puid", this.puid)
+					.characterEncoding("utf-8"))
+			.andDo(print()).andExpect(status().isOk());
+		});
+	}
+
+	@Test
+	public void testGetFiltersForFeatured() throws Exception {
+		this.mockMvc
+		.perform(post("/v1/partner/learning/featured/filters").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.header("X-Mashery-Handshake", this.XMasheryHeader)
+				.header("puid", this.puid)
+				.characterEncoding("utf-8"))
+		.andDo(print()).andExpect(status().isOk());
+
 	}
 
 	private String loadFromFile(String filePath) throws IOException {

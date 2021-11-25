@@ -68,7 +68,7 @@ public class PartnerProfileServiceImpl implements PartnerProfileService {
 		UserDetailsWithCompanyList userDetails = null;
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
-		requestHeaders.set("Authorization", "Basic " + config.createCxpBasicAuthToken());
+//		requestHeaders.set("Authorization", "Basic " + config.createCxpBasicAuthToken());
 		addHeaders(requestHeaders);
 		HttpEntity<String> requestEntity = new HttpEntity<String>(null, requestHeaders);
 		ResponseEntity<String> result = restTemplate.exchange(config.getPartnerUserDetails(), HttpMethod.GET,requestEntity, String.class);
