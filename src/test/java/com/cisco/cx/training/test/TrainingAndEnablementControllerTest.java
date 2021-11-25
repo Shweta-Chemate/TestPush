@@ -109,27 +109,7 @@ public class TrainingAndEnablementControllerTest {
 			.andDo(print()).andExpect(status().isOk());
 		});
 	}
-	
-	@Test
-	public void testSuccessAcademy() throws Exception {
-		this.mockMvc
-				.perform(get("/v1/partner/training/learnings").contentType(MediaType.APPLICATION_JSON_VALUE)
-						.header("X-Mashery-Handshake", this.XMasheryHeader)
-						.header("puid", this.puid)
-						.characterEncoding("utf-8"))
-				.andDo(print()).andExpect(status().isOk());
-	}
-	
-	@Test
-	public void testSuccessAcademyLearningFilters() throws Exception {
-		this.mockMvc
-				.perform(get("/v1/partner/training/getLearningFilters").contentType(MediaType.APPLICATION_JSON_VALUE)
-						.header("X-Mashery-Handshake", this.XMasheryHeader)
-						.header("puid", this.puid)
-						.characterEncoding("utf-8"))
-				.andDo(print()).andExpect(status().isOk());
-	}
-	
+
 	@Test
 	public void testCheckReady() throws Exception {
 		this.mockMvc

@@ -83,10 +83,6 @@ public class NewLearningContentController {
 			sortType = "asc";
 		}
 		String ccoId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException("API Not Found.");
-		}
 		SuccessTalkResponseSchema successTalkResponseSchema = learningContentService.fetchSuccesstalks(ccoId, sortField, sortType, filter, search);
 		return new ResponseEntity<SuccessTalkResponseSchema>(successTalkResponseSchema, HttpStatus.OK);
 	}
@@ -118,10 +114,6 @@ public class NewLearningContentController {
 			sortType = "asc";
 		}
 		String ccoId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException("API Not Found.");
-		}
 		List<PIW> piw_items = learningContentService.fetchPIWs(ccoId, region, sortField, sortType, filter, search);
 		LOG.info("Received PIWs content in {} ", (System.currentTimeMillis() - requestStartTime));
 		return piw_items;
@@ -139,10 +131,6 @@ public class NewLearningContentController {
 		if (StringUtils.isBlank(xMasheryHandshake)) {
             throw new BadRequestException("X-Mashery-Handshake header missing in request");
         }
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException("API Not Found.");
-		}
 		CountResponseSchema countResponseSchema = learningContentService.getIndexCounts();
 		return new ResponseEntity<CountResponseSchema>(countResponseSchema, HttpStatus.OK);
 	}
@@ -163,10 +151,6 @@ public class NewLearningContentController {
 		if (StringUtils.isBlank(xMasheryHandshake)) {
 			throw new BadRequestException("X-Mashery-Handshake header missing in request");
 		}
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException("API Not Found.");
-		}
 		String ccoId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		List<LearningContentItem> newLearningContentList = learningContentService.fetchNewLearningContent(ccoId, filtersSelected);
 		LOG.info("Received new learning content in {} ", (System.currentTimeMillis() - requestStartTime));
@@ -185,10 +169,6 @@ public class NewLearningContentController {
 			throws Exception {
 		LOG.info("Entering the getNewLearningsFilters method");
 		long requestStartTime = System.currentTimeMillis();
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException("API Not Found.");
-		}
 		Map<String, Object> learningFilters = learningContentService.getViewMoreNewFiltersWithCount(filtersSelected);
 		LOG.info("Received new learning content in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<Map<String, Object>>(learningFilters, HttpStatus.OK);
@@ -209,10 +189,6 @@ public class NewLearningContentController {
 			throw new BadRequestException("X-Mashery-Handshake header missing in request");
 		}
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException("API Not Found.");
-		}
 		LearningStatusEntity learningStatusEntity=learningContentService.updateUserStatus(userId, puid, learningStatusSchema, xMasheryHandshake);
 		if(null != learningStatusEntity){
 			return new ResponseEntity<>(HttpStatus.OK);
@@ -238,10 +214,6 @@ public class NewLearningContentController {
 			throw new BadRequestException("X-Mashery-Handshake header missing in request");
 		}
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException("API Not Found.");
-		}
 		List<LearningContentItem> learningContentList = learningContentService.fetchRecentlyViewedContent(userId, filtersSelected);
 		LOG.info("Received recently viewed learning content in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<List<LearningContentItem>>(learningContentList, HttpStatus.OK);
@@ -264,10 +236,6 @@ public class NewLearningContentController {
 			throw new BadRequestException("X-Mashery-Handshake header missing in request");
 		}
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException("API Not Found.");
-		}
 		Map<String, Object> learningFilters = learningContentService.getRecentlyViewedFiltersWithCount(userId, filtersSelected);
 		LOG.info("Received recently viewed filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<Map<String, Object>>(learningFilters, HttpStatus.OK);
@@ -288,10 +256,6 @@ public class NewLearningContentController {
 		long requestStartTime = System.currentTimeMillis();
 		if (StringUtils.isBlank(xMasheryHandshake)) {
 			throw new BadRequestException("X-Mashery-Handshake header missing in request");
-		}
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException("API Not Found.");
 		}
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		List<LearningContentItem> learningContentList = learningContentService.fetchBookMarkedContent(userId, filtersSelected);
@@ -315,10 +279,6 @@ public class NewLearningContentController {
 		if (StringUtils.isBlank(xMasheryHandshake)) {
 			throw new BadRequestException("X-Mashery-Handshake header missing in request");
 		}
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException("API Not Found.");
-		}
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		Map<String, Object> learningFilters = learningContentService.getBookmarkedFiltersWithCount(userId, filtersSelected);
 		LOG.info("Received bookmarked filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
@@ -341,10 +301,6 @@ public class NewLearningContentController {
 		if (StringUtils.isBlank(xMasheryHandshake)) {
 			throw new BadRequestException("X-Mashery-Handshake header missing in request");
 		}
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException("API Not Found.");
-		}
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		List<LearningContentItem> learningContentList = learningContentService.fetchUpcomingContent(userId, filtersSelected);
 		LOG.info("Received bookmarked learning content in {} ", (System.currentTimeMillis() - requestStartTime));
@@ -363,10 +319,6 @@ public class NewLearningContentController {
 			throws Exception {
 		LOG.info("Entering the getFiltersForUpcoming method");
 		long requestStartTime = System.currentTimeMillis();
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException("API Not Found.");
-		}
 		Map<String, Object> learningFilters = learningContentService.getUpcomingFiltersWithCount(filtersSelected);
 		LOG.info("Received upcoming filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<Map<String, Object>>(learningFilters, HttpStatus.OK);
@@ -390,10 +342,6 @@ public class NewLearningContentController {
 		long requestStartTime = System.currentTimeMillis();
 		if (StringUtils.isBlank(xMasheryHandshake)) {
 			throw new BadRequestException("X-Mashery-Handshake header missing in request");
-		}
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException("API Not Found.");
 		}
 		if(sortField==null)
 			sortField="sortByDate";
@@ -424,10 +372,6 @@ public class NewLearningContentController {
 		if (StringUtils.isBlank(xMasheryHandshake)) {
 			throw new BadRequestException("X-Mashery-Handshake header missing in request");
 		}
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException("API Not Found.");
-		}
 		if(searchToken!=null)
 			searchToken=searchToken.trim();
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
@@ -453,11 +397,6 @@ public class NewLearningContentController {
 		if (StringUtils.isBlank(xMasheryHandshake)) {
 			throw new BadRequestException("X-Mashery-Handshake header missing in request");
 		}
-		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException("API Not Found.");
-		}
 		LearningMap learningMap = learningContentService.getLearningMap(id, title);
 		LOG.info("Retrieved Learning Map in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<LearningMap>(learningMap, HttpStatus.OK);
@@ -479,10 +418,6 @@ public class NewLearningContentController {
 			throw new NotFoundException("API Not Found.");
 		LOG.info("Entering the getPopularContent method");
 		long requestStartTime = System.currentTimeMillis();
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException("API Not Found.");
-		}
 		if (StringUtils.isBlank(xMasheryHandshake)) {
 			throw new BadRequestException("X-Mashery-Handshake header missing in request");
 		}
@@ -507,10 +442,6 @@ public class NewLearningContentController {
 			throw new NotFoundException("API Not Found.");
 		LOG.info("Entering the getPopularContentFilters method");
 		long requestStartTime = System.currentTimeMillis();
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException("API Not Found.");
-		}
 		Map<String, Object> learningFilters = learningContentService.getPopularContentFiltersWithCount(filtersSelected, puid, popularityType);
 		LOG.info("Received popular content filters counts in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<Map<String, Object>>(learningFilters, HttpStatus.OK);
@@ -532,10 +463,6 @@ public class NewLearningContentController {
 		if (StringUtils.isBlank(xMasheryHandshake)) {
 			throw new BadRequestException("X-Mashery-Handshake header missing in request");
 		}
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException("API Not Found.");
-		}
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		List<LearningContentItem> learningContentList = learningContentService.fetchFeaturedContent(userId, filtersSelected);
 		LOG.info("Received featured learning content in {} ", (System.currentTimeMillis() - requestStartTime));
@@ -554,10 +481,6 @@ public class NewLearningContentController {
 			throws Exception {
 		LOG.info("Entering the getFiltersForFeatured method");
 		long requestStartTime = System.currentTimeMillis();
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException("API Not Found.");
-		}
 		Map<String, Object> learningFilters = learningContentService.getFeaturedFiltersWithCount(filtersSelected);
 		LOG.info("Received featured filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<Map<String, Object>>(learningFilters, HttpStatus.OK);
