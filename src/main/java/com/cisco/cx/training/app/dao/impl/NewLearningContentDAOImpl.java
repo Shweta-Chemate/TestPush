@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -524,7 +525,8 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		NewLearningContentEntity learningMapEntity = new NewLearningContentEntity();
 		if(id!=null)
 		{
-			learningMapEntity =  learningContentRepo.findById(id).isPresent()?learningContentRepo.findById(id).get():null;
+			Optional<NewLearningContentEntity> optFirst = learningContentRepo.findById(id);
+			learningMapEntity =  optFirst.isPresent()?optFirst.get():null;
 		}
 		else if(title!=null)
 		{

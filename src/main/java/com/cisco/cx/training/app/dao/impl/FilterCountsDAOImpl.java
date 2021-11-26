@@ -242,7 +242,7 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 						cardIds.addAll(bookmarkIds);
 					}
 					filteredCards.put(filterGroup, cardIds);
-				}
+				} break;
 				default : LOG.info("other {}={}",filterGroup,list);
 				};
 			}
