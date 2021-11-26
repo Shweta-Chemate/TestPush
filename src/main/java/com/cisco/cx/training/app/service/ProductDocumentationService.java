@@ -63,6 +63,8 @@ public class ProductDocumentationService{
 	@Value("${top.picks.learnings.display.limit}")
 	public Integer topicksLimit;
 	
+	private Random r = new Random();
+	
 	private Map<String, Set<String>> filterCards(HashMap<String, Object> applyFilters, String contentTab)
 	{	
 		LOG.info("applyFilters = {}",applyFilters);	
@@ -750,6 +752,7 @@ public class ProductDocumentationService{
 			
 			if(o1Title!=null)
 				o1Title = o1.getTitle().trim().replaceAll(regChars, "").toLowerCase();
+			else o1Title="";
 			
 			if(o2Title!=null)
 				o2Title = o2.getTitle().trim().replaceAll(regChars, "").toLowerCase();
@@ -848,7 +851,7 @@ public class ProductDocumentationService{
 			pvPK.setRoleName(userRole);
 			Optional<PeerViewedEntity> peerViewExist = peerViewedRepo.findById(pvPK);
 			// record already exists in the table
-			if (peerViewExist != null && peerViewExist.isPresent()) {
+			if (peerViewExist.isPresent()) {
 				PeerViewedEntity dbEntry = peerViewExist.get();
 				if(dbEntry!=null){
 					dbEntry.setUpdatedTime(Timestamp.valueOf(getNowDateUTCStr()));
@@ -1015,8 +1018,7 @@ public class ProductDocumentationService{
 		{
 			int randomNums = orgSize>= limitEnd*2 ? limitEnd/2 : orgSize-limitEnd-1;  //12 or less			
 			int boundry = orgSize>= limitEnd*2 ? limitEnd*2 : orgSize; //50 or less
-			Set<Integer> randomIndexes = new HashSet<Integer>();
-			Random r = new Random();
+			Set<Integer> randomIndexes = new HashSet<Integer>();			
 			//while(randomIndexes.size()<randomNums) ---may take more time
 			for(int i=0;i<=randomNums;i++)
 			{
@@ -1077,7 +1079,7 @@ public class ProductDocumentationService{
 		responseModel.setLearningData(learningCards);				
 		List<LearningItemEntity> dbCards = new ArrayList<LearningItemEntity>();
 		Map<String, Set<String>> prefCards = new HashMap<String,Set<String>>();
-		if(applyFilters!=null && !applyFilters.isEmpty())
+		if(!applyFilters.isEmpty())
 		{
 			prefCards.putAll(filterCards(applyFilters,contentTab));
 		}
@@ -1086,7 +1088,7 @@ public class ProductDocumentationService{
 		Set<String> filteredCards = orPreferences(prefCards);
 		if(filteredCards!=null && !filteredCards.isEmpty())
 			dbCards.addAll(productDocumentationDAO.getAllLearningCardsByFilter(contentTab,filteredCards,Sort.by(order, sort)));			
-		LOG.info("all OR dbCards= {} {}",dbCards.size());
+		LOG.info("all OR dbCards= {}",dbCards.size());
 		learningCards.addAll(mapLearningEntityToCards(dbCards, userBookmarks));		
 		return responseModel;	
 	}

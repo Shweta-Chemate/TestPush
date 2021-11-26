@@ -276,7 +276,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 
 		CountSchema webinarCount = new CountSchema();
 		webinarCount.setLabel("Webinars");
-		webinarCount.setCount(new Long(learningContentDAO.getPIWCount()+learningContentDAO.getSuccessTalkCount()));
+		webinarCount.setCount(new Long(Integer.toUnsignedLong(learningContentDAO.getPIWCount())+learningContentDAO.getSuccessTalkCount()));
 		return webinarCount;
 
 	}
@@ -294,7 +294,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 
 		CountSchema documentationCount = new CountSchema();
 		documentationCount.setLabel("Success Tracks");
-		documentationCount.setCount(new Long(learningContentDAO.getSuccessTracksCount()+learningContentDAO.getLifecycleCount()));
+		documentationCount.setCount(new Long(Integer.toUnsignedLong(learningContentDAO.getSuccessTracksCount())+learningContentDAO.getLifecycleCount()));
 		return documentationCount;
 
 	}

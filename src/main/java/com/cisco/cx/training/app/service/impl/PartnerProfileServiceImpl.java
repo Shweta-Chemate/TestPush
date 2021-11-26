@@ -73,8 +73,7 @@ public class PartnerProfileServiceImpl implements PartnerProfileService {
 		HttpEntity<String> requestEntity = new HttpEntity<String>(null, requestHeaders);
 		ResponseEntity<String> result = restTemplate.exchange(config.getPartnerUserDetails(), HttpMethod.GET,requestEntity, String.class);
 		LOGGER.info("Prtner user details URL response = {}",result.getStatusCode().value() != HttpStatus.OK.value() ? result.getBody() : "call completed.");
-		if(result==null)
-			throw new GenericException("user details api failed");
+		//if(result==null)throw new GenericException("user details api failed");
 		try {
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			userDetails = mapper.readValue(result.getBody(), UserDetailsWithCompanyList.class);
