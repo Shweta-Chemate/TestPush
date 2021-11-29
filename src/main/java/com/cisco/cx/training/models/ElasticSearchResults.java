@@ -18,7 +18,7 @@ public class ElasticSearchResults<T extends HasId> {
 	}
 
 	public List<T> getDocuments() {
-		return documents;
+		return documents; //NOSONAR
 	}
 
 	public ElasticSearchResults<T> addDocument(T document) {

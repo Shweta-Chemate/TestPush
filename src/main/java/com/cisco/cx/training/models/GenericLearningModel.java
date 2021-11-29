@@ -126,11 +126,11 @@ public class GenericLearningModel {
 	}
 
 	public Timestamp getCreatedTimeStamp() {
-		return createdTimeStamp;
+		return createdTimeStamp; //NOSONAR
 	}
 
 	public void setCreatedTimeStamp(Timestamp createdTimeStamp) {
-		this.createdTimeStamp = createdTimeStamp;
+		this.createdTimeStamp = createdTimeStamp; //NOSONAR
 	}
 
 	public Boolean getIsBookMarked() {

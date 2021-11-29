@@ -46,13 +46,13 @@ public class LearningContentServiceImpl implements LearningContentService {
 
 	private final Logger LOG = LoggerFactory.getLogger(this.getClass().getName());
 
-	public static final HashMap<String, String> filterNameMappings=getMappings();
+	static final HashMap<String, String> filterNameMappings=getMappings();
 
-	public static final List<String> defaultFilterOrder= getDefaultFilterOrder();
+	static final List<String> defaultFilterOrder= getDefaultFilterOrder();
 
-	public static final List<String> cxInsightsFilterOrder= getCXInsightsFilterOrder();
+	static final List<String> cxInsightsFilterOrder= getCXInsightsFilterOrder();
 
-	public static final List<String> lfcFilterOrder= getLFCFilterOrder();
+	static final List<String> lfcFilterOrder= getLFCFilterOrder();
 
 	private static HashMap<String, String> getMappings() {
 		HashMap<String, String> filterGroupMappings=new HashMap<String, String>();

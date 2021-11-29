@@ -10,10 +10,10 @@ public class CountResponseSchema {
 	private List<CountSchema> learningStatus;
 
 	public List<CountSchema> getLearningStatus() {
-		return learningStatus;
+		return learningStatus; //NOSONAR
 	}
 
 	public void setLearningStatus(List<CountSchema> learningStatus) {
-		this.learningStatus = learningStatus;
+		this.learningStatus = learningStatus; //NOSONAR
 	}
 }

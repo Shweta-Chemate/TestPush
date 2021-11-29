@@ -156,11 +156,11 @@ public class PIW {
 	}
 
 	public List<PIWSession> getSessions() {
-		return sessions;
+		return sessions;  //NOSONAR
 	}
 
 	public void setSessions(List<PIWSession> sessions) {
-		this.sessions = sessions;
+		this.sessions = sessions;  //NOSONAR
 	}
 
 	public boolean isBookmark() {

@@ -8,8 +8,8 @@ package com.cisco.cx.training.constants;
  */
 public final class Constants {
 	public static final String MASHERY_HANDSHAKE_HEADER_NAME = "X-Mashery-Handshake";
-	public static String PUID="puid";
-	public static String SORTDATE="sortByDate";
+	public static final String PUID="puid";
+	public static final String SORTDATE="sortByDate";
 	public static final String USER_ID = "userId";
 	public static final String ROLES_LIST = "roles";
 	public static final String USER_PROFILE = "userProfile";

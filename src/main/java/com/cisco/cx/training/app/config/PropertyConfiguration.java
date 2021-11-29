@@ -51,7 +51,7 @@ public class PropertyConfiguration {
 
 	private SealedObject rbacIncludedEndPoints;
 
-	public SealedObject authUrl;
+	private SealedObject authUrl;
 
 	private SealedObject partnerUserDetails;
 	
