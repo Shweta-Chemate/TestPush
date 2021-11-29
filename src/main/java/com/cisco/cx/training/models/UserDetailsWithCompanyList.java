@@ -18,10 +18,10 @@ public class UserDetailsWithCompanyList {
 		this.ciscoUserProfileSchema = ciscoUserProfileSchema;
 	}
 	public List<Company> getCompanyList() {
-		return companyList;
+		return companyList;  //NOSONAR
 	}
 	public void setCompanyList(List<Company> companyList) {
-		this.companyList = companyList;
+		this.companyList = companyList;  //NOSONAR
 	}
 
 }

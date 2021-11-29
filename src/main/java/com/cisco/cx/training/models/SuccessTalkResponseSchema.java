@@ -16,11 +16,11 @@ public class SuccessTalkResponseSchema {
 	private List<SuccessTalk> items;
 
 	public List<SuccessTalk> getItems() {
-		return items;
+		return items;  //NOSONAR
 	}
 
 	public void setItems(List<SuccessTalk> items) {
-		this.items = items;
+		this.items = items;  //NOSONAR
 	}
 
 	public String getSolution() {

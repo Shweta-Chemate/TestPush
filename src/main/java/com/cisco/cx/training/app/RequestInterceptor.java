@@ -16,7 +16,7 @@ import com.cisco.cx.training.models.MasheryUser;
 
 
 public class RequestInterceptor implements HandlerInterceptor {
-	private final Logger LOG = LoggerFactory.getLogger(RequestInterceptor.class);
+	private final Logger logger = LoggerFactory.getLogger(RequestInterceptor.class);
 	
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -43,7 +43,7 @@ public class RequestInterceptor implements HandlerInterceptor {
 
 	@Override
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-		LOG.info("END_REQUEST method={} path={} responseStatus={} timetaken={}", request.getMethod(), MDC.get(LoggerConstants.REQUEST_URI), response.getStatus(), (System.currentTimeMillis() - Long.parseLong(MDC.get(LoggerConstants.START_TIME))));
+		logger.info("END_REQUEST method={} path={} responseStatus={} timetaken={}", request.getMethod(), MDC.get(LoggerConstants.REQUEST_URI), response.getStatus(), (System.currentTimeMillis() - Long.parseLong(MDC.get(LoggerConstants.START_TIME))));
 		MDC.clear();
 	}
 }

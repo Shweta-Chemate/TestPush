@@ -72,11 +72,11 @@ public class LearningMap {
 	}
 
 	public Timestamp getDate() {
-		return date;
+		return date; //NOSONAR
 	}
 
 	public void setDate(Timestamp date) {
-		this.date = date;
+		this.date = date;  //NOSONAR
 	}
 
 	public List<LearningModule> getLearningModules() {

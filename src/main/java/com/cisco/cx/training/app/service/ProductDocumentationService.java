@@ -493,9 +493,12 @@ public class ProductDocumentationService{
 	}
 	
 	private void setFilterCounts(Set<String> cardIdsInp, final HashMap<String, Object> filters, String contentTab, 
-			Map<String, Set<String>> filteredCardsMap, boolean search, Set<String> searchCardIds)
+			Map<String, Set<String>> filteredCardsMap, boolean search, Set<String> searchCardIdsInp)
 	{
-		Set<String> cardIds = cardIdsInp;
+		Set<String> cardIds = new HashSet<String>();
+		cardIds.addAll(cardIdsInp);
+		Set<String> searchCardIds = new HashSet<String>();
+		searchCardIds.addAll(searchCardIdsInp);
 		
 		if(search && filteredCardsMap.containsKey(CONTENT_TYPE_FILTER)) cardIds = searchCardIds;  
 		List<Map<String,Object>> dbListCT = productDocumentationDAO.getAllContentTypeWithCountByCards(contentTab,cardIds);		

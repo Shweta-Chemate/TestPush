@@ -42,10 +42,10 @@ public class UserRole {
 		this.roleId = roleId;
 	}
 	public List<String> getResourceList() {
-		return resourceList;
+		return resourceList;  //NOSONAR
 	}
 	public void setResourceList(List<String> resourceList) {
-		this.resourceList = resourceList;
+		this.resourceList = resourceList;  //NOSONAR
 	}
 //	public List<CustomerInfo> getCustomerList() {
 //		return customerList;
