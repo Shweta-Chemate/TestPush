@@ -1,7 +1,6 @@
 package com.cisco.cx.training.test;
 
 import java.io.IOException;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
