@@ -97,13 +97,18 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 		Map<String, AttributeValue> itemValue = new HashMap<String, AttributeValue>();
 		Set<String> currentBookMarks = new HashSet<String>();
 		Map<String,Object> currentBookMarksMap = getBookmarksWithTime(bookmarkResponseSchema.getCcoid());
-		if(null == currentBookMarksMap)
+		if(null == currentBookMarksMap) {
 			currentBookMarksMap = new HashMap<String,Object>();
-		if(bookmarkResponseSchema.isBookmark())
+		}
+		if(bookmarkResponseSchema.isBookmark()) {
 			currentBookMarksMap.put(bookmarkResponseSchema.getLearningid(), getTime());
-		else					
+		}
+		else {					
 			currentBookMarksMap.remove(bookmarkResponseSchema.getLearningid());	
-		if(currentBookMarksMap.isEmpty()) currentBookMarks.add("");
+		}
+		if(currentBookMarksMap.isEmpty()) {
+			currentBookMarks.add("");
+		}
 		else
 		{	
 			currentBookMarksMap.forEach((k,v)->{
@@ -119,7 +124,7 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 			});
 		}	
 		itemValue.put("userid", AttributeValue.builder().s(bookmarkResponseSchema.getCcoid().concat(USERID_SUFFIX)).build());
-		itemValue.put("bookmarks", AttributeValue.builder().ss(currentBookMarks).build());
+		itemValue.put(BOOKMARK_KEY, AttributeValue.builder().ss(currentBookMarks).build());
 		Builder putItemReq = PutItemRequest.builder();
 		LOG.info("Preprocessing done in {} ", (System.currentTimeMillis() - requestStartTime));
 		requestStartTime = System.currentTimeMillis();	
@@ -141,9 +146,9 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 					bookMarkCountsEntity.setCount(1);
 				}
 			}
-			if(bookMarkCountsEntity!=null && bookMarkCountsEntity.getCount()>=0)
+			if(bookMarkCountsEntity!=null && bookMarkCountsEntity.getCount()>=0) {
 				bookmarkCountsRepo.save(bookMarkCountsEntity);
-
+			}
 			BookmarkResponseSchema responseSchema = new BookmarkResponseSchema();
 			responseSchema.setId(bookmarkResponseSchema.getId());
 			return responseSchema;

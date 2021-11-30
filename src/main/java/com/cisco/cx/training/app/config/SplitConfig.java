@@ -20,7 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 public class SplitConfig {
 
     private static final Logger LOG = LoggerFactory.getLogger(SplitConfig.class);
-    private static final int blockTimeout = 10000;
+    private static final int BLOCK_TIMEOUT = 10000;
 
     @Value("${authorization.split.io.key}")
     private String apiKey;
@@ -38,11 +38,11 @@ public class SplitConfig {
 
     	if (StringUtils.isNotEmpty(squidProxyHost) && StringUtils.isNotEmpty(squidProxyPort)) {
     		LOG.info("Connecting to split io through squid");
-    		config = SplitClientConfig.builder().proxyHost(squidProxyHost).proxyPort(Integer.parseInt(squidProxyPort)).setBlockUntilReadyTimeout(blockTimeout).enableDebug()
+    		config = SplitClientConfig.builder().proxyHost(squidProxyHost).proxyPort(Integer.parseInt(squidProxyPort)).setBlockUntilReadyTimeout(BLOCK_TIMEOUT).enableDebug()
     				.build();
     	} else {
     		LOG.info("Connecting to split io without squid");
-    		config = SplitClientConfig.builder().setBlockUntilReadyTimeout(blockTimeout).enableDebug().build();
+    		config = SplitClientConfig.builder().setBlockUntilReadyTimeout(BLOCK_TIMEOUT).enableDebug().build();
     	}
 
     	if (config == null){
