@@ -14,6 +14,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.cisco.cx.training.app.entities.LearningItemEntity;
 
+@SuppressWarnings({"java:S1192","squid:S1192","java:S1214","squid:S1214"})
 public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntity,String>{
 	
 	
