@@ -28,8 +28,7 @@ public class SpecificationBuilderSuccessTalk {
 			try {
 				search = java.net.URLDecoder.decode(search, StandardCharsets.UTF_8.name());
 			} catch (UnsupportedEncodingException e) {
-				LOGGER.error("Issue while decoding string");
-				e.printStackTrace();
+				LOGGER.error("Issue while decoding string: ", e);
 			}
 			Specification<T> searchSpecification = buildSearchSpecification(search.toLowerCase());
 			specification = specification.and(searchSpecification);
@@ -60,13 +59,13 @@ public class SpecificationBuilderSuccessTalk {
 				searchSpecification = searchSpecification
 						.or(CustomSpecifications.searchSuccesstalksWithCriteria(searchField, search));
 			}
-			LOGGER.info(searchSpecification.toString());
+			LOGGER.info("stspecifications: {} ", searchSpecification);
 		}
 		return searchSpecification;
 	}
 
 	public Set<String> getSearchFields() {
-		Set<String> searchFields = new HashSet<String>();
+		Set<String> searchFields = new HashSet<>();
 		searchFields.add(Constants.TITLE);
 		return searchFields;
 	}

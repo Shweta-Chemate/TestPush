@@ -1,10 +1,17 @@
 package com.cisco.cx.training.app.config;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.security.InvalidKeyException;
+import java.security.InvalidParameterException;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SealedObject;
 import javax.crypto.SecretKey;
 
@@ -12,8 +19,9 @@ public class CryptoAccess<T extends Serializable> {
 	private static KeyGenerator keyGen;
 	private char[] transformation = "AES".toCharArray();
 	private SecretKey secretKey;
+	private static int keySize=256;
 
-	public static final CryptoAccess<String> CRYPTO_STRING = new CryptoAccess<String>();
+	public static final CryptoAccess<String> CRYPTO_STRING = new CryptoAccess<>();
 
 	public CryptoAccess(){
 		secretKey = getkeyGen(transformation).generateKey();
@@ -25,11 +33,11 @@ public class CryptoAccess<T extends Serializable> {
 		}
 		try {
 			KeyGenerator keyGen = KeyGenerator.getInstance(new String(transformation));
-			keyGen.init(256);
+			keyGen.init(keySize);
 			CryptoAccess.keyGen=keyGen;
 			return CryptoAccess.keyGen;
 
-		} catch (Exception e) {
+		} catch (NoSuchAlgorithmException | NullPointerException | InvalidParameterException  e) {
 			throw new IllegalStateException("FATAL:cannot create key generator",e);
 		}
 	}
@@ -38,7 +46,8 @@ public class CryptoAccess<T extends Serializable> {
 			Cipher cipher = Cipher.getInstance(new String(transformation));
 			cipher.init(Cipher.ENCRYPT_MODE, secretKey, new SecureRandom());
 			return new SealedObject(object,cipher);
-		} catch (Exception e) {
+		} catch (NoSuchAlgorithmException  | NoSuchPaddingException |  InvalidKeyException
+				| IllegalBlockSizeException |	IOException e) {
 			throw new IllegalStateException("cannot create sealed object for given objects",e);
 		}
 	}
@@ -52,8 +61,9 @@ public class CryptoAccess<T extends Serializable> {
 			Cipher cipher = Cipher.getInstance(new String(transformation));
 			cipher.init(Cipher.DECRYPT_MODE, secretKey, new SecureRandom());
 			return (T) object.getObject(cipher);
-		} catch (Exception e) {
+		} catch (NoSuchAlgorithmException|NoSuchPaddingException|InvalidKeyException 
+	|IOException|ClassNotFoundException |IllegalBlockSizeException|BadPaddingException e) {
 			throw new IllegalStateException("cannot create sealed object for given objects",e);
-		}
+		} 
 	}
 }

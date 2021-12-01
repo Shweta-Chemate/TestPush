@@ -63,7 +63,7 @@ public class ProductDocumentationService{
 	@Value("${top.picks.learnings.display.limit}")
 	public Integer topicksLimit;
 	
-	private Random r = new Random();
+	private Random r = new Random();  //NOSONAR
 	
 	private Map<String, Set<String>> filterCards(HashMap<String, Object> applyFilters, String contentTab)
 	{	

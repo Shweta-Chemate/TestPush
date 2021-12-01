@@ -1,5 +1,6 @@
 package com.cisco.cx.training.constants;
 
+@SuppressWarnings({"java:S1192","squid:S1192","java:S1214","squid:S1214"})
 public class SQLConstants {
 	
 	public static final String GET_CONTENT_TYPE_WITH_COUNT_BY_CARD = "select asset_type as label, count(*) as count from cxpp_db.cxpp_item_link where asset_type IS NOT NULL and asset_type!='null' and learning_item_id in (:learningItemIds) \n"

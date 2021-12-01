@@ -217,7 +217,7 @@ public class TrainingAndEnablementController {
 		HashMap<String, Object> filters = new HashMap<String, Object>();
 		LearningRecordsAndFiltersModel learningCards = trainingAndEnablementService.
 				getMyPreferredLearnings(xMasheryHandshake,search,filters,sortBy,sortOrder,puid, limit);
-		if(limit!=null && limit < 0) throw new BadRequestException("Invalid limit.");
+		if(limit!=null && limit < 0) {throw new BadRequestException("Invalid limit.");}
 		return new ResponseEntity<LearningRecordsAndFiltersModel>(learningCards, HttpStatus.OK);
 	}
 	

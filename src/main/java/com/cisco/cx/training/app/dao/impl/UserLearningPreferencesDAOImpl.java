@@ -58,7 +58,7 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
 	
 	private static final String USERID_SUFFIX = "";//_ulp
 	private static final String USERID_KEY="userid";	
-	private static enum PREFERENCES_KEYS {role,technology,language,region,timeinterval};
+	private static enum PREFERENCES_KEYS {role,technology,language,region,timeinterval};  //NOSONAR 
 	private static final String PREFERENCE_SUFFIX = "";//"_ulp";
 	private DynamoDbClient dbClient;	
 	private static ObjectMapper mapper = new ObjectMapper();
@@ -100,7 +100,8 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
 		{
 			LOG.info("User cleared prefs.");
 		}
-		else Arrays.asList(PREFERENCES_KEYS.values()).forEach( preferenceKey ->{
+		else {
+		Arrays.asList(PREFERENCES_KEYS.values()).forEach( preferenceKey ->{
 			if(ulPreferences.containsKey(preferenceKey.name()) )
 			{
 				Set<String> preferenceNames = new HashSet<String>();
@@ -119,14 +120,18 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
 								}							
 							
 						}
-						else if(up.isSelected()) preferenceNames.add(up.getName());
+						else if(up.isSelected()) { 
+							preferenceNames.add(up.getName());
+						}
 					});
 				}
 				
-				if(!preferenceNames.isEmpty())
+				if(!preferenceNames.isEmpty()) {
 					itemValue.put(preferenceKey.name().concat(PREFERENCE_SUFFIX), AttributeValue.builder().ss(preferenceNames).build());
+				}
 			}					
 		});
+	}
 		LOG.info("Preprocessing done in {} ", (System.currentTimeMillis() - requestStartTime));
 		requestStartTime = System.currentTimeMillis();	
 		Builder putItemReq = PutItemRequest.builder();		
@@ -217,10 +222,13 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
 					else
 					{
 						List<UserLearningPreference> preDBList = ulpMap.get(preferenceKey.name());					
-						if(preDBList!=null && !preDBList.isEmpty())
+						if(preDBList!=null && !preDBList.isEmpty()) {
 							preDBList.forEach(up -> {
-								if(ulps.contains(up.getName())) up.setSelected(true);
+								if(ulps.contains(up.getName())) {
+									up.setSelected(true);
+								}
 							});
+						}
 					}					
 				}			
 			});			
