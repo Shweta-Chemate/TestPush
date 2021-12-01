@@ -25,8 +25,8 @@ public class AuthorizationUtil {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(Constants.MASHERY_HANDSHAKE_HEADER_NAME, masheryHeader);
-			if (propertyConfiguration.createCxpBasicAuthToken() != null)
-				headers.set("Authorization", "Basic " + propertyConfiguration.createCxpBasicAuthToken());
+			if (propertyConfiguration.createCxpBasicAuthToken() != null) {
+				headers.set("Authorization", "Basic " + propertyConfiguration.createCxpBasicAuthToken());}
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity requestEntity = new HttpEntity(null, headers);
 
@@ -35,13 +35,13 @@ public class AuthorizationUtil {
 			ResponseEntity<String> result = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, requestEntity,
 					String.class);
 			logger.info("result  " + result);
-			if (result.getStatusCode() == HttpStatus.OK)
-				response = result.getBody();
+			if (result.getStatusCode() == HttpStatus.OK) {
+				response = result.getBody();}
 			else {
 				logger.error("URL " + propertyConfiguration.getAuthUrl() + " Returned Status Code "
 						+ result.getStatusCode() + " Expected 200 ok Response :" + result.getBody());
 			}
-		} catch (Exception e) {
+		} catch (Exception e) {  //NOSONAR
 			logger.error(e.getMessage(), e);
 		}
 		return response;
@@ -62,21 +62,21 @@ public class AuthorizationUtil {
 			ResponseEntity<String> result = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, requestEntity,
 					String.class);
 			logger.info("result  " + result);
-			if (result.getStatusCode() == HttpStatus.OK)
-				response = result.getBody();
+			if (result.getStatusCode() == HttpStatus.OK) {
+				response = result.getBody();}
 			else {
 				logger.error("URL " + propertyConfiguration.getAuthUrl() + " Returned Status Code "
 						+ result.getStatusCode() + " Expected 200 ok Response :" + result.getBody());
 			}
-		} catch (Exception e) {
+		} catch (Exception e) {  //NOSONAR
 			logger.error(e.getMessage(), e);
 		}
 		return response;
 	}
 
 	public static boolean isRoleCheckRequired(String roleId, String roleIdsforCustomerCheck) {
-		if (roleIdsforCustomerCheck.indexOf(roleId) != -1)
-			return true;
+		if (roleIdsforCustomerCheck.indexOf(roleId) != -1) {
+			return true;}
 		return false;
 	}
 }

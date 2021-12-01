@@ -243,7 +243,7 @@ public class PIW {
 		session.setScheduled(false);
 		List<PIWSession> sessions = new ArrayList<>();
 		sessions.add(session);
-		this.setSessions(sessions);
+		this.setSessions(sessions);  //NOSONAR
 	}
 
 }
