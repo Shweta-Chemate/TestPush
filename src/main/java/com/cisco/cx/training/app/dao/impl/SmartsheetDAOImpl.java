@@ -38,14 +38,14 @@ public class SmartsheetDAOImpl implements SmartsheetDAO {
     @Autowired
     private PropertyConfiguration config;
     
-    private static final String eventNameKey = "Event Name";
-    private static final String emailKey = "Email";
-    private static final String registeredKey = "Registered";
+    private static final String EVENT_NAME_KEY = "Event Name";
+    private static final String EMAIL_KEY = "Email";
+    private static final String REGISTERED_KEY = "Registered";
 
     private static Map<String, String> successTalkRegColTitleToSchemaKeyMap = Stream.of(new Object[][] {
-            { eventNameKey, "title" },
-            { emailKey, "email" },
-            { registeredKey, "registrationStatus" },
+            { EVENT_NAME_KEY, "title" },
+            { EMAIL_KEY, "email" },
+            { REGISTERED_KEY, "registrationStatus" },
             { "Attended", "attendedStatus" },
             { "Registration Date/Time", "registrationDateFormatted"},
             { "Event Start Date", "eventStartDateFormatted"}
@@ -133,13 +133,13 @@ public class SmartsheetDAOImpl implements SmartsheetDAO {
             updatedMatchedRow.setCells(matchedRow.getCells().stream()
                     .filter(cell -> allowedColumns.contains(columnIdToTitleMap.get(cell.getColumnId())))
                     .map(cell -> {
-                        if (StringUtils.equalsIgnoreCase(columnIdToTitleMap.get(cell.getColumnId()), registeredKey)) {
+                        if (StringUtils.equalsIgnoreCase(columnIdToTitleMap.get(cell.getColumnId()), REGISTERED_KEY)) {
                             cell.setValue(cancelledRegistration.getRegistrationStatus());
                             cell.setDisplayValue(cancelledRegistration.getRegistrationStatus().toString());
-                        } else if (StringUtils.equalsIgnoreCase(columnIdToTitleMap.get(cell.getColumnId()), emailKey)) {
+                        } else if (StringUtils.equalsIgnoreCase(columnIdToTitleMap.get(cell.getColumnId()), EMAIL_KEY)) {
                             cell.setValue(cancelledRegistration.getCcoid());
                             cell.setDisplayValue(cancelledRegistration.getCcoid());
-                        } else if (StringUtils.equalsIgnoreCase(columnIdToTitleMap.get(cell.getColumnId()), eventNameKey)) {
+                        } else if (StringUtils.equalsIgnoreCase(columnIdToTitleMap.get(cell.getColumnId()), EVENT_NAME_KEY)) {
                             cell.setValue(cancelledRegistration.getTitle());
                             cell.setDisplayValue(cancelledRegistration.getTitle());
                         }
@@ -167,11 +167,11 @@ public class SmartsheetDAOImpl implements SmartsheetDAO {
                     boolean isCellQualified = true;
                     //LOG.info("{} -> {}, {}", currentCell.getColumnId(), currentCell.getValue(), currentCell.getDisplayValue());
                     // check for field conditions and determine if the cell values qualifies or disqualifies the row to be matched
-                    if (StringUtils.equalsIgnoreCase(columnIdToTitleMap.get(currentCell.getColumnId()), eventNameKey)) {
+                    if (StringUtils.equalsIgnoreCase(columnIdToTitleMap.get(currentCell.getColumnId()), EVENT_NAME_KEY)) {
                         isCellQualified = isCellQualified && (Objects.equals(registration.getTitle(), currentCell.getValue()));
-                    } else if (StringUtils.equalsIgnoreCase(columnIdToTitleMap.get(currentCell.getColumnId()), emailKey)) {
+                    } else if (StringUtils.equalsIgnoreCase(columnIdToTitleMap.get(currentCell.getColumnId()), EMAIL_KEY)) {
                         isCellQualified = isCellQualified && (Objects.equals(registration.getCcoid(), currentCell.getValue()));
-                    } else if (StringUtils.equalsIgnoreCase(columnIdToTitleMap.get(currentCell.getColumnId()), registeredKey)) {
+                    } else if (StringUtils.equalsIgnoreCase(columnIdToTitleMap.get(currentCell.getColumnId()), REGISTERED_KEY)) {
                         isCellQualified = isCellQualified && (status == null || status.isEmpty() || status.contains(currentCell.getValue()));
                     }
 

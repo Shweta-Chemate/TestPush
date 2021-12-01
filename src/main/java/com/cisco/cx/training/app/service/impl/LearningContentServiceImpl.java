@@ -41,6 +41,7 @@ import com.cisco.cx.training.models.SuccessTalkResponseSchema;
 import com.cisco.cx.training.models.SuccessTalkSession;
 import com.cisco.cx.training.models.UserDetailsWithCompanyList;
 
+@SuppressWarnings({"squid:S2221","squid:S5361"})
 @Service
 public class LearningContentServiceImpl implements LearningContentService {
 
@@ -408,8 +409,8 @@ public class LearningContentServiceImpl implements LearningContentService {
 			Optional<Company> matchingObject = companies.stream()
 					.filter(c -> (c.getPuid().equals(puid) && c.isDemoAccount())).findFirst();
 			Company company = matchingObject.isPresent() ? matchingObject.get() : null;
-			if (company != null)
-				throw new NotAllowedException("Not Allowed for DemoAccount");
+			if (company != null) {
+				throw new NotAllowedException("Not Allowed for DemoAccount");}
 		}
 		try {
 			productDocumentationService.addLearningsViewedForRole(userId,learningStatusSchema.getLearningItemId(),puid);
@@ -666,10 +667,10 @@ public class LearningContentServiceImpl implements LearningContentService {
 		}
 		try
 		{
-			if(popularityType.equals(Constants.POPULAR_ACROSS_PARTNERS_PATH))
-				contentList = learningContentDAO.fetchPopularAcrossPartnersContent(queryMap, stMap);
-			if(popularityType.equals(Constants.POPULAR_AT_PARTNER_PATH))
-				contentList = learningContentDAO.fetchPopularAtPartnerContent(queryMap, stMap, puid);
+			if(popularityType.equals(Constants.POPULAR_ACROSS_PARTNERS_PATH)) {
+				contentList = learningContentDAO.fetchPopularAcrossPartnersContent(queryMap, stMap);}
+			if(popularityType.equals(Constants.POPULAR_AT_PARTNER_PATH)) {
+				contentList = learningContentDAO.fetchPopularAtPartnerContent(queryMap, stMap, puid);}
 			// populate bookmark and registration info
 			Set<String> userBookmarks = null;
 			if (null != ccoid) {
@@ -706,10 +707,10 @@ public class LearningContentServiceImpl implements LearningContentService {
 		Map<String, Object> result;
 		try
 		{
-			if(popularityType.equals(Constants.POPULAR_ACROSS_PARTNERS_PATH))
-				popularContentCounts = learningContentDAO.getPopularAcrossPartnersFiltersWithCount(filtersSelected);
-			if(popularityType.equals(Constants.POPULAR_AT_PARTNER_PATH))
-				popularContentCounts = learningContentDAO.getPopularAtPartnerFiltersWithCount(filtersSelected, puid);
+			if(popularityType.equals(Constants.POPULAR_ACROSS_PARTNERS_PATH)) {
+				popularContentCounts = learningContentDAO.getPopularAcrossPartnersFiltersWithCount(filtersSelected);}
+			if(popularityType.equals(Constants.POPULAR_AT_PARTNER_PATH)) {
+				popularContentCounts = learningContentDAO.getPopularAtPartnerFiltersWithCount(filtersSelected, puid);}
 		}catch (Exception e) {
 			LOG.error("There was a problem in fetching popular across partners filter counts", e);
 			throw new GenericException("There was a problem in fetching popular across partners filter counts");
@@ -803,8 +804,8 @@ public class LearningContentServiceImpl implements LearningContentService {
 					Map<String, String> lfcOld = (Map<String, String>) filters.get(filterGroup);
 					List<String> lfcFilterOrder = LearningContentServiceImpl.getLFCFilterOrder();
 					for(String filter : lfcFilterOrder) {
-						if(lfcOld.containsKey(filter))
-							lfcFilterNew.put(filter, lfcOld.get(filter));
+						if(lfcOld.containsKey(filter)) {
+							lfcFilterNew.put(filter, lfcOld.get(filter));}
 					}
 					filters.put(filterGroup, lfcFilterNew);
 				}

@@ -41,8 +41,8 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 			String[] keys = filteredCards.keySet().toArray(new String[0]);
 			for(int i=0; i<keys.length; i++)
 			{
-				if(i==0) cardIds.addAll(filteredCards.get(keys[i]));
-				else cardIds.retainAll(filteredCards.get(keys[i]));
+				if(i==0) { cardIds.addAll(filteredCards.get(keys[i])); }
+				else { cardIds.retainAll(filteredCards.get(keys[i])); }
 			}
 		}
 		LOG.info("mapped = {} ",cardIds);
@@ -99,13 +99,13 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 		if(filterCountsMap.containsKey(Constants.FOR_YOU_FILTER) && !filterGroup.equals(Constants.FOR_YOU_FILTER)) {
 			Map<String, String> forYouMap=new TreeMap<>();
 			int count = learningContentRepo.getRecentlyViewedContentFilteredIds(userId, cardIds).size();
-			if(count>0)
-				forYouMap.put(Constants.RECENTLY_VIEWED, Integer.toString(count));
+			if(count>0) {
+				forYouMap.put(Constants.RECENTLY_VIEWED, Integer.toString(count));}
 			Set<String> bookmarkIds=getBookMarkedIds(userId);
 			bookmarkIds.retainAll(cardIds);
 			count = bookmarkIds.size();
-			if(count>0)
-				forYouMap.put(Constants.BOOKMARKED_FOR_YOU, Integer.toString(count));
+			if(count>0) {
+				forYouMap.put(Constants.BOOKMARKED_FOR_YOU, Integer.toString(count));}
 			((Map<String, String>) filterCountsMap.get(Constants.FOR_YOU_FILTER)).putAll(forYouMap);
 		}
 	}
@@ -173,13 +173,13 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 			Set<String> cardIds = andFiltersWithExcludeKey(filteredCardsMap,Constants.FOR_YOU_FILTER);
 			Map<String, String> forYouMap=new TreeMap<>();
 			int count = learningContentRepo.getRecentlyViewedContentFilteredIds(userId, cardIds).size();
-			if(count>0)
-				forYouMap.put(Constants.RECENTLY_VIEWED, Integer.toString(count));
+			if(count>0) {
+				forYouMap.put(Constants.RECENTLY_VIEWED, Integer.toString(count));}
 			Set<String> bookmarkIds=getBookMarkedIds(userId);
 			bookmarkIds.retainAll(cardIds);
 			count = bookmarkIds.size();
-			if(count>0)
-				forYouMap.put(Constants.BOOKMARKED_FOR_YOU, Integer.toString(count));
+			if(count>0) {
+				forYouMap.put(Constants.BOOKMARKED_FOR_YOU, Integer.toString(count));}
 			((Map<String, String>) filterCountsMap.get(Constants.FOR_YOU_FILTER)).putAll(forYouMap);
 
 		}
@@ -196,14 +196,14 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 			String[] keys = filteredCardsMap.keySet().toArray(new String[0]);
 			int first = -1;
 			for (int i = 0; i < keys.length; i++) {
-				if (keys[i].equalsIgnoreCase(excludeKey))
-					continue;
-				if (first == -1)
-					first = i;
-				if (i == first)
-					cardIds.addAll(filteredCardsMap.get(keys[i]));
-				else
-					cardIds.retainAll(filteredCardsMap.get(keys[i]));
+				if (keys[i].equalsIgnoreCase(excludeKey)) {
+					continue;}
+				if (first == -1) {
+					first = i;}
+				if (i == first) {
+					cardIds.addAll(filteredCardsMap.get(keys[i]));}
+				else {
+					cardIds.retainAll(filteredCardsMap.get(keys[i]));}
 			}
 		}
 		return cardIds;
@@ -217,7 +217,7 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 	public Map<String, Set<String>> filterCards(Map<String, Object> filtersSelected, Set<String> learningItemIdsList, String userId){
 		LOG.info("applyFilters = {}",filtersSelected);
 		Map<String, Set<String>> filteredCards = new HashMap<String, Set<String>>();
-		if(filtersSelected==null || filtersSelected.isEmpty()) return filteredCards;
+		if(filtersSelected==null || filtersSelected.isEmpty()) {return filteredCards;}
 
 		/** OR **/
 		filtersSelected.keySet().forEach(filterGroup -> {
@@ -234,8 +234,8 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 				case Constants.LIFECYCLE : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByLFC(new HashSet<String>(list),learningItemIdsList));break;
 				case Constants.FOR_YOU_FILTER : {
 					Set<String> cardIds=new HashSet<>();
-					if(list.contains(Constants.RECENTLY_VIEWED))
-						cardIds.addAll(learningContentRepo.getRecentlyViewedContentFilteredIds(userId, learningItemIdsList));
+					if(list.contains(Constants.RECENTLY_VIEWED)) {
+						cardIds.addAll(learningContentRepo.getRecentlyViewedContentFilteredIds(userId, learningItemIdsList));}
 					if(list.contains(Constants.BOOKMARKED_FOR_YOU)) {
 						Set<String> bookmarkIds=getBookMarkedIds(userId);
 						bookmarkIds.retainAll(learningItemIdsList);
@@ -406,23 +406,23 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 			String dbValue = String.valueOf(dbMap.get("dbvalue"));
 
 			distinctST.add(st);
-			if(!distinctUCForST.keySet().contains(st)) distinctUCForST.put(st, new ArrayList<String>());
+			if(!distinctUCForST.keySet().contains(st)) { distinctUCForST.put(st, new ArrayList<String>());}
 			distinctUCForST.get(st).add(uc);
-			if(!distinctPSForUC.keySet().contains(uc)) distinctPSForUC.put(uc, new ArrayList<String>());
+			if(!distinctPSForUC.keySet().contains(uc)) {distinctPSForUC.put(uc, new ArrayList<String>());}
 			distinctPSForUC.get(uc).add(ps);
 
-			if(!stMap.keySet().contains(st)) stMap.put(st, new HashMap<String,Map<String,String>>()) ;
-			if(!((Map)stMap.get(st)).keySet().contains(uc)) ((Map)stMap.get(st)).put(uc, dbValue);//.put(uc, new HashMap<String,String>());
+			if(!stMap.keySet().contains(st)) {stMap.put(st, new HashMap<String,Map<String,String>>()) ;}
+			if(!((Map)stMap.get(st)).keySet().contains(uc)) {((Map)stMap.get(st)).put(uc, dbValue);}//.put(uc, new HashMap<String,String>());
 			//if(!((Map)((Map)stMap.get(st)).get(uc)).keySet().contains(ps)) ((Map)((Map)stMap.get(st)).get(uc)).put(ps, dbValue);
 
 			if(stFilter!=null)
 			{
-				if(!stAllKeysMap.keySet().contains(st)) stAllKeysMap.put(st, new HashMap<String,Map<String,String>>()) ;
-				if(!((Map)stAllKeysMap.get(st)).keySet().contains(uc)) ((Map)stAllKeysMap.get(st)).put(uc, "0");//.put(uc, new HashMap<String,String>());
+				if(!stAllKeysMap.keySet().contains(st)) { stAllKeysMap.put(st, new HashMap<String,Map<String,String>>()) ;}
+				if(!((Map)stAllKeysMap.get(st)).keySet().contains(uc)) {((Map)stAllKeysMap.get(st)).put(uc, "0");}//.put(uc, new HashMap<String,String>());
 				//if(!((Map)((Map)stAllKeysMap.get(st)).get(uc)).keySet().contains(ps)) ((Map)((Map)stAllKeysMap.get(st)).get(uc)).put(ps, "0");
 			}
 		}
-		stCountMap.putAll(stMap);if(stFilter!=null)stFilter.putAll(stAllKeysMap);
+		stCountMap.putAll(stMap);if(stFilter!=null) {stFilter.putAll(stAllKeysMap);}
 		LOG.info("stCountMap {} , stFilter={}",stCountMap, stFilter);
 		return stCountMap;
 	}
