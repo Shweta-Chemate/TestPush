@@ -136,7 +136,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 			SuccessAcademyFilter filter = new SuccessAcademyFilter();					
 			filter.setName(key);
 			filter.setFilters(mapData.get(key));					
-			filter.setTabLocationOnUI(lookupValues.get(key.toLowerCase().replaceAll(" ", "")));
+			filter.setTabLocationOnUI(lookupValues.get(key.toLowerCase().replaceAll(" ", ""))); //NOSONAR
 			filters.add(filter);
 		}
 		LOG.info("Sending final response in {} ", (System.currentTimeMillis() - requestStartTime));
@@ -169,7 +169,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	private Map<String,String> getLookUpMapFromEntity(List<PartnerPortalLookUpEntity> entityList){
 		HashMap<String, String> lookUpValues = new HashMap<String, String>();
 		for(PartnerPortalLookUpEntity entity : entityList){
-			String key = entity.getPartnerPortalKey().replaceAll(CXPP_UI_TAB_PREFIX, "");
+			String key = entity.getPartnerPortalKey().replaceAll(CXPP_UI_TAB_PREFIX, ""); //NOSONAR
 			lookUpValues.put(key.toLowerCase(), entity.getPartnerPortalKeyValue());
 		}		
 		return lookUpValues;

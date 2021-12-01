@@ -69,7 +69,7 @@ public class ProductDocumentationService{
 	{	
 		LOG.info("applyFilters = {}",applyFilters);	
 		Map<String, Set<String>> filteredCards = new HashMap<String, Set<String>>();
-		if(applyFilters==null || applyFilters.isEmpty()) return filteredCards;
+		if(applyFilters==null || applyFilters.isEmpty()) {return filteredCards;}
 		
 		/** OR **/
 		applyFilters.keySet().forEach(k -> {
@@ -133,8 +133,8 @@ public class ProductDocumentationService{
 			String[] keys = filteredCards.keySet().toArray(new String[0]);
 			for(int i=0; i<keys.length; i++)
 			{
-				if(i==0) cardIds.addAll(filteredCards.get(keys[i]));
-				else cardIds.retainAll(filteredCards.get(keys[i]));
+				if(i==0) { cardIds.addAll(filteredCards.get(keys[i]));}
+				else {cardIds.retainAll(filteredCards.get(keys[i]));}
 			}
 		}
 		LOG.info("mapped = {} ",cardIds);	
@@ -155,18 +155,19 @@ public class ProductDocumentationService{
 		
 		Map<String, String> lmCounts = getLearningMapCounts();
 		List<GenericLearningModel>  cards = new ArrayList<GenericLearningModel>();
-		if(dbList==null || dbList.size()==0) return cards;
+		if(dbList==null || dbList.size()==0) {return cards;}
 		dbList.forEach(learning -> {
 			
 			GenericLearningModel card =  new GenericLearningModel();	
-			if(learning.getSortByDate()==null)card.setCreatedTimeStamp(null);
-			else card.setCreatedTimeStamp(Timestamp.valueOf(learning.getSortByDate()));  //same as created date
+			if(learning.getSortByDate()==null) {card.setCreatedTimeStamp(null);}
+			else {card.setCreatedTimeStamp(Timestamp.valueOf(learning.getSortByDate())); } //same as created date
 			card.setDescription(learning.getDescription());
 			card.setDuration(learning.getDuration());
 			
 			if(null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
-					&& userBookmarks.contains(learning.getLearning_item_id()))
-			card.setIsBookMarked(true);
+					&& userBookmarks.contains(learning.getLearning_item_id())) {
+				card.setIsBookMarked(true);	
+			}		
 		
 			//card.setLink(learning.getRegistrationUrl());//learning.getLink()
 			card.setStatus(learning.getStatus());
@@ -231,23 +232,23 @@ public class ProductDocumentationService{
 			String dbValue = String.valueOf(dbMap.get("dbvalue"));	
 			
 			distinctST.add(st);
-			if(!distinctUCForST.keySet().contains(st)) distinctUCForST.put(st, new ArrayList<String>());
+			if(!distinctUCForST.keySet().contains(st)) {distinctUCForST.put(st, new ArrayList<String>());}
 			distinctUCForST.get(st).add(uc);
-			if(!distinctPSForUC.keySet().contains(uc)) distinctPSForUC.put(uc, new ArrayList<String>());
+			if(!distinctPSForUC.keySet().contains(uc)) {distinctPSForUC.put(uc, new ArrayList<String>());}
 			distinctPSForUC.get(uc).add(ps);
 			
-			if(!stMap.keySet().contains(st)) stMap.put(st, new HashMap<String,Map<String,String>>()) ;
-			if(!((Map)stMap.get(st)).keySet().contains(uc)) ((Map)stMap.get(st)).put(uc, dbValue);//.put(uc, new HashMap<String,String>());
+			if(!stMap.keySet().contains(st)) {stMap.put(st, new HashMap<String,Map<String,String>>()) ;}
+			if(!((Map)stMap.get(st)).keySet().contains(uc)) {((Map)stMap.get(st)).put(uc, dbValue);}//.put(uc, new HashMap<String,String>());
 			//if(!((Map)((Map)stMap.get(st)).get(uc)).keySet().contains(ps)) ((Map)((Map)stMap.get(st)).get(uc)).put(ps, dbValue);
 			
 			if(stFilter!=null)
 			{
-				if(!stAllKeysMap.keySet().contains(st)) stAllKeysMap.put(st, new HashMap<String,Map<String,String>>()) ;
-				if(!((Map)stAllKeysMap.get(st)).keySet().contains(uc)) ((Map)stAllKeysMap.get(st)).put(uc, "0");//.put(uc, new HashMap<String,String>());
+				if(!stAllKeysMap.keySet().contains(st)) { stAllKeysMap.put(st, new HashMap<String,Map<String,String>>()) ;}
+				if(!((Map)stAllKeysMap.get(st)).keySet().contains(uc)) { ((Map)stAllKeysMap.get(st)).put(uc, "0");}//.put(uc, new HashMap<String,String>());
 				//if(!((Map)((Map)stAllKeysMap.get(st)).get(uc)).keySet().contains(ps)) ((Map)((Map)stAllKeysMap.get(st)).get(uc)).put(ps, "0");
 			}					
 		}		
-		stCountMap.putAll(stMap);if(stFilter!=null)stFilter.putAll(stAllKeysMap);		
+		stCountMap.putAll(stMap);if(stFilter!=null) {stFilter.putAll(stAllKeysMap);}		
 		
 		LOG.info("stCountMap {} , stFilter={}",stCountMap, stFilter);
 		
@@ -363,8 +364,8 @@ public class ProductDocumentationService{
 					final Set<String> cardIdsNew = new HashSet<String>();
 					List<NewLearningContentEntity> result = learningContentRepo.findNew();
 					result.forEach(card -> cardIdsNew.add(card.getId()));
-					if(!cardIdsNew.isEmpty())
-					cardIds.addAll(productDocumentationDAO.getAllNewCardIdsByCards(contentTab, cardIdsNew));
+					if(!cardIdsNew.isEmpty()) {
+						cardIds.addAll(productDocumentationDAO.getAllNewCardIdsByCards(contentTab, cardIdsNew));}
 				}
 				else if(youKey.equals(FOR_YOU_KEYS[3])) //Bookmarked
 				{
@@ -386,7 +387,7 @@ public class ProductDocumentationService{
 		
 		//1. New
 		List<NewLearningContentEntity> result = learningContentRepo.findNew();//1 month as of now
-		if(result == null) youMap.put(FOR_YOU_KEYS[0], "0"); 
+		if(result == null) {youMap.put(FOR_YOU_KEYS[0], "0");} 
 		else 
 		{
 			Set<String> cardIdsNew = new HashSet<String>();
@@ -479,13 +480,13 @@ public class ProductDocumentationService{
 			int first=-1;
 			for(int i=0; i<keys.length; i++)
 			{
-				if(keys[i].equalsIgnoreCase(excludeKey)) continue;
-				if(first==-1) first=i;
-				if(i==first) cardIds.addAll(filteredCards.get(keys[i]));
-				else cardIds.retainAll(filteredCards.get(keys[i]));
+				if(keys[i].equalsIgnoreCase(excludeKey)) { continue;}
+				if(first==-1) {first=i;}
+				if(i==first) {cardIds.addAll(filteredCards.get(keys[i]));}
+				else {cardIds.retainAll(filteredCards.get(keys[i]));}
 			}
 			LOG.info("mapped with exclude key {} = {} cardIdsInp={}", excludeKey, cardIds, cardIdsInp);	
-			if(search) cardIds.retainAll(cardIdsInp);
+			if(search) {cardIds.retainAll(cardIdsInp);}
 		}
 		
 		LOG.info("count for exclude key {} = {}", excludeKey, cardIds);	
@@ -500,15 +501,15 @@ public class ProductDocumentationService{
 		Set<String> searchCardIds = new HashSet<String>();
 		searchCardIds.addAll(searchCardIdsInp);
 		
-		if(search && filteredCardsMap.containsKey(CONTENT_TYPE_FILTER)) cardIds = searchCardIds;  
+		if(search && filteredCardsMap.containsKey(CONTENT_TYPE_FILTER)) {cardIds = searchCardIds;}  
 		List<Map<String,Object>> dbListCT = productDocumentationDAO.getAllContentTypeWithCountByCards(contentTab,cardIds);		
 		((Map<String,String>)filters.get(CONTENT_TYPE_FILTER)).putAll(listToMap(dbListCT));
 				
-		if(search && filteredCardsMap.containsKey(TECHNOLOGY_FILTER)) cardIds = searchCardIds; else cardIds = cardIdsInp; 
+		if(search && filteredCardsMap.containsKey(TECHNOLOGY_FILTER)) {cardIds = searchCardIds;} else {cardIds = cardIdsInp;} 
 		List<Map<String,Object>> dbListTC = productDocumentationDAO.getAllTechnologyWithCountByCards(contentTab,cardIds);		
 		((Map<String,String>)filters.get(TECHNOLOGY_FILTER)).putAll(listToMap(dbListTC));
 		
-		if(search && filteredCardsMap.containsKey(LANGUAGE_FILTER)) cardIds = searchCardIds; else cardIds = cardIdsInp;
+		if(search && filteredCardsMap.containsKey(LANGUAGE_FILTER)) {cardIds = searchCardIds; } else {cardIds = cardIdsInp;}
 		List<Map<String,Object>> dbListLG = productDocumentationDAO.getAllLanguageWithCountByCards(contentTab,cardIds);		
 		((Map<String,String>)filters.get(LANGUAGE_FILTER)).putAll(listToMap(dbListLG));
 		
@@ -519,29 +520,29 @@ public class ProductDocumentationService{
 		((Map<String,String>)filters.get(DOCUMENTATION_FILTER)).putAll(listToMap(dbListDC));
 		}*/
 		
-		if(search && filteredCardsMap.containsKey(LIVE_EVENTS_FILTER)) cardIds = searchCardIds; else cardIds = cardIdsInp;
+		if(search && filteredCardsMap.containsKey(LIVE_EVENTS_FILTER)) { cardIds = searchCardIds; }else {cardIds = cardIdsInp;}
 		List<Map<String,Object>> dbListLE = productDocumentationDAO.getAllLiveEventsWithCountByCards(contentTab,cardIds);		
 		((Map<String,String>)filters.get(LIVE_EVENTS_FILTER)).putAll(listToMap(dbListLE));	
 		
 		//if(contentTab.equals(TECHNOLOGY_DB_TABLE))
 		{
-		if(search && filteredCardsMap.containsKey(SUCCESS_TRACKS_FILTER)) cardIds = searchCardIds; else cardIds = cardIdsInp;
+		if(search && filteredCardsMap.containsKey(SUCCESS_TRACKS_FILTER)) {cardIds = searchCardIds; }else {cardIds = cardIdsInp;}
 		List<Map<String,Object>> dbListST = productDocumentationDAO.getAllStUcWithCountByCards(contentTab,cardIds);//productDocumentationDAO.getAllStUcPsWithCountByCards(contentTab,cardIds);
 		Map<String,Object> filterAndCountsFromDb = listToSTMap(dbListST,null);
 		mergeSTFilterCounts(filters,filterAndCountsFromDb);
 		
-		if(search && filteredCardsMap.containsKey(LIFECYCLE_FILTER)) cardIds = searchCardIds; else cardIds = cardIdsInp;		
+		if(search && filteredCardsMap.containsKey(LIFECYCLE_FILTER)) {cardIds = searchCardIds;} else {cardIds = cardIdsInp;	}
 		List<Map<String,Object>> dbListLC = productDocumentationDAO.getAllPitstopsWithCountByCards(contentTab,cardIds);		
 		((Map<String,String>)filters.get(LIFECYCLE_FILTER)).putAll(listToMap(dbListLC));		
 		}
 		
-		if(search && filteredCardsMap.containsKey(FOR_YOU_FILTER)) cardIds = searchCardIds; else cardIds = cardIdsInp;
+		if(search && filteredCardsMap.containsKey(FOR_YOU_FILTER)) {cardIds = searchCardIds;} else {cardIds = cardIdsInp;}
 		Map<String,String> dbMapYou = getForYouCounts(contentTab,cardIds);		
 		((Map<String,String>)filters.get(FOR_YOU_FILTER)).putAll(dbMapYou);
 				
 		//if(contentTab.equals(ROLE_DB_TABLE))
 		{
-		if(search && filteredCardsMap.containsKey(ROLE_FILTER)) cardIds = searchCardIds; else cardIds = cardIdsInp;
+		if(search && filteredCardsMap.containsKey(ROLE_FILTER)) {cardIds = searchCardIds;} else {cardIds = cardIdsInp;}
 		List<Map<String,Object>> dbListRole = productDocumentationDAO.getAllRoleWithCountByCards(contentTab, cardIds);		
 		((Map<String,String>)filters.get(ROLE_FILTER)).putAll(listToMap(dbListRole));
 		}
@@ -636,12 +637,12 @@ public class ProductDocumentationService{
 	{
 		Map<String, Object> orderedFilters = new LinkedHashMap<String,Object>();
 		String [] orders = FILTER_CATEGORIES;
-		if(contentTab.equals(ROLE_DB_TABLE)) orders = FILTER_CATEGORIES_ROLE;
+		if(contentTab.equals(ROLE_DB_TABLE)) {orders = FILTER_CATEGORIES_ROLE;}
 			
 		for(int i=0;i<orders.length;i++)
 		{
 			String key = orders[i];
-			if(filters.containsKey(key)) orderedFilters.put(key, filters.get(key));
+			if(filters.containsKey(key)) {orderedFilters.put(key, filters.get(key));}
 		}
 		return orderedFilters;
 	}
@@ -673,11 +674,11 @@ public class ProductDocumentationService{
 			Set<String> nulls = new HashSet<String>();
 			Set<String>  all = subFilters.keySet();
 			all.forEach(ak -> {
-				if(ak==null || ak.trim().isEmpty() || ak.trim().equalsIgnoreCase(NULL_TEXT))
-					nulls.add(ak);
+				if(ak==null || ak.trim().isEmpty() || ak.trim().equalsIgnoreCase(NULL_TEXT)) {
+					nulls.add(ak);}
 			});
 			nulls.forEach(n-> subFilters.remove(n));
-			if(subFilters.size()==0) removeThese.add(k);//remove filter itself
+			if(subFilters.size()==0) {removeThese.add(k);}//remove filter itself
 
 		});
 				
@@ -693,8 +694,8 @@ public class ProductDocumentationService{
 
 		String sort = DEFAULT_SORT_FIELD ; 
 		Direction order = DEFAULT_SORT_ORDER ; 		
-		if(sortBy!=null  && !sortBy.equalsIgnoreCase("date")) sort = sortBy;
-		if(sortOrder!=null && sortOrder.equalsIgnoreCase("asc")) order = Sort.Direction.ASC;		
+		if(sortBy!=null  && !sortBy.equalsIgnoreCase("date")) { sort = sortBy;}
+		if(sortOrder!=null && sortOrder.equalsIgnoreCase("asc")) { order = Sort.Direction.ASC;}		
 		LOG.info("sort={} {}",sort, order);
 		
 		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
@@ -720,8 +721,8 @@ public class ProductDocumentationService{
 		else if(applyFilters!=null && !applyFilters.isEmpty())
 		{
 			Set<String> filteredCards = andFilters(filterCards(applyFilters,contentTab));
-			if(filteredCards!=null && !filteredCards.isEmpty())
-				dbCards = productDocumentationDAO.getAllLearningCardsByFilter(contentTab,filteredCards,Sort.by(order, sort)); 
+			if(filteredCards!=null && !filteredCards.isEmpty()) {
+				dbCards = productDocumentationDAO.getAllLearningCardsByFilter(contentTab,filteredCards,Sort.by(order, sort)); }
 		}			
 		else 
 		{
@@ -742,8 +743,8 @@ public class ProductDocumentationService{
 		if(sortBy.equalsIgnoreCase("title"))
 		{
 			learningCards.sort(new SortTitle());
-			if(order.isDescending())
-				Collections.reverse(learningCards);
+			if(order.isDescending()) {
+				Collections.reverse(learningCards);}
 		}
 	}
 	
@@ -753,19 +754,19 @@ public class ProductDocumentationService{
 		public int compare(GenericLearningModel o1, GenericLearningModel o2) {	
 			String o1Title = o1.getTitle(), o2Title = o2.getTitle();
 			
-			if(o1Title!=null)
-				o1Title = o1.getTitle().trim().replaceAll(regChars, "").toLowerCase();
-			else o1Title="";
+			if(o1Title!=null) {
+				o1Title = o1.getTitle().trim().replaceAll(REG_CHARS, "").toLowerCase();}
+			else {o1Title="";}
 			
-			if(o2Title!=null)
-				o2Title = o2.getTitle().trim().replaceAll(regChars, "").toLowerCase();
+			if(o2Title!=null) {
+				o2Title = o2.getTitle().trim().replaceAll(REG_CHARS, "").toLowerCase();}
 			
 			return o1Title.compareTo(o2Title);			
 		}		
 	}
 	
 	//  !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~   and lower must.
-	private static final String regChars= "[\\Q!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~\\E]";
+	private static final String REG_CHARS= "[\\Q!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~\\E]";
 	
 	private static final String TECHNOLOGY_DB_TABLE = "Technology";
 	private static final String ROLE_DB_TABLE = "Skill";
@@ -810,7 +811,7 @@ public class ProductDocumentationService{
 		}
 		if(prefFilters.containsKey(ROLE_FILTER))
 		{
-			if(!((List)prefFilters.get(ROLE_FILTER)).contains(userRole))((List)prefFilters.get(ROLE_FILTER)).add(userRole);
+			if(!((List)prefFilters.get(ROLE_FILTER)).contains(userRole)) {((List)prefFilters.get(ROLE_FILTER)).add(userRole);}
 		}
 		else
 		{
@@ -906,7 +907,7 @@ public class ProductDocumentationService{
 			int utcTimeHrsStart = utcStartInd+3;
 			int utcTimeHrsEnd = timeZone.indexOf(":",utcTimeHrsStart);
 			int utcTimeMinuteStart=-1,utcTimeMinuteEnd=-1;
-			if(utcTimeHrsEnd == -1) utcTimeHrsEnd = timeZone.length()-1;
+			if(utcTimeHrsEnd == -1) {utcTimeHrsEnd = timeZone.length()-1;}
 			else { utcTimeMinuteStart = utcTimeHrsEnd+1; utcTimeMinuteEnd = timeZone.length()-1;}			
 			int hrs3 = Integer.parseInt(timeZone.substring(utcTimeHrsStart, utcTimeHrsEnd));			
 			int min3 = utcTimeMinuteStart==-1?0:Integer.parseInt(timeZone.substring(utcTimeMinuteStart, utcTimeMinuteEnd));		
@@ -925,25 +926,29 @@ public class ProductDocumentationService{
 	
 		int hrs1 = Integer.parseInt(startTime.substring(0, startTime.indexOf(":")));
 		int min1 = Integer.parseInt(startTime.substring(startTime.indexOf(":")+1, startTime.indexOf(" ")));
-		if(startTime.contains("PM")) hrs1=hrs1+12;
-		else if (hrs1 == 12) hrs1=0;
+		if(startTime.contains("PM")) {hrs1=hrs1+12;}
+		else if (hrs1 == 12) {hrs1=0;}
 		
 		int hrs2 = Integer.parseInt(endTime.substring(0, endTime.indexOf(":")));
 		int min2 = Integer.parseInt(endTime.substring(endTime.indexOf(":")+1, endTime.indexOf(" ")));
-		if(endTime.contains("PM")) hrs2=hrs2+12;
-		else if (hrs2 == 12) hrs2=0;
+		if(endTime.contains("PM")) {hrs2=hrs2+12;}
+		else if (hrs2 == 12) {hrs2=0;}
 		//LOG.info("{} {} {} {}",hrs1,min1,hrs2,min2);
 		
 		Integer hrMin[] = getHrsMins(timeZone);
 		int hrs3 = hrMin[0];
 		int min3 = hrMin[1];
-		if(timeZone.contains("UTC-")) min3 = min3 * -1;		
+		if(timeZone.contains("UTC-")) {min3 = min3 * -1;}		
 		
 		for(LearningItemEntity futureCard : onlyFutureLWIds)
 		{			
 			Date date4 = Timestamp.valueOf(futureCard.getSortByDate());	
-			int finalHrs = date4.getHours() + hrs3; if(finalHrs<0) finalHrs = finalHrs*-1 -1; if(finalHrs>=24) finalHrs-=24;
-			int finalMin = date4.getMinutes() + min3; if(finalMin<0) {finalMin += 60; finalHrs-=1; } if(finalMin>=60) { finalMin-=60;finalHrs+=1;}
+			int finalHrs = date4.getHours() + hrs3; 
+			if(finalHrs<0) {finalHrs = finalHrs*-1 -1;} 
+			if(finalHrs>=24) {finalHrs-=24;}
+			int finalMin = date4.getMinutes() + min3; 
+			if(finalMin<0) {finalMin += 60; finalHrs-=1; } 
+			if(finalMin>=60) { finalMin-=60;finalHrs+=1;}
 			LOG.info("finalHrs {} {} {} {} {} {} {} {} {} {}",futureCard.getLearning_item_id(),hrs1,min1,hrs2,min2, hrs3, min3, date4 , finalHrs, finalMin); 
 			if( (finalHrs>hrs1 && finalHrs<hrs2 ) ||
 					(finalHrs==hrs1 && finalMin>=min1 ) ||
@@ -1011,7 +1016,7 @@ public class ProductDocumentationService{
 				.thenComparing(
 				GenericLearningModel::getAvgRatingPercentage, Comparator.nullsFirst(Comparator.naturalOrder()))
 				);
-		if(order.isDescending()) Collections.reverse(learningCards);
+		if(order.isDescending()) {Collections.reverse(learningCards);}
 	}
 	
 	private void randomizeCards(LearningRecordsAndFiltersModel learningCards, Integer limitEnd)
@@ -1048,7 +1053,7 @@ public class ProductDocumentationService{
 	{		
 		if(learningCards!=null && learningCards.getLearningData()!=null && learningCards.getLearningData().size()>0)
 		{		
-			if(limitEnd > learningCards.getLearningData().size()) limitEnd = learningCards.getLearningData().size();
+			if(limitEnd > learningCards.getLearningData().size()) {limitEnd = learningCards.getLearningData().size();}
 			List<GenericLearningModel> preferredCards = learningCards.getLearningData().subList(0, limitEnd);
 			learningCards.setLearningData(preferredCards);
 		}
@@ -1089,8 +1094,8 @@ public class ProductDocumentationService{
 		prefCards.put("peerCards",getPeerViewedCards(userRole));
 		prefCards.put("tiCards",getWebinarTimeinterval((List<String>) applyFilters.get(TIME_INTERVAL_FILTER)));
 		Set<String> filteredCards = orPreferences(prefCards);
-		if(filteredCards!=null && !filteredCards.isEmpty())
-			dbCards.addAll(productDocumentationDAO.getAllLearningCardsByFilter(contentTab,filteredCards,Sort.by(order, sort)));			
+		if(filteredCards!=null && !filteredCards.isEmpty()) {
+			dbCards.addAll(productDocumentationDAO.getAllLearningCardsByFilter(contentTab,filteredCards,Sort.by(order, sort)));	}		
 		LOG.info("all OR dbCards= {}",dbCards.size());
 		learningCards.addAll(mapLearningEntityToCards(dbCards, userBookmarks));		
 		return responseModel;	

@@ -1,6 +1,6 @@
 package com.cisco.cx.training.constants;
 
-@SuppressWarnings({"java:S1192","squid:S1192","java:S1214","squid:S1214"})
+@SuppressWarnings({"java:S1192","squid:S1192","squid:S00115"})
 public class SQLConstants {
 	
 	public static final String GET_CONTENT_TYPE_WITH_COUNT_BY_CARD = "select asset_type as label, count(*) as count from cxpp_db.cxpp_item_link where asset_type IS NOT NULL and asset_type!='null' and learning_item_id in (:learningItemIds) \n"
@@ -20,7 +20,7 @@ public class SQLConstants {
 			"where base.id in (:learningItemIds)";
 	
 	public static final String GET_NEW_CONTENT_IDs = "select id from (\n" + GET_NEW_CONTENT_BASE + ") base\n" +
-			"where base.id in (:learningItemIds)";;
+			"where base.id in (:learningItemIds)";
 
 	public static final String GET_UPCOMING_CONTENT_BASE = "select * from cxpp_db.cxpp_learning_content where asset_type='Live Webinar' and  sort_by_date > current_date() and status!='cancelled' order by sort_by_date asc limit 25";
 
@@ -35,7 +35,7 @@ public class SQLConstants {
 			"where base.id in (:learningItemIds)";
 	
 	public static final String GET_RECENTLY_VIEWED_IDs = "select id from (\n" + GET_RECENTLY_VIEWED_CONTENT_BASE + ") base\n" +
-			"where base.id in (:learningItemIds)";;
+			"where base.id in (:learningItemIds)";
 
 	public static final String GET_PD_CARDS__BY_ST = "select lc.* "
 			+ "from cxpp_db.cxpp_learning_successtrack st "

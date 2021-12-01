@@ -238,7 +238,7 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 			+ " and lmt.learning_map_id in (:cardIds) "
 			+ ")";
 	
-	public static final String GET_PD_CARD_IDS_BY_stUcPs = " select learning_item_id from ( "
+	public static final String GET_PD_CARD_IDS_BY_STUCPS = " select learning_item_id from ( "
 			+ " ( select learning_item_id , pitstop, usecase, successtrack "
 			+ " from cxpp_db.cxpp_learning_successtrack st "
 			+ " inner join cxpp_db.cxpp_learning_usecase uc "
@@ -250,7 +250,7 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 			+ " ) as T "
 			+ " where pitstop in (:pitstopInp) and usecase = :usecaseInp and successtrack = :successtrackInp ";
 			//+ " where ps.pitstop in (:pitstopInp) and uc.usecase = :usecaseInp and st.successtrack = :successtrackInp"					
-	@Query(value=GET_PD_CARD_IDS_BY_stUcPs , nativeQuery=true)	
+	@Query(value=GET_PD_CARD_IDS_BY_STUCPS , nativeQuery=true)	
 	Set<String> getCardIdsByPsUcSt(String joinTable,String successtrackInp, String usecaseInp, Set<String> pitstopInp);
 	
 	/** LM counts **/
@@ -631,7 +631,7 @@ public static final String GET_PD_DOCUMENTATION_WITH_COUNT_BY_CARD = "select arc
 	
 	
 	
-	public static final String GET_PD_CARD_IDS_BY_pitstop = " select learning_item_id from ( "
+	public static final String GET_PD_CARD_IDS_BY_PITSTOP = " select learning_item_id from ( "
 			+ " ( select learning_item_id , pitstop, usecase, successtrack "
 			+ " from cxpp_db.cxpp_learning_successtrack st "
 			+ " inner join cxpp_db.cxpp_learning_usecase uc "
@@ -643,13 +643,13 @@ public static final String GET_PD_DOCUMENTATION_WITH_COUNT_BY_CARD = "select arc
 			+ " ) as T "
 			+ " where pitstop in (:pitstopInp)  ";
 			//+ " where ps.pitstop in (:pitstopInp) and uc.usecase = :usecaseInp and st.successtrack = :successtrackInp"					
-	@Query(value=GET_PD_CARD_IDS_BY_pitstop , nativeQuery=true)	
+	@Query(value=GET_PD_CARD_IDS_BY_PITSTOP , nativeQuery=true)	
 	Set<String> getCardIdsByPsUcSt(String joinTable, HashSet<String> pitstopInp);
 	
 	
 	
 	
-	public static final String GET_PD_CARD_IDS_BY_stUc = " select learning_item_id from ( "
+	public static final String GET_PD_CARD_IDS_BY_STUC = " select learning_item_id from ( "
 			+ " ( select learning_item_id , usecase, successtrack "
 			+ " from cxpp_db.cxpp_learning_successtrack st "
 			+ " inner join cxpp_db.cxpp_learning_usecase uc "
@@ -661,7 +661,7 @@ public static final String GET_PD_DOCUMENTATION_WITH_COUNT_BY_CARD = "select arc
 			+ " ) as T "
 			+ " where usecase in (:usecaseInp) and successtrack = :successtrackInp ";
 			//+ " where ps.pitstop in (:pitstopInp) and uc.usecase = :usecaseInp and st.successtrack = :successtrackInp"					
-	@Query(value=GET_PD_CARD_IDS_BY_stUc , nativeQuery=true)	
+	@Query(value=GET_PD_CARD_IDS_BY_STUC , nativeQuery=true)	
 	Set<String> getCardIdsByPsUcSt(String joinTable, String successtrackInp, Set<String> usecaseInp);
 	
 	

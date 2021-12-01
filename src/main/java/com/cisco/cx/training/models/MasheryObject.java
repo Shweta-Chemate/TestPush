@@ -2,6 +2,7 @@ package com.cisco.cx.training.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
@@ -50,7 +51,7 @@ public class MasheryObject {
             String decodeRequestHeader = new String(Base64.decodeBase64(requestHeader));
             try {
                 masheryObject = OBJECT_MAPPER.readValue(decodeRequestHeader, MasheryObject.class);
-            } catch (Exception e) {
+            } catch (JsonProcessingException e) {
                 throw new IllegalArgumentException("Could not decode Mashery header, User unknown");
             }
         } else {
