@@ -41,6 +41,7 @@ import com.cisco.cx.training.models.UserDetails;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@SuppressWarnings({"squid:S134"})
 @Service
 public class ProductDocumentationService{
 	private final Logger LOG = LoggerFactory.getLogger(this.getClass().getName());
@@ -711,8 +712,8 @@ public class ProductDocumentationService{
 				applyFilters!=null && !applyFilters.isEmpty()	)
 		{
 			Set<String> filteredCards = andFilters(filterCards(applyFilters,contentTab));
-			if(filteredCards!=null && !filteredCards.isEmpty())
-				dbCards = productDocumentationDAO.getAllLearningCardsByFilterSearch(contentTab,filteredCards,"%"+searchToken+"%",Sort.by(order, sort));			
+			if(filteredCards!=null && !filteredCards.isEmpty()) {
+				dbCards = productDocumentationDAO.getAllLearningCardsByFilterSearch(contentTab,filteredCards,"%"+searchToken+"%",Sort.by(order, sort));}			
 		}
 		else if(searchToken!=null && !searchToken.trim().isEmpty())
 		{
@@ -949,11 +950,12 @@ public class ProductDocumentationService{
 			int finalMin = date4.getMinutes() + min3; 
 			if(finalMin<0) {finalMin += 60; finalHrs-=1; } 
 			if(finalMin>=60) { finalMin-=60;finalHrs+=1;}
-			LOG.info("finalHrs {} {} {} {} {} {} {} {} {} {}",futureCard.getLearning_item_id(),hrs1,min1,hrs2,min2, hrs3, min3, date4 , finalHrs, finalMin); 
-			if( (finalHrs>hrs1 && finalHrs<hrs2 ) ||
-					(finalHrs==hrs1 && finalMin>=min1 ) ||
-					(finalHrs==hrs2 && finalMin <= min2 )
-				)
+			LOG.info("finalHrs {} {} {} {} {} {} {} {} {} {}",futureCard.getLearning_item_id(),hrs1,min1,hrs2,min2, hrs3, min3, date4 , finalHrs, finalMin);
+			
+			boolean hrsCondition = (finalHrs>hrs1 && finalHrs<hrs2);
+			boolean hrMinCondition1 = (finalHrs==hrs1 && finalMin>=min1 );
+			boolean hrMinCondition2 = (finalHrs==hrs2 && finalMin <= min2 ) ;
+			if( hrsCondition ||	hrMinCondition1 ||	hrMinCondition2	)
 			 { rangeCardsIds.add(futureCard.getLearning_item_id());} 
 		}		
 		return rangeCardsIds; //rangeCards
@@ -977,10 +979,11 @@ public class ProductDocumentationService{
 				} catch (JsonProcessingException e) {
 					LOG.error("Invalid time interval",e);
 				}
-				if(	ddbTI.get(TI_START_TIME)!=null && !ddbTI.get(TI_START_TIME).trim().isEmpty() &&
-						ddbTI.get(TI_END_TIME)!=null && !ddbTI.get(TI_END_TIME).trim().isEmpty() &&
-						ddbTI.get(TI_TIME_ZONE)!=null && !ddbTI.get(TI_TIME_ZONE).trim().isEmpty()						
-						)
+				
+				boolean srtCondition = ddbTI.get(TI_START_TIME)!=null && !ddbTI.get(TI_START_TIME).trim().isEmpty();
+				boolean endCondition = ddbTI.get(TI_END_TIME)!=null && !ddbTI.get(TI_END_TIME).trim().isEmpty() ;
+				boolean tznCondition = ddbTI.get(TI_TIME_ZONE)!=null && !ddbTI.get(TI_TIME_ZONE).trim().isEmpty();	
+				if(	srtCondition &&	endCondition && tznCondition )
 				{
 					List<LearningItemEntity>  onlyFutureLWs = new ArrayList<LearningItemEntity>();
 					Set<String> onlyFutureLWIds= new HashSet<String>();

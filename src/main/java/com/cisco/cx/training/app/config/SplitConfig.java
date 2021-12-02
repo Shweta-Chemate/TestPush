@@ -61,9 +61,14 @@ public class SplitConfig {
     		} else {
     			LOG.error("Error while initialising Split :: Split Factory is null");
     		}
-    	}catch (IOException|URISyntaxException|InterruptedException|TimeoutException e){
+    	}catch (IOException|URISyntaxException|TimeoutException e){
     		LOG.error("Error while initialising Split", e);
-    	}
+    	}catch (InterruptedException e) {
+    		LOG.warn("Split Interrupted!", e);
+    	    // Restore interrupted state...
+    	    Thread.currentThread().interrupt();
+    	  }
+    	
     	return client;
     }
 }
