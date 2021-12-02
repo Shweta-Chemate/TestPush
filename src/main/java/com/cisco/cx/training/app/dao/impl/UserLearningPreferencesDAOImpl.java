@@ -46,6 +46,7 @@ import com.cisco.cx.training.models.UserLearningPreference;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@SuppressWarnings({"squid:S134"})
 @Repository
 public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDAO {
 	

@@ -33,6 +33,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 
+@SuppressWarnings({"squid:S134"})
 @Component
 public class RBACFilter implements Filter {
 

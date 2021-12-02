@@ -18,8 +18,8 @@ import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
 import com.cisco.cx.training.app.repo.NewLearningContentRepo;
 import com.cisco.cx.training.constants.Constants;
 
-
-@Repository
+@SuppressWarnings({"squid:S134"})
+@Repository  
 public class FilterCountsDAOImpl implements FilterCountsDAO{
 
 	private final static Logger LOG = LoggerFactory.getLogger(FilterCountsDAOImpl.class);
