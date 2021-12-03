@@ -129,7 +129,7 @@ public class RBACFilter implements Filter {
 
 			} catch (Exception e) {
 
-				Throwable cause = (e instanceof ServletException && e.getCause() != null) ? e.getCause() : e;
+				Throwable cause = (e instanceof ServletException && e.getCause() != null) ? e.getCause() : e; //NOSONAR
 				ErrorResponse errorResponse = RestResponseStatusExceptionResolver.createErrorResponse(cause);
 				response.setStatus(errorResponse.getStatus());
 				response.setContentType(Constants.APPLICATION_JSON);

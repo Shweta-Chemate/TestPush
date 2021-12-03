@@ -40,6 +40,7 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
+@SuppressWarnings({"squid:S00112"})
 @RestController
 @Validated
 @RequestMapping("/v1/partner/training")

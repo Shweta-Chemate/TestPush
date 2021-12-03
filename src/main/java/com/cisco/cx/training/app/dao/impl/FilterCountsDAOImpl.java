@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -423,13 +424,15 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 	@SuppressWarnings("unchecked")
 	private void mergeSTFilterCounts(Map<String,Object> filters , Map<String,Object> filterAndCountsFromDb) {
 		Map<String,Object> stFilters = ((Map<String,Object>)filters.get(Constants.SUCCESS_TRACK));
-		for(String stkey : filterAndCountsFromDb.keySet()) {
+		for(Entry<String, Object> entry : filterAndCountsFromDb.entrySet()) {
+			String stkey= entry.getKey();
 			if(stFilters.containsKey(stkey)) {
 				Map<String,Object> stFilter = (Map<String,Object>)stFilters.get(stkey);
-				Map<String,Object> stFilterFromDB = (Map<String,Object>)filterAndCountsFromDb.get(stkey);
-				for(String useCaseKey : stFilterFromDB.keySet()) {
+				Map<String,Object> stFilterFromDB = (Map<String,Object>)entry.getValue();
+				for(Entry<String, Object> useCaseEntry : stFilterFromDB.entrySet()) {
+					String useCaseKey = useCaseEntry.getKey();
 					if(stFilter.containsKey(useCaseKey)) {
-						stFilter.put(useCaseKey, stFilterFromDB.get(useCaseKey));
+						stFilter.put(useCaseKey, useCaseEntry.getValue());
 					}
 				}
 			}

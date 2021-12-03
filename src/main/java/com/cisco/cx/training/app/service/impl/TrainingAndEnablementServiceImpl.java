@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -132,10 +133,11 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 			subFilters.add((objectData[1]).toString());
 			mapData.put((objectData[0]).toString(), subFilters);
 		}
-		for(String key : mapData.keySet()){			
+		for(Entry<String, List<String>> entry : mapData.entrySet()){		
+			String key = entry.getKey();
 			SuccessAcademyFilter filter = new SuccessAcademyFilter();					
 			filter.setName(key);
-			filter.setFilters(mapData.get(key));					
+			filter.setFilters(entry.getValue());					
 			filter.setTabLocationOnUI(lookupValues.get(key.toLowerCase().replaceAll(" ", ""))); //NOSONAR
 			filters.add(filter);
 		}

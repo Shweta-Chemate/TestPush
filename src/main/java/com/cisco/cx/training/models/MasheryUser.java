@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -48,7 +47,7 @@ public class MasheryUser {
 			String decodeRequestHeader = new String(Base64.decodeBase64(requestHeader));
 			try {
 				masheryUser = OBJECT_MAPPER.readValue(decodeRequestHeader, MasheryUser.class);
-			} catch (JsonProcessingException e) {
+			} catch (Exception e) {
 				throw new IllegalArgumentException("Could not decode Mashery header, User unknown");
 			}
 		} else {

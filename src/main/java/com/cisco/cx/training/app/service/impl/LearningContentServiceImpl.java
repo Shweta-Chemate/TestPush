@@ -277,7 +277,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 
 		CountSchema webinarCount = new CountSchema();
 		webinarCount.setLabel("Webinars");
-		webinarCount.setCount(new Long(Integer.toUnsignedLong(learningContentDAO.getPIWCount())+learningContentDAO.getSuccessTalkCount()));
+		webinarCount.setCount(Long.valueOf(learningContentDAO.getPIWCount()+learningContentDAO.getSuccessTalkCount()));
 		return webinarCount;
 
 	}
@@ -286,7 +286,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 
 		CountSchema documentationCount = new CountSchema();
 		documentationCount.setLabel("Documentation");
-		documentationCount.setCount(new Long(learningContentDAO.getDocumentationCount()));
+		documentationCount.setCount(Long.valueOf(learningContentDAO.getDocumentationCount()));
 		return documentationCount;
 
 	}
@@ -295,7 +295,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 
 		CountSchema documentationCount = new CountSchema();
 		documentationCount.setLabel("Success Tracks");
-		documentationCount.setCount(new Long(Integer.toUnsignedLong(learningContentDAO.getSuccessTracksCount())+learningContentDAO.getLifecycleCount()));
+		documentationCount.setCount(Long.valueOf(learningContentDAO.getSuccessTracksCount()+learningContentDAO.getLifecycleCount()));
 		return documentationCount;
 
 	}
@@ -304,7 +304,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 
 		CountSchema documentationCount = new CountSchema();
 		documentationCount.setLabel("Technology");
-		documentationCount.setCount(new Long(learningContentDAO.getTechnologyCount()));
+		documentationCount.setCount(Long.valueOf(learningContentDAO.getTechnologyCount()));
 		return documentationCount;
 
 	}
@@ -313,7 +313,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 
 		CountSchema documentationCount = new CountSchema();
 		documentationCount.setLabel("Role");
-		documentationCount.setCount(new Long(learningContentDAO.getRolesCount()));
+		documentationCount.setCount(Long.valueOf(learningContentDAO.getRolesCount()));
 		return documentationCount;
 
 	}
@@ -802,8 +802,8 @@ public class LearningContentServiceImpl implements LearningContentService {
 				{
 					LinkedHashMap<String, Object> lfcFilterNew=new LinkedHashMap<>();
 					Map<String, String> lfcOld = (Map<String, String>) filters.get(filterGroup);
-					List<String> lfcFilterOrder = LearningContentServiceImpl.getLFCFilterOrder();
-					for(String filter : lfcFilterOrder) {
+					List<String> lfcFilterOrderList = LearningContentServiceImpl.getLFCFilterOrder();
+					for(String filter : lfcFilterOrderList) {
 						if(lfcOld.containsKey(filter)) {
 							lfcFilterNew.put(filter, lfcOld.get(filter));}
 					}

@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -41,7 +42,7 @@ import com.cisco.cx.training.models.UserDetails;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@SuppressWarnings({"squid:S134"})
+@SuppressWarnings({"squid:S134","squid:CommentedOutCodeLine"})
 @Service
 public class ProductDocumentationService{
 	private final Logger LOG = LoggerFactory.getLogger(this.getClass().getName());
@@ -80,7 +81,7 @@ public class ProductDocumentationService{
 				list= (List<String>)v;				
 				switch(k) {
 				case TECHNOLOGY_FILTER : filteredCards.put(k, productDocumentationDAO.getCardIdsByTC(contentTab,new HashSet<String>(list)));break;
-				//case DOCUMENTATION_FILTER : filteredCards.put(k, productDocumentationDAO.getCardIdsByAT(contentTab,new HashSet<String>(list)));break;
+				//case DOCUMENTATION_FILTER : filteredCards.put(k, productDocumentationDAO.getCardIdsByAT(contentTab,new HashSet<String>(list)));break; //NOSONAR
 				case LIVE_EVENTS_FILTER : filteredCards.put(k, productDocumentationDAO.getCardIdsByRegion(contentTab,new HashSet<String>(list)));break;
 				case CONTENT_TYPE_FILTER : filteredCards.put(k, productDocumentationDAO.getLearningsByContentType(contentTab,new HashSet<String>(list)));break;
 				case LANGUAGE_FILTER : filteredCards.put(k, productDocumentationDAO.getCardIdsByLanguage(contentTab,new HashSet<String>(list)));break;
@@ -92,27 +93,12 @@ public class ProductDocumentationService{
 			}
 			else if ( v instanceof Map) {	
 				Set<String> cardIdsStUcPs = new HashSet<String>();
-				//LOG.info("ST="+((Map) v).keySet());
 				((Map) v).keySet().forEach(ik->{
 					Object iv = ((Map)v).get(ik);
 					List<String> ilist;
 					if(iv instanceof Map) {
-						//LOG.info("UC="+((Map) iv).keySet());
 						Set<String> usecaseS= ((Map) iv).keySet(); String successtrack = ik.toString();
 						cardIdsStUcPs.addAll(productDocumentationDAO.getCardIdsByPsUcSt(contentTab,successtrack,usecaseS));
-					/*	((Map)iv).keySet().forEach(ivk -> {
-							Object ivv = ((Map)iv).get(ivk);
-							List<String> ivlist;
-							if(ivv instanceof List) 
-							{
-								ivlist= (List<String>)ivv;
-								LOG.info("PS={} uc={} st={}",ivlist,ivk,ik);
-								Set<String> pitStops = new HashSet<String>(ivlist);
-								String usecase = ivk.toString();
-								String successtrack = ik.toString();
-								cardIdsStUcPs.addAll(productDocumentationDAO.getCardIdsByPsUcSt(contentTab,successtrack,usecase,pitStops));
-							}						
-						}); */
 					}
 				});
 				filteredCards.put(k,cardIdsStUcPs);
@@ -239,14 +225,12 @@ public class ProductDocumentationService{
 			distinctPSForUC.get(uc).add(ps);
 			
 			if(!stMap.keySet().contains(st)) {stMap.put(st, new HashMap<String,Map<String,String>>()) ;}
-			if(!((Map)stMap.get(st)).keySet().contains(uc)) {((Map)stMap.get(st)).put(uc, dbValue);}//.put(uc, new HashMap<String,String>());
-			//if(!((Map)((Map)stMap.get(st)).get(uc)).keySet().contains(ps)) ((Map)((Map)stMap.get(st)).get(uc)).put(ps, dbValue);
+			if(!((Map)stMap.get(st)).keySet().contains(uc)) {((Map)stMap.get(st)).put(uc, dbValue);}
 			
 			if(stFilter!=null)
 			{
 				if(!stAllKeysMap.keySet().contains(st)) { stAllKeysMap.put(st, new HashMap<String,Map<String,String>>()) ;}
-				if(!((Map)stAllKeysMap.get(st)).keySet().contains(uc)) { ((Map)stAllKeysMap.get(st)).put(uc, "0");}//.put(uc, new HashMap<String,String>());
-				//if(!((Map)((Map)stAllKeysMap.get(st)).get(uc)).keySet().contains(ps)) ((Map)((Map)stAllKeysMap.get(st)).get(uc)).put(ps, "0");
+				if(!((Map)stAllKeysMap.get(st)).keySet().contains(uc)) { ((Map)stAllKeysMap.get(st)).put(uc, "0");}				
 			}					
 		}		
 		stCountMap.putAll(stMap);if(stFilter!=null) {stFilter.putAll(stAllKeysMap);}		
@@ -367,11 +351,7 @@ public class ProductDocumentationService{
 					result.forEach(card -> cardIdsNew.add(card.getId()));
 					if(!cardIdsNew.isEmpty()) {
 						cardIds.addAll(productDocumentationDAO.getAllNewCardIdsByCards(contentTab, cardIdsNew));}
-				}
-				else if(youKey.equals(FOR_YOU_KEYS[3])) //Bookmarked
-				{
-					//TODO  cardIds.add(card.getId());
-				}				
+				}			
 			}
 			else
 			{
@@ -552,13 +532,15 @@ public class ProductDocumentationService{
 	
 	private void mergeSTFilterCounts(Map<String,Object> filters , Map<String,Object> filterAndCountsFromDb) {
 		Map<String,Object> stFilters = ((Map<String,Object>)filters.get(SUCCESS_TRACKS_FILTER));
-		for(String stkey : filterAndCountsFromDb.keySet()) {
+		for(Entry<String, Object> entry : filterAndCountsFromDb.entrySet()) {
+			String stkey = entry.getKey();
 			if(stFilters.containsKey(stkey)) {
 				Map<String,Object> stFilter = (Map<String,Object>)stFilters.get(stkey);
-				Map<String,Object> stFilterFromDB = (Map<String,Object>)filterAndCountsFromDb.get(stkey);
-				for(String useCaseKey : stFilterFromDB.keySet()) {
+				Map<String,Object> stFilterFromDB = (Map<String,Object>)entry.getValue();
+				for(Entry<String, Object> useCaseEntry : stFilterFromDB.entrySet()) {
+					String useCaseKey = useCaseEntry.getKey();
 					if(stFilter.containsKey(useCaseKey)) {
-						stFilter.put(useCaseKey, stFilterFromDB.get(useCaseKey)); //addition
+						stFilter.put(useCaseKey, useCaseEntry.getValue()); //addition
 						/*
 						 * Map<String,Object> useCaseFilter =
 						 * (Map<String,Object>)stFilter.get(useCaseKey); Map<String,Object>
@@ -782,10 +764,16 @@ public class ProductDocumentationService{
 		PREFERENCE_FILTER_MAPPING.put("region", LIVE_EVENTS_FILTER);
 		PREFERENCE_FILTER_MAPPING.put("timeinterval", TIME_INTERVAL_FILTER);
 	}
-	private static Integer TOP_PICKS_LIMIT = 25;
+	private static final Integer TOP_PICKS_LIMIT = 25;
 	private static final String TI_START_TIME = "startTime";
 	private static final String TI_END_TIME = "endTime";
 	private static final String TI_TIME_ZONE = "timeZone";
+	
+	private static final int TWENTY_FOUR = 24;
+	private static final int TWELVE = 12;
+	private static final int TWO = 2;
+	private static final int THREE = 3;
+	private static final int SIXTY=60;
 	
 	private String getUserRole(String userId, String puId)
 	{
@@ -796,8 +784,8 @@ public class ProductDocumentationService{
 	
 	/** TOP Picks = my role + my preferences  
 	 * @param limit **/
-	public LearningRecordsAndFiltersModel fetchMyPreferredLearnings(String userId, String search,
-			HashMap<String, Object> filters, String sortBy, String sortOrder, String puid,
+	public LearningRecordsAndFiltersModel fetchMyPreferredLearnings(String userId, String search, //NOSONAR
+			HashMap<String, Object> filters, String sortBy, String sortOrder, String puid,			//NOSONAR
 			HashMap<String, Object> preferences, Integer limit) {
 		String userRole = getUserRole(userId,puid);		
 		HashMap<String, Object> prefFilters = new HashMap<String,Object>();	
@@ -883,7 +871,7 @@ public class ProductDocumentationService{
 	{
 		try
 		{
-			Date nowDate = new Date();
+			Date nowDate = new Date();  //NOSONAR
 			SimpleDateFormat sdf1 = new SimpleDateFormat();
 			sdf1.applyPattern("yyyy-MM-dd HH:mm:ss");
 			sdf1.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -905,7 +893,7 @@ public class ProductDocumentationService{
 		Integer hrMin []= new Integer[] {0,0};
 		if(utcStartInd>-1)
 		{
-			int utcTimeHrsStart = utcStartInd+3;
+			int utcTimeHrsStart = utcStartInd + THREE;
 			int utcTimeHrsEnd = timeZone.indexOf(":",utcTimeHrsStart);
 			int utcTimeMinuteStart=-1,utcTimeMinuteEnd=-1;
 			if(utcTimeHrsEnd == -1) {utcTimeHrsEnd = timeZone.length()-1;}
@@ -927,13 +915,13 @@ public class ProductDocumentationService{
 	
 		int hrs1 = Integer.parseInt(startTime.substring(0, startTime.indexOf(":")));
 		int min1 = Integer.parseInt(startTime.substring(startTime.indexOf(":")+1, startTime.indexOf(" ")));
-		if(startTime.contains("PM")) {hrs1=hrs1+12;}
-		else if (hrs1 == 12) {hrs1=0;}
+		if(startTime.contains("PM")) {hrs1=hrs1+TWELVE;}
+		else if (hrs1 == TWELVE) {hrs1=0;}
 		
 		int hrs2 = Integer.parseInt(endTime.substring(0, endTime.indexOf(":")));
 		int min2 = Integer.parseInt(endTime.substring(endTime.indexOf(":")+1, endTime.indexOf(" ")));
-		if(endTime.contains("PM")) {hrs2=hrs2+12;}
-		else if (hrs2 == 12) {hrs2=0;}
+		if(endTime.contains("PM")) {hrs2=hrs2+TWELVE;}
+		else if (hrs2 == TWELVE) {hrs2=0;}
 		//LOG.info("{} {} {} {}",hrs1,min1,hrs2,min2);
 		
 		Integer hrMin[] = getHrsMins(timeZone);
@@ -946,10 +934,10 @@ public class ProductDocumentationService{
 			Date date4 = Timestamp.valueOf(futureCard.getSortByDate());	
 			int finalHrs = date4.getHours() + hrs3; 
 			if(finalHrs<0) {finalHrs = finalHrs*-1 -1;} 
-			if(finalHrs>=24) {finalHrs-=24;}
+			if(finalHrs>=TWENTY_FOUR) {finalHrs-=TWENTY_FOUR;}
 			int finalMin = date4.getMinutes() + min3; 
-			if(finalMin<0) {finalMin += 60; finalHrs-=1; } 
-			if(finalMin>=60) { finalMin-=60;finalHrs+=1;}
+			if(finalMin<0) {finalMin += SIXTY; finalHrs-=1; } 
+			if(finalMin>=SIXTY) { finalMin-=SIXTY;finalHrs+=1;}
 			LOG.info("finalHrs {} {} {} {} {} {} {} {} {} {}",futureCard.getLearning_item_id(),hrs1,min1,hrs2,min2, hrs3, min3, date4 , finalHrs, finalMin);
 			
 			boolean hrsCondition = (finalHrs>hrs1 && finalHrs<hrs2);
@@ -973,12 +961,8 @@ public class ProductDocumentationService{
 			if(timeInterval !=null && timeInterval.size()==1)
 			{
 				String tiStr = timeInterval.get(0);
-				try {					
-					Map<String,String> ddbTimeinterval= new ObjectMapper().readValue(tiStr, Map.class);
-					ddbTI.putAll(ddbTimeinterval);
-				} catch (JsonProcessingException e) {
-					LOG.error("Invalid time interval",e);
-				}
+				Map<String,String> ddbTimeinterval= new ObjectMapper().readValue(tiStr, Map.class);
+				ddbTI.putAll(ddbTimeinterval);				
 				
 				boolean srtCondition = ddbTI.get(TI_START_TIME)!=null && !ddbTI.get(TI_START_TIME).trim().isEmpty();
 				boolean endCondition = ddbTI.get(TI_END_TIME)!=null && !ddbTI.get(TI_END_TIME).trim().isEmpty() ;
@@ -1027,8 +1011,8 @@ public class ProductDocumentationService{
 		int orgSize = learningCards.getLearningData().size();
 		if(orgSize > limitEnd) //25
 		{
-			int randomNums = orgSize>= limitEnd*2 ? limitEnd/2 : orgSize-limitEnd-1;  //12 or less			
-			int boundry = orgSize>= limitEnd*2 ? limitEnd*2 : orgSize; //50 or less
+			int randomNums = orgSize>= limitEnd*TWO ? limitEnd/TWO : orgSize-limitEnd-1;  //12 or less			
+			int boundry = orgSize>= limitEnd*TWO ? limitEnd*TWO : orgSize; //50 or less
 			Set<Integer> randomIndexes = new HashSet<Integer>();			
 			//while(randomIndexes.size()<randomNums) ---may take more time
 			for(int i=0;i<=randomNums;i++)
@@ -1097,7 +1081,7 @@ public class ProductDocumentationService{
 		prefCards.put("peerCards",getPeerViewedCards(userRole));
 		prefCards.put("tiCards",getWebinarTimeinterval((List<String>) applyFilters.get(TIME_INTERVAL_FILTER)));
 		Set<String> filteredCards = orPreferences(prefCards);
-		if(filteredCards!=null && !filteredCards.isEmpty()) {
+		if(filteredCards!=null && !filteredCards.isEmpty()) {  //NOSONAR
 			dbCards.addAll(productDocumentationDAO.getAllLearningCardsByFilter(contentTab,filteredCards,Sort.by(order, sort)));	}		
 		LOG.info("all OR dbCards= {}",dbCards.size());
 		learningCards.addAll(mapLearningEntityToCards(dbCards, userBookmarks));		
