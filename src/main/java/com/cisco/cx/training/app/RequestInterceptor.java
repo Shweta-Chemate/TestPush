@@ -33,7 +33,7 @@ public class RequestInterceptor implements HandlerInterceptor {
 			} else {
 				throw new BadRequestException("Mashrey Header is mandatory");
 			}
-		} catch (BadRequestException | IllegalArgumentException  e) {
+		} catch (BadRequestException | IllegalArgumentException  e) {  //NOSONAR
 			MDC.put(LoggerConstants.USER_ID, LoggerConstants.USER_ID_DEFAULT);			
 			throw new BadRequestException(e.getMessage());
 

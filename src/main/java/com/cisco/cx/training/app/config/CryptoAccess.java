@@ -19,7 +19,7 @@ public class CryptoAccess<T extends Serializable> {
 	private static KeyGenerator keyGen;
 	private char[] transformation = "AES".toCharArray();
 	private SecretKey secretKey;
-	private static int keySize=256;
+	private static final int KEY_SIZE=256;
 
 	public static final CryptoAccess<String> CRYPTO_STRING = new CryptoAccess<>();
 
@@ -33,11 +33,11 @@ public class CryptoAccess<T extends Serializable> {
 		}
 		try {
 			KeyGenerator keyGen = KeyGenerator.getInstance(new String(transformation));
-			keyGen.init(keySize);
+			keyGen.init(KEY_SIZE);
 			CryptoAccess.keyGen=keyGen;
 			return CryptoAccess.keyGen;
 
-		} catch (NoSuchAlgorithmException | NullPointerException | InvalidParameterException  e) {
+		} catch (NoSuchAlgorithmException | InvalidParameterException  e) {
 			throw new IllegalStateException("FATAL:cannot create key generator",e);
 		}
 	}

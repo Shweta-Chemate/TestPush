@@ -36,9 +36,6 @@ import com.cisco.cx.training.models.LearningModule;
 
 @Repository
 public class NewLearningContentDAOImpl implements NewLearningContentDAO{
-
-	private final static Logger LOG = LoggerFactory.getLogger(NewLearningContentDAOImpl.class);
-
 	private final static HashMap<String, List<String>> APIFilterGroupMappings=getAPIFilterGroupMappings();
 
 	@Autowired
@@ -134,7 +131,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 			if(cardIds.isEmpty()) {
 				return filters;
 			}
-			if(filtersSelected!=null && !filtersSelected.isEmpty() && filtersSelected.size()==1)
+			if(filtersSelected.size()==1)
 			{
 				filtersSelected.keySet().forEach(filterGroup -> filters.put(filterGroup, countFilters.get(filterGroup)));
 
@@ -169,7 +166,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 			if(cardIds.isEmpty()) {
 				return filters;
 			}
-			if(filtersSelected!=null && !filtersSelected.isEmpty() && filtersSelected.size()==1)
+			if(filtersSelected.size()==1)
 			{
 				filtersSelected.keySet().forEach(filterGroup -> filters.put(filterGroup, countFilters.get(filterGroup)));
 
@@ -204,7 +201,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 			if(cardIds.isEmpty()) {
 				return filters;
 			}
-			if(filtersSelected!=null && !filtersSelected.isEmpty() && filtersSelected.size()==1)
+			if(filtersSelected.size()==1)
 			{
 				filtersSelected.keySet().forEach(filterGroup -> filters.put(filterGroup, countFilters.get(filterGroup)));
 
@@ -237,7 +234,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 			if(cardIds.isEmpty()) {
 				return filters;
 			}
-			if(filtersSelected!=null && !filtersSelected.isEmpty() && filtersSelected.size()==1)
+			if(filtersSelected.size()==1)
 			{
 				filtersSelected.keySet().forEach(filterGroup -> filters.put(filterGroup, countFilters.get(filterGroup)));
 
@@ -272,7 +269,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 			if(cardIds.isEmpty()) {
 				return filters;
 			}
-			if(filtersSelected!=null && !filtersSelected.isEmpty() && filtersSelected.size()==1)
+			if(filtersSelected.size()==1)
 			{
 				filtersSelected.keySet().forEach(filterGroup -> filters.put(filterGroup, countFilters.get(filterGroup)));
 
@@ -308,7 +305,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 			if(cardIds.isEmpty()) {
 				return filters;
 			}
-			if(filtersSelected!=null && !filtersSelected.isEmpty() && filtersSelected.size()==1)
+			if(filtersSelected.size()==1)
 			{
 				filtersSelected.keySet().forEach(filterGroup -> filters.put(filterGroup, countFilters.get(filterGroup)));
 
@@ -351,7 +348,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 			if(cardIds.isEmpty()) {
 				return filters;
 			}
-			if(filtersSelected!=null && !filtersSelected.isEmpty() && filtersSelected.size()==1)
+			if(filtersSelected.size()==1)
 			{
 				filtersSelected.keySet().forEach(filterGroup -> filters.put(filterGroup, countFilters.get(filterGroup)));
 			}
@@ -608,12 +605,12 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	@SuppressWarnings("unchecked")
 	private Set<String> getSTFilteredIDs(Object stMap) {
 		Set<String> cardIdsStUc = new HashSet<String>();
-		//LOG.info("ST="+((Map) v).keySet());
+		//LOG.info("ST="+((Map) v).keySet()); //NOSONAR
 		((Map) stMap).keySet().forEach(ik->{
 			Object iv = ((Map)stMap).get(ik);
 			List<String> ilist;
 			if(iv instanceof Map) {
-				//LOG.info("UC="+((Map) iv).keySet());
+				//LOG.info("UC="+((Map) iv).keySet()); //NOSONAR
 				Set<String> usecases= ((Map) iv).keySet(); String successtrack = ik.toString();
 				cardIdsStUc.addAll(learningContentRepo.getCardIdsByUcSt(successtrack, usecases));
 			}
@@ -690,7 +687,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 			if (cardIds.isEmpty()) {
 				return filters;
 			}
-			if (filtersSelected != null && !filtersSelected.isEmpty() && filtersSelected.size() == 1) {
+			if (filtersSelected.size() == 1) {
 				filtersSelected.keySet()
 						.forEach(filterGroup -> filters.put(filterGroup, countFilters.get(filterGroup)));
 

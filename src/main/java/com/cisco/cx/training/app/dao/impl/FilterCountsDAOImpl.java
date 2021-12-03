@@ -232,28 +232,21 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 				case Constants.ROLE : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByRole(new HashSet<String>(list),learningItemIdsList));break;
 				case Constants.TECHNOLOGY : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByTech(new HashSet<String>(list),learningItemIdsList));break;
 				case Constants.LIFECYCLE : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByLFC(new HashSet<String>(list),learningItemIdsList));break;
-				case Constants.FOR_YOU_FILTER : {
-					Set<String> cardIds=new HashSet<>();
-					if(list.contains(Constants.RECENTLY_VIEWED)) {
-						cardIds.addAll(learningContentRepo.getRecentlyViewedContentFilteredIds(userId, learningItemIdsList));}
-					if(list.contains(Constants.BOOKMARKED_FOR_YOU)) {
-						Set<String> bookmarkIds=getBookMarkedIds(userId);
-						bookmarkIds.retainAll(learningItemIdsList);
-						cardIds.addAll(bookmarkIds);
-					}
-					filteredCards.put(filterGroup, cardIds);
-				} break;
+				case Constants.FOR_YOU_FILTER : {Set<String> cardIds=new HashSet<>();
+					if(list.contains(Constants.RECENTLY_VIEWED)) {cardIds.addAll(learningContentRepo.getRecentlyViewedContentFilteredIds(userId, learningItemIdsList));}
+					if(list.contains(Constants.BOOKMARKED_FOR_YOU)){Set<String> bookmarkIds=getBookMarkedIds(userId);bookmarkIds.retainAll(learningItemIdsList);cardIds.addAll(bookmarkIds);}
+					filteredCards.put(filterGroup, cardIds);} break;
 				default : LOG.info("other {}={}",filterGroup,list);
 				};
 			}
 			else if ( v instanceof Map) {
 				Set<String> cardIdsStUc = new HashSet<String>();
-				//LOG.info("ST="+((Map) v).keySet());
+				//LOG.info("ST="+((Map) v).keySet()); //NOSONAR
 				((Map) v).keySet().forEach(ik->{
 					Object iv = ((Map)v).get(ik);
 					List<String> ilist;
 					if(iv instanceof Map) {
-						//LOG.info("UC="+((Map) iv).keySet());
+						//LOG.info("UC="+((Map) iv).keySet()); //NOSONAR
 						Set<String> usecases= ((Map) iv).keySet(); String successtrack = ik.toString();
 						cardIdsStUc.addAll(learningContentRepo.getCardIdsByUcStFilter(successtrack, usecases, learningItemIdsList));
 					}
@@ -412,14 +405,14 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 			distinctPSForUC.get(uc).add(ps);
 
 			if(!stMap.keySet().contains(st)) {stMap.put(st, new HashMap<String,Map<String,String>>()) ;}
-			if(!((Map)stMap.get(st)).keySet().contains(uc)) {((Map)stMap.get(st)).put(uc, dbValue);}//.put(uc, new HashMap<String,String>());
-			//if(!((Map)((Map)stMap.get(st)).get(uc)).keySet().contains(ps)) ((Map)((Map)stMap.get(st)).get(uc)).put(ps, dbValue);
+			if(!((Map)stMap.get(st)).keySet().contains(uc)) {((Map)stMap.get(st)).put(uc, dbValue);}//.put(uc, new HashMap<String,String>()); //NOSONAR
+			//if(!((Map)((Map)stMap.get(st)).get(uc)).keySet().contains(ps)) ((Map)((Map)stMap.get(st)).get(uc)).put(ps, dbValue); //NOSONAR
 
 			if(stFilter!=null)
 			{
 				if(!stAllKeysMap.keySet().contains(st)) { stAllKeysMap.put(st, new HashMap<String,Map<String,String>>()) ;}
-				if(!((Map)stAllKeysMap.get(st)).keySet().contains(uc)) {((Map)stAllKeysMap.get(st)).put(uc, "0");}//.put(uc, new HashMap<String,String>());
-				//if(!((Map)((Map)stAllKeysMap.get(st)).get(uc)).keySet().contains(ps)) ((Map)((Map)stAllKeysMap.get(st)).get(uc)).put(ps, "0");
+				if(!((Map)stAllKeysMap.get(st)).keySet().contains(uc)) {((Map)stAllKeysMap.get(st)).put(uc, "0");}//.put(uc, new HashMap<String,String>());//NOSONAR
+				//if(!((Map)((Map)stAllKeysMap.get(st)).get(uc)).keySet().contains(ps)) ((Map)((Map)stAllKeysMap.get(st)).get(uc)).put(ps, "0"); //NOSONAR
 			}
 		}
 		stCountMap.putAll(stMap);if(stFilter!=null) {stFilter.putAll(stAllKeysMap);}

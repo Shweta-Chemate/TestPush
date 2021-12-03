@@ -46,6 +46,9 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 	
 	private final Logger LOG = LoggerFactory.getLogger(this.getClass().getName());
 	
+	private static final int CONN_TIMEOUT = 20;
+	private static final int SOCKET_TIMEOUT = 20;
+	
 	@Autowired
 	private PropertyConfiguration propertyConfig;
 
@@ -72,8 +75,8 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 	public void init() {
 		LOG.info("Initializing LearningBookmarkDAOImpl for table :: {}", propertyConfig.getBookmarkTableName());
 		SdkHttpClient httpClient = ApacheHttpClient.builder().
-                connectionTimeout(Duration.ofSeconds(20))
-                .socketTimeout(Duration.ofSeconds(20))
+                connectionTimeout(Duration.ofSeconds(CONN_TIMEOUT))
+                .socketTimeout(Duration.ofSeconds(SOCKET_TIMEOUT))
                 .build();
 		
 		Region region = Region.of(propertyConfig.getAwsRegion());
@@ -167,7 +170,7 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 	}
 
 	/*
-	 * {"ACIDistNet1":1620903592718, ...}	 */
+	 * {"ACIDistNet1":1620903592718, ...}	 */  //NOSONAR
 	@Override
 	public Map<String,Object> getBookmarksWithTime(String email){
 		LOG.info("Entering the fetch bookmarks");

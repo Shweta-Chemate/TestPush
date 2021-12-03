@@ -51,6 +51,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDAO {
 	
 	private final Logger LOG = LoggerFactory.getLogger(this.getClass().getName());
+	private static final int CONN_TIMEOUT = 20;
+	private static final int SOCKET_TIMEOUT = 20;
 	
 	@Autowired
 	private PropertyConfiguration propertyConfig;	
@@ -60,7 +62,7 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
 	private static final String USERID_SUFFIX = "";//_ulp
 	private static final String USERID_KEY="userid";	
 	private static enum PREFERENCES_KEYS {role,technology,language,region,timeinterval};  //NOSONAR 
-	private static final String PREFERENCE_SUFFIX = "";//"_ulp";
+	private static final String PREFERENCE_SUFFIX = "";//"_ulp"
 	private DynamoDbClient dbClient;	
 	private static ObjectMapper mapper = new ObjectMapper();
 	
@@ -77,13 +79,13 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
 	{
 		LOG.info("Initializing ULP for table :: {}", propertyConfig.getUlPreferencesTableName());
 		SdkHttpClient httpClient = ApacheHttpClient.builder().
-                connectionTimeout(Duration.ofSeconds(20))
-                .socketTimeout(Duration.ofSeconds(20))
+                connectionTimeout(Duration.ofSeconds(CONN_TIMEOUT))
+                .socketTimeout(Duration.ofSeconds(SOCKET_TIMEOUT))
                 .build();
 		
 		Region region = Region.of(propertyConfig.getAwsRegion());
 		DynamoDbClientBuilder dDbClientBuilder = DynamoDbClient.builder().httpClient(httpClient);
-				//.endpointOverride(new URI("http://localhost:8000"));
+				//.endpointOverride(new URI("http://localhost:8000")); //NOSONAR
 		dDbClientBuilder.region(region);
 		dbClient = dDbClientBuilder.build();
 	}
@@ -107,17 +109,17 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
 			{
 				Set<String> preferenceNames = new HashSet<String>();
 				List<UserLearningPreference> ulpList = ulPreferences.get(preferenceKey.name());
-				//LOG.info("preferenceKey {} ulpList {}",preferenceKey, ulpList);
+				//LOG.info("preferenceKey {} ulpList {}",preferenceKey, ulpList);  //NOSONAR
 				if(ulpList!=null && !ulpList.isEmpty())
 				{
 					ulpList.forEach(up ->{
 						if(preferenceKey.equals(PREFERENCES_KEYS.timeinterval))
 						{
 								try {
-									String oneTI = new ObjectMapper().writeValueAsString(up.getTimeMap());
+									String oneTI = mapper.writeValueAsString(up.getTimeMap());
 									preferenceNames.add(oneTI);
-								} catch (JsonProcessingException e) {
-									LOG.warn("Invalid TI in create {} {}", up, e.getMessage());
+								} catch (JsonProcessingException e) { //NOSONAR
+									LOG.warn("Invalid TI in create {} {}", up, e.getMessage()); 
 								}							
 							
 						}
@@ -196,7 +198,7 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
 		QueryResponse queryResult = fetchULPPreferencesDDB(userId);		
 		long requestStartTime = System.currentTimeMillis();	
 		List<Map<String,AttributeValue>> attributeValues = queryResult.items();		
-		//LOG.info("attributeValues {} , {}", attributeValues, attributeValues.size());
+		//LOG.info("attributeValues {} , {}", attributeValues, attributeValues.size());  //NOSONAR
 		if(attributeValues.size()>0) {
 			Map<String,AttributeValue> userLearningPreferences = attributeValues.get(0);
 			Arrays.asList(PREFERENCES_KEYS.values()).forEach( preferenceKey ->{
@@ -204,7 +206,7 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
 				if(preferenceSet != null)
 				{
 					Set<String> ulps = new HashSet<String>(preferenceSet.ss());	
-					//LOG.info(" preferenceKey {} ulps {}",preferenceKey, ulps);
+					//LOG.info(" preferenceKey {} ulps {}",preferenceKey, ulps);  //NOSONAR
 					if(preferenceKey.equals(PREFERENCES_KEYS.timeinterval))
 					{
 						List<UserLearningPreference> listTI = new ArrayList<UserLearningPreference>();
@@ -212,10 +214,10 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
 							try {
 								UserLearningPreference timeULP = new UserLearningPreference();
 								timeULP.setSelected(true);
-								timeULP.setTimeMap(new ObjectMapper().readValue(timeInterval, Map.class));
+								timeULP.setTimeMap(mapper.readValue(timeInterval, Map.class));
 								listTI.add(timeULP);
-							} catch (JsonProcessingException e) {
-								LOG.warn("Invalid TimeInterval preference {} err={}",timeInterval, e.getMessage());								
+							} catch (JsonProcessingException e) {  //NOSONAR
+								LOG.warn("Invalid TimeInterval preference {} err={}",timeInterval, e.getMessage());							
 							}						
 						});	
 						ulpMap.put(PREFERENCES_KEYS.timeinterval.name(), listTI);
