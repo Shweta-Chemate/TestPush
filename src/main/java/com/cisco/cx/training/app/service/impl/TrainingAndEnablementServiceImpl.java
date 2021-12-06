@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -35,6 +36,7 @@ import com.cisco.cx.training.models.UserDetails;
 import com.cisco.cx.training.models.UserLearningPreference;
 import com.cisco.cx.training.util.SuccessAcademyMapper;
 
+@SuppressWarnings({"squid:S1200"})
 @Service
 public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementService {
 	private final Logger LOG = LoggerFactory.getLogger(this.getClass().getName());
@@ -132,10 +134,11 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 			subFilters.add((objectData[1]).toString());
 			mapData.put((objectData[0]).toString(), subFilters);
 		}
-		for(String key : mapData.keySet()){			
+		for(Entry<String, List<String>> entry : mapData.entrySet()){		
+			String key = entry.getKey();
 			SuccessAcademyFilter filter = new SuccessAcademyFilter();					
 			filter.setName(key);
-			filter.setFilters(mapData.get(key));					
+			filter.setFilters(entry.getValue());					
 			filter.setTabLocationOnUI(lookupValues.get(key.toLowerCase().replaceAll(" ", ""))); //NOSONAR
 			filters.add(filter);
 		}

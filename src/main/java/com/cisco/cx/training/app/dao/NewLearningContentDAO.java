@@ -15,7 +15,7 @@ public interface NewLearningContentDAO {
 	List<NewLearningContentEntity> fetchSuccesstalks(String sortField, String sortType,
 			Map<String, String> filterParams, String search);
 
-	List<NewLearningContentEntity> listPIWs(String region, String sortField, String sortType,
+	List<NewLearningContentEntity> listPIWs(String region, String sortField, String sortType, //NOSONAR
 			Map<String, String> query_map, String search);
 	
 	Integer getSuccessTalkCount();

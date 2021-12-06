@@ -165,7 +165,7 @@ public class SmartsheetDAOImpl implements SmartsheetDAO {
                 boolean isRowMatch = currentRow.getCells().stream().map(currentCell -> {
                     // start with flag true (at start every cell is qualified for row to be a match)
                     boolean isCellQualified = true;
-                    //LOG.info("{} -> {}, {}", currentCell.getColumnId(), currentCell.getValue(), currentCell.getDisplayValue());
+                    //LOG.info("{} -> {}, {}", currentCell.getColumnId(), currentCell.getValue(), currentCell.getDisplayValue()); //NOSONAR
                     // check for field conditions and determine if the cell values qualifies or disqualifies the row to be matched
                     if (StringUtils.equalsIgnoreCase(columnIdToTitleMap.get(currentCell.getColumnId()), EVENT_NAME_KEY)) {
                         isCellQualified = isCellQualified && (Objects.equals(registration.getTitle(), currentCell.getValue()));

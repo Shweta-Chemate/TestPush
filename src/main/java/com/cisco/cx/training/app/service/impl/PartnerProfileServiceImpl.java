@@ -47,7 +47,7 @@ public class PartnerProfileServiceImpl implements PartnerProfileService {
 		HttpHeaders headers = new HttpHeaders();
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
-		//headers.set("Authorization", "Basic " + config.createCxpBasicAuthToken());
+		//headers.set("Authorization", "Basic " + config.createCxpBasicAuthToken()); //NOSONAR
 		addHeaders(headers);
 		HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
 		ResponseEntity<String> result = restTemplate.exchange(entitlementUrl + "/" + userId, HttpMethod.GET, requestEntity, String.class);
@@ -68,12 +68,12 @@ public class PartnerProfileServiceImpl implements PartnerProfileService {
 		UserDetailsWithCompanyList userDetails = null;
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
-//		requestHeaders.set("Authorization", "Basic " + config.createCxpBasicAuthToken());
+//		requestHeaders.set("Authorization", "Basic " + config.createCxpBasicAuthToken()); //NOSONAR
 		addHeaders(requestHeaders);
 		HttpEntity<String> requestEntity = new HttpEntity<String>(null, requestHeaders);
 		ResponseEntity<String> result = restTemplate.exchange(config.getPartnerUserDetails(), HttpMethod.GET,requestEntity, String.class);
 		LOGGER.info("Prtner user details URL response = {}",result.getStatusCode().value() != HttpStatus.OK.value() ? result.getBody() : "call completed.");
-		//if(result==null)throw new GenericException("user details api failed");
+		//if(result==null)throw new GenericException("user details api failed"); //NOSONAR
 		try {
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			userDetails = mapper.readValue(result.getBody(), UserDetailsWithCompanyList.class);
