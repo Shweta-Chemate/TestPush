@@ -336,35 +336,46 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 		}
 
 		if(filterGroups.contains(Constants.LIFECYCLE)) {
-			Map<String, String> lfcFilter = new LinkedHashMap<>();
-			List<Map<String,Object>> dbListLFC = learningContentRepo.getAllLFCWithCountByCards(learningItemIdsList);
-			Map<String,String> allContentsLFC = listToMap(dbListLFC);
-			if(!allContentsLFC.isEmpty()) {
-				countFilters.put(Constants.LIFECYCLE, allContentsLFC);
-				filters.put(Constants.LIFECYCLE, lfcFilter);
-				allContentsLFC.keySet().forEach(k -> lfcFilter.put(k, "0"));
-			}
+			initializeLCWithCounts(filters, countFilters, learningItemIdsList);
 		}
 
 		if(filterGroups.contains(Constants.FOR_YOU_FILTER)) {
-			Map<String, String> forYouMap=new LinkedHashMap<>();
-			Map<String, String> forYouMapEmpty=new LinkedHashMap<>();
-			Set<String> bookmarkIds=getBookMarkedIds(userId);
-			bookmarkIds.retainAll(learningItemIdsList);
-			int count = bookmarkIds.size();
-			if(count>0) {
-				forYouMap.put(Constants.BOOKMARKED_FOR_YOU, Integer.toString(count));
-				forYouMapEmpty.put(Constants.BOOKMARKED_FOR_YOU, "0");
-			}
-			count = learningContentRepo.getRecentlyViewedContentFilteredIds(userId, learningItemIdsList).size();
-			if(count>0) {
-				forYouMap.put(Constants.RECENTLY_VIEWED, Integer.toString(count));
-				forYouMapEmpty.put(Constants.RECENTLY_VIEWED, "0");
-			}
-			if(!forYouMap.isEmpty()) {
-				countFilters.put(Constants.FOR_YOU_FILTER, forYouMap);
-				filters.put(Constants.FOR_YOU_FILTER, forYouMapEmpty);
-			}
+			initializeYouWithCounts(filters, countFilters, learningItemIdsList, userId);
+		}
+	}
+	
+	private void initializeLCWithCounts(HashMap<String, Object> filters, 
+	HashMap<String, Object> countFilters, Set<String> learningItemIdsList) {
+		Map<String, String> lfcFilter = new LinkedHashMap<>();
+		List<Map<String,Object>> dbListLFC = learningContentRepo.getAllLFCWithCountByCards(learningItemIdsList);
+		Map<String,String> allContentsLFC = listToMap(dbListLFC);
+		if(!allContentsLFC.isEmpty()) {
+			countFilters.put(Constants.LIFECYCLE, allContentsLFC);
+			filters.put(Constants.LIFECYCLE, lfcFilter);
+			allContentsLFC.keySet().forEach(k -> lfcFilter.put(k, "0"));
+		}
+	
+	}
+	
+	private void initializeYouWithCounts(HashMap<String, Object> filters, 
+	HashMap<String, Object> countFilters, Set<String> learningItemIdsList, String userId) {
+		Map<String, String> forYouMap=new LinkedHashMap<>();
+		Map<String, String> forYouMapEmpty=new LinkedHashMap<>();
+		Set<String> bookmarkIds=getBookMarkedIds(userId);
+		bookmarkIds.retainAll(learningItemIdsList);
+		int count = bookmarkIds.size();
+		if(count>0) {
+			forYouMap.put(Constants.BOOKMARKED_FOR_YOU, Integer.toString(count));
+			forYouMapEmpty.put(Constants.BOOKMARKED_FOR_YOU, "0");
+		}
+		count = learningContentRepo.getRecentlyViewedContentFilteredIds(userId, learningItemIdsList).size();
+		if(count>0) {
+			forYouMap.put(Constants.RECENTLY_VIEWED, Integer.toString(count));
+			forYouMapEmpty.put(Constants.RECENTLY_VIEWED, "0");
+		}
+		if(!forYouMap.isEmpty()) {
+			countFilters.put(Constants.FOR_YOU_FILTER, forYouMap);
+			filters.put(Constants.FOR_YOU_FILTER, forYouMapEmpty);
 		}
 	}
 

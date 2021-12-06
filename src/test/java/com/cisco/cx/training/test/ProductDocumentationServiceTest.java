@@ -170,10 +170,10 @@ public class ProductDocumentationServiceTest {
 		NewLearningContentEntity n1 = new NewLearningContentEntity(); n1.setId("101");
 		List<NewLearningContentEntity> result = new ArrayList<NewLearningContentEntity>();result.add(n1);
 		when(learningContentRepo.findNew()).thenReturn(result);
-		
+		/*
 		when(productDocumentationDAO.getAllStUcPsWithCount(Mockito.anyString())).thenReturn(mockDbST());
 		when(productDocumentationDAO.getAllStUcPsWithCountByCards(Mockito.anyString(),Mockito.anySet())).thenReturn(mockDbST());
-		
+		*/
 		Map<String, Object> a3 = productDocumentationService.getAllLearningFilters(null,aMock,learningTab);		
 		assertTrue(a3.size()>=1); //st=7
 	}

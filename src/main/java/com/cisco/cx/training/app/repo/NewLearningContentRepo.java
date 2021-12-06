@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.constants.SQLConstants;
 
+@SuppressWarnings({"squid:S1448"})
 @Repository
 public interface NewLearningContentRepo
 		extends JpaRepository<NewLearningContentEntity, String>, JpaSpecificationExecutor<NewLearningContentEntity> {

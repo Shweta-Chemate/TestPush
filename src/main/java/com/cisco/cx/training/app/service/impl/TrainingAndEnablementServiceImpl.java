@@ -36,6 +36,7 @@ import com.cisco.cx.training.models.UserDetails;
 import com.cisco.cx.training.models.UserLearningPreference;
 import com.cisco.cx.training.util.SuccessAcademyMapper;
 
+@SuppressWarnings({"squid:S1200"})
 @Service
 public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementService {
 	private final Logger LOG = LoggerFactory.getLogger(this.getClass().getName());

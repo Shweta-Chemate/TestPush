@@ -41,6 +41,7 @@ import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@SuppressWarnings({"squid:S1200"})
 @Repository
 public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 	

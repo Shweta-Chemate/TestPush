@@ -53,14 +53,8 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 	@Query(value=ProductDocumentationConstants.GET_PD_CARD_IDS_LG , nativeQuery=true)
 	Set<String> getCardIdsByLanguage(String joinTable,Set<String> values);
 	
-	@Query(value=ProductDocumentationConstants.GET_PD_CARD_IDS_AT , nativeQuery=true)
-	Set<String> getCardIdsByAT(String joinTable,Set<String> values);
-	
 	@Query(value=ProductDocumentationConstants.GET_PD_CARD_IDS_TC , nativeQuery=true)
 	Set<String> getCardIdsByTC(String joinTable,Set<String> values);
-	
-	@Query(value=ProductDocumentationConstants.GET_PD_CARD_IDS_BY_STUCPS , nativeQuery=true)	
-	Set<String> getCardIdsByPsUcSt(String joinTable,String successtrackInp, String usecaseInp, Set<String> pitstopInp);
 	
 	/** LM counts **/
 		
@@ -74,9 +68,6 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 	
 	@Query(value=ProductDocumentationConstants.GET_PD_LANGUAGE_WITH_COUNT_BY_CARD , nativeQuery=true)
 	List<Map<String, Object>> getAllLanguageWithCountByCards(String joinTable,Set<String> cardIds);
-	
-	@Query(value=ProductDocumentationConstants.GET_PD_DOCUMENTATION_WITH_COUNT_BY_CARD , nativeQuery=true)
-	List<Map<String, Object>> getAllDocumentationWithCountByCards(String joinTable,Set<String> cardIds);
 	
 	@Query(value=ProductDocumentationConstants.GET_PD_LIVE_EVENTS_WITH_COUNT_BY_CARD , nativeQuery=true)
 	List<Map<String, Object>> getAllLiveEventsWithCountByCards(String joinTable,Set<String> cardIds);
@@ -93,21 +84,8 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 	@Query(value=ProductDocumentationConstants.GET_PD_LANGUAGE_WITH_COUNT , nativeQuery=true)
 	List<Map<String, Object>> getAllLanguageWithCount(String joinTable);
 
-	@Query(value=ProductDocumentationConstants.GET_PD_DOCUMENTATION_WITH_COUNT , nativeQuery=true)
-	List<Map<String, Object>> getAllDocumentationWithCount(String joinTable);
-	
 	@Query(value=ProductDocumentationConstants.GET_PD_LIVE_EVENTS_WITH_COUNT , nativeQuery=true)
 	List<Map<String, Object>> getAllLiveEventsWithCount(String joinTable);
-	
-	
-	/** ST **/	
-	
-	@Query(value=ProductDocumentationConstants.GET_PD_ST_UC_PS_WITH_COUNT , nativeQuery=true)
-	List<Map<String, Object>> getAllStUcPsWithCount(String joinTable);
-	
-	@Query(value=ProductDocumentationConstants.GET_PD_ST_UC_PS_WITH_COUNT_BY_CARDS , nativeQuery=true)
-	List<Map<String, Object>> getAllStUcPsWithCountByCards(String joinTable,Set<String> cardIds);
-	
 	
 	/** skill  - for role no case clause required **/
 	
