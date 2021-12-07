@@ -155,11 +155,11 @@ public class PIW {
 	}
 
 	public List<PIWSession> getSessions() {
-		return sessions;
+		return sessions;  //NOSONAR
 	}
 
 	public void setSessions(List<PIWSession> sessions) {
-		this.sessions = sessions;
+		this.sessions = sessions;  //NOSONAR
 	}
 
 	public boolean isBookmark() {
@@ -242,7 +242,7 @@ public class PIW {
 		session.setScheduled(false);
 		List<PIWSession> sessions = new ArrayList<>();
 		sessions.add(session);
-		this.setSessions(sessions);
+		this.setSessions(sessions);  //NOSONAR
 	}
 
 }

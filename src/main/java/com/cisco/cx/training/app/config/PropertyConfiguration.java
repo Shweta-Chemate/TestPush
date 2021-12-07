@@ -10,8 +10,8 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 
 @Configuration
-@PropertySources({ @PropertySource(value = "classpath:environment.properties"),
-		@PropertySource(value = "file:/myapp/environment.properties", ignoreResourceNotFound = true) })
+@PropertySource(value = "classpath:environment.properties")
+@PropertySource(value = "file:/myapp/environment.properties", ignoreResourceNotFound = true) 
 public class PropertyConfiguration {
 	
 	private final CryptoAccess<String> cryptoAccess = new CryptoAccess<>();
@@ -51,7 +51,7 @@ public class PropertyConfiguration {
 
 	private SealedObject rbacIncludedEndPoints;
 
-	public SealedObject authUrl;
+	private SealedObject authUrl;
 
 	private SealedObject partnerUserDetails;
 	

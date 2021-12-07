@@ -131,6 +131,7 @@ public class GenericLearningModel {
 
 	public void setCreatedTimeStamp(String createdTimeStamp) {
 		this.createdTimeStamp = createdTimeStamp;
+
 	}
 
 	public Boolean getIsBookMarked() {

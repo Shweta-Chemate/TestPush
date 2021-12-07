@@ -1,11 +1,16 @@
 package com.cisco.cx.training.models;
 
 import com.cisco.cx.training.util.HasId;
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonValue;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
@@ -95,8 +100,8 @@ public class SuccesstalkUserRegEsSchema implements HasId {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {return true;}
+        if (o == null || getClass() != o.getClass()) {return false;}
 
         SuccesstalkUserRegEsSchema that = (SuccesstalkUserRegEsSchema) o;
         return getCcoid().equals(that.getCcoid()) && getTitle().equals(that.getTitle()) && getEventStartDate().equals(that.eventStartDate);
@@ -191,7 +196,7 @@ public class SuccesstalkUserRegEsSchema implements HasId {
         this.eventStartDateFormatted = eventStartDateFormatted;
         try {
             this.eventStartDate = StringUtils.isNotBlank(eventStartDateFormatted) ? new SimpleDateFormat(SMARTSHEET_DATE_FORMAT).parse(eventStartDateFormatted).getTime() : null;
-        } catch (Exception e) {
+        } catch (ParseException | NullPointerException | IllegalArgumentException e) {
             LOG.warn("Could not parse pattern {} from date value {}", SMARTSHEET_DATE_FORMAT, eventStartDateFormatted);
         }
 	}
@@ -216,7 +221,7 @@ public class SuccesstalkUserRegEsSchema implements HasId {
 			this.registrationDate = StringUtils.isNotBlank(registrationDateFormatted)
 					? new SimpleDateFormat(SMARTSHEET_DATE_FORMAT).parse(registrationDateFormatted).getTime()
 					: null;
-		} catch (Exception e) {
+		} catch (ParseException | NullPointerException | IllegalArgumentException e)  {
 			LOG.warn("Could not parse pattern {} from date value {}", SMARTSHEET_DATE_FORMAT,
 					registrationDateFormatted);
 		}

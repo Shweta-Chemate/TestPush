@@ -136,11 +136,11 @@ public class SuccessTalk implements HasId, Comparable<SuccessTalk> {
 	}
 
 	public List<SuccessTalkSession> getSessions() {
-		return sessions;
+		return sessions;  //NOSONAR
 	}
 
 	public void setSessions(List<SuccessTalkSession> sessions) {
-		this.sessions = sessions;
+		this.sessions = sessions;  //NOSONAR
 	}
 
 	public String getQuarter() {

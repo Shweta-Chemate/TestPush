@@ -33,8 +33,7 @@ public class SpecificationBuilderPIW {
 			try {
 				search = java.net.URLDecoder.decode(search, StandardCharsets.UTF_8.name());
 			} catch (UnsupportedEncodingException e) {
-				LOGGER.error("Issue while decoding string");
-				e.printStackTrace();
+				LOGGER.error("Issue while decoding string: ",e);
 			}
 			Specification<T> searchSpecification = buildSearchSpecification(search.toLowerCase());
 			specification = specification.and(searchSpecification);
@@ -75,13 +74,13 @@ public class SpecificationBuilderPIW {
 				searchSpecification = searchSpecification
 						.or(CustomSpecifications.searchPIWsWithCriteria(searchField, search));
 			}
-			LOGGER.info(searchSpecification.toString());
+			LOGGER.info("spspecifications: {} ", searchSpecification);
 		}
 		return searchSpecification;
 	}
 
 	public Set<String> getSearchFields() {
-		Set<String> searchFields = new HashSet<String>();
+		Set<String> searchFields = new HashSet<>();
 		searchFields.add(Constants.TITLE);
 		searchFields.add(Constants.SPEAKERS);
 		return searchFields;

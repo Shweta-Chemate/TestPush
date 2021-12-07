@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -18,8 +19,8 @@ import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
 import com.cisco.cx.training.app.repo.NewLearningContentRepo;
 import com.cisco.cx.training.constants.Constants;
 
-
-@Repository
+@SuppressWarnings({"squid:S134"})
+@Repository  
 public class FilterCountsDAOImpl implements FilterCountsDAO{
 
 	private final static Logger LOG = LoggerFactory.getLogger(FilterCountsDAOImpl.class);
@@ -41,8 +42,8 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 			String[] keys = filteredCards.keySet().toArray(new String[0]);
 			for(int i=0; i<keys.length; i++)
 			{
-				if(i==0) cardIds.addAll(filteredCards.get(keys[i]));
-				else cardIds.retainAll(filteredCards.get(keys[i]));
+				if(i==0) { cardIds.addAll(filteredCards.get(keys[i])); }
+				else { cardIds.retainAll(filteredCards.get(keys[i])); }
 			}
 		}
 		LOG.info("mapped = {} ",cardIds);
@@ -99,13 +100,13 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 		if(filterCountsMap.containsKey(Constants.FOR_YOU_FILTER) && !filterGroup.equals(Constants.FOR_YOU_FILTER)) {
 			Map<String, String> forYouMap=new TreeMap<>();
 			int count = learningContentRepo.getRecentlyViewedContentFilteredIds(userId, cardIds).size();
-			if(count>0)
-				forYouMap.put(Constants.RECENTLY_VIEWED, Integer.toString(count));
+			if(count>0) {
+				forYouMap.put(Constants.RECENTLY_VIEWED, Integer.toString(count));}
 			Set<String> bookmarkIds=getBookMarkedIds(userId);
 			bookmarkIds.retainAll(cardIds);
 			count = bookmarkIds.size();
-			if(count>0)
-				forYouMap.put(Constants.BOOKMARKED_FOR_YOU, Integer.toString(count));
+			if(count>0) {
+				forYouMap.put(Constants.BOOKMARKED_FOR_YOU, Integer.toString(count));}
 			((Map<String, String>) filterCountsMap.get(Constants.FOR_YOU_FILTER)).putAll(forYouMap);
 		}
 	}
@@ -173,13 +174,13 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 			Set<String> cardIds = andFiltersWithExcludeKey(filteredCardsMap,Constants.FOR_YOU_FILTER);
 			Map<String, String> forYouMap=new TreeMap<>();
 			int count = learningContentRepo.getRecentlyViewedContentFilteredIds(userId, cardIds).size();
-			if(count>0)
-				forYouMap.put(Constants.RECENTLY_VIEWED, Integer.toString(count));
+			if(count>0) {
+				forYouMap.put(Constants.RECENTLY_VIEWED, Integer.toString(count));}
 			Set<String> bookmarkIds=getBookMarkedIds(userId);
 			bookmarkIds.retainAll(cardIds);
 			count = bookmarkIds.size();
-			if(count>0)
-				forYouMap.put(Constants.BOOKMARKED_FOR_YOU, Integer.toString(count));
+			if(count>0) {
+				forYouMap.put(Constants.BOOKMARKED_FOR_YOU, Integer.toString(count));}
 			((Map<String, String>) filterCountsMap.get(Constants.FOR_YOU_FILTER)).putAll(forYouMap);
 
 		}
@@ -196,14 +197,14 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 			String[] keys = filteredCardsMap.keySet().toArray(new String[0]);
 			int first = -1;
 			for (int i = 0; i < keys.length; i++) {
-				if (keys[i].equalsIgnoreCase(excludeKey))
-					continue;
-				if (first == -1)
-					first = i;
-				if (i == first)
-					cardIds.addAll(filteredCardsMap.get(keys[i]));
-				else
-					cardIds.retainAll(filteredCardsMap.get(keys[i]));
+				if (keys[i].equalsIgnoreCase(excludeKey)) {
+					continue;}
+				if (first == -1) {
+					first = i;}
+				if (i == first) {
+					cardIds.addAll(filteredCardsMap.get(keys[i]));}
+				else {
+					cardIds.retainAll(filteredCardsMap.get(keys[i]));}
 			}
 		}
 		return cardIds;
@@ -217,7 +218,7 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 	public Map<String, Set<String>> filterCards(Map<String, Object> filtersSelected, Set<String> learningItemIdsList, String userId){
 		LOG.info("applyFilters = {}",filtersSelected);
 		Map<String, Set<String>> filteredCards = new HashMap<String, Set<String>>();
-		if(filtersSelected==null || filtersSelected.isEmpty()) return filteredCards;
+		if(filtersSelected==null || filtersSelected.isEmpty()) {return filteredCards;}
 
 		/** OR **/
 		filtersSelected.keySet().forEach(filterGroup -> {
@@ -232,28 +233,21 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 				case Constants.ROLE : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByRole(new HashSet<String>(list),learningItemIdsList));break;
 				case Constants.TECHNOLOGY : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByTech(new HashSet<String>(list),learningItemIdsList));break;
 				case Constants.LIFECYCLE : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByLFC(new HashSet<String>(list),learningItemIdsList));break;
-				case Constants.FOR_YOU_FILTER : {
-					Set<String> cardIds=new HashSet<>();
-					if(list.contains(Constants.RECENTLY_VIEWED))
-						cardIds.addAll(learningContentRepo.getRecentlyViewedContentFilteredIds(userId, learningItemIdsList));
-					if(list.contains(Constants.BOOKMARKED_FOR_YOU)) {
-						Set<String> bookmarkIds=getBookMarkedIds(userId);
-						bookmarkIds.retainAll(learningItemIdsList);
-						cardIds.addAll(bookmarkIds);
-					}
-					filteredCards.put(filterGroup, cardIds);
-				}
+				case Constants.FOR_YOU_FILTER : {Set<String> cardIds=new HashSet<>();
+					if(list.contains(Constants.RECENTLY_VIEWED)) {cardIds.addAll(learningContentRepo.getRecentlyViewedContentFilteredIds(userId, learningItemIdsList));}
+					if(list.contains(Constants.BOOKMARKED_FOR_YOU)){Set<String> bookmarkIds=getBookMarkedIds(userId);bookmarkIds.retainAll(learningItemIdsList);cardIds.addAll(bookmarkIds);}
+					filteredCards.put(filterGroup, cardIds);} break;
 				default : LOG.info("other {}={}",filterGroup,list);
 				};
 			}
 			else if ( v instanceof Map) {
 				Set<String> cardIdsStUc = new HashSet<String>();
-				//LOG.info("ST="+((Map) v).keySet());
+				//LOG.info("ST="+((Map) v).keySet()); //NOSONAR
 				((Map) v).keySet().forEach(ik->{
 					Object iv = ((Map)v).get(ik);
 					List<String> ilist;
 					if(iv instanceof Map) {
-						//LOG.info("UC="+((Map) iv).keySet());
+						//LOG.info("UC="+((Map) iv).keySet()); //NOSONAR
 						Set<String> usecases= ((Map) iv).keySet(); String successtrack = ik.toString();
 						cardIdsStUc.addAll(learningContentRepo.getCardIdsByUcStFilter(successtrack, usecases, learningItemIdsList));
 					}
@@ -342,35 +336,46 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 		}
 
 		if(filterGroups.contains(Constants.LIFECYCLE)) {
-			Map<String, String> lfcFilter = new LinkedHashMap<>();
-			List<Map<String,Object>> dbListLFC = learningContentRepo.getAllLFCWithCountByCards(learningItemIdsList);
-			Map<String,String> allContentsLFC = listToMap(dbListLFC);
-			if(!allContentsLFC.isEmpty()) {
-				countFilters.put(Constants.LIFECYCLE, allContentsLFC);
-				filters.put(Constants.LIFECYCLE, lfcFilter);
-				allContentsLFC.keySet().forEach(k -> lfcFilter.put(k, "0"));
-			}
+			initializeLCWithCounts(filters, countFilters, learningItemIdsList);
 		}
 
 		if(filterGroups.contains(Constants.FOR_YOU_FILTER)) {
-			Map<String, String> forYouMap=new LinkedHashMap<>();
-			Map<String, String> forYouMapEmpty=new LinkedHashMap<>();
-			Set<String> bookmarkIds=getBookMarkedIds(userId);
-			bookmarkIds.retainAll(learningItemIdsList);
-			int count = bookmarkIds.size();
-			if(count>0) {
-				forYouMap.put(Constants.BOOKMARKED_FOR_YOU, Integer.toString(count));
-				forYouMapEmpty.put(Constants.BOOKMARKED_FOR_YOU, "0");
-			}
-			count = learningContentRepo.getRecentlyViewedContentFilteredIds(userId, learningItemIdsList).size();
-			if(count>0) {
-				forYouMap.put(Constants.RECENTLY_VIEWED, Integer.toString(count));
-				forYouMapEmpty.put(Constants.RECENTLY_VIEWED, "0");
-			}
-			if(!forYouMap.isEmpty()) {
-				countFilters.put(Constants.FOR_YOU_FILTER, forYouMap);
-				filters.put(Constants.FOR_YOU_FILTER, forYouMapEmpty);
-			}
+			initializeYouWithCounts(filters, countFilters, learningItemIdsList, userId);
+		}
+	}
+	
+	private void initializeLCWithCounts(HashMap<String, Object> filters, 
+	HashMap<String, Object> countFilters, Set<String> learningItemIdsList) {
+		Map<String, String> lfcFilter = new LinkedHashMap<>();
+		List<Map<String,Object>> dbListLFC = learningContentRepo.getAllLFCWithCountByCards(learningItemIdsList);
+		Map<String,String> allContentsLFC = listToMap(dbListLFC);
+		if(!allContentsLFC.isEmpty()) {
+			countFilters.put(Constants.LIFECYCLE, allContentsLFC);
+			filters.put(Constants.LIFECYCLE, lfcFilter);
+			allContentsLFC.keySet().forEach(k -> lfcFilter.put(k, "0"));
+		}
+	
+	}
+	
+	private void initializeYouWithCounts(HashMap<String, Object> filters, 
+	HashMap<String, Object> countFilters, Set<String> learningItemIdsList, String userId) {
+		Map<String, String> forYouMap=new LinkedHashMap<>();
+		Map<String, String> forYouMapEmpty=new LinkedHashMap<>();
+		Set<String> bookmarkIds=getBookMarkedIds(userId);
+		bookmarkIds.retainAll(learningItemIdsList);
+		int count = bookmarkIds.size();
+		if(count>0) {
+			forYouMap.put(Constants.BOOKMARKED_FOR_YOU, Integer.toString(count));
+			forYouMapEmpty.put(Constants.BOOKMARKED_FOR_YOU, "0");
+		}
+		count = learningContentRepo.getRecentlyViewedContentFilteredIds(userId, learningItemIdsList).size();
+		if(count>0) {
+			forYouMap.put(Constants.RECENTLY_VIEWED, Integer.toString(count));
+			forYouMapEmpty.put(Constants.RECENTLY_VIEWED, "0");
+		}
+		if(!forYouMap.isEmpty()) {
+			countFilters.put(Constants.FOR_YOU_FILTER, forYouMap);
+			filters.put(Constants.FOR_YOU_FILTER, forYouMapEmpty);
 		}
 	}
 
@@ -406,23 +411,23 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 			String dbValue = String.valueOf(dbMap.get("dbvalue"));
 
 			distinctST.add(st);
-			if(!distinctUCForST.keySet().contains(st)) distinctUCForST.put(st, new ArrayList<String>());
+			if(!distinctUCForST.keySet().contains(st)) { distinctUCForST.put(st, new ArrayList<String>());}
 			distinctUCForST.get(st).add(uc);
-			if(!distinctPSForUC.keySet().contains(uc)) distinctPSForUC.put(uc, new ArrayList<String>());
+			if(!distinctPSForUC.keySet().contains(uc)) {distinctPSForUC.put(uc, new ArrayList<String>());}
 			distinctPSForUC.get(uc).add(ps);
 
-			if(!stMap.keySet().contains(st)) stMap.put(st, new HashMap<String,Map<String,String>>()) ;
-			if(!((Map)stMap.get(st)).keySet().contains(uc)) ((Map)stMap.get(st)).put(uc, dbValue);//.put(uc, new HashMap<String,String>());
-			//if(!((Map)((Map)stMap.get(st)).get(uc)).keySet().contains(ps)) ((Map)((Map)stMap.get(st)).get(uc)).put(ps, dbValue);
+			if(!stMap.keySet().contains(st)) {stMap.put(st, new HashMap<String,Map<String,String>>()) ;}
+			if(!((Map)stMap.get(st)).keySet().contains(uc)) {((Map)stMap.get(st)).put(uc, dbValue);}//.put(uc, new HashMap<String,String>()); //NOSONAR
+			//if(!((Map)((Map)stMap.get(st)).get(uc)).keySet().contains(ps)) ((Map)((Map)stMap.get(st)).get(uc)).put(ps, dbValue); //NOSONAR
 
 			if(stFilter!=null)
 			{
-				if(!stAllKeysMap.keySet().contains(st)) stAllKeysMap.put(st, new HashMap<String,Map<String,String>>()) ;
-				if(!((Map)stAllKeysMap.get(st)).keySet().contains(uc)) ((Map)stAllKeysMap.get(st)).put(uc, "0");//.put(uc, new HashMap<String,String>());
-				//if(!((Map)((Map)stAllKeysMap.get(st)).get(uc)).keySet().contains(ps)) ((Map)((Map)stAllKeysMap.get(st)).get(uc)).put(ps, "0");
+				if(!stAllKeysMap.keySet().contains(st)) { stAllKeysMap.put(st, new HashMap<String,Map<String,String>>()) ;}
+				if(!((Map)stAllKeysMap.get(st)).keySet().contains(uc)) {((Map)stAllKeysMap.get(st)).put(uc, "0");}//.put(uc, new HashMap<String,String>());//NOSONAR
+				//if(!((Map)((Map)stAllKeysMap.get(st)).get(uc)).keySet().contains(ps)) ((Map)((Map)stAllKeysMap.get(st)).get(uc)).put(ps, "0"); //NOSONAR
 			}
 		}
-		stCountMap.putAll(stMap);if(stFilter!=null)stFilter.putAll(stAllKeysMap);
+		stCountMap.putAll(stMap);if(stFilter!=null) {stFilter.putAll(stAllKeysMap);}
 		LOG.info("stCountMap {} , stFilter={}",stCountMap, stFilter);
 		return stCountMap;
 	}
@@ -430,13 +435,15 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 	@SuppressWarnings("unchecked")
 	private void mergeSTFilterCounts(Map<String,Object> filters , Map<String,Object> filterAndCountsFromDb) {
 		Map<String,Object> stFilters = ((Map<String,Object>)filters.get(Constants.SUCCESS_TRACK));
-		for(String stkey : filterAndCountsFromDb.keySet()) {
+		for(Entry<String, Object> entry : filterAndCountsFromDb.entrySet()) {
+			String stkey= entry.getKey();
 			if(stFilters.containsKey(stkey)) {
 				Map<String,Object> stFilter = (Map<String,Object>)stFilters.get(stkey);
-				Map<String,Object> stFilterFromDB = (Map<String,Object>)filterAndCountsFromDb.get(stkey);
-				for(String useCaseKey : stFilterFromDB.keySet()) {
+				Map<String,Object> stFilterFromDB = (Map<String,Object>)entry.getValue();
+				for(Entry<String, Object> useCaseEntry : stFilterFromDB.entrySet()) {
+					String useCaseKey = useCaseEntry.getKey();
 					if(stFilter.containsKey(useCaseKey)) {
-						stFilter.put(useCaseKey, stFilterFromDB.get(useCaseKey));
+						stFilter.put(useCaseKey, useCaseEntry.getValue());
 					}
 				}
 			}

@@ -41,10 +41,10 @@ public class Company {
 		this.domainIdentifier = domainIdentifier;
 	}
 	public List<UserRole> getRoleList() {
-		return roleList;
+		return roleList; //NOSONAR
 	}
 	public void setRoleList(List<UserRole> roleList) {
-		this.roleList = roleList;
+		this.roleList = roleList; //NOSONAR
 	}
 	public boolean isDemoAccount() {
 		return demoAccount;

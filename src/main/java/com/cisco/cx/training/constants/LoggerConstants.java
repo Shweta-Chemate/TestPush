@@ -46,8 +46,6 @@ public class LoggerConstants {
 	
 	public static final String AUTHORIZATION = "authorization";
 	public static final String CUSTOMER_ID = "customerId";
-	
-	public static final String dummycommit = "test deploy";
 
 	/**
 	 * other : "policyName"; //privilege level
@@ -99,8 +97,8 @@ public class LoggerConstants {
 			MDC.put(LoggerConstants.USER_ID, userId);
 			MDC.put(USER_TYPE,USER_TYPE_PERSON);
 		}
-		if(!StringUtils.isEmpty(puId))MDC.put(LoggerConstants.PUID, puId);
-		if(!StringUtils.isEmpty(customerIdReqParam))MDC.put(LoggerConstants.CUSTOMER_ID, customerIdReqParam);
+		if(!StringUtils.isEmpty(puId)) {MDC.put(LoggerConstants.PUID, puId);}
+		if(!StringUtils.isEmpty(customerIdReqParam)) {MDC.put(LoggerConstants.CUSTOMER_ID, customerIdReqParam);}
 		
 		
 		/* logger starts */
@@ -126,7 +124,7 @@ public class LoggerConstants {
 		}
 
 		String puid= request.getHeader(LoggerConstants.PUID)+"";        
-		if(!StringUtils.isEmpty(puid))MDC.put(LoggerConstants.PUID,puid);
+		if(!StringUtils.isEmpty(puid)) {MDC.put(LoggerConstants.PUID,puid);}
 
 		//Map<String, String> map = new HashMap<>();
 		List<String> requestHeaderKeys = new ArrayList<>();
@@ -134,8 +132,8 @@ public class LoggerConstants {
 
 		while (headerNames.hasMoreElements()) {
 			String key = (String) headerNames.nextElement();
-			if(key.trim().equalsIgnoreCase(LoggerConstants.AUTHORIZATION)) continue;
-			if(key.trim().equalsIgnoreCase(LoggerConstants.X_REQUEST_ID)) continue;
+			if(key.trim().equalsIgnoreCase(LoggerConstants.AUTHORIZATION)) {continue;}
+			if(key.trim().equalsIgnoreCase(LoggerConstants.X_REQUEST_ID)) {continue;}
 			requestHeaderKeys.add(key);
 			MDC.put(key, request.getHeader(key));
 		}

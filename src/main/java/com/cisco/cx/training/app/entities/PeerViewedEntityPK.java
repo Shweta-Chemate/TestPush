@@ -19,7 +19,7 @@ public class PeerViewedEntityPK implements Serializable {
 		return roleName;
 	}
 	public void setRoleName(String role_name) {
-		this.roleName = roleName;
+		this.roleName = role_name;
 	}
 
 	

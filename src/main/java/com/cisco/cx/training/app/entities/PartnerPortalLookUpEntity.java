@@ -75,19 +75,19 @@ public class PartnerPortalLookUpEntity implements Serializable{
 	}
 
 	public Date getCreatedDtTime() {
-		return createdDtTime;
+		return createdDtTime; //NOSONAR
 	}
 
 	public void setCreatedDtTime(Date createdDtTime) {
-		this.createdDtTime = createdDtTime;
+		this.createdDtTime = createdDtTime; //NOSONAR
 	}
 
 	public Date getUpdatedDtTime() {
-		return updatedDtTime;
+		return updatedDtTime; //NOSONAR
 	}
 
 	public void setUpdatedDtTime(Date updatedDtTime) {
-		this.updatedDtTime = updatedDtTime;
+		this.updatedDtTime = updatedDtTime; //NOSONAR
 	}
 
 	public String getCreatedBy() {

@@ -43,12 +43,15 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
+@SuppressWarnings({"squid:S00112"})
 @RestController
 @Validated
 @RequestMapping("/v1/partner/learning")
 @Api(value = "New Learning Content APIs")
 public class NewLearningContentController {
 	private final Logger LOG = LoggerFactory.getLogger(this.getClass().getName());
+	private static final String MASHERY_MISSING_MSG = "X-Mashery-Handshake header missing in request";
+	private static final String API_NOT_FOUND_MSG = "API Not Found.";
 
 	@Autowired
 	private LearningContentService learningContentService;
@@ -72,7 +75,7 @@ public class NewLearningContentController {
 					throws Exception {
 
 		if (StringUtils.isBlank(xMasheryHandshake)) {
-			throw new BadRequestException("X-Mashery-Handshake header missing in request");
+			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
 		// Providing default sorting
 		if (sortField == null) {
@@ -103,7 +106,7 @@ public class NewLearningContentController {
 		LOG.info("PIWs API called");
 		long requestStartTime = System.currentTimeMillis();
 		if (StringUtils.isBlank(xMasheryHandshake)) {
-			throw new BadRequestException("X-Mashery-Handshake header missing in request");
+			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
 		// Providing default sorting
 		if (sortField == null) {
@@ -129,7 +132,7 @@ public class NewLearningContentController {
 			throws Exception {
 		
 		if (StringUtils.isBlank(xMasheryHandshake)) {
-            throw new BadRequestException("X-Mashery-Handshake header missing in request");
+            throw new BadRequestException(MASHERY_MISSING_MSG);
         }
 		CountResponseSchema countResponseSchema = learningContentService.getIndexCounts();
 		return new ResponseEntity<CountResponseSchema>(countResponseSchema, HttpStatus.OK);
@@ -149,7 +152,7 @@ public class NewLearningContentController {
 		LOG.info("Entering the fetchlearningcontent method");
 		long requestStartTime = System.currentTimeMillis();
 		if (StringUtils.isBlank(xMasheryHandshake)) {
-			throw new BadRequestException("X-Mashery-Handshake header missing in request");
+			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
 		String ccoId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		List<LearningContentItem> newLearningContentList = learningContentService.fetchNewLearningContent(ccoId, filtersSelected);
@@ -186,7 +189,7 @@ public class NewLearningContentController {
 			@ApiParam(value = "JSON Body to update user status", required = true) @Valid @RequestBody LearningStatusSchema learningStatusSchema)
 			throws Exception {
 		if (StringUtils.isBlank(xMasheryHandshake)) {
-			throw new BadRequestException("X-Mashery-Handshake header missing in request");
+			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		LearningStatusEntity learningStatusEntity=learningContentService.updateUserStatus(userId, puid, learningStatusSchema, xMasheryHandshake);
@@ -211,7 +214,7 @@ public class NewLearningContentController {
 		LOG.info("Entering the getRecentlyViewedContent method");
 		long requestStartTime = System.currentTimeMillis();
 		if (StringUtils.isBlank(xMasheryHandshake)) {
-			throw new BadRequestException("X-Mashery-Handshake header missing in request");
+			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		List<LearningContentItem> learningContentList = learningContentService.fetchRecentlyViewedContent(userId, filtersSelected);
@@ -233,7 +236,7 @@ public class NewLearningContentController {
 		LOG.info("Entering the getFiltersForRecentlyViewed method");
 		long requestStartTime = System.currentTimeMillis();
 		if (StringUtils.isBlank(xMasheryHandshake)) {
-			throw new BadRequestException("X-Mashery-Handshake header missing in request");
+			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		Map<String, Object> learningFilters = learningContentService.getRecentlyViewedFiltersWithCount(userId, filtersSelected);
@@ -255,7 +258,7 @@ public class NewLearningContentController {
 		LOG.info("Entering the getBookmarkedContent method");
 		long requestStartTime = System.currentTimeMillis();
 		if (StringUtils.isBlank(xMasheryHandshake)) {
-			throw new BadRequestException("X-Mashery-Handshake header missing in request");
+			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		List<LearningContentItem> learningContentList = learningContentService.fetchBookMarkedContent(userId, filtersSelected);
@@ -277,7 +280,7 @@ public class NewLearningContentController {
 		LOG.info("Entering the getFiltersForBookmarked method");
 		long requestStartTime = System.currentTimeMillis();
 		if (StringUtils.isBlank(xMasheryHandshake)) {
-			throw new BadRequestException("X-Mashery-Handshake header missing in request");
+			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		Map<String, Object> learningFilters = learningContentService.getBookmarkedFiltersWithCount(userId, filtersSelected);
@@ -299,7 +302,7 @@ public class NewLearningContentController {
 		LOG.info("Entering the getBookmarkedContent method");
 		long requestStartTime = System.currentTimeMillis();
 		if (StringUtils.isBlank(xMasheryHandshake)) {
-			throw new BadRequestException("X-Mashery-Handshake header missing in request");
+			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		List<LearningContentItem> learningContentList = learningContentService.fetchUpcomingContent(userId, filtersSelected);
@@ -341,14 +344,14 @@ public class NewLearningContentController {
 		LOG.info("Entering the getCXInsightsContent method");
 		long requestStartTime = System.currentTimeMillis();
 		if (StringUtils.isBlank(xMasheryHandshake)) {
-			throw new BadRequestException("X-Mashery-Handshake header missing in request");
+			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
-		if(sortField==null)
-			sortField="sortByDate";
-		if(sortType==null)
-			sortType="desc";
-		if(searchToken!=null)
-			searchToken=searchToken.trim();
+		if(sortField==null) {
+			sortField="sortByDate";}
+		if(sortType==null) {
+			sortType="desc";}
+		if(searchToken!=null) {
+			searchToken=searchToken.trim();}
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		List<LearningContentItem> learningContentList = learningContentService.fetchCXInsightsContent(userId, filtersSelected, searchToken, sortField, sortType);
 		LOG.info("Received cxinsights content in {} ", (System.currentTimeMillis() - requestStartTime));
@@ -370,10 +373,10 @@ public class NewLearningContentController {
 		LOG.info("Entering the getFiltersForCXInsights method");
 		long requestStartTime = System.currentTimeMillis();
 		if (StringUtils.isBlank(xMasheryHandshake)) {
-			throw new BadRequestException("X-Mashery-Handshake header missing in request");
+			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
-		if(searchToken!=null)
-			searchToken=searchToken.trim();
+		if(searchToken!=null) {
+			searchToken=searchToken.trim();}
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		Map<String, Object> learningFilters = learningContentService.getCXInsightsFiltersWithCount(userId, searchToken, filtersSelected);
 		LOG.info("Received cx insights filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
@@ -395,7 +398,7 @@ public class NewLearningContentController {
 		LOG.info("Entering the fetchlearningmap method");
 		long requestStartTime = System.currentTimeMillis();
 		if (StringUtils.isBlank(xMasheryHandshake)) {
-			throw new BadRequestException("X-Mashery-Handshake header missing in request");
+			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
 		LearningMap learningMap = learningContentService.getLearningMap(id, title);
 		LOG.info("Retrieved Learning Map in {} ", (System.currentTimeMillis() - requestStartTime));
@@ -414,12 +417,14 @@ public class NewLearningContentController {
             @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
 			@ApiParam(value = "Filters") @RequestBody(required = false) HashMap<String, Object> filtersSelected)
 					throws Exception {
-		if(!(popularityType.equals(Constants.POPULAR_ACROSS_PARTNERS_PATH) || popularityType.equals(Constants.POPULAR_AT_PARTNER_PATH)))
-			throw new NotFoundException("API Not Found.");
+		if(!(popularityType.equals(Constants.POPULAR_ACROSS_PARTNERS_PATH) || popularityType.equals(Constants.POPULAR_AT_PARTNER_PATH))) 
+		{
+			throw new NotFoundException(API_NOT_FOUND_MSG);
+		}
 		LOG.info("Entering the getPopularContent method");
 		long requestStartTime = System.currentTimeMillis();
 		if (StringUtils.isBlank(xMasheryHandshake)) {
-			throw new BadRequestException("X-Mashery-Handshake header missing in request");
+			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		List<LearningContentItem> learningContentList = learningContentService.fetchPopularContent(userId, filtersSelected, popularityType, puid);
@@ -439,7 +444,9 @@ public class NewLearningContentController {
 			@ApiParam(value = "JSON Body to update filters", required = false) @RequestBody(required=false) HashMap<String, Object> filtersSelected)
 			throws Exception {
 		if(!(popularityType.equals(Constants.POPULAR_ACROSS_PARTNERS_PATH) || popularityType.equals(Constants.POPULAR_AT_PARTNER_PATH)))
-			throw new NotFoundException("API Not Found.");
+		{
+			throw new NotFoundException(API_NOT_FOUND_MSG);
+		}
 		LOG.info("Entering the getPopularContentFilters method");
 		long requestStartTime = System.currentTimeMillis();
 		Map<String, Object> learningFilters = learningContentService.getPopularContentFiltersWithCount(filtersSelected, puid, popularityType);
@@ -461,7 +468,7 @@ public class NewLearningContentController {
 		LOG.info("Entering the getFeaturedContent method");
 		long requestStartTime = System.currentTimeMillis();
 		if (StringUtils.isBlank(xMasheryHandshake)) {
-			throw new BadRequestException("X-Mashery-Handshake header missing in request");
+			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		List<LearningContentItem> learningContentList = learningContentService.fetchFeaturedContent(userId, filtersSelected);
