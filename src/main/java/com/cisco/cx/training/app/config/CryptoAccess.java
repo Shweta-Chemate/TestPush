@@ -20,6 +20,8 @@ public class CryptoAccess<T extends Serializable> {
 	private char[] transformation = "AES".toCharArray();
 	private SecretKey secretKey;
 	private static final int KEY_SIZE=256;
+	private static final String FATAL_MSG = "FATAL:cannot create key generator";
+	private static final String SEAL_MSG = "cannot create sealed object for given objects";
 
 	public static final CryptoAccess<String> CRYPTO_STRING = new CryptoAccess<>();
 
@@ -38,7 +40,7 @@ public class CryptoAccess<T extends Serializable> {
 			return CryptoAccess.keyGen;
 
 		} catch (NoSuchAlgorithmException | InvalidParameterException  e) {
-			throw new IllegalStateException("FATAL:cannot create key generator",e);
+			throw new IllegalStateException(FATAL_MSG,e);
 		}
 	}
 	public SealedObject seal(T object) {
@@ -48,7 +50,7 @@ public class CryptoAccess<T extends Serializable> {
 			return new SealedObject(object,cipher);
 		} catch (NoSuchAlgorithmException  | NoSuchPaddingException |  InvalidKeyException
 				| IllegalBlockSizeException |	IOException e) {
-			throw new IllegalStateException("cannot create sealed object for given objects",e);
+			throw new IllegalStateException(SEAL_MSG,e);
 		}
 	}
 
@@ -63,7 +65,7 @@ public class CryptoAccess<T extends Serializable> {
 			return (T) object.getObject(cipher);
 		} catch (NoSuchAlgorithmException|NoSuchPaddingException|InvalidKeyException 
 	|IOException|ClassNotFoundException |IllegalBlockSizeException|BadPaddingException e) {
-			throw new IllegalStateException("cannot create sealed object for given objects",e);
+			throw new IllegalStateException(SEAL_MSG,e);
 		} 
 	}
 }

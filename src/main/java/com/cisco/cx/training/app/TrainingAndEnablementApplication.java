@@ -12,7 +12,8 @@ import org.springframework.web.client.RestTemplate;
 @SpringBootApplication
 public class TrainingAndEnablementApplication {
 
-	static final int CORE_POOL_SIZE = 5, MAX_POOL_SIZE = 10; 
+	static final int CORE_POOL_SIZE = 5;
+	static final int MAX_POOL_SIZE = 10; 
     public static void main(String[] args) throws Throwable {
         SpringApplication.run(TrainingAndEnablementApplication.class);
     }
