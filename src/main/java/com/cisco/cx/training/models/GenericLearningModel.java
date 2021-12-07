@@ -28,7 +28,7 @@ public class GenericLearningModel {
 	private String link;
 	
 	@JsonProperty("createdTimeStamp")
-	private Timestamp createdTimeStamp;
+	private String createdTimeStamp;
 	
 	@JsonProperty("isBookMarked")
 	private Boolean isBookMarked = false;
@@ -125,12 +125,13 @@ public class GenericLearningModel {
 		this.link = link;
 	}
 
-	public Timestamp getCreatedTimeStamp() {
-		return createdTimeStamp; //NOSONAR
+	public String getCreatedTimeStamp() {
+		return createdTimeStamp;
 	}
 
-	public void setCreatedTimeStamp(Timestamp createdTimeStamp) {
-		this.createdTimeStamp = createdTimeStamp; //NOSONAR
+	public void setCreatedTimeStamp(String createdTimeStamp) {
+		this.createdTimeStamp = createdTimeStamp;
+
 	}
 
 	public Boolean getIsBookMarked() {

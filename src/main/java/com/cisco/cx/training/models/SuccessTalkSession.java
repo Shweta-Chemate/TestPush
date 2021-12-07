@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class SuccessTalkSession implements HasId {
 
 	private String sessionId;
-	private Long sessionStartDate;
+	private String sessionStartDate;
 	private String presenterName;
 	private String registrationUrl;
 	@JsonIgnore
@@ -33,11 +33,11 @@ public class SuccessTalkSession implements HasId {
 
 	}
 
-	public Long getSessionStartDate() {
+	public String getSessionStartDate() {
 		return sessionStartDate;
 	}
 
-	public void setSessionStartDate(Long sessionStartDate) {
+	public void setSessionStartDate(String sessionStartDate) {
 		this.sessionStartDate = sessionStartDate;
 	}
 
