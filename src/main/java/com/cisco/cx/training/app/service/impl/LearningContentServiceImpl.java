@@ -86,7 +86,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 		SuccessTalkResponseSchema successTalkResponseSchema = new SuccessTalkResponseSchema();
 		try
 		{
-			Map<String, String> query_map = filterStringtoMap(filter);
+			Map<String, String> query_map = LearningContentUtil.filterStringtoMap(filter);
 			List<NewLearningContentEntity> successTalkEntityList = new ArrayList<NewLearningContentEntity>();
 			successTalkEntityList = learningContentDAO.fetchSuccesstalks(sortField, sortType, query_map, search);
 			List<SuccessTalk> successtalkList = new ArrayList<>();
@@ -152,7 +152,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 
 		try
 		{
-			Map<String, String> query_map = filterStringtoMap(filter);
+			Map<String, String> query_map = LearningContentUtil.filterStringtoMap(filter);
 			result = learningContentDAO.listPIWs(region, sortField, sortType, query_map, search);
 			//populate bookmark and registration info
 			Set<String> userBookmarks = null;
@@ -274,22 +274,6 @@ public class LearningContentServiceImpl implements LearningContentService {
 		documentationCount.setCount(Long.valueOf(learningContentDAO.getRolesCount()));
 		return documentationCount;
 
-	}
-
-	private Map<String, String>  filterStringtoMap(String filter){
-		Map<String, String> query_map = new LinkedHashMap<String, String>();
-		if (!StringUtils.isBlank(filter)) {
-			filter = filter.replaceAll("%3B", ";");
-			filter = filter.replaceAll("%3A", ":");
-			String[] columnFilter = filter.split(";");
-			for (int colFilterIndex = 0; colFilterIndex < columnFilter.length; colFilterIndex++) {
-				String[] valueFilter = columnFilter[colFilterIndex].split(":");
-				String fieldName = valueFilter[0];
-				String fieldValue = valueFilter[1];
-				query_map.put(fieldName, fieldValue);
-			}
-		}
-		return query_map;
 	}
 
 	@Override

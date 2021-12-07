@@ -46,7 +46,7 @@ import io.swagger.annotations.ApiResponses;
 @RequestMapping("/v1/partner/training")
 @Api(value = "Trainining and Enablement APIs", description = "REST APIs for Training And Enablement")
 public class TrainingAndEnablementController {
-	private final Logger LOG = LoggerFactory.getLogger(TrainingAndEnablementController.class);
+	private static final String LIMIT_MSG = "Invalid limit.";
 
 	@SuppressWarnings("unused")
 	private final Map<String, Callable<Boolean>> mandatoryDependencies = new HashMap<>();
@@ -187,7 +187,7 @@ public class TrainingAndEnablementController {
 		HashMap<String, Object> filters = new HashMap<String, Object>();
 		LearningRecordsAndFiltersModel learningCards = trainingAndEnablementService.
 				getMyPreferredLearnings(xMasheryHandshake,search,filters,sortBy,sortOrder,puid, limit);
-		if(limit!=null && limit < 0) {throw new BadRequestException("Invalid limit.");}
+		if(limit!=null && limit < 0) {throw new BadRequestException(LIMIT_MSG);}
 		return new ResponseEntity<LearningRecordsAndFiltersModel>(learningCards, HttpStatus.OK);
 	}
 	
