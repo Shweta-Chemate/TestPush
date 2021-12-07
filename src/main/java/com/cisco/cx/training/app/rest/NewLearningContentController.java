@@ -86,10 +86,6 @@ public class NewLearningContentController {
 			sortType = "asc";
 		}
 		String ccoId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException(API_NOT_FOUND_MSG);
-		}
 		SuccessTalkResponseSchema successTalkResponseSchema = learningContentService.fetchSuccesstalks(ccoId, sortField, sortType, filter, search);
 		return new ResponseEntity<SuccessTalkResponseSchema>(successTalkResponseSchema, HttpStatus.OK);
 	}
@@ -121,10 +117,6 @@ public class NewLearningContentController {
 			sortType = "asc";
 		}
 		String ccoId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException(API_NOT_FOUND_MSG);
-		}
 		List<PIW> piw_items = learningContentService.fetchPIWs(ccoId, region, sortField, sortType, filter, search);
 		LOG.info("Received PIWs content in {} ", (System.currentTimeMillis() - requestStartTime));
 		return piw_items;
@@ -142,10 +134,6 @@ public class NewLearningContentController {
 		if (StringUtils.isBlank(xMasheryHandshake)) {
             throw new BadRequestException(MASHERY_MISSING_MSG);
         }
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException(API_NOT_FOUND_MSG);
-		}
 		CountResponseSchema countResponseSchema = learningContentService.getIndexCounts();
 		return new ResponseEntity<CountResponseSchema>(countResponseSchema, HttpStatus.OK);
 	}
@@ -166,10 +154,6 @@ public class NewLearningContentController {
 		if (StringUtils.isBlank(xMasheryHandshake)) {
 			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException(API_NOT_FOUND_MSG);
-		}
 		String ccoId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		List<LearningContentItem> newLearningContentList = learningContentService.fetchNewLearningContent(ccoId, filtersSelected);
 		LOG.info("Received new learning content in {} ", (System.currentTimeMillis() - requestStartTime));
@@ -188,10 +172,6 @@ public class NewLearningContentController {
 			throws Exception {
 		LOG.info("Entering the getNewLearningsFilters method");
 		long requestStartTime = System.currentTimeMillis();
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException(API_NOT_FOUND_MSG);
-		}
 		Map<String, Object> learningFilters = learningContentService.getViewMoreNewFiltersWithCount(filtersSelected);
 		LOG.info("Received new learning content in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<Map<String, Object>>(learningFilters, HttpStatus.OK);
@@ -212,10 +192,6 @@ public class NewLearningContentController {
 			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException(API_NOT_FOUND_MSG);
-		}
 		LearningStatusEntity learningStatusEntity=learningContentService.updateUserStatus(userId, puid, learningStatusSchema, xMasheryHandshake);
 		if(null != learningStatusEntity){
 			return new ResponseEntity<>(HttpStatus.OK);
@@ -241,10 +217,6 @@ public class NewLearningContentController {
 			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException(API_NOT_FOUND_MSG);
-		}
 		List<LearningContentItem> learningContentList = learningContentService.fetchRecentlyViewedContent(userId, filtersSelected);
 		LOG.info("Received recently viewed learning content in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<List<LearningContentItem>>(learningContentList, HttpStatus.OK);
@@ -267,10 +239,6 @@ public class NewLearningContentController {
 			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException(API_NOT_FOUND_MSG);
-		}
 		Map<String, Object> learningFilters = learningContentService.getRecentlyViewedFiltersWithCount(userId, filtersSelected);
 		LOG.info("Received recently viewed filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<Map<String, Object>>(learningFilters, HttpStatus.OK);
@@ -291,10 +259,6 @@ public class NewLearningContentController {
 		long requestStartTime = System.currentTimeMillis();
 		if (StringUtils.isBlank(xMasheryHandshake)) {
 			throw new BadRequestException(MASHERY_MISSING_MSG);
-		}
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException(API_NOT_FOUND_MSG);
 		}
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		List<LearningContentItem> learningContentList = learningContentService.fetchBookMarkedContent(userId, filtersSelected);
@@ -318,10 +282,6 @@ public class NewLearningContentController {
 		if (StringUtils.isBlank(xMasheryHandshake)) {
 			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException(API_NOT_FOUND_MSG);
-		}
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		Map<String, Object> learningFilters = learningContentService.getBookmarkedFiltersWithCount(userId, filtersSelected);
 		LOG.info("Received bookmarked filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
@@ -344,10 +304,6 @@ public class NewLearningContentController {
 		if (StringUtils.isBlank(xMasheryHandshake)) {
 			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException(API_NOT_FOUND_MSG);
-		}
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		List<LearningContentItem> learningContentList = learningContentService.fetchUpcomingContent(userId, filtersSelected);
 		LOG.info("Received bookmarked learning content in {} ", (System.currentTimeMillis() - requestStartTime));
@@ -366,10 +322,6 @@ public class NewLearningContentController {
 			throws Exception {
 		LOG.info("Entering the getFiltersForUpcoming method");
 		long requestStartTime = System.currentTimeMillis();
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException(API_NOT_FOUND_MSG);
-		}
 		Map<String, Object> learningFilters = learningContentService.getUpcomingFiltersWithCount(filtersSelected);
 		LOG.info("Received upcoming filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<Map<String, Object>>(learningFilters, HttpStatus.OK);
@@ -393,10 +345,6 @@ public class NewLearningContentController {
 		long requestStartTime = System.currentTimeMillis();
 		if (StringUtils.isBlank(xMasheryHandshake)) {
 			throw new BadRequestException(MASHERY_MISSING_MSG);
-		}
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException(API_NOT_FOUND_MSG);
 		}
 		if(sortField==null) {
 			sortField="sortByDate";}
@@ -427,10 +375,6 @@ public class NewLearningContentController {
 		if (StringUtils.isBlank(xMasheryHandshake)) {
 			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException(API_NOT_FOUND_MSG);
-		}
 		if(searchToken!=null) {
 			searchToken=searchToken.trim();}
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
@@ -456,11 +400,6 @@ public class NewLearningContentController {
 		if (StringUtils.isBlank(xMasheryHandshake)) {
 			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
-		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException(API_NOT_FOUND_MSG);
-		}
 		LearningMap learningMap = learningContentService.getLearningMap(id, title);
 		LOG.info("Retrieved Learning Map in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<LearningMap>(learningMap, HttpStatus.OK);
@@ -484,10 +423,6 @@ public class NewLearningContentController {
 		}
 		LOG.info("Entering the getPopularContent method");
 		long requestStartTime = System.currentTimeMillis();
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException(API_NOT_FOUND_MSG);
-		}
 		if (StringUtils.isBlank(xMasheryHandshake)) {
 			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
@@ -514,10 +449,6 @@ public class NewLearningContentController {
 		}
 		LOG.info("Entering the getPopularContentFilters method");
 		long requestStartTime = System.currentTimeMillis();
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException(API_NOT_FOUND_MSG);
-		}
 		Map<String, Object> learningFilters = learningContentService.getPopularContentFiltersWithCount(filtersSelected, puid, popularityType);
 		LOG.info("Received popular content filters counts in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<Map<String, Object>>(learningFilters, HttpStatus.OK);
@@ -539,10 +470,6 @@ public class NewLearningContentController {
 		if (StringUtils.isBlank(xMasheryHandshake)) {
 			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException(API_NOT_FOUND_MSG);
-		}
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		List<LearningContentItem> learningContentList = learningContentService.fetchFeaturedContent(userId, filtersSelected);
 		LOG.info("Received featured learning content in {} ", (System.currentTimeMillis() - requestStartTime));
@@ -561,10 +488,6 @@ public class NewLearningContentController {
 			throws Exception {
 		LOG.info("Entering the getFiltersForFeatured method");
 		long requestStartTime = System.currentTimeMillis();
-		if(!config.isNewLearningFeature())
-		{
-			throw new NotFoundException(API_NOT_FOUND_MSG);
-		}
 		Map<String, Object> learningFilters = learningContentService.getFeaturedFiltersWithCount(filtersSelected);
 		LOG.info("Received featured filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<Map<String, Object>>(learningFilters, HttpStatus.OK);

@@ -1,5 +1,7 @@
 package com.cisco.cx.training.app.service.impl;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -108,7 +110,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 						.findFirst().orElse(null);
 				if (userRegistration != null && userRegistration.getRegStatus() != null) {
 					learningItem.setStatus(userRegistration.getRegStatus());
-					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp());
+					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp()!=null?userRegistration.getRegUpdatedTimestamp().toInstant().toString():null);
 				}
 				successtalkList.add(learningItem);
 			}
@@ -133,7 +135,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 		successtalkSession.setRegion(learningEntity.getRegion());
 		successtalkSession.setRegistrationUrl(learningEntity.getRegistrationUrl());
 		successtalkSession.setSessionId(learningEntity.getId());
-		successtalkSession.setSessionStartDate(learningEntity.getSessionStartDate().getTime());
+		successtalkSession.setSessionStartDate(learningEntity.getSessionStartDate()!=null?learningEntity.getSessionStartDate().toInstant().toString():null);
 		successtalkSession.setScheduled(false);
 		sessionList.add(successtalkSession);
 		successtalk.setSessions(sessionList);
@@ -171,7 +173,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 						.findFirst().orElse(null);
 				if (userRegistration != null && userRegistration.getRegStatus() != null) {
 					learningItem.setStatus(userRegistration.getRegStatus());
-					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp());
+					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp()!=null?userRegistration.getRegUpdatedTimestamp().toInstant().toString():null);
 				}
 				piwItems.add(learningItem);
 			}
@@ -329,7 +331,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 						.findFirst().orElse(null);
 				if (userRegistration != null && userRegistration.getRegStatus() != null) {
 					learningItem.setStatus(userRegistration.getRegStatus());
-					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp());
+					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp()!=null?userRegistration.getRegUpdatedTimestamp().toInstant().toString():null);
 				}
 				result.add(learningItem);
 			}
@@ -375,10 +377,10 @@ public class LearningContentServiceImpl implements LearningContentService {
 			if (learning_status_existing != null) {
 				if(regStatus!=null){
 					learning_status_existing.setRegStatus(regStatus.toString());
-					learning_status_existing.setRegUpdatedTimestamp(java.time.LocalDateTime.now());
+					learning_status_existing.setRegUpdatedTimestamp(Timestamp.from(Instant.now()));
 				}
 				if(learningStatusSchema.isViewed()){
-					learning_status_existing.setViewedTimestamp(java.time.LocalDateTime.now());
+					learning_status_existing.setViewedTimestamp(Timestamp.from(Instant.now()));
 				}
 				learningStatusRepo.save(learning_status_existing);
 				return learning_status_existing;
@@ -391,10 +393,10 @@ public class LearningContentServiceImpl implements LearningContentService {
 				learning_status_new.setLearningItemId(learningStatusSchema.getLearningItemId());
 				if(regStatus!=null){
 					learning_status_new.setRegStatus(regStatus.toString());
-					learning_status_new.setRegUpdatedTimestamp(java.time.LocalDateTime.now());
+					learning_status_new.setRegUpdatedTimestamp(Timestamp.from(Instant.now()));
 				}
 				if(learningStatusSchema.isViewed()){
-					learning_status_new.setViewedTimestamp(java.time.LocalDateTime.now());
+					learning_status_new.setViewedTimestamp(Timestamp.from(Instant.now()));
 				}
 				return learningStatusRepo.save(learning_status_new);
 			}
@@ -448,7 +450,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 						.findFirst().orElse(null);
 				if (userRegistration != null && userRegistration.getRegStatus() != null) {
 					learningItem.setStatus(userRegistration.getRegStatus());
-					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp());
+					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp()!=null?userRegistration.getRegUpdatedTimestamp().toInstant().toString():null);
 				}
 				result.add(learningItem);
 			}			
@@ -503,7 +505,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 				if(null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
 						&& userBookmarks.keySet().contains(entity.getId())){
 					learningItem.setBookmark(true);
-					learningItem.setBookmarkTimeStamp((long) userBookmarks.get(entity.getId()));
+					learningItem.setBookmarkTimeStamp(Instant.ofEpochMilli((long)userBookmarks.get(entity.getId())).toString());
 					result.add(learningItem);
 					LearningStatusEntity userRegistration = userRegistrations.stream()
 							.filter(userRegistrationInStream -> userRegistrationInStream.getLearningItemId()
@@ -511,7 +513,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 							.findFirst().orElse(null);
 					if (userRegistration != null && userRegistration.getRegStatus() != null) {
 						learningItem.setStatus(userRegistration.getRegStatus());
-						learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp());
+						learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp()!=null?userRegistration.getRegUpdatedTimestamp().toInstant().toString():null);
 					}
 				}
 			}			
@@ -579,7 +581,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 						.findFirst().orElse(null);
 				if (userRegistration != null && userRegistration.getRegStatus() != null) {
 					learningItem.setStatus(userRegistration.getRegStatus());
-					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp());
+					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp()!=null?userRegistration.getRegUpdatedTimestamp().toInstant().toString():null);
 				}
 				result.add(learningItem);
 			}			
@@ -646,7 +648,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 						.findFirst().orElse(null);
 				if (userRegistration != null && userRegistration.getRegStatus() != null) {
 					learningItem.setStatus(userRegistration.getRegStatus());
-					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp());
+					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp()!=null?userRegistration.getRegUpdatedTimestamp().toInstant().toString():null);
 				}
 				result.add(learningItem);
 			}
@@ -808,7 +810,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 						.findFirst().orElse(null);
 				if (userRegistration != null && userRegistration.getRegStatus() != null) {
 					learningItem.setStatus(userRegistration.getRegStatus());
-					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp());
+					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp()!=null?userRegistration.getRegUpdatedTimestamp().toInstant().toString():null);
 				}
 				result.add(learningItem);
 			}
