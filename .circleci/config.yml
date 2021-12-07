@@ -231,7 +231,7 @@ workflows:
               only: 
                 - master
                 - /^pull.*/ 
-                - feature/datetime_localization
+                - feature/sonar_and_iso
           context: aws-devops-context
 
       - Push_To_ECR:
@@ -242,7 +242,7 @@ workflows:
               only: 
                 - master
                 - /^pull.*/
-                - feature/datetime_localization
+                - feature/sonar_and_iso
           context: aws-devops-context
       - Push_Helm_Chart:
           requires:
@@ -252,5 +252,5 @@ workflows:
               only:
                 - master
                 - /^pull.*/  
-                - feature/datetime_localization
+                - feature/sonar_and_iso
           context: aws-devops-context    
