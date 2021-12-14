@@ -49,5 +49,5 @@ public class TrainingAndEnablementApplication {
 	@Bean
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
-	}
+	 }
 }
