@@ -25,11 +25,11 @@ public class SuccessAcademyFilter{
 	}
 
 	public List<String> getFilters() {
-		return filters;
+		return filters;  //NOSONAR
 	}
 
 	public void setFilters(List<String> filters) {
-		this.filters = filters;
+		this.filters = filters;  //NOSONAR
 	}
 
 	public String getTabLocationOnUI() {

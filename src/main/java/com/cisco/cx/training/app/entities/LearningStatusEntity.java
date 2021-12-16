@@ -1,6 +1,7 @@
 package com.cisco.cx.training.app.entities;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
@@ -8,6 +9,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(name = "cxpp_learning_status")
@@ -32,10 +35,10 @@ public class LearningStatusEntity implements Serializable {
 	private String regStatus;
 
 	@Column(name = "reg_updated_timestamp")
-	private LocalDateTime regUpdatedTimestamp;
+	private Timestamp regUpdatedTimestamp;
 	
 	@Column(name = "viewed_timestamp")
-	private LocalDateTime viewedTimestamp;
+	private Timestamp viewedTimestamp;
 	
 	public String getUserId() {
 		return userId;
@@ -69,19 +72,19 @@ public class LearningStatusEntity implements Serializable {
 		this.regStatus = regStatus;
 	}
 
-	public LocalDateTime getRegUpdatedTimestamp() {
+	public Timestamp getRegUpdatedTimestamp() {
 		return regUpdatedTimestamp;
 	}
 
-	public void setRegUpdatedTimestamp(LocalDateTime regUpdatedTimestamp) {
+	public void setRegUpdatedTimestamp(Timestamp regUpdatedTimestamp) {
 		this.regUpdatedTimestamp = regUpdatedTimestamp;
 	}
 
-	public LocalDateTime getViewedTimestamp() {
+	public Timestamp getViewedTimestamp() {
 		return viewedTimestamp;
 	}
 
-	public void setViewedTimestamp(LocalDateTime viewedTimestamp) {
+	public void setViewedTimestamp(Timestamp viewedTimestamp) {
 		this.viewedTimestamp = viewedTimestamp;
 	}
 

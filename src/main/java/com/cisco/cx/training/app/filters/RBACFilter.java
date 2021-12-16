@@ -33,6 +33,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 
+@SuppressWarnings({"squid:S134"})
 @Component
 public class RBACFilter implements Filter {
 
@@ -128,7 +129,7 @@ public class RBACFilter implements Filter {
 
 			} catch (Exception e) {
 
-				Throwable cause = (e instanceof ServletException && e.getCause() != null) ? e.getCause() : e;
+				Throwable cause = (e instanceof ServletException && e.getCause() != null) ? e.getCause() : e; //NOSONAR
 				ErrorResponse errorResponse = RestResponseStatusExceptionResolver.createErrorResponse(cause);
 				response.setStatus(errorResponse.getStatus());
 				response.setContentType(Constants.APPLICATION_JSON);

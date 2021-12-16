@@ -110,10 +110,10 @@ public class UserProfile {
 		this.telephone = telephone;
 	}
 	public Set<String> getBillToIds() {
-		return billToIds;
+		return billToIds;  //NOSONAR
 	}
 	public void setBillToIds(Set<String> billToIds) {
-		this.billToIds = billToIds;
+		this.billToIds = billToIds;  //NOSONAR
 	}
 	public String getDplAddressFlag() {
 		return dplAddressFlag;

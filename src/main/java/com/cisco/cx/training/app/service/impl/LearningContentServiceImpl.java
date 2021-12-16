@@ -1,5 +1,7 @@
 package com.cisco.cx.training.app.service.impl;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -40,71 +42,28 @@ import com.cisco.cx.training.models.SuccessTalk;
 import com.cisco.cx.training.models.SuccessTalkResponseSchema;
 import com.cisco.cx.training.models.SuccessTalkSession;
 import com.cisco.cx.training.models.UserDetailsWithCompanyList;
+import com.cisco.cx.training.util.LearningContentUtil;
 
+@SuppressWarnings({"squid:S2221","squid:S5361","squid:S134","squid:S1200","squid:S00104"})
 @Service
 public class LearningContentServiceImpl implements LearningContentService {
 
 	private final Logger LOG = LoggerFactory.getLogger(this.getClass().getName());
 
-	public static final HashMap<String, String> filterNameMappings=getMappings();
+	static final HashMap<String, String> filterNameMappings= LearningContentUtil.getMappings();
 
-	public static final List<String> defaultFilterOrder= getDefaultFilterOrder();
+	static final List<String> defaultFilterOrder= LearningContentUtil.getDefaultFilterOrder();
 
-	public static final List<String> cxInsightsFilterOrder= getCXInsightsFilterOrder();
+	static final List<String> cxInsightsFilterOrder= LearningContentUtil.getCXInsightsFilterOrder();
 
-	public static final List<String> lfcFilterOrder= getLFCFilterOrder();
-
-	private static HashMap<String, String> getMappings() {
-		HashMap<String, String> filterGroupMappings=new HashMap<String, String>();
-		filterGroupMappings.put(Constants.LANGUAGE, Constants.LANGUAGE_PRM);
-		filterGroupMappings.put(Constants.LIVE_EVENTS, Constants.REGION);
-		filterGroupMappings.put(Constants.CONTENT_TYPE, Constants.CONTENT_TYPE_PRM);
-		filterGroupMappings.put(Constants.ROLE, Constants.ROLE);
-		filterGroupMappings.put(Constants.MODEL, Constants.MODEL);
-		filterGroupMappings.put(Constants.TECHNOLOGY, Constants.TECHNOLOGY);
-		filterGroupMappings.put(Constants.SUCCESS_TRACK, Constants.SUCCESS_TRACK);
-		filterGroupMappings.put(Constants.LIFECYCLE, Constants.LIFECYCLE);
-		filterGroupMappings.put(Constants.FOR_YOU_FILTER, Constants.FOR_YOU_FILTER);
-		return filterGroupMappings;
-	}
-
-	private static List<String> getDefaultFilterOrder() {
-		List<String> order = new ArrayList<>();
-		order.add(Constants.ROLE);
-		order.add(Constants.SUCCESS_TRACK);
-		order.add(Constants.LIFECYCLE);
-		order.add(Constants.TECHNOLOGY);
-		order.add(Constants.LIVE_EVENTS);
-		order.add(Constants.CONTENT_TYPE);
-		order.add(Constants.LANGUAGE);
-		return order;
-	}
-
-	private static List<String> getCXInsightsFilterOrder() {
-		List<String> order = new ArrayList<>();
-		order.add(Constants.LIFECYCLE);
-		order.add(Constants.ROLE);
-		order.add(Constants.TECHNOLOGY);
-		order.add(Constants.SUCCESS_TRACK);
-		order.add(Constants.LIVE_EVENTS);
-		order.add(Constants.FOR_YOU_FILTER);
-		order.add(Constants.CONTENT_TYPE);
-		order.add(Constants.LANGUAGE);
-		return order;
-	}
-
-	private static List<String> getLFCFilterOrder() {
-		List<String> order = new ArrayList<>();
-		order.add("Accelerate"); order.add("Need");
-		order.add("Evaluate"); order.add("Select");
-		order.add("Align"); order.add("Purchase");
-		order.add("Onboard"); order.add("Implement");
-		order.add("Use");  order.add("Engage");
-		order.add("Adopt"); order.add("Optmize");
-		order.add("Renew"); order.add("Recommend");
-		order.add("Advocate");
-		return order;
-	}
+	static final List<String> lfcFilterOrder= LearningContentUtil.getLFCFilterOrder();
+	
+	private static final String DEMO_NA_MSG = "Not Allowed for DemoAccount";
+	private static final String TECHNOLOGY_LABEL = "Technology";
+	private static final String ST_LABEL = "Success Tracks";
+	private static final String ROLE_LABEL = "Role";
+	private static final String DOC_LABEL = "Documentation";
+	private static final String WEBINARS_LABEL = "Webinars";
 
 	@Autowired
 	private NewLearningContentDAO learningContentDAO;
@@ -127,7 +86,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 		SuccessTalkResponseSchema successTalkResponseSchema = new SuccessTalkResponseSchema();
 		try
 		{
-			Map<String, String> query_map = filterStringtoMap(filter);
+			Map<String, String> query_map = LearningContentUtil.filterStringtoMap(filter);
 			List<NewLearningContentEntity> successTalkEntityList = new ArrayList<NewLearningContentEntity>();
 			successTalkEntityList = learningContentDAO.fetchSuccesstalks(sortField, sortType, query_map, search);
 			List<SuccessTalk> successtalkList = new ArrayList<>();
@@ -151,7 +110,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 						.findFirst().orElse(null);
 				if (userRegistration != null && userRegistration.getRegStatus() != null) {
 					learningItem.setStatus(userRegistration.getRegStatus());
-					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp());
+					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp()!=null?userRegistration.getRegUpdatedTimestamp().toInstant().toString():null);
 				}
 				successtalkList.add(learningItem);
 			}
@@ -176,7 +135,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 		successtalkSession.setRegion(learningEntity.getRegion());
 		successtalkSession.setRegistrationUrl(learningEntity.getRegistrationUrl());
 		successtalkSession.setSessionId(learningEntity.getId());
-		successtalkSession.setSessionStartDate(learningEntity.getSessionStartDate().getTime());
+		successtalkSession.setSessionStartDate(learningEntity.getSessionStartDate()!=null?learningEntity.getSessionStartDate().toInstant().toString():null);
 		successtalkSession.setScheduled(false);
 		sessionList.add(successtalkSession);
 		successtalk.setSessions(sessionList);
@@ -193,7 +152,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 
 		try
 		{
-			Map<String, String> query_map = filterStringtoMap(filter);
+			Map<String, String> query_map = LearningContentUtil.filterStringtoMap(filter);
 			result = learningContentDAO.listPIWs(region, sortField, sortType, query_map, search);
 			//populate bookmark and registration info
 			Set<String> userBookmarks = null;
@@ -214,7 +173,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 						.findFirst().orElse(null);
 				if (userRegistration != null && userRegistration.getRegStatus() != null) {
 					learningItem.setStatus(userRegistration.getRegStatus());
-					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp());
+					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp()!=null?userRegistration.getRegUpdatedTimestamp().toInstant().toString():null);
 				}
 				piwItems.add(learningItem);
 			}
@@ -275,8 +234,8 @@ public class LearningContentServiceImpl implements LearningContentService {
 	private CountSchema getWebinarCount() {
 
 		CountSchema webinarCount = new CountSchema();
-		webinarCount.setLabel("Webinars");
-		webinarCount.setCount(new Long(learningContentDAO.getPIWCount()+learningContentDAO.getSuccessTalkCount()));
+		webinarCount.setLabel(WEBINARS_LABEL);
+		webinarCount.setCount(Long.valueOf(Integer.toUnsignedLong(learningContentDAO.getPIWCount())+learningContentDAO.getSuccessTalkCount()));
 		return webinarCount;
 
 	}
@@ -284,8 +243,8 @@ public class LearningContentServiceImpl implements LearningContentService {
 	private CountSchema getDocumentationCount() {
 
 		CountSchema documentationCount = new CountSchema();
-		documentationCount.setLabel("Documentation");
-		documentationCount.setCount(new Long(learningContentDAO.getDocumentationCount()));
+		documentationCount.setLabel(DOC_LABEL);
+		documentationCount.setCount(Long.valueOf(learningContentDAO.getDocumentationCount()));
 		return documentationCount;
 
 	}
@@ -293,8 +252,8 @@ public class LearningContentServiceImpl implements LearningContentService {
 	private CountSchema getSuccessTrackCount() {
 
 		CountSchema documentationCount = new CountSchema();
-		documentationCount.setLabel("Success Tracks");
-		documentationCount.setCount(new Long(learningContentDAO.getSuccessTracksCount()+learningContentDAO.getLifecycleCount()));
+		documentationCount.setLabel(ST_LABEL);
+		documentationCount.setCount(Long.valueOf(Integer.toUnsignedLong(learningContentDAO.getSuccessTracksCount())+learningContentDAO.getLifecycleCount()));
 		return documentationCount;
 
 	}
@@ -302,8 +261,8 @@ public class LearningContentServiceImpl implements LearningContentService {
 	private CountSchema getTechnologyCount() {
 
 		CountSchema documentationCount = new CountSchema();
-		documentationCount.setLabel("Technology");
-		documentationCount.setCount(new Long(learningContentDAO.getTechnologyCount()));
+		documentationCount.setLabel(TECHNOLOGY_LABEL);
+		documentationCount.setCount(Long.valueOf(learningContentDAO.getTechnologyCount()));
 		return documentationCount;
 
 	}
@@ -311,26 +270,10 @@ public class LearningContentServiceImpl implements LearningContentService {
 	private CountSchema getRolesCount() {
 
 		CountSchema documentationCount = new CountSchema();
-		documentationCount.setLabel("Role");
-		documentationCount.setCount(new Long(learningContentDAO.getRolesCount()));
+		documentationCount.setLabel(ROLE_LABEL);
+		documentationCount.setCount(Long.valueOf(learningContentDAO.getRolesCount()));
 		return documentationCount;
 
-	}
-
-	private Map<String, String>  filterStringtoMap(String filter){
-		Map<String, String> query_map = new LinkedHashMap<String, String>();
-		if (!StringUtils.isBlank(filter)) {
-			filter = filter.replaceAll("%3B", ";");
-			filter = filter.replaceAll("%3A", ":");
-			String[] columnFilter = filter.split(";");
-			for (int colFilterIndex = 0; colFilterIndex < columnFilter.length; colFilterIndex++) {
-				String[] valueFilter = columnFilter[colFilterIndex].split(":");
-				String fieldName = valueFilter[0];
-				String fieldValue = valueFilter[1];
-				query_map.put(fieldName, fieldValue);
-			}
-		}
-		return query_map;
 	}
 
 	@Override
@@ -372,7 +315,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 						.findFirst().orElse(null);
 				if (userRegistration != null && userRegistration.getRegStatus() != null) {
 					learningItem.setStatus(userRegistration.getRegStatus());
-					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp());
+					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp()!=null?userRegistration.getRegUpdatedTimestamp().toInstant().toString():null);
 				}
 				result.add(learningItem);
 			}
@@ -394,7 +337,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 			LOG.error("There was a problem in fetching new filter counts", e);
 			throw new GenericException("There was a problem in fetching new filter counts");
 		}
-		result=orderFilters(viewMoreNewCounts, LearningContentServiceImpl.getDefaultFilterOrder());
+		result=orderFilters(viewMoreNewCounts, LearningContentUtil.getDefaultFilterOrder());
 		return result;
 	}
 
@@ -408,8 +351,8 @@ public class LearningContentServiceImpl implements LearningContentService {
 			Optional<Company> matchingObject = companies.stream()
 					.filter(c -> (c.getPuid().equals(puid) && c.isDemoAccount())).findFirst();
 			Company company = matchingObject.isPresent() ? matchingObject.get() : null;
-			if (company != null)
-				throw new NotAllowedException("Not Allowed for DemoAccount");
+			if (company != null) {
+				throw new NotAllowedException(DEMO_NA_MSG);}
 		}
 		try {
 			productDocumentationService.addLearningsViewedForRole(userId,learningStatusSchema.getLearningItemId(),puid);
@@ -418,10 +361,10 @@ public class LearningContentServiceImpl implements LearningContentService {
 			if (learning_status_existing != null) {
 				if(regStatus!=null){
 					learning_status_existing.setRegStatus(regStatus.toString());
-					learning_status_existing.setRegUpdatedTimestamp(java.time.LocalDateTime.now());
+					learning_status_existing.setRegUpdatedTimestamp(Timestamp.from(Instant.now()));
 				}
 				if(learningStatusSchema.isViewed()){
-					learning_status_existing.setViewedTimestamp(java.time.LocalDateTime.now());
+					learning_status_existing.setViewedTimestamp(Timestamp.from(Instant.now()));
 				}
 				learningStatusRepo.save(learning_status_existing);
 				return learning_status_existing;
@@ -434,10 +377,10 @@ public class LearningContentServiceImpl implements LearningContentService {
 				learning_status_new.setLearningItemId(learningStatusSchema.getLearningItemId());
 				if(regStatus!=null){
 					learning_status_new.setRegStatus(regStatus.toString());
-					learning_status_new.setRegUpdatedTimestamp(java.time.LocalDateTime.now());
+					learning_status_new.setRegUpdatedTimestamp(Timestamp.from(Instant.now()));
 				}
 				if(learningStatusSchema.isViewed()){
-					learning_status_new.setViewedTimestamp(java.time.LocalDateTime.now());
+					learning_status_new.setViewedTimestamp(Timestamp.from(Instant.now()));
 				}
 				return learningStatusRepo.save(learning_status_new);
 			}
@@ -491,7 +434,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 						.findFirst().orElse(null);
 				if (userRegistration != null && userRegistration.getRegStatus() != null) {
 					learningItem.setStatus(userRegistration.getRegStatus());
-					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp());
+					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp()!=null?userRegistration.getRegUpdatedTimestamp().toInstant().toString():null);
 				}
 				result.add(learningItem);
 			}			
@@ -513,7 +456,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 			LOG.error("There was a problem in fetching recently viewed filter counts", e);
 			throw new GenericException("There was a problem in fetching recently viewed filter counts");
 		}
-		result=orderFilters(recentlyViewedCounts, LearningContentServiceImpl.getDefaultFilterOrder());
+		result=orderFilters(recentlyViewedCounts, LearningContentUtil.getDefaultFilterOrder());
 		return result;
 	}
 
@@ -546,7 +489,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 				if(null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
 						&& userBookmarks.keySet().contains(entity.getId())){
 					learningItem.setBookmark(true);
-					learningItem.setBookmarkTimeStamp((long) userBookmarks.get(entity.getId()));
+					learningItem.setBookmarkTimeStamp(Instant.ofEpochMilli((long)userBookmarks.get(entity.getId())).toString());
 					result.add(learningItem);
 					LearningStatusEntity userRegistration = userRegistrations.stream()
 							.filter(userRegistrationInStream -> userRegistrationInStream.getLearningItemId()
@@ -554,7 +497,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 							.findFirst().orElse(null);
 					if (userRegistration != null && userRegistration.getRegStatus() != null) {
 						learningItem.setStatus(userRegistration.getRegStatus());
-						learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp());
+						learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp()!=null?userRegistration.getRegUpdatedTimestamp().toInstant().toString():null);
 					}
 				}
 			}			
@@ -580,7 +523,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 			LOG.error("There was a problem in fetching bookmarked filter counts", e);
 			throw new GenericException("There was a problem in fetching bookmarked filter counts");
 		}
-		result=orderFilters(bookmarkedCounts, LearningContentServiceImpl.getDefaultFilterOrder());
+		result=orderFilters(bookmarkedCounts, LearningContentUtil.getDefaultFilterOrder());
 		return result;
 	}
 	
@@ -622,7 +565,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 						.findFirst().orElse(null);
 				if (userRegistration != null && userRegistration.getRegStatus() != null) {
 					learningItem.setStatus(userRegistration.getRegStatus());
-					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp());
+					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp()!=null?userRegistration.getRegUpdatedTimestamp().toInstant().toString():null);
 				}
 				result.add(learningItem);
 			}			
@@ -644,7 +587,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 			LOG.error("There was a problem in fetching upcoming filter counts", e);
 			throw new GenericException("There was a problem in fetching upcoming filter counts");
 		}
-		result=orderFilters(upcomingContentCounts, LearningContentServiceImpl.getDefaultFilterOrder());
+		result=orderFilters(upcomingContentCounts, LearningContentUtil.getDefaultFilterOrder());
 		return result;
 	}
 
@@ -666,10 +609,10 @@ public class LearningContentServiceImpl implements LearningContentService {
 		}
 		try
 		{
-			if(popularityType.equals(Constants.POPULAR_ACROSS_PARTNERS_PATH))
-				contentList = learningContentDAO.fetchPopularAcrossPartnersContent(queryMap, stMap);
-			if(popularityType.equals(Constants.POPULAR_AT_PARTNER_PATH))
-				contentList = learningContentDAO.fetchPopularAtPartnerContent(queryMap, stMap, puid);
+			if(popularityType.equals(Constants.POPULAR_ACROSS_PARTNERS_PATH)) {
+				contentList = learningContentDAO.fetchPopularAcrossPartnersContent(queryMap, stMap);}
+			if(popularityType.equals(Constants.POPULAR_AT_PARTNER_PATH)) {
+				contentList = learningContentDAO.fetchPopularAtPartnerContent(queryMap, stMap, puid);}
 			// populate bookmark and registration info
 			Set<String> userBookmarks = null;
 			if (null != ccoid) {
@@ -689,7 +632,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 						.findFirst().orElse(null);
 				if (userRegistration != null && userRegistration.getRegStatus() != null) {
 					learningItem.setStatus(userRegistration.getRegStatus());
-					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp());
+					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp()!=null?userRegistration.getRegUpdatedTimestamp().toInstant().toString():null);
 				}
 				result.add(learningItem);
 			}
@@ -706,15 +649,15 @@ public class LearningContentServiceImpl implements LearningContentService {
 		Map<String, Object> result;
 		try
 		{
-			if(popularityType.equals(Constants.POPULAR_ACROSS_PARTNERS_PATH))
-				popularContentCounts = learningContentDAO.getPopularAcrossPartnersFiltersWithCount(filtersSelected);
-			if(popularityType.equals(Constants.POPULAR_AT_PARTNER_PATH))
-				popularContentCounts = learningContentDAO.getPopularAtPartnerFiltersWithCount(filtersSelected, puid);
+			if(popularityType.equals(Constants.POPULAR_ACROSS_PARTNERS_PATH)) {
+				popularContentCounts = learningContentDAO.getPopularAcrossPartnersFiltersWithCount(filtersSelected);}
+			if(popularityType.equals(Constants.POPULAR_AT_PARTNER_PATH)) {
+				popularContentCounts = learningContentDAO.getPopularAtPartnerFiltersWithCount(filtersSelected, puid);}
 		}catch (Exception e) {
 			LOG.error("There was a problem in fetching popular across partners filter counts", e);
 			throw new GenericException("There was a problem in fetching popular across partners filter counts");
 		}
-		result=orderFilters(popularContentCounts, LearningContentServiceImpl.getDefaultFilterOrder());
+		result=orderFilters(popularContentCounts, LearningContentUtil.getDefaultFilterOrder());
 		return result;
 	}
 
@@ -770,7 +713,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 			LOG.error("There was a problem in fetching cx insights filters", e);
 			throw new GenericException("There was a problem in fetching cx insights filters");
 		}
-		result=orderFilters(cxInsightsContentCounts, LearningContentServiceImpl.getCXInsightsFilterOrder());
+		result=orderFilters(cxInsightsContentCounts, LearningContentUtil.getCXInsightsFilterOrder());
 		return result;
 	}
 	
@@ -801,10 +744,10 @@ public class LearningContentServiceImpl implements LearningContentService {
 				{
 					LinkedHashMap<String, Object> lfcFilterNew=new LinkedHashMap<>();
 					Map<String, String> lfcOld = (Map<String, String>) filters.get(filterGroup);
-					List<String> lfcFilterOrder = LearningContentServiceImpl.getLFCFilterOrder();
-					for(String filter : lfcFilterOrder) {
-						if(lfcOld.containsKey(filter))
-							lfcFilterNew.put(filter, lfcOld.get(filter));
+					List<String> lfcFilterOrderList = LearningContentUtil.getLFCFilterOrder();
+					for(String filter : lfcFilterOrderList) {
+						if(lfcOld.containsKey(filter)) {
+							lfcFilterNew.put(filter, lfcOld.get(filter));}
 					}
 					filters.put(filterGroup, lfcFilterNew);
 				}
@@ -851,7 +794,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 						.findFirst().orElse(null);
 				if (userRegistration != null && userRegistration.getRegStatus() != null) {
 					learningItem.setStatus(userRegistration.getRegStatus());
-					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp());
+					learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp()!=null?userRegistration.getRegUpdatedTimestamp().toInstant().toString():null);
 				}
 				result.add(learningItem);
 			}
@@ -872,7 +815,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 			LOG.error("There was a problem in fetching featured filter counts", e);
 			throw new GenericException("There was a problem in fetching featured filter counts");
 		}
-		result = orderFilters(featuredContentCounts, LearningContentServiceImpl.getDefaultFilterOrder());
+		result = orderFilters(featuredContentCounts, LearningContentUtil.getDefaultFilterOrder());
 		return result;
 	}
 

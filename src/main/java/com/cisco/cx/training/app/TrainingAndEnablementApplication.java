@@ -12,6 +12,8 @@ import org.springframework.web.client.RestTemplate;
 @SpringBootApplication
 public class TrainingAndEnablementApplication {
 
+	static final int CORE_POOL_SIZE = 5;
+	static final int MAX_POOL_SIZE = 10; 
     public static void main(String[] args) throws Throwable {
         SpringApplication.run(TrainingAndEnablementApplication.class);
     }
@@ -19,8 +21,8 @@ public class TrainingAndEnablementApplication {
 	@Bean
 	public ThreadPoolTaskExecutor taskExecutor() {
 		ThreadPoolTaskExecutor pool = new ThreadPoolTaskExecutor();
-		pool.setCorePoolSize(5);
-		pool.setMaxPoolSize(10);
+		pool.setCorePoolSize(CORE_POOL_SIZE);
+		pool.setMaxPoolSize(MAX_POOL_SIZE);
 		
 		/* logger starts */
 		// set the MDC context using task decorator
@@ -47,5 +49,5 @@ public class TrainingAndEnablementApplication {
 	@Bean
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
-	}
+	 }
 }

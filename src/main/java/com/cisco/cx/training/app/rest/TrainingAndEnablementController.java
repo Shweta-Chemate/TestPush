@@ -40,12 +40,13 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
+@SuppressWarnings({"squid:S00112"})
 @RestController
 @Validated
 @RequestMapping("/v1/partner/training")
 @Api(value = "Trainining and Enablement APIs", description = "REST APIs for Training And Enablement")
 public class TrainingAndEnablementController {
-	private final Logger LOG = LoggerFactory.getLogger(TrainingAndEnablementController.class);
+	private static final String LIMIT_MSG = "Invalid limit.";
 
 	@SuppressWarnings("unused")
 	private final Map<String, Callable<Boolean>> mandatoryDependencies = new HashMap<>();
@@ -80,38 +81,7 @@ public class TrainingAndEnablementController {
 		List<Community> communityList = trainingAndEnablementService.getAllCommunities();
 		return new ResponseEntity<List<Community>>(communityList, HttpStatus.OK);
 	}
-    
-   
-	
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/learnings")
-	@ApiOperation(value = "Fetch SuccessAcademy", response = String.class, nickname = "fetchsuccessacademy")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
-			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
-			@ApiResponse(code = 404, message = "Entity Not Found"),
-			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
-	public ResponseEntity<List<SuccessAcademyLearning>> getAllLearnings(
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake)
-			throws Exception {
-		LOG.info("Entering the getAllLearnings");
-		long requestStartTime = System.currentTimeMillis();		
-		List<SuccessAcademyLearning> sucessAcademyList = trainingAndEnablementService.getAllSuccessAcademyLearnings(xMasheryHandshake);
-		LOG.info("Received learnings in {} ", (System.currentTimeMillis() - requestStartTime));
-		return new ResponseEntity<List<SuccessAcademyLearning>>(sucessAcademyList, HttpStatus.OK);
-	}
-	
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/getLearningFilters")
-	@ApiOperation(value = "Fetch SuccessAcademy Filters", response = String.class, nickname = "fetchsuccessacademyfilters")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
-			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
-			@ApiResponse(code = 404, message = "Entity Not Found"),
-			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
-	public ResponseEntity<List<SuccessAcademyFilter>> getAllLearningFilters(
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake)
-			throws Exception {
-		List<SuccessAcademyFilter> sucessAcademyFilterList = trainingAndEnablementService.getSuccessAcademyFilters();
-		return new ResponseEntity<List<SuccessAcademyFilter>>(sucessAcademyFilterList, HttpStatus.OK);
-	}
-	
+ 
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, path = "/learning/bookmark")
     @ApiOperation(value = "Create or remove bookmark for one of the learnings", response = BookmarkResponseSchema.class)
     @ApiResponses(value = {
@@ -217,7 +187,7 @@ public class TrainingAndEnablementController {
 		HashMap<String, Object> filters = new HashMap<String, Object>();
 		LearningRecordsAndFiltersModel learningCards = trainingAndEnablementService.
 				getMyPreferredLearnings(xMasheryHandshake,search,filters,sortBy,sortOrder,puid, limit);
-		if(limit!=null && limit < 0) throw new BadRequestException("Invalid limit.");
+		if(limit!=null && limit < 0) {throw new BadRequestException(LIMIT_MSG);}
 		return new ResponseEntity<LearningRecordsAndFiltersModel>(learningCards, HttpStatus.OK);
 	}
 	

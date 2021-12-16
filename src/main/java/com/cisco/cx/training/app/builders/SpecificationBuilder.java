@@ -53,7 +53,7 @@ public class SpecificationBuilder {
 				searchSpecification = searchSpecification
 						.or(CustomSpecifications.searchItemsWithCriteria(searchField, search));
 			}
-			LOGGER.info(searchSpecification.toString());
+			LOGGER.info("sspecifications: {} ", searchSpecification);
 		}
 		return searchSpecification;
 	}
@@ -68,7 +68,7 @@ public class SpecificationBuilder {
 	}
 
 	public Set<String> getSearchFields() {
-		Set<String> searchFields = new HashSet<String>();
+		Set<String> searchFields = new HashSet<>();
 		searchFields.add(Constants.TITLE);
 		searchFields.add(Constants.SPEAKERS);
 		searchFields.add(Constants.DESCRIPTION);

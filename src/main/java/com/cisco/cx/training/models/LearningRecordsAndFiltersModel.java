@@ -8,10 +8,10 @@ public class LearningRecordsAndFiltersModel {
 	private List<GenericLearningModel> learningData;	
 	
 	public List<GenericLearningModel> getLearningData() {
-		return learningData;
+		return learningData;  //NOSONAR
 	}
 	public void setLearningData(List<GenericLearningModel> learningData) {
-		this.learningData = learningData;
+		this.learningData = learningData;  //NOSONAR
 	}
 	
 }

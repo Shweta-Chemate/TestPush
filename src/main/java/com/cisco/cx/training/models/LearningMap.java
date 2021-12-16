@@ -1,6 +1,5 @@
 package com.cisco.cx.training.models;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
@@ -19,7 +18,7 @@ public class LearningMap {
 
 	private String module_count;
 
-	private Timestamp date;
+	private String date;
 
 	List<LearningModule> learningModules;
 
@@ -71,11 +70,11 @@ public class LearningMap {
 		this.module_count = module_count;
 	}
 
-	public Timestamp getDate() {
+	public String getDate() {
 		return date;
 	}
 
-	public void setDate(Timestamp date) {
+	public void setDate(String date) {
 		this.date = date;
 	}
 
@@ -94,7 +93,7 @@ public class LearningMap {
 		learningMap.setTitle(learningMapEntity.getTitle());
 		learningMap.setDescription(learningMapEntity.getDescription());
 		learningMap.setLearning_type(learningMapEntity.getLearningType());
-		learningMap.setDate(learningMapEntity.getSortByDate());
+		learningMap.setDate(learningMapEntity.getSortByDate()!=null?learningMapEntity.getSortByDate().toInstant().toString():null);
 		learningMap.setLink(learningMapEntity.getLink());
 		learningMap.setModule_count(learningMapEntity.getModulecount());
 		return learningMap;

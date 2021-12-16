@@ -20,7 +20,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -31,11 +37,15 @@ public class SmartsheetDAOImpl implements SmartsheetDAO {
 
     @Autowired
     private PropertyConfiguration config;
+    
+    private static final String EVENT_NAME_KEY = "Event Name";
+    private static final String EMAIL_KEY = "Email";
+    private static final String REGISTERED_KEY = "Registered";
 
     private static Map<String, String> successTalkRegColTitleToSchemaKeyMap = Stream.of(new Object[][] {
-            { "Event Name", "title" },
-            { "Email", "email" },
-            { "Registered", "registrationStatus" },
+            { EVENT_NAME_KEY, "title" },
+            { EMAIL_KEY, "email" },
+            { REGISTERED_KEY, "registrationStatus" },
             { "Attended", "attendedStatus" },
             { "Registration Date/Time", "registrationDateFormatted"},
             { "Event Start Date", "eventStartDateFormatted"}
@@ -123,13 +133,13 @@ public class SmartsheetDAOImpl implements SmartsheetDAO {
             updatedMatchedRow.setCells(matchedRow.getCells().stream()
                     .filter(cell -> allowedColumns.contains(columnIdToTitleMap.get(cell.getColumnId())))
                     .map(cell -> {
-                        if (StringUtils.equalsIgnoreCase(columnIdToTitleMap.get(cell.getColumnId()), "Registered")) {
+                        if (StringUtils.equalsIgnoreCase(columnIdToTitleMap.get(cell.getColumnId()), REGISTERED_KEY)) {
                             cell.setValue(cancelledRegistration.getRegistrationStatus());
                             cell.setDisplayValue(cancelledRegistration.getRegistrationStatus().toString());
-                        } else if (StringUtils.equalsIgnoreCase(columnIdToTitleMap.get(cell.getColumnId()), "Email")) {
+                        } else if (StringUtils.equalsIgnoreCase(columnIdToTitleMap.get(cell.getColumnId()), EMAIL_KEY)) {
                             cell.setValue(cancelledRegistration.getCcoid());
                             cell.setDisplayValue(cancelledRegistration.getCcoid());
-                        } else if (StringUtils.equalsIgnoreCase(columnIdToTitleMap.get(cell.getColumnId()), "Event Name")) {
+                        } else if (StringUtils.equalsIgnoreCase(columnIdToTitleMap.get(cell.getColumnId()), EVENT_NAME_KEY)) {
                             cell.setValue(cancelledRegistration.getTitle());
                             cell.setDisplayValue(cancelledRegistration.getTitle());
                         }
@@ -155,13 +165,13 @@ public class SmartsheetDAOImpl implements SmartsheetDAO {
                 boolean isRowMatch = currentRow.getCells().stream().map(currentCell -> {
                     // start with flag true (at start every cell is qualified for row to be a match)
                     boolean isCellQualified = true;
-                    //LOG.info("{} -> {}, {}", currentCell.getColumnId(), currentCell.getValue(), currentCell.getDisplayValue());
+                    //LOG.info("{} -> {}, {}", currentCell.getColumnId(), currentCell.getValue(), currentCell.getDisplayValue()); //NOSONAR
                     // check for field conditions and determine if the cell values qualifies or disqualifies the row to be matched
-                    if (StringUtils.equalsIgnoreCase(columnIdToTitleMap.get(currentCell.getColumnId()), "Event Name")) {
+                    if (StringUtils.equalsIgnoreCase(columnIdToTitleMap.get(currentCell.getColumnId()), EVENT_NAME_KEY)) {
                         isCellQualified = isCellQualified && (Objects.equals(registration.getTitle(), currentCell.getValue()));
-                    } else if (StringUtils.equalsIgnoreCase(columnIdToTitleMap.get(currentCell.getColumnId()), "Email")) {
+                    } else if (StringUtils.equalsIgnoreCase(columnIdToTitleMap.get(currentCell.getColumnId()), EMAIL_KEY)) {
                         isCellQualified = isCellQualified && (Objects.equals(registration.getCcoid(), currentCell.getValue()));
-                    } else if (StringUtils.equalsIgnoreCase(columnIdToTitleMap.get(currentCell.getColumnId()), "Registered")) {
+                    } else if (StringUtils.equalsIgnoreCase(columnIdToTitleMap.get(currentCell.getColumnId()), REGISTERED_KEY)) {
                         isCellQualified = isCellQualified && (status == null || status.isEmpty() || status.contains(currentCell.getValue()));
                     }
 

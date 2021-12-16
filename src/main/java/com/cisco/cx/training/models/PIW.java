@@ -1,6 +1,5 @@
 package com.cisco.cx.training.models;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
@@ -17,7 +16,7 @@ public class PIW {
 
 	private String status;
 
-	private LocalDateTime regTimestamp;
+	private String regTimestamp;
 
 	private boolean bookmark;
 
@@ -156,11 +155,11 @@ public class PIW {
 	}
 
 	public List<PIWSession> getSessions() {
-		return sessions;
+		return sessions;  //NOSONAR
 	}
 
 	public void setSessions(List<PIWSession> sessions) {
-		this.sessions = sessions;
+		this.sessions = sessions;  //NOSONAR
 	}
 
 	public boolean isBookmark() {
@@ -171,11 +170,11 @@ public class PIW {
 		this.bookmark = bookmark;
 	}
 
-	public LocalDateTime getRegTimestamp() {
+	public String getRegTimestamp() {
 		return regTimestamp;
 	}
 
-	public void setRegTimestamp(LocalDateTime regTimestamp) {
+	public void setRegTimestamp(String regTimestamp) {
 		this.regTimestamp = regTimestamp;
 	}
 
@@ -238,12 +237,12 @@ public class PIW {
 		PIWSession session = new PIWSession();
 		session.setSessionId(item.getId());
 		session.setRegistrationUrl(item.getRegistrationUrl());
-		session.setSessionStartDate(item.getSessionStartDate().getTime());
+		session.setSessionStartDate(item.getSessionStartDate()!=null?item.getSessionStartDate().toInstant().toString():null);
 		session.setPresenterName(item.getPresenterName());
 		session.setScheduled(false);
 		List<PIWSession> sessions = new ArrayList<>();
 		sessions.add(session);
-		this.setSessions(sessions);
+		this.setSessions(sessions);  //NOSONAR
 	}
 
 }

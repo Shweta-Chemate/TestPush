@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -35,9 +36,6 @@ import com.cisco.cx.training.models.LearningModule;
 
 @Repository
 public class NewLearningContentDAOImpl implements NewLearningContentDAO{
-
-	private final static Logger LOG = LoggerFactory.getLogger(NewLearningContentDAOImpl.class);
-
 	private final static HashMap<String, List<String>> APIFilterGroupMappings=getAPIFilterGroupMappings();
 
 	@Autowired
@@ -130,9 +128,10 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		}else {
 			filteredCardsMap = filterCountsDAO.filterCards(filtersSelected, learningItemIdsList, null);
 			cardIds = filterCountsDAO.andFilters(filteredCardsMap);
-			if(cardIds.isEmpty())
+			if(cardIds.isEmpty()) {
 				return filters;
-			if(filtersSelected!=null && !filtersSelected.isEmpty() && filtersSelected.size()==1)
+			}
+			if(filtersSelected.size()==1)
 			{
 				filtersSelected.keySet().forEach(filterGroup -> filters.put(filterGroup, countFilters.get(filterGroup)));
 
@@ -164,9 +163,10 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		}else {
 			filteredCardsMap = filterCountsDAO.filterCards(filtersSelected, learningItemIdsList, null);
 			cardIds = filterCountsDAO.andFilters(filteredCardsMap);
-			if(cardIds.isEmpty())
+			if(cardIds.isEmpty()) {
 				return filters;
-			if(filtersSelected!=null && !filtersSelected.isEmpty() && filtersSelected.size()==1)
+			}
+			if(filtersSelected.size()==1)
 			{
 				filtersSelected.keySet().forEach(filterGroup -> filters.put(filterGroup, countFilters.get(filterGroup)));
 
@@ -198,9 +198,10 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		}else {
 			filteredCardsMap = filterCountsDAO.filterCards(filtersSelected, learningItemIdsList, null);
 			cardIds = filterCountsDAO.andFilters(filteredCardsMap);
-			if(cardIds.isEmpty())
+			if(cardIds.isEmpty()) {
 				return filters;
-			if(filtersSelected!=null && !filtersSelected.isEmpty() && filtersSelected.size()==1)
+			}
+			if(filtersSelected.size()==1)
 			{
 				filtersSelected.keySet().forEach(filterGroup -> filters.put(filterGroup, countFilters.get(filterGroup)));
 
@@ -230,9 +231,10 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		}else {
 			filteredCardsMap = filterCountsDAO.filterCards(filtersSelected, learningItemIdsList, null);
 			cardIds = filterCountsDAO.andFilters(filteredCardsMap);
-			if(cardIds.isEmpty())
+			if(cardIds.isEmpty()) {
 				return filters;
-			if(filtersSelected!=null && !filtersSelected.isEmpty() && filtersSelected.size()==1)
+			}
+			if(filtersSelected.size()==1)
 			{
 				filtersSelected.keySet().forEach(filterGroup -> filters.put(filterGroup, countFilters.get(filterGroup)));
 
@@ -264,9 +266,10 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		}else {
 			filteredCardsMap = filterCountsDAO.filterCards(filtersSelected, learningItemIdsList, null);
 			cardIds = filterCountsDAO.andFilters(filteredCardsMap);
-			if(cardIds.isEmpty())
+			if(cardIds.isEmpty()) {
 				return filters;
-			if(filtersSelected!=null && !filtersSelected.isEmpty() && filtersSelected.size()==1)
+			}
+			if(filtersSelected.size()==1)
 			{
 				filtersSelected.keySet().forEach(filterGroup -> filters.put(filterGroup, countFilters.get(filterGroup)));
 
@@ -299,9 +302,10 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		}else {
 			filteredCardsMap = filterCountsDAO.filterCards(filtersSelected, learningItemIdsList, null);
 			cardIds = filterCountsDAO.andFilters(filteredCardsMap);
-			if(cardIds.isEmpty())
+			if(cardIds.isEmpty()) {
 				return filters;
-			if(filtersSelected!=null && !filtersSelected.isEmpty() && filtersSelected.size()==1)
+			}
+			if(filtersSelected.size()==1)
 			{
 				filtersSelected.keySet().forEach(filterGroup -> filters.put(filterGroup, countFilters.get(filterGroup)));
 
@@ -341,9 +345,10 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		}else {
 			filteredCardsMap = filterCountsDAO.filterCards(filtersSelected, learningItemIdsList, userId);
 			cardIds = filterCountsDAO.andFilters(filteredCardsMap);
-			if(cardIds.isEmpty())
+			if(cardIds.isEmpty()) {
 				return filters;
-			if(filtersSelected!=null && !filtersSelected.isEmpty() && filtersSelected.size()==1)
+			}
+			if(filtersSelected.size()==1)
 			{
 				filtersSelected.keySet().forEach(filterGroup -> filters.put(filterGroup, countFilters.get(filterGroup)));
 			}
@@ -366,8 +371,9 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 						});
 					});
 				}
-				else
+				else {
 					((Map)filter).put(key, "0");
+				}
 			});
 
 		});
@@ -376,8 +382,9 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	@Override
 	public List<NewLearningContentEntity> fetchNewLearningContent(Map<String, List<String>> queryMap, Object stMap) {
 		List<NewLearningContentEntity> result;
-		if(queryMap.isEmpty() && stMap==null)
+		if(queryMap.isEmpty() && stMap==null) {
 			result= learningContentRepo.findNew();
+			}
 		else {
 			List<NewLearningContentEntity> filteredList = new ArrayList<>();
 			Set<String> learningItemIdsList = new HashSet<String>();
@@ -396,8 +403,9 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	@Override
 	public List<NewLearningContentEntity> fetchRecentlyViewedContent(String userId,  Map<String, List<String>> queryMap, Object stMap) {
 		List<NewLearningContentEntity> result;
-		if(queryMap.isEmpty() && stMap==null)
+		if(queryMap.isEmpty() && stMap==null) {
 			result= learningContentRepo.getRecentlyViewedContent(userId);
+		}
 		else {
 			List<NewLearningContentEntity> filteredList = new ArrayList<>();
 			Set<String> learningItemIdsList = new HashSet<String>();
@@ -417,8 +425,9 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	public List<NewLearningContentEntity> fetchPopularAcrossPartnersContent(Map<String, List<String>> queryMap,
 			Object stMap) {
 		List<NewLearningContentEntity> result;
-		if(queryMap.isEmpty() && stMap==null)
+		if(queryMap.isEmpty() && stMap==null) {
 			result= learningContentRepo.getPopularAcrossPartners(popularAcrossPartnersCategoryLiimit);
+		}
 		else {
 			List<NewLearningContentEntity> filteredList = new ArrayList<>();
 			Set<String> learningItemIdsList = new HashSet<String>();
@@ -438,8 +447,9 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	public List<NewLearningContentEntity> fetchPopularAtPartnerContent(Map<String, List<String>> queryMap,
 			Object stMap, String puid) {
 		List<NewLearningContentEntity> result;
-		if(queryMap.isEmpty() && stMap==null)
+		if(queryMap.isEmpty() && stMap==null) {
 			result= learningContentRepo.getPopularAtPartner(puid, popularAtPartnerCompanyLimit);
+		}
 		else {
 			List<NewLearningContentEntity> filteredList = new ArrayList<>();
 			Set<String> learningItemIdsList = new HashSet<String>();
@@ -500,8 +510,9 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	@Override
 	public List<NewLearningContentEntity> fetchUpcomingContent(Map<String, List<String>> queryMap, Object stMap) {
 		List<NewLearningContentEntity> result;
-		if(queryMap.isEmpty() && stMap==null)
+		if(queryMap.isEmpty() && stMap==null) {
 			result= learningContentRepo.findUpcoming();
+		}
 		else {
 			List<NewLearningContentEntity> filteredList = new ArrayList<>();
 			Set<String> learningItemIdsList = new HashSet<String>();
@@ -524,7 +535,8 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		NewLearningContentEntity learningMapEntity = new NewLearningContentEntity();
 		if(id!=null)
 		{
-			learningMapEntity =  learningContentRepo.findById(id).isPresent()?learningContentRepo.findById(id).get():null;
+			Optional<NewLearningContentEntity> optFirst = learningContentRepo.findById(id);
+			learningMapEntity =  optFirst.isPresent()?optFirst.get():null;
 		}
 		else if(title!=null)
 		{
@@ -569,10 +581,12 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 			}
 			if(key.equals(Constants.FOR_YOU_FILTER)) {
 				List<String> learningItemIdsListForYouFiltered=new ArrayList<>();
-				if(values.contains(Constants.BOOKMARKED_FOR_YOU))
+				if(values.contains(Constants.BOOKMARKED_FOR_YOU)) {
 					learningItemIdsListForYouFiltered.addAll(getBookMarkedIds(userId));
-				if(values.contains(Constants.RECENTLY_VIEWED))
+					}
+				if(values.contains(Constants.RECENTLY_VIEWED)) {
 					learningItemIdsListForYouFiltered.addAll(fetchRecentlyViewedContent(userId, new HashMap<String, List<String>>(), null).stream().map(learningItem -> learningItem.getId()).collect(Collectors.toSet()));
+					}
 				specification=specification.and(CustomSpecifications.hasValueIn(Constants.ID, learningItemIdsListForYouFiltered));
 			}
 		}
@@ -591,12 +605,12 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	@SuppressWarnings("unchecked")
 	private Set<String> getSTFilteredIDs(Object stMap) {
 		Set<String> cardIdsStUc = new HashSet<String>();
-		//LOG.info("ST="+((Map) v).keySet());
+		//LOG.info("ST="+((Map) v).keySet()); //NOSONAR
 		((Map) stMap).keySet().forEach(ik->{
 			Object iv = ((Map)stMap).get(ik);
 			List<String> ilist;
 			if(iv instanceof Map) {
-				//LOG.info("UC="+((Map) iv).keySet());
+				//LOG.info("UC="+((Map) iv).keySet()); //NOSONAR
 				Set<String> usecases= ((Map) iv).keySet(); String successtrack = ik.toString();
 				cardIdsStUc.addAll(learningContentRepo.getCardIdsByUcSt(successtrack, usecases));
 			}
@@ -631,8 +645,9 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	@Override
 	public List<NewLearningContentEntity> fetchFeaturedContent(Map<String, List<String>> queryMap, Object stMap) {
 		List<NewLearningContentEntity> result;
-		if (queryMap.isEmpty() && stMap == null)
+		if (queryMap.isEmpty() && stMap == null) {
 			result = learningContentRepo.findFeatured();
+		}
 		else {
 			List<NewLearningContentEntity> filteredList = new ArrayList<>();
 			Set<String> learningItemIdsList = new HashSet<String>();
@@ -669,9 +684,10 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		} else {
 			filteredCardsMap = filterCountsDAO.filterCards(filtersSelected, learningItemIdsList, null);
 			cardIds = filterCountsDAO.andFilters(filteredCardsMap);
-			if (cardIds.isEmpty())
+			if (cardIds.isEmpty()) {
 				return filters;
-			if (filtersSelected != null && !filtersSelected.isEmpty() && filtersSelected.size() == 1) {
+			}
+			if (filtersSelected.size() == 1) {
 				filtersSelected.keySet()
 						.forEach(filterGroup -> filters.put(filterGroup, countFilters.get(filterGroup)));
 

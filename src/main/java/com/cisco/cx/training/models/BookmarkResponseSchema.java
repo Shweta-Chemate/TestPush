@@ -62,6 +62,11 @@ public class BookmarkResponseSchema extends BookmarkRequestSchema implements Has
     public int hashCode() {
         return Objects.hash(getTitle(), getCcoid());
     }
+	
+    @Override
+    public boolean equals(Object obj) {
+    	return super.equals(obj);
+    }
 
 	@Override
     @JsonIgnore

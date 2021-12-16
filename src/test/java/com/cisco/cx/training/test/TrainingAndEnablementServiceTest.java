@@ -1,7 +1,9 @@
 package com.cisco.cx.training.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.sql.Date;
@@ -138,8 +140,8 @@ public class TrainingAndEnablementServiceTest {
 		when(learningDAO.getBookmarks(Mockito.anyString())).thenReturn(bookMarks);
 		List<SuccessAcademyLearning> learnings = trainingAndEnablementService.getAllSuccessAcademyLearnings("");
 		assertEquals(learnings.size(), 2);
-		assertEquals(learnings.get(0).getIsBookMarked(),true);
-		assertEquals(learnings.get(1).getIsBookMarked(),false);
+		assertTrue(learnings.get(0).getIsBookMarked());
+		assertFalse(learnings.get(1).getIsBookMarked());
 	}
 	
 	@Test
@@ -199,7 +201,7 @@ public class TrainingAndEnablementServiceTest {
 		session.setRegistrationUrl("");
 		session.setScheduled(false);
 		session.setSessionId("");
-		session.setSessionStartDate(00L);
+		session.setSessionStartDate("test");
 		sessions = Arrays.asList(session);
 		successTalk.setSessions(sessions);
 		return successTalk;

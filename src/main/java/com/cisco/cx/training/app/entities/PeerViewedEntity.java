@@ -46,11 +46,11 @@ public class PeerViewedEntity implements Serializable {
 	}
 
 	public Timestamp getUpdatedTime() {
-		return updatedTime;
+		return updatedTime; //NOSONAR
 	}
 
 	public void setUpdatedTime(Timestamp date) {
-		this.updatedTime = date;
+		this.updatedTime = date; //NOSONAR
 	}
 	
 	
