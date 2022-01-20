@@ -3,6 +3,7 @@ package com.cisco.cx.training.app.dao;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.models.LearningContentItem;
@@ -53,14 +54,14 @@ public interface NewLearningContentDAO {
 	
 	Integer getRolesCount();
 
-	List<NewLearningContentEntity> fetchPopularAcrossPartnersContent(Map<String, List<String>> queryMap, Object stMap);
+	List<NewLearningContentEntity> fetchPopularAcrossPartnersContent(Map<String, List<String>> queryMap, Object stMap, Set<String> userBookmarks);
 
-	HashMap<String, Object> getPopularAcrossPartnersFiltersWithCount(HashMap<String, Object> filtersSelected);
+	HashMap<String, Object> getPopularAcrossPartnersFiltersWithCount(HashMap<String, Object> filtersSelected, Set<String> userBookmarks);
 
 	List<NewLearningContentEntity> fetchPopularAtPartnerContent(Map<String, List<String>> queryMap, Object stMap,
-			String puid);
+			String puid, Set<String> userBookmarks);
 
-	HashMap<String, Object> getPopularAtPartnerFiltersWithCount(HashMap<String, Object> filtersSelected, String puid);
+	HashMap<String, Object> getPopularAtPartnerFiltersWithCount(HashMap<String, Object> filtersSelected, String puid, Set<String> userBookmarks);
 	
 	List<NewLearningContentEntity> fetchFeaturedContent(Map<String, List<String>> queryMap, Object stMap);
 	

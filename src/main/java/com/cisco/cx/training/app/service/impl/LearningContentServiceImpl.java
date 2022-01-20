@@ -12,7 +12,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -609,15 +608,16 @@ public class LearningContentServiceImpl implements LearningContentService {
 		}
 		try
 		{
-			if(popularityType.equals(Constants.POPULAR_ACROSS_PARTNERS_PATH)) {
-				contentList = learningContentDAO.fetchPopularAcrossPartnersContent(queryMap, stMap);}
-			if(popularityType.equals(Constants.POPULAR_AT_PARTNER_PATH)) {
-				contentList = learningContentDAO.fetchPopularAtPartnerContent(queryMap, stMap, puid);}
 			// populate bookmark and registration info
 			Set<String> userBookmarks = null;
 			if (null != ccoid) {
 				userBookmarks = learningBookmarkDAO.getBookmarks(ccoid);
 			}
+			if(popularityType.equals(Constants.POPULAR_ACROSS_PARTNERS_PATH))
+				contentList = learningContentDAO.fetchPopularAcrossPartnersContent(queryMap, stMap, userBookmarks);
+			if(popularityType.equals(Constants.POPULAR_AT_PARTNER_PATH))
+				contentList = learningContentDAO.fetchPopularAtPartnerContent(queryMap, stMap, puid, userBookmarks);
+			// populate bookmark and registration info
 			List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserId(ccoid);
 			for (NewLearningContentEntity entity : contentList) {
 				LearningContentItem learningItem = new LearningContentItem(entity);
@@ -644,15 +644,19 @@ public class LearningContentServiceImpl implements LearningContentService {
 	}
 
 	@Override
-	public Map<String, Object> getPopularContentFiltersWithCount(HashMap<String, Object> filtersSelected, String puid, String popularityType) {
+	public Map<String, Object> getPopularContentFiltersWithCount(HashMap<String, Object> filtersSelected, String puid, String popularityType, String userId) {
 		HashMap<String, Object> popularContentCounts = new HashMap<>();
 		Map<String, Object> result;
 		try
 		{
-			if(popularityType.equals(Constants.POPULAR_ACROSS_PARTNERS_PATH)) {
-				popularContentCounts = learningContentDAO.getPopularAcrossPartnersFiltersWithCount(filtersSelected);}
-			if(popularityType.equals(Constants.POPULAR_AT_PARTNER_PATH)) {
-				popularContentCounts = learningContentDAO.getPopularAtPartnerFiltersWithCount(filtersSelected, puid);}
+			Set<String> userBookmarks = null;
+			if (null != userId) {
+				userBookmarks = learningBookmarkDAO.getBookmarks(userId);
+			}
+			if(popularityType.equals(Constants.POPULAR_ACROSS_PARTNERS_PATH))
+				popularContentCounts = learningContentDAO.getPopularAcrossPartnersFiltersWithCount(filtersSelected, userBookmarks);
+			if(popularityType.equals(Constants.POPULAR_AT_PARTNER_PATH))
+				popularContentCounts = learningContentDAO.getPopularAtPartnerFiltersWithCount(filtersSelected, puid, userBookmarks);
 		}catch (Exception e) {
 			LOG.error("There was a problem in fetching popular across partners filter counts", e);
 			throw new GenericException("There was a problem in fetching popular across partners filter counts");

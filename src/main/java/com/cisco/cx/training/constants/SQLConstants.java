@@ -150,28 +150,30 @@ public class SQLConstants {
 	
 	public static final String GET_TECHNOLOGY_COUNT= "select count(*) FROM cxpp_db.cxpp_learning_technology";
 
-	public static final String GET_POPULAR_ACCROSS_PARTNERS = "select * from\n" +
-			"((select learning_item_id from cxpp_db.cxpp_learning_popularity where learning_type='learningmodule' or learning_type='learningmap' and popularity_weight > 0 order by popularity_weight desc limit :limit)\n" +
-			"UNION\n" +
-			"(select learning_item_id from cxpp_db.cxpp_learning_popularity where learning_type='piw' or learning_type='successtalk' and popularity_weight > 0 order by popularity_weight desc limit :limit)\n" +
-			"UNION\n" +
-			"(select learning_item_id from cxpp_db.cxpp_learning_popularity where learning_type='product_documentation' and popularity_weight > 0 order by popularity_weight desc limit :limit)) as idView\n" +
-			"left join\n" +
-			"cxpp_db.cxpp_learning_content\n" +
-			"on idView.learning_item_id = id order by sort_by_date desc";
+	public static final String GET_POPULAR_ACCROSS_PARTNERS = "select item.* from\n" +
+			" ((select * from\n" +
+			" (select learning_item_id, ROUND((COALESCE(usage_weight,0) + COALESCE(user_rating_weight,0) + COALESCE(IF(learning_item_id in (:userBookmarks), IF(:mx>0, (bookmark_weight*(:mx)-100)/(:mx), 0), bookmark_weight),0))/3,2) as weight\n" +
+			" from cxpp_db.cxpp_learning_popularity where learning_type='learningmodule' or learning_type='learningmap' and popularity_weight > 0 order by popularity_weight desc limit :limitExtended) as adjustedview\n" +
+			" where weight>0 order by weight desc, learning_item_id desc limit :limitNormal)\n" +
+			" UNION\n" +
+			" (select * from\n" +
+			" (select learning_item_id, ROUND((COALESCE(user_rating_weight,0) + COALESCE(IF(learning_item_id in (:userBookmarks), IF(:mx>0, (bookmark_weight*(:mx)-100)/(:mx), 0), bookmark_weight),0))/2,2) as weight\n" +
+			" from cxpp_db.cxpp_learning_popularity where learning_type='piw' or learning_type='successtalk' and popularity_weight > 0 order by popularity_weight desc limit :limitExtended) as adjustedview\n" +
+			" where weight>0 order by weight desc, learning_item_id desc limit :limitNormal)\n" +
+			" UNION\n" +
+			" (select * from\n" +
+			" (select learning_item_id,  ROUND(COALESCE(IF(learning_item_id in (:userBookmarks), IF(:mx>0, (bookmark_weight*(:mx)-100)/(:mx), 0), bookmark_weight),0),2) as weight\n" +
+			" from cxpp_db.cxpp_learning_popularity where learning_type='product_documentation' and popularity_weight > 0 order by popularity_weight desc limit :limitExtended) as adjustedview\n" +
+			" where weight>0 order by weight desc, learning_item_id desc limit :limitNormal)) as idView\n" +
+			" join cxpp_db.cxpp_learning_content as item on idView.learning_item_id = id order by sort_by_date desc";
 
-	public static final String GET_POPULAR_ACCROSS_PARTNERS_FILTERED = "select * from\n" +
-			"((select learning_item_id from cxpp_db.cxpp_learning_popularity where learning_type='learningmodule' or learning_type='learningmap' and popularity_weight > 0 order by popularity_weight desc limit :limit)\n" +
-			"UNION\n" +
-			"(select learning_item_id from cxpp_db.cxpp_learning_popularity where learning_type='piw' or learning_type='successtalk' and popularity_weight > 0 order by popularity_weight desc limit :limit)\n" +
-			"UNION\n" +
-			"(select learning_item_id from cxpp_db.cxpp_learning_popularity where learning_type='product_documentation' and popularity_weight > 0 order by popularity_weight desc limit :limit)) as idView \n" +
-			" join\n" +
-			"cxpp_db.cxpp_learning_content \n" +
-			"on idView.learning_item_id = id and idView.learning_item_id in (:learningItemIds) order by sort_by_date desc";
+	public static final String GET_POPULAR_ACCROSS_PARTNERS_FILTERED = "select * from (\n" + GET_POPULAR_ACCROSS_PARTNERS + ") base\n" +
+			"where base.id in (:learningItemIds)";
 
-	public static final String GET_POPULAR_AT_PARTNER = "select * from cxpp_db.cxpp_learning_bookmark_count bkcount, cxpp_db.cxpp_learning_content learning \n" +
-			"where bkcount.puid = :puid and bkcount.learning_item_id=learning.id and bkcount.count>0 order by count desc, sort_by_date desc limit :limit";
+	public static final String GET_POPULAR_AT_PARTNER = "select * from \n" +
+			"(select learning.*, IF(learning_item_id in (:userBookmarks), bkcount.count-1, bkcount.count) as count from cxpp_db.cxpp_learning_bookmark_count bkcount, cxpp_db.cxpp_learning_content learning \n" +
+					"where bkcount.puid = :puid and bkcount.learning_item_id=learning.id and bkcount.count>0 order by count desc, sort_by_date desc limit :limitExtended) as learningiteams \n" +
+		            "where count>0 order by count desc, sort_by_date desc limit :limit ";
 
 	public static final String GET_POPULAR_AT_PARTNER_FILTERED = "select * from (\n" + GET_POPULAR_AT_PARTNER + ") base where base.learning_item_id in (:learningItemIds) order by base.count desc, base.sort_by_date desc ";
 
@@ -179,4 +181,7 @@ public class SQLConstants {
 
 	public static final String GET_FEATURED_CONTENT = "select * from (\n" + GET_FEATURED_CONTENT_BASE + ") base\n" +
 			"where base.id in (:learningItemIds)";
+
+	public static final String GET_MAX_BOOKMARK = "SELECT MAX(count) AS maxcount FROM\n" +
+			" (SELECT learning_item_id, SUM(count) AS count FROM  cxpp_db.cxpp_learning_bookmark_count  GROUP BY learning_item_id) as countView";
 }

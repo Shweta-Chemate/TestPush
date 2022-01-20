@@ -132,20 +132,23 @@ public interface NewLearningContentRepo
 	Integer getRolesCount();
 
 	@Query(value = SQLConstants.GET_POPULAR_ACCROSS_PARTNERS, nativeQuery = true)
-	List<NewLearningContentEntity> getPopularAcrossPartners(Integer limit);
+	List<NewLearningContentEntity> getPopularAcrossPartners(Integer limitNormal, Integer limitExtended, Integer mx, Set<String> userBookmarks);
 
 	@Query(value = SQLConstants.GET_POPULAR_ACCROSS_PARTNERS_FILTERED, nativeQuery = true)
-	List<NewLearningContentEntity> getPopularAcrossPartnersFiltered(Set<String> learningItemIds, Integer limit);
+	List<NewLearningContentEntity> getPopularAcrossPartnersFiltered(Set<String> learningItemIds, Integer limitNormal, Integer limitExtended, Integer mx, Set<String> userBookmarks);
 
 	@Query(value = SQLConstants.GET_POPULAR_AT_PARTNER, nativeQuery = true)
-	List<NewLearningContentEntity> getPopularAtPartner(String puid, Integer limit);
+	List<NewLearningContentEntity> getPopularAtPartner(String puid, Integer limit, Integer limitExtended, Set<String> userBookmarks);
 
 	@Query(value = SQLConstants.GET_POPULAR_AT_PARTNER_FILTERED, nativeQuery = true)
-	List<NewLearningContentEntity> getPopularAtPartnerFiltered(String puid, Set<String> learningItemIds, Integer limit);
+	List<NewLearningContentEntity> getPopularAtPartnerFiltered(String puid, Set<String> learningItemIds, Integer limit, Integer limitExtended, Set<String> userBookmarks);
 
 	@Query(value = SQLConstants.GET_FEATURED_CONTENT_BASE, nativeQuery = true)
 	List<NewLearningContentEntity> findFeatured();
 	
 	@Query(value = SQLConstants.GET_FEATURED_CONTENT, nativeQuery = true)
 	List<NewLearningContentEntity> findFeaturedFiltered(Set<String> learningItemIds);
+
+	@Query(value = SQLConstants.GET_MAX_BOOKMARK, nativeQuery = true)
+	Integer getMaxBookmark();
 }
