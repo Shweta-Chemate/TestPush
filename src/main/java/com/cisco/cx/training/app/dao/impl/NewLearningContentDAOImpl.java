@@ -245,7 +245,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	}
 
 	@Override
-	public HashMap<String, Object> getPopularAcrossPartnersFiltersWithCount(HashMap<String, Object> filtersSelected) {
+	public HashMap<String, Object> getPopularAcrossPartnersFiltersWithCount(HashMap<String, Object> filtersSelected, Set<String> userBookmarks) {
 		Map<String, Set<String>> filteredCardsMap = new HashMap<String, Set<String>>();
 		List<NewLearningContentEntity> filteredList = new ArrayList<>();
 		Set<String> learningItemIdsList = new HashSet<String>();
@@ -254,7 +254,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		HashMap<String, Object> countFilters = new HashMap<>();
 
 		List<String> filterGroups=NewLearningContentDAOImpl.APIFilterGroupMappings.get(Constants.POPULAR_ACROSS_PARTNERS);
-		filteredList = fetchPopularAcrossPartnersContent(new HashMap<String,List<String>>(), null);
+		filteredList = fetchPopularAcrossPartnersContent(new HashMap<String,List<String>>(), null, userBookmarks);
 		learningItemIdsList = filteredList.stream().map(learningItem -> learningItem.getId())
 				.collect(Collectors.toSet());
 
@@ -281,7 +281,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 
 	@Override
 	public HashMap<String, Object> getPopularAtPartnerFiltersWithCount(HashMap<String, Object> filtersSelected,
-			String puid) {
+			String puid, Set<String> userBookmarks) {
 		Map<String, Set<String>> filteredCardsMap = new HashMap<String, Set<String>>();
 		List<NewLearningContentEntity> filteredList = new ArrayList<>();
 		Set<String> learningItemIdsList = new HashSet<String>();
@@ -290,7 +290,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		HashMap<String, Object> countFilters = new HashMap<>();
 
 		List<String> filterGroups=NewLearningContentDAOImpl.APIFilterGroupMappings.get(Constants.POPULAR_ACROSS_PARTNERS);
-		filteredList = fetchPopularAtPartnerContent(new HashMap<String,List<String>>(), null, puid);
+		filteredList = fetchPopularAtPartnerContent(new HashMap<String,List<String>>(), null, puid, userBookmarks);
 		learningItemIdsList = filteredList.stream().map(learningItem -> learningItem.getId())
 				.collect(Collectors.toSet());
 
@@ -423,10 +423,15 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 
 	@Override
 	public List<NewLearningContentEntity> fetchPopularAcrossPartnersContent(Map<String, List<String>> queryMap,
-			Object stMap) {
+			Object stMap, Set<String> userBookmarks) {
 		List<NewLearningContentEntity> result;
+		int extendedLimit = popularAcrossPartnersCategoryLiimit+(userBookmarks!=null?userBookmarks.size():0);
+		Integer maxBookmarkValue = learningContentRepo.getMaxBookmark();
+		if(maxBookmarkValue==null) {
+			maxBookmarkValue = 0;
+		}
 		if(queryMap.isEmpty() && stMap==null) {
-			result= learningContentRepo.getPopularAcrossPartners(popularAcrossPartnersCategoryLiimit);
+			result= learningContentRepo.getPopularAcrossPartners(popularAcrossPartnersCategoryLiimit, extendedLimit, maxBookmarkValue, userBookmarks);
 		}
 		else {
 			List<NewLearningContentEntity> filteredList = new ArrayList<>();
@@ -438,18 +443,18 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 			filteredList = learningContentRepo.findAll(specification);
 			learningItemIdsList = filteredList.stream().map(learningItem -> learningItem.getId())
 					.collect(Collectors.toSet());
-			result=learningContentRepo.getPopularAcrossPartnersFiltered(learningItemIdsList, popularAcrossPartnersCategoryLiimit);
+			result=learningContentRepo.getPopularAcrossPartnersFiltered(learningItemIdsList, popularAcrossPartnersCategoryLiimit, extendedLimit, maxBookmarkValue, userBookmarks);
 		}
 		return result;
 	}
 
 	@Override
 	public List<NewLearningContentEntity> fetchPopularAtPartnerContent(Map<String, List<String>> queryMap,
-			Object stMap, String puid) {
+			Object stMap, String puid, Set<String> userBookmarks) {
 		List<NewLearningContentEntity> result;
-		if(queryMap.isEmpty() && stMap==null) {
-			result= learningContentRepo.getPopularAtPartner(puid, popularAtPartnerCompanyLimit);
-		}
+		int extendedLimit = popularAtPartnerCompanyLimit+(userBookmarks!=null?userBookmarks.size():0);
+		if(queryMap.isEmpty() && stMap==null)
+			result= learningContentRepo.getPopularAtPartner(puid, popularAtPartnerCompanyLimit, extendedLimit, userBookmarks);
 		else {
 			List<NewLearningContentEntity> filteredList = new ArrayList<>();
 			Set<String> learningItemIdsList = new HashSet<String>();
@@ -460,7 +465,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 			filteredList = learningContentRepo.findAll(specification);
 			learningItemIdsList = filteredList.stream().map(learningItem -> learningItem.getId())
 					.collect(Collectors.toSet());
-			result=learningContentRepo.getPopularAtPartnerFiltered(puid, learningItemIdsList, popularAtPartnerCompanyLimit);
+			result=learningContentRepo.getPopularAtPartnerFiltered(puid, learningItemIdsList, popularAtPartnerCompanyLimit, extendedLimit, userBookmarks);
 		}
 		return result;
 	}

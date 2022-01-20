@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import org.assertj.core.util.Arrays;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,7 +21,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cisco.cx.training.app.builders.SpecificationBuilderPIW;
 import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
@@ -335,32 +339,41 @@ public class LearningContentDaoTest {
 
 	@Test
 	public void testFetchPopularAcrossPartnersContent() {
+        ReflectionTestUtils.setField(learningContentDAO, "popularAcrossPartnersCategoryLiimit", Integer.valueOf(10));
 		Map<String, List<String>> filterParams = new HashMap<>();
 		List<NewLearningContentEntity> newContentList = new ArrayList<>();
-		when(learningContentRepo.getPopularAcrossPartnersFiltered(Mockito.any(), Mockito.any())).thenReturn(newContentList);
+		HashSet<String> bookmarks = new HashSet<String>();
+		bookmarks.add("test");
+		when(learningContentRepo.getPopularAcrossPartnersFiltered(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(newContentList);
 		Map stMapTest = new HashMap<>();
-		learningContentDAO.fetchPopularAcrossPartnersContent(filterParams, stMapTest);
+		learningContentDAO.fetchPopularAcrossPartnersContent(filterParams, stMapTest, bookmarks);
 	}
 
 	@Test
 	public void testGetPopularAcrossPartnersFiltersWithCount() {
-		HashMap<String, Object> filterSelected = new HashMap<>();
-		learningContentDAO.getPopularAcrossPartnersFiltersWithCount(filterSelected);
+        ReflectionTestUtils.setField(learningContentDAO, "popularAcrossPartnersCategoryLiimit", Integer.valueOf(10));
+        HashSet<String> bookmarks = new HashSet<String>();
+		bookmarks.add("test");
+        HashMap<String, Object> filterSelected = new HashMap<>();
+		learningContentDAO.getPopularAcrossPartnersFiltersWithCount(filterSelected, bookmarks);
 	}
 
 	@Test
 	public void testFetchPopularAtPartnerContent() {
+        ReflectionTestUtils.setField(learningContentDAO, "popularAtPartnerCompanyLimit", Integer.valueOf(10));
 		Map<String, List<String>> filterParams = new HashMap<>();
 		List<NewLearningContentEntity> newContentList = new ArrayList<>();
-		when(learningContentRepo.getPopularAtPartnerFiltered(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(newContentList);
+		HashSet<String> bookmarks = new HashSet<String>();
+		bookmarks.add("test");
 		Map stMapTest = new HashMap<>();
-		learningContentDAO.fetchPopularAtPartnerContent(filterParams, stMapTest, "puid");
+		Assertions.assertNotNull(learningContentDAO.fetchPopularAtPartnerContent(filterParams, stMapTest, "puid", bookmarks));
 	}
 
 	@Test
 	public void testGetPopularAtPartnerFiltersWithCount() {
+        ReflectionTestUtils.setField(learningContentDAO, "popularAtPartnerCompanyLimit", Integer.valueOf(10));
 		HashMap<String, Object> filterSelected = new HashMap<>();
-		learningContentDAO.getPopularAtPartnerFiltersWithCount(filterSelected, "test");
+		Assertions.assertNotNull(learningContentDAO.getPopularAtPartnerFiltersWithCount(filterSelected, "test", new HashSet<String>()));
 	}
 
 	@Test
