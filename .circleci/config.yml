@@ -1,11 +1,15 @@
+# Java Maven CircleCI 2.0 configuration file
+
 aliases:
   - &remove_parent_pom_from_cache
     name: "Remove parent pom from cache"
-    command: |
-      rm -rf ~/.m2/repository/com/cisco/services/cxe-parent-pom
-      
-# Java Maven CircleCI 2.0 configuration file
-version: 2
+    command: rm -r ~/.m2/repository/com/cisco/services/cxe-parent-pom || true
+
+version: 2.1
+
+orbs:
+  sonarqube-orb: cxepi/sonarqube-orb@1.1.0
+
 jobs:
   build:
     docker:
@@ -27,6 +31,7 @@ jobs:
             - v3-dependencies-{{ checksum "pom.xml" }}
             # fallback to using the latest cache if no exact match is found
             - v3-dependencies-
+
       - run: *remove_parent_pom_from_cache
 
       - run: 
@@ -35,12 +40,12 @@ jobs:
       - run:
           name: "view_dependencies"
           command: mvn -B -Dmaven.test.skip="true" dependency:tree -Dverbose --settings settings.xml
-      - run: *remove_parent_pom_from_cache
-      
+      - sonarqube-orb/scan-java
+      - run: *remove_parent_pom_from_cache             
       - save_cache:
           paths:
             - ~/.m2
-          key: v3-dependencies-{{ checksum "pom.xml" }}
+          key: v3-dependencies-{{ checksum "pom.xml" }}   
 
       ## Code coverage metrics
       - store_artifacts:
@@ -128,13 +133,11 @@ jobs:
             if [  "${CIRCLE_BRANCH}" == "master" ];
             then
               export IMAGE_TAG=$( cat /home/circleci/project/version_file.txt )
-              docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${CIRCLE_PROJECT_REPONAME}:${IMAGE_TAG}
+              docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${CIRCLE_PROJECT_REPONAME}:${IMAGE_TAG} | tee /home/circleci/project/img_version.txt
             else  
               export SHORT_GIT_SHA=$(git rev-parse --short ${CIRCLE_SHA1})
               echo $SHORT_GIT_SHA
-              docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${CIRCLE_PROJECT_REPONAME}:${IMAGE_VERSION}-${SHORT_GIT_SHA}
-              export FINAL_VERSION=${IMAGE_VERSION}-${SHORT_GIT_SHA}
-              echo ${FINAL_VERSION} > /home/circleci/project/img_version.txt
+              docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${CIRCLE_PROJECT_REPONAME}:${IMAGE_VERSION}-${SHORT_GIT_SHA} | tee /home/circleci/project/img_version.txt
             fi    
   #### This step saves the updated version for any merge to master ####            
       - save_cache: 
@@ -199,7 +202,7 @@ jobs:
                 export PACKAGE_VERSION=$( cat /home/circleci/project/helm/version_file.txt )
                 echo $PACKAGE_VERSION
                 echo ${PACKAGE_VERSION} > /home/circleci/project/helm_version.txt
-              fi  
+              fi
               modifiedfiles=$(git show --first-parent HEAD --name-only --pretty="" | cut -d'/' -f 1  2>&1)
               if [[ $modifiedfiles = *"deploy"* ]];
               then
@@ -217,17 +220,12 @@ jobs:
               fi              
               docker create  -v /cfg --name helm-dir ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/cci-helm-plugin:latest /bin/true
               docker cp -a /home/circleci/project/${PACKAGE_DIR}/  helm-dir:/cfg
-              docker run --rm -e IMAGE_VERSION=${IMAGE_VERSION} -e HELM_REPO_URL=${HELM_REPO_URL} -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} -e AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION} -e HELM_PACKAGE_PATH=${HELM_PACKAGE_PATH} -e GIT_SHA=${SHORT_GIT_SHA} -e GIT_BRANCH=${CIRCLE_BRANCH} -e PACKAGE_VERSION=${PACKAGE_VERSION} --volumes-from helm-dir ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/cci-helm-plugin:latest
-              if [  "${CIRCLE_BRANCH}" != "master" ];
-              then
-                export PACKAGE_VERSION=${IMAGE_VERSION}-${SHORT_GIT_SHA}
-                echo ${PACKAGE_VERSION} > /home/circleci/project/helm_version.txt
-              fi
+              docker run --rm -e IMAGE_VERSION=${IMAGE_VERSION} -e HELM_REPO_URL=${HELM_REPO_URL} -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} -e AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION} -e HELM_PACKAGE_PATH=${HELM_PACKAGE_PATH} -e GIT_SHA=${SHORT_GIT_SHA} -e GIT_BRANCH=${CIRCLE_BRANCH} -e PACKAGE_VERSION=${PACKAGE_VERSION} --volumes-from helm-dir ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/cci-helm-plugin:latest | tee /home/circleci/project/helm_version.txt
               
       - save_cache: 
           key: helm-cache-v2-{{ arch }}-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
           paths:
-            - /home/circleci/project/helm/version_file.txt
+            - /home/circleci/project/helm/version_file.txt   
   #### This step saves the branch img version to artifacts
       - store_artifacts:
           path: /home/circleci/project/helm_version.txt
@@ -244,8 +242,7 @@ workflows:
             branches:
               only: 
                 - master
-                - /^pull.*/ 
-                - feature/sonar_and_iso
+                - /^pull.*/
           context: aws-devops-context
 
       - Push_To_ECR:
@@ -256,7 +253,6 @@ workflows:
               only: 
                 - master
                 - /^pull.*/
-                - feature/sonar_and_iso
           context: aws-devops-context
       - Push_Helm_Chart:
           requires:
@@ -265,6 +261,5 @@ workflows:
             branches:
               only:
                 - master
-                - /^pull.*/  
-                - feature/sonar_and_iso
+                - /^pull.*/
           context: aws-devops-context    
