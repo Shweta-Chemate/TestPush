@@ -159,45 +159,23 @@
 		</plugins>
 	</build>
 
-
 	<repositories>
 		<repository>
-			<id>repo.cxe.csco.cloud-snapshot</id>
-			<url>s3://repo.cxe.csco.cloud/snapshot</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>repo.cxe.csco.cloud-release</id>
-			<url>s3://repo.cxe.csco.cloud/release</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
+			<id>cxepi</id>
+			<url>https://cxaf.jfrog.io/artifactory/cx-platform</url>
 		</repository>
 	</repositories>
 	<distributionManagement>
 		<repository>
-			<id>repo.cxe.csco.cloud-release</id>
-			<url>s3://repo.cxe.csco.cloud/release</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
+			<id>cxepi</id>
+			<url>https://cxaf.jfrog.io/artifactory/cx-platform</url>
 		</repository>
 		<snapshotRepository>
-			<id>repo.cxe.csco.cloud-snapshot</id>
-			<url>s3://repo.cxe.csco.cloud/snapshot</url>
+			<id>cxepi-snapshots</id>
+			<url>https://cxaf.jfrog.io/artifactory/cx-platform</url>
 		</snapshotRepository>
 	</distributionManagement>
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
