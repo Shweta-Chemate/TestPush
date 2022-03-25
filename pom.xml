@@ -25,7 +25,24 @@
 		properties and versions are managed by cxe-parent-pom + ========================================================== 
 		+ -->
 	<properties>
-
+		<sonar.exclusions>
+			**/resources/**,
+			**/models/**,
+			**/util/**,
+			**/exception/**,
+			**/constants/**,
+			**/entities/*,
+			**/filters/**,
+			**/config/**,
+			src/main/java/com/cisco/cx/training/app/dao/impl/SmartsheetDAOImpl.java,
+			src/main/java/com/cisco/cx/training/app/config/PropertyConfiguration.java
+		</sonar.exclusions>
+		<sonar.cpd.exclusions>
+			**/FilterCountsDAOImpl.java,
+			**/NewLearningContentDAOImpl.java,
+			**/SpecificationBuilderPIW.java,
+			**/LearningContentServiceImpl.java
+		</sonar.cpd.exclusions>
 	</properties>
 
 	<dependencies>
