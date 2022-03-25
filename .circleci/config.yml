@@ -274,6 +274,7 @@ workflows:
             branches:
               only: 
                 - master
+                - sogandha/TE_master
                 - /^pull.*/
           context: aws-devops-context
       
@@ -282,6 +283,7 @@ workflows:
             branches:
               only: 
                 - master
+                - sogandha/TE_master
                 - /^pull.*/
           context: aws-devops-context
 
@@ -292,6 +294,7 @@ workflows:
             branches:
               only: 
                 - master
+                - sogandha/TE_master
                 - /^pull.*/
           context: aws-devops-context
       - Push_Helm_Chart:
@@ -301,5 +304,6 @@ workflows:
             branches:
               only:
                 - master
+                - sogandha/TE_master
                 - /^pull.*/
           context: aws-devops-context    

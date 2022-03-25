@@ -12,6 +12,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.servlet.http.HttpServletRequest;
+
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -31,6 +34,7 @@ import com.cisco.cx.training.app.entities.PeerViewedEntity;
 import com.cisco.cx.training.app.entities.PeerViewedEntityPK;
 import com.cisco.cx.training.app.repo.NewLearningContentRepo;
 import com.cisco.cx.training.app.repo.PeerViewedRepo;
+import com.cisco.cx.training.constants.Constants;
 import com.cisco.cx.training.models.GenericLearningModel;
 import com.cisco.cx.training.models.LearningRecordsAndFiltersModel;
 import com.cisco.cx.training.models.UserDetails;
@@ -56,6 +60,9 @@ public class ProductDocumentationService{
 
 	@Autowired
 	private PeerViewedRepo peerViewedRepo;
+	
+	@Autowired
+	private HttpServletRequest httpServletRequest;
 
 	@Value("${top.picks.learnings.display.limit}")
 	public Integer topicksLimit;
@@ -675,8 +682,11 @@ public class ProductDocumentationService{
 
 	private String getUserRole(String userId, String puId)
 	{
-		String userRole = productDocumentationDAO.getUserRole(userId,puId);
-		LOG.info("Role found {}.",userRole);
+		long requestStartTime = System.currentTimeMillis();
+		String userRoleId = (String) httpServletRequest.getServletContext().getAttribute(Constants.ROLE_ID);
+		String userRole = productDocumentationDAO.getUserRole(userRoleId);
+		LOG.info("PD-Role found {} {} in {}.",userRoleId, userRole, (System.currentTimeMillis() - requestStartTime));
+		
 		return userRole;
 	}
 
@@ -718,12 +728,13 @@ public class ProductDocumentationService{
 
 	private Set<String> getPeerViewedCards(String userRole)
 	{
+		long requestStartTime = System.currentTimeMillis();	
 		Set<String> peerViewed = new HashSet<String>();
 		try
 		{
 			List<PeerViewedEntity> peerCards = peerViewedRepo.findByRoleName(userRole);
 			peerCards.forEach(pv -> peerViewed.add(pv.getCardId()));	
-			LOG.info("peer viewed {} {}",peerViewed.size(), peerViewed);
+			LOG.info("PD-peer viewed {} {} in {} ",peerViewed.size(), peerViewed, (System.currentTimeMillis() - requestStartTime));
 		}
 		catch(Exception e)
 		{
@@ -767,6 +778,7 @@ public class ProductDocumentationService{
 
 	private List<String> getRangeLW(List<LearningItemEntity> onlyFutureLWIds, Map<String, String> ddbTI)
 	{
+		long requestStartTime = System.currentTimeMillis();	
 		List<String> rangeCardsIds = new ArrayList<String>();
 		String startTime = ddbTI.get(TI_START_TIME).trim();
 		String endTime = ddbTI.get(TI_END_TIME).trim();
@@ -806,6 +818,7 @@ public class ProductDocumentationService{
 			if( hrsCondition ||	hrMinCondition1 ||	hrMinCondition2	)
 			{ rangeCardsIds.add(futureCard.getLearning_item_id());} 
 		}		
+		LOG.info("PD-range processed in {} ", (System.currentTimeMillis() - requestStartTime));
 		return rangeCardsIds; //rangeCards
 	}
 
@@ -832,7 +845,9 @@ public class ProductDocumentationService{
 					List<LearningItemEntity>  onlyFutureLWs = new ArrayList<LearningItemEntity>();
 					Set<String> onlyFutureLWIds= new HashSet<String>();
 					String contentTab = "Preference";
+					long requestStartTime = System.currentTimeMillis();	
 					onlyFutureLWs.addAll(productDocumentationDAO.getUpcomingWebinars(contentTab));
+					LOG.info("PD-UWeb fetch in {} ", (System.currentTimeMillis() - requestStartTime));
 					onlyFutureLWs.forEach(card->onlyFutureLWIds.add(card.getLearning_item_id()));
 					LOG.info("onlyFutureLWIds: {} " , onlyFutureLWIds );
 					onlyFutureLWInRange.addAll(getRangeLW(onlyFutureLWs,ddbTI));					
@@ -867,10 +882,11 @@ public class ProductDocumentationService{
 	}
 
 	private void randomizeCards(LearningRecordsAndFiltersModel learningCards, Integer limitEnd)
-	{
+	{		
 		int orgSize = learningCards.getLearningData().size();
 		if(orgSize > limitEnd) //25
 		{
+			long requestStartTime = System.currentTimeMillis();	
 			int randomNums = orgSize>= limitEnd*TWO ? limitEnd/TWO : orgSize-limitEnd-1;  //12 or less			
 			int boundry = orgSize>= limitEnd*TWO ? limitEnd*TWO : orgSize; //50 or less
 			Set<Integer> randomIndexes = new HashSet<Integer>();			
@@ -893,6 +909,7 @@ public class ProductDocumentationService{
 			}
 			learningCards.setLearningData(newList);
 			LOG.info(" random org {} {}, new {}{}", allCardIds.size(),allCardIds , newListCardIds.size(), newListCardIds );
+			LOG.info("PD-random done in {} ", (System.currentTimeMillis() - requestStartTime));
 		}
 	}
 
@@ -926,7 +943,10 @@ public class ProductDocumentationService{
 		prefCards.put("tiCards",getWebinarTimeinterval((List<String>) applyFilters.get(TIME_INTERVAL_FILTER)));
 		Set<String> filteredCards = ProductDocumentationUtil.orPreferences(prefCards);
 		if(filteredCards!=null && !filteredCards.isEmpty()) {  //NOSONAR
-			dbCards.addAll(productDocumentationDAO.getAllLearningCardsByFilter(contentTab,filteredCards,Sort.by(order, sort)));	}		
+			long requestStartTime = System.currentTimeMillis();	
+			dbCards.addAll(productDocumentationDAO.getAllLearningCardsByFilter(contentTab,filteredCards,Sort.by(order, sort)));	
+			LOG.info("PD-gC in {} ", (System.currentTimeMillis() - requestStartTime));
+			}		
 		LOG.info("all OR dbCards= {}",dbCards.size());
 		learningCards.addAll(mapLearningEntityToCards(dbCards, userBookmarks));		
 		return responseModel;	
