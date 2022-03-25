@@ -274,7 +274,6 @@ workflows:
             branches:
               only: 
                 - master
-                - sonar-fixes
                 - /^pull.*/
           context: aws-devops-context
       
@@ -283,7 +282,6 @@ workflows:
             branches:
               only: 
                 - master
-                - sonar-fixes
                 - /^pull.*/
           context: aws-devops-context
 
@@ -294,7 +292,6 @@ workflows:
             branches:
               only: 
                 - master
-                - sonar-fixes
                 - /^pull.*/
           context: aws-devops-context
       - Push_Helm_Chart:
@@ -304,6 +301,5 @@ workflows:
             branches:
               only:
                 - master
-                - sonar-fixes
                 - /^pull.*/
           context: aws-devops-context    
