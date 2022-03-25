@@ -34,7 +34,6 @@ public class AuthorizationUtil {
 					.queryParam("userId", userId).queryParam("puId", Integer.parseInt(puid));
 			ResponseEntity<String> result = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, requestEntity,
 					String.class);
-			logger.info("result  " + result);
 			if (result.getStatusCode() == HttpStatus.OK) {
 				response = result.getBody();}
 			else {
@@ -61,7 +60,6 @@ public class AuthorizationUtil {
 					.queryParam("puId", Integer.parseInt(puid)).queryParam(Constants.RESOURCE_ID_PARAM, Constants.RESOURCE_ID_LEARNING);
 			ResponseEntity<String> result = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, requestEntity,
 					String.class);
-			logger.info("result  " + result);
 			if (result.getStatusCode() == HttpStatus.OK) {
 				response = result.getBody();}
 			else {

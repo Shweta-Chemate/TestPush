@@ -24,6 +24,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		String[] excludePatterns = excludePathPatterns.split(Constants.COMMA.trim());
-		registry.addInterceptor(requestInterceptor()).addPathPatterns(includePathPatterns).excludePathPatterns(excludePatterns);
+		String[] includePatterns = includePathPatterns.split(Constants.COMMA.trim());
+		registry.addInterceptor(requestInterceptor()).addPathPatterns(includePatterns).excludePathPatterns(excludePatterns);
 	}
 }

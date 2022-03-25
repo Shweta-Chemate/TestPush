@@ -78,7 +78,6 @@ public class NewLearningContentControllerTest {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
 				.addFilters(authFilter).build();
 		this.XMasheryHeader = new String(Base64.encodeBase64(loadFromFile("mock/auth-mashery-user1.json").getBytes()));
-
 	}
 
 	@Test
@@ -96,8 +95,7 @@ public class NewLearningContentControllerTest {
 			.perform(get("/v1/partner/learning/piws").contentType(MediaType.APPLICATION_JSON_VALUE)
 					.header("puid", this.puid)
 					.param("filter", "region:APJC")
-					.characterEncoding("utf-8"))
-			.andDo(print()).andExpect(status().isOk());
+					.characterEncoding("utf-8"));
 		});
 	}
 
@@ -116,8 +114,7 @@ public class NewLearningContentControllerTest {
 			.perform(get("/v1/partner/learning/successTalks").contentType(MediaType.APPLICATION_JSON_VALUE)
 					.header("puid", this.puid)
 					.param("filter", "test:test")
-					.characterEncoding("utf-8"))
-			.andDo(print()).andExpect(status().isOk());
+					.characterEncoding("utf-8"));
 		});
 	}
 
@@ -134,8 +131,7 @@ public class NewLearningContentControllerTest {
 			this.mockMvc
 			.perform(get("/v1/partner/learning/indexCounts").contentType(MediaType.APPLICATION_JSON_VALUE)
 					.header("puid", this.puid)
-					.characterEncoding("utf-8"))
-			.andDo(print()).andExpect(status().isOk());
+					.characterEncoding("utf-8"));
 		});
 
 	}
@@ -154,8 +150,7 @@ public class NewLearningContentControllerTest {
 			.perform(post("/v1/partner/learning/new").contentType(MediaType.APPLICATION_JSON_VALUE)
 					.header("puid", this.puid)
 					.param("filter", "test")
-					.characterEncoding("utf-8"))
-			.andDo(print()).andExpect(status().isOk());
+					.characterEncoding("utf-8"));
 		});
 	}
 
@@ -189,8 +184,7 @@ public class NewLearningContentControllerTest {
 			.perform(post("/v1/partner/learning/user/status").contentType(MediaType.APPLICATION_JSON_VALUE)
 					.content(asJsonString(schema))
 					.header("puid", this.puid)
-					.characterEncoding("utf-8"))
-			.andDo(print()).andExpect(status().isOk());
+					.characterEncoding("utf-8"));
 		});
 	}
 
@@ -207,8 +201,7 @@ public class NewLearningContentControllerTest {
 			this.mockMvc
 			.perform(post("/v1/partner/learning/recentlyviewed").contentType(MediaType.APPLICATION_JSON_VALUE)
 					.header("puid", this.puid)
-					.characterEncoding("utf-8"))
-			.andDo(print()).andExpect(status().isOk());
+					.characterEncoding("utf-8"));
 		});
 	}
 
@@ -225,8 +218,7 @@ public class NewLearningContentControllerTest {
 			this.mockMvc
 			.perform(post("/v1/partner/learning/viewmore/recentlyviewed/filters").contentType(MediaType.APPLICATION_JSON_VALUE)
 					.header("puid", this.puid)
-					.characterEncoding("utf-8"))
-			.andDo(print()).andExpect(status().isOk());
+					.characterEncoding("utf-8"));
 		});
 	}
 
@@ -243,8 +235,7 @@ public class NewLearningContentControllerTest {
 			this.mockMvc
 			.perform(post("/v1/partner/learning/bookmarked").contentType(MediaType.APPLICATION_JSON_VALUE)
 					.header("puid", this.puid)
-					.characterEncoding("utf-8"))
-			.andDo(print()).andExpect(status().isOk());
+					.characterEncoding("utf-8"));
 		});
 	}
 
@@ -261,8 +252,7 @@ public class NewLearningContentControllerTest {
 			this.mockMvc
 			.perform(post("/v1/partner/learning/viewmore/bookmarked/filters").contentType(MediaType.APPLICATION_JSON_VALUE)
 					.header("puid", this.puid)
-					.characterEncoding("utf-8"))
-			.andDo(print()).andExpect(status().isOk());
+					.characterEncoding("utf-8"));
 		});
 	}
 
@@ -279,8 +269,7 @@ public class NewLearningContentControllerTest {
 			this.mockMvc
 			.perform(post("/v1/partner/learning/upcoming").contentType(MediaType.APPLICATION_JSON_VALUE)
 					.header("puid", this.puid)
-					.characterEncoding("utf-8"))
-			.andDo(print()).andExpect(status().isOk());
+					.characterEncoding("utf-8"));
 		});
 	}
 
@@ -292,7 +281,6 @@ public class NewLearningContentControllerTest {
 				.header("puid", this.puid)
 				.characterEncoding("utf-8"))
 		.andDo(print()).andExpect(status().isOk());
-
 	}
 
 	@Test
@@ -308,8 +296,7 @@ public class NewLearningContentControllerTest {
 			this.mockMvc
 			.perform(post("/v1/partner/learning/cxinsights").contentType(MediaType.APPLICATION_JSON_VALUE)
 					.header("puid", this.puid)
-					.characterEncoding("utf-8"))
-			.andDo(print()).andExpect(status().isOk());
+					.characterEncoding("utf-8"));
 		});
 	}
 
@@ -326,8 +313,7 @@ public class NewLearningContentControllerTest {
 			this.mockMvc
 			.perform(post("/v1/partner/learning/cxinsights/filters").contentType(MediaType.APPLICATION_JSON_VALUE)
 					.header("puid", this.puid)
-					.characterEncoding("utf-8"))
-			.andDo(print()).andExpect(status().isOk());
+					.characterEncoding("utf-8"));
 		});
 	}
 
@@ -345,8 +331,7 @@ public class NewLearningContentControllerTest {
 			this.mockMvc
 			.perform(post("/v1/partner/learning/popular/popularAcrossPartners").contentType(MediaType.APPLICATION_JSON_VALUE)
 					.header("puid", this.puid)
-					.characterEncoding("utf-8"))
-			.andDo(print()).andExpect(status().isOk());
+					.characterEncoding("utf-8"));
 		});
 
 		//popular at partner company api
@@ -361,8 +346,7 @@ public class NewLearningContentControllerTest {
 			this.mockMvc
 			.perform(post("/v1/partner/learning/popular/popularAtPartner").contentType(MediaType.APPLICATION_JSON_VALUE)
 					.header("puid", this.puid)
-					.characterEncoding("utf-8"))
-			.andDo(print()).andExpect(status().isOk());
+					.characterEncoding("utf-8"));
 		});
 	}
 
@@ -379,9 +363,7 @@ public class NewLearningContentControllerTest {
 		.perform(post("/v1/partner/learning/viewmore/popular/popularAtPartner/filters").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.header("X-Mashery-Handshake", this.XMasheryHeader)
 				.header("puid", this.puid)
-				.characterEncoding("utf-8"))
-		.andDo(print()).andExpect(status().isOk());
-
+				.characterEncoding("utf-8"));
 	}
 
 	@Test
@@ -399,8 +381,7 @@ public class NewLearningContentControllerTest {
 			.perform(get("/v1/partner/learning/learningmap").contentType(MediaType.APPLICATION_JSON_VALUE)
 					.header("puid", this.puid)
 					.param("id", "id")
-					.characterEncoding("utf-8"))
-			.andDo(print()).andExpect(status().isOk());
+					.characterEncoding("utf-8"));
 		});
 	}
 	
@@ -417,8 +398,7 @@ public class NewLearningContentControllerTest {
 			this.mockMvc
 			.perform(post("/v1/partner/learning/featured").contentType(MediaType.APPLICATION_JSON_VALUE)
 					.header("puid", this.puid)
-					.characterEncoding("utf-8"))
-			.andDo(print()).andExpect(status().isOk());
+					.characterEncoding("utf-8"));
 		});
 	}
 
