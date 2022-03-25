@@ -49,7 +49,6 @@ public class SpecificationBuilder {
 		Specification<T> searchSpecification = Specification.where(null);
 		if (search != null) {
 			for (String searchField : getSearchFields()) {
-				LOGGER.info("searchField : {}  searchValue : {}",searchField,search);
 				searchSpecification = searchSpecification
 						.or(CustomSpecifications.searchItemsWithCriteria(searchField, search));
 			}

@@ -1,7 +1,6 @@
 package com.cisco.cx.training.test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -105,8 +104,7 @@ public class TrainingAndEnablementControllerTest {
 		assertThrows(Exception.class, () -> {
 			this.mockMvc
 			.perform(get("/v1/partner/training/communities").contentType(MediaType.APPLICATION_JSON_VALUE)
-					.characterEncoding("utf-8"))
-			.andDo(print()).andExpect(status().isOk());
+					.characterEncoding("utf-8"));
 		});
 	}
 

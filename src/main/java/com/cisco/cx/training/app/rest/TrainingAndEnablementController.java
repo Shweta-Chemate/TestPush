@@ -57,13 +57,13 @@ public class TrainingAndEnablementController {
 	@Autowired
 	private TrainingAndEnablementService trainingAndEnablementService;
 	
-	@RequestMapping(path = "/ready", produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(method = RequestMethod.GET, path = "/ready", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Template API Readiness probe", hidden = true)
 	public Map<String, String> checkReady() throws HealthCheckException {
 		return new HashMap<>();
 	}
 	
-	@RequestMapping("/live")
+	@RequestMapping(method = RequestMethod.GET, path="/live")
 	@ApiOperation(value = "Training And Enablement API Liveness Probe", hidden = true)
 	public String checkAlive() {
 		return "Yes I am alive.";

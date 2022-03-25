@@ -55,7 +55,6 @@ public class SpecificationBuilderSuccessTalk {
 		Specification<T> searchSpecification = Specification.where(null);
 		if (search != null) {
 			for (String searchField : getSearchFields()) {
-				LOGGER.info("searchField : {}  searchValue : {}",searchField,search);
 				searchSpecification = searchSpecification
 						.or(CustomSpecifications.searchSuccesstalksWithCriteria(searchField, search));
 			}
