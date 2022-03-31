@@ -144,8 +144,8 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 	@Query(value="select distinct piw_language from cxpp_db.cxpp_learning_item where piw_language is not null order by piw_language", nativeQuery=true)
 	List<String> getAllLanguagesForPreferences();
 
-	@Query(value="select role from cxpp_db_um.managed_screen_details where ccoid=:cecId and puid=:puid and role<> 'PSS role1' limit 1", nativeQuery=true)
-	String getUserRole(String cecId, String puid);
+	@Query(value="select role from cxpp_db_um.cxpp_platform_roles where roleid=:userRoleId", nativeQuery=true)
+	String getUserRole(String userRoleId);
 	
 	@Query(value=ProductDocumentationConstants.GET_UPCOMING_WEBINARS, nativeQuery=true)
 	List<LearningItemEntity>  getUpcomingWebinars(String joinTable);

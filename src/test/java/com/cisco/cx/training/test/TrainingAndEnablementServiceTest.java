@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,11 +17,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.codec.binary.Base64;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.cisco.cx.training.app.config.PropertyConfiguration;
@@ -102,7 +108,21 @@ public class TrainingAndEnablementServiceTest {
 	@Mock
 	private BookmarkCountsRepo bookmarkCountsRepo;
 	
+	@Autowired
+	private ResourceLoader resourceLoader;
+	
 	String learningTab = "Technology";
+	
+	private String xMasheryHeader;
+	
+	@BeforeEach
+	public void init() throws IOException {
+		this.xMasheryHeader = new String(Base64.encodeBase64(loadFromFile("mock/auth-mashery-user1.json").getBytes()));
+	}
+	private String loadFromFile(String filePath) throws IOException {
+		return new String(Files.readAllBytes(resourceLoader.getResource("classpath:" + filePath).getFile().toPath()));
+	}
+
 
 	@Test
 	public void testGetSuccessAcademy() {
@@ -278,8 +298,8 @@ public class TrainingAndEnablementServiceTest {
 		List<GenericLearningModel> cards = new ArrayList<GenericLearningModel>();
 		LearningRecordsAndFiltersModel aMock = new LearningRecordsAndFiltersModel();
 		aMock.setLearningData(cards);
-		when(productDocumentationService.getAllLearningInfo("mashery","searchToken",null,"sortBy","sortOrder",learningTab)).thenReturn(aMock);
-		LearningRecordsAndFiltersModel a = trainingAndEnablementService.getAllLearningInfoPost("mashery","searchToken",null,"sortBy","sortOrder",learningTab);		
+		when(productDocumentationService.getAllLearningInfo(xMasheryHeader,"searchToken",null,"sortBy","sortOrder",learningTab)).thenReturn(aMock);
+		LearningRecordsAndFiltersModel a = trainingAndEnablementService.getAllLearningInfoPost(xMasheryHeader,"searchToken",null,"sortBy","sortOrder",learningTab);		
 		assertEquals(0, a.getLearningData().size());
 	}
 	
@@ -334,10 +354,10 @@ public class TrainingAndEnablementServiceTest {
 		tiUP.setTimeMap(new HashMap<String,String>());tiList.add(tiUP);
 		ulps.put("timeinterval", tiList);
 		when(userLearningPreferencesDAO.createOrUpdateULP(userDetails.getCecId(), ulps)).thenReturn(ulps);
-		trainingAndEnablementService.postUserLearningPreferences("mashery", ulps);
+		trainingAndEnablementService.postUserLearningPreferences(xMasheryHeader, ulps);
 		
 		when(userLearningPreferencesDAO.fetchUserLearningPreferences(userDetails.getCecId())).thenReturn(ulps);
-		trainingAndEnablementService.getUserLearningPreferences("mashery");
+		trainingAndEnablementService.getUserLearningPreferences(xMasheryHeader);
 	}
 	
 	@Test
@@ -347,7 +367,7 @@ public class TrainingAndEnablementServiceTest {
 		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(userDetails);
 		HashMap<String, Object> prefMap = new HashMap<String,Object>();
 		when(userLearningPreferencesDAO.getULPPreferencesDDB(Mockito.anyString())).thenReturn(prefMap);
-		trainingAndEnablementService.getMyPreferredLearnings("mashery", "search", null, "sortBy", "sortOrder", "puid" ,25);
+		trainingAndEnablementService.getMyPreferredLearnings(xMasheryHeader, "search", null, "sortBy", "sortOrder", "puid" ,25);
 	}
 	
 }

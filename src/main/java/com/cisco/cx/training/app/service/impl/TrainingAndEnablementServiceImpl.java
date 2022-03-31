@@ -30,6 +30,7 @@ import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.cisco.cx.training.models.Community;
 import com.cisco.cx.training.models.CountSchema;
 import com.cisco.cx.training.models.LearningRecordsAndFiltersModel;
+import com.cisco.cx.training.models.MasheryObject;
 import com.cisco.cx.training.models.SuccessAcademyFilter;
 import com.cisco.cx.training.models.SuccessAcademyLearning;
 import com.cisco.cx.training.models.UserDetails;
@@ -193,22 +194,22 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	@Override
 	public Map<String, List<UserLearningPreference>> postUserLearningPreferences(String xMasheryHandshake,
 			Map<String, List<UserLearningPreference>> userPreferences) {
-		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
-		return userLearningPreferencesDAO.createOrUpdateULP(userDetails.getCecId(), userPreferences);
+		String ccoId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
+		return userLearningPreferencesDAO.createOrUpdateULP(ccoId, userPreferences);
 	}
 
 	@Override
 	public Map<String, List<UserLearningPreference>> getUserLearningPreferences(String xMasheryHandshake) {
-		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);		
-		return userLearningPreferencesDAO.fetchUserLearningPreferences(userDetails.getCecId());
+		String ccoId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();	
+		return userLearningPreferencesDAO.fetchUserLearningPreferences(ccoId);
 	}
 
 	@Override
 	public LearningRecordsAndFiltersModel getMyPreferredLearnings(String xMasheryHandshake, String search,
-			HashMap<String, Object> filters, String sortBy, String sortOrder, String puid,Integer limit) {
-		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);		
-		HashMap<String, Object> preferences = userLearningPreferencesDAO.getULPPreferencesDDB(userDetails.getCecId());
-		return productDocumentationService.fetchMyPreferredLearnings(userDetails.getCecId(),search,filters,sortBy, sortOrder,puid,preferences,limit);
+			HashMap<String, Object> filters, String sortBy, String sortOrder, String puid,Integer limit) {		
+		String ccoId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
+		HashMap<String, Object> preferences = userLearningPreferencesDAO.getULPPreferencesDDB(ccoId);
+		return productDocumentationService.fetchMyPreferredLearnings(ccoId,search,filters,sortBy, sortOrder,puid,preferences,limit);
 		
 	}
 }

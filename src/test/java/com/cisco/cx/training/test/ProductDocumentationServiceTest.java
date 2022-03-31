@@ -15,11 +15,15 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -34,6 +38,7 @@ import com.cisco.cx.training.app.repo.NewLearningContentRepo;
 import com.cisco.cx.training.app.repo.PeerViewedRepo;
 import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.app.service.ProductDocumentationService;
+import com.cisco.cx.training.constants.Constants;
 import com.cisco.cx.training.models.LearningRecordsAndFiltersModel;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -57,6 +62,12 @@ public class ProductDocumentationServiceTest {
 	
 	@Mock
 	PeerViewedRepo peerViewedRepo;
+	
+	@Mock
+	private HttpServletRequest request;
+	
+    @Mock 
+    private ServletContext servletContext;
 	
 	@InjectMocks
 	private ProductDocumentationService productDocumentationService;
@@ -235,6 +246,10 @@ public class ProductDocumentationServiceTest {
 		Map<String,String> time = new HashMap<String,String>();
 		time.put("startTime", "9:00 AM");time.put("endTime", "4:00 PM");time.put("timeZone", "PDT(UTC-07:30)"); 
 		ti.add(new ObjectMapper().writeValueAsString(time));
+		
+		when(request.getServletContext()).thenReturn(servletContext);
+		when(servletContext.getAttribute(Constants.ROLE_ID)).thenReturn("101");
+		
 		productDocumentationService.fetchMyPreferredLearnings(
 				"userId", null, null, "sortBy", "sortOrder", "puid", preferences, 25);
 	}
@@ -242,6 +257,8 @@ public class ProductDocumentationServiceTest {
 	@Test
 	public void addPeerLearnings() throws JsonProcessingException
 	{
+		when(request.getServletContext()).thenReturn(servletContext);
+		when(servletContext.getAttribute(Constants.ROLE_ID)).thenReturn("101");
 		productDocumentationService.addLearningsViewedForRole("userId", "cardId", "puid");
 		PeerViewedEntity en = new PeerViewedEntity();
 		en.setCardId("cardId");en.setRole_name("role");en.setUpdatedTime(Timestamp.valueOf("2019-10-24 18:30:00"));
@@ -252,7 +269,10 @@ public class ProductDocumentationServiceTest {
 	
 	@Test
 	public void codeCoverTest() throws JsonProcessingException
-	{
+	{		
+		when(request.getServletContext()).thenReturn(servletContext);
+		when(servletContext.getAttribute(Constants.ROLE_ID)).thenReturn("101");
+		
 		when(peerViewedRepo.save(Mockito.any(PeerViewedEntity.class))).thenThrow(new RuntimeException("Some test Exc"));
 		productDocumentationService.addLearningsViewedForRole("userId", "cardId", "puid");
 		
@@ -261,6 +281,7 @@ public class ProductDocumentationServiceTest {
 		Map<String,String> time = new HashMap<String,String>();
 		time.put("startTime", "9:00 AM");time.put("endTime", "4:00 PM");time.put("timeZone", "PDT(UTC-7)"); 
 		ti.add(new ObjectMapper().writeValueAsString(time));
+		
 		productDocumentationService.fetchMyPreferredLearnings(
 				"userId", null, null, "sortBy", "sortOrder", "puid", preferences, 25);
 	}
@@ -283,8 +304,9 @@ public class ProductDocumentationServiceTest {
 			ln.setLearning_item_id(100+i + "");
 			v.add(ln);
 		}
-		
-		when(productDocumentationDAO.getUserRole(Mockito.anyString(),Mockito.anyString())).thenReturn("role101");
+		when(request.getServletContext()).thenReturn(servletContext);
+		when(servletContext.getAttribute(Constants.ROLE_ID)).thenReturn("101");
+		when(productDocumentationDAO.getUserRole(Mockito.anyString())).thenReturn("role101");
 		when(peerViewedRepo.findByRoleName(Mockito.anyString())).thenReturn(a);
 		when(productDocumentationDAO.getAllLearningCardsByFilter(Mockito.anyString(), Mockito.anySet(), Mockito.any(Sort.class)))
 		.thenReturn(v);
@@ -357,6 +379,9 @@ public class ProductDocumentationServiceTest {
 		ln.setLearning_item_id("101");ln.setSortByDate("2019-10-24 18:30:00");
 		
 		when(productDocumentationDAO.getUpcomingWebinars(Mockito.anyString())).thenReturn(len);
+		
+		when(request.getServletContext()).thenReturn(servletContext);
+		when(servletContext.getAttribute(Constants.ROLE_ID)).thenReturn("101");
 		
 		productDocumentationService.fetchMyPreferredLearnings(
 				"userId", null, null, "sortBy", "sortOrder", "puid", preferences, 25);

@@ -173,6 +173,7 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
 	public HashMap<String, Object> getULPPreferencesDDB(String userId) 
 	{			
 		LOG.info("Entering get DDB ULPs");
+		long requestStartTime = System.currentTimeMillis();	
 		HashMap<String, Object> prefFilters = new HashMap<String,Object>();	
 		QueryResponse queryResult = fetchULPPreferencesDDB(userId);		
 		List<Map<String,AttributeValue>> attributeValues = queryResult.items();		
@@ -187,6 +188,7 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
 				}
 			});
 		}		
+		LOG.info("PD-DDB done in {} ", (System.currentTimeMillis() - requestStartTime));
 		return prefFilters;
 	}
 

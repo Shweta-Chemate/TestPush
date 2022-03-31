@@ -113,7 +113,10 @@ public class RBACFilter implements Filter {
 					logger.debug("Is Request valid : " + requestValid);
 
 					if (requestValid) {
-						logger.info("User {} is performing the request {} on {}" ,userId, request.getMethod(), path);
+						logger.info("User {} is performing the request {} on {}" ,userId, request.getMethod(), path);			
+
+						String roleId = JsonPath.using(conf).parse(authResult).read("$.roleId");
+						request.getServletContext().setAttribute(Constants.ROLE_ID, roleId);
 
 					} else {
 						logger.error("AUTH API Returned invalid response for >> " + request.getRequestURI());
