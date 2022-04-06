@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.util.Arrays;
 
 import org.apache.commons.codec.binary.Base64;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,6 +24,7 @@ import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
 import com.cisco.cx.training.app.config.PropertyConfiguration;
+import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.app.service.impl.PartnerProfileServiceImpl;
 import com.cisco.cx.training.models.Company;
@@ -115,19 +117,29 @@ public class PartnerProfileServiceTest {
 	}
 
 	@Test
-	public void isPLSActive() throws Exception {
+	void testisPLSActive() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		String xMasheryHandshake = new String(Base64.encodeBase64(loadFromFile("mock/auth-mashery-user1.json").getBytes()));
 		headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
-		//headers.set("Authorization", "Basic " + "");
 		HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
 		when(config.getPlsURL()).thenReturn("http:/test.com/{puid}");
 		ResponseEntity<String> result = new ResponseEntity<>(getplsresponse(), HttpStatus.OK);
 		when(restTemplate.exchange(config.getPlsURL().replace("{puid}", "101"), HttpMethod.GET, requestEntity, String.class)).thenReturn(result);
-		partnerProfileService.isPLSActive(xMasheryHandshake, "101");
-		
+		Assertions.assertNotNull(partnerProfileService.isPLSActive(xMasheryHandshake, "101"));
 	}
-	
+
+	@Test
+	void testisPLSActiveError() throws Exception {
+		HttpHeaders headers = new HttpHeaders();
+		String xMasheryHandshake = new String(Base64.encodeBase64(loadFromFile("mock/auth-mashery-user1.json").getBytes()));
+		headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
+		HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
+		when(config.getPlsURL()).thenReturn("http:/test.com/{puid}");
+		ResponseEntity<String> result = new ResponseEntity<>("test", HttpStatus.OK);
+		when(restTemplate.exchange(config.getPlsURL().replace("{puid}", "101"), HttpMethod.GET, requestEntity, String.class)).thenReturn(result);
+		Assertions.assertThrows(BadRequestException.class, ()-> partnerProfileService.isPLSActive(xMasheryHandshake, "101"));
+	}
+
 	private String getUserDetails() throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);

@@ -17,6 +17,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.cisco.cx.training.app.config.PropertyConfiguration;
+import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.exception.GenericException;
 import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.constants.LoggerConstants;
@@ -118,8 +119,7 @@ public class PartnerProfileServiceImpl implements PartnerProfileService {
 			plsResponse = mapper.readValue(result.getBody(), PLSResponse.class);
 			return plsResponse.getStatus();	
 		} catch (IOException | HttpClientErrorException e) {
-			LOGGER.error("Error while invoking the pls API", e);
-			throw e;
+			throw new BadRequestException("Error while invoking the PLS API" + e);
 		} 
 	}
 }
