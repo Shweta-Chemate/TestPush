@@ -125,7 +125,7 @@ public class PartnerProfileServiceTest {
 		when(config.getPlsURL()).thenReturn("http:/test.com/{puid}");
 		ResponseEntity<String> result = new ResponseEntity<>(getplsresponse(), HttpStatus.OK);
 		when(restTemplate.exchange(config.getPlsURL().replace("{puid}", "101"), HttpMethod.GET, requestEntity, String.class)).thenReturn(result);
-		Assertions.assertNotNull(partnerProfileService.isPLSActive(xMasheryHandshake, "101"));
+		Assert.isTrue(partnerProfileService.isPLSActive(xMasheryHandshake, "101"));
 	}
 
 	@Test
@@ -188,7 +188,7 @@ public class PartnerProfileServiceTest {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		PLSResponse plsResponse = new PLSResponse();
-		plsResponse.setStatus(false);
+		plsResponse.setStatus(true);
 		
 		return mapper.writeValueAsString(plsResponse);
 	}
