@@ -25,6 +25,7 @@ import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.app.service.ProductDocumentationService;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
+import com.cisco.cx.training.constants.Constants;
 import com.cisco.cx.training.models.BookmarkRequestSchema;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.cisco.cx.training.models.Community;
@@ -208,7 +209,12 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	public LearningRecordsAndFiltersModel getMyPreferredLearnings(String xMasheryHandshake, String search,
 			HashMap<String, Object> filters, String sortBy, String sortOrder, String puid,Integer limit) {		
 		String ccoId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
+		//get specialization info
+		List<String> specializations = new ArrayList<>();
+		specializations.add("pls");
+		specializations.add("offer");
 		HashMap<String, Object> preferences = userLearningPreferencesDAO.getULPPreferencesDDB(ccoId);
+		preferences.put(Constants.SPECIALIZATION_FILTER, specializations);
 		return productDocumentationService.fetchMyPreferredLearnings(ccoId,search,filters,sortBy, sortOrder,puid,preferences,limit);
 		
 	}

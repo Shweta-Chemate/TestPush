@@ -68,6 +68,9 @@ public class LearningItemEntity {
 	@Column(name = "votes_percentage")
 	private Integer votesPercentage;
 
+	@Column(name = "specialization")
+	private String specialization;
+
 	private String asset_types;	
 	private String asset_links;
 	private String learning_map;
@@ -222,6 +225,14 @@ public class LearningItemEntity {
 
 	public void setVotesPercentage(Integer votesPercentage) {
 		this.votesPercentage = votesPercentage;
+	}
+
+	public String getSpecialization() {
+		return specialization;
+	}
+
+	public void setSpecialization(String specialization) {
+		this.specialization = specialization;
 	}
 
 }

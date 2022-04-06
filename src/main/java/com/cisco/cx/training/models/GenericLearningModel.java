@@ -41,6 +41,9 @@ public class GenericLearningModel {
 	
 	@JsonProperty("rating")
 	private Integer rating;
+
+	@JsonProperty("specialization")
+	private String specialization;
 	
 	private String registrationUrl;
 	private String recordingUrl;
@@ -213,7 +216,14 @@ public class GenericLearningModel {
 	public void setId(String id) {
 		this.id = id;
 	}
-	
+
+	public String getSpecialization() {
+		return specialization;
+	}
+
+	public void setSpecialization(String specialization) {
+		this.specialization = specialization;
+	}
 
 }
 

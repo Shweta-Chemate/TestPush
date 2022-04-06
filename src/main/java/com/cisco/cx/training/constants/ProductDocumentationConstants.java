@@ -597,6 +597,9 @@ public static final String GET_PD_DOCUMENTATION_WITH_COUNT_BY_CARD = "select arc
 	public static final String GET_UPCOMING_WEBINARS = " select * from ( " + ALL_CARDS + " ) as UW "
 			+ " where UW.asset_types like '%Live Webinar%' and  UW.sort_by_date > current_date() and UW.status!='cancelled' " ;
 
+
+	public static final String GET_SPECIALIZED_CARDS = "select learning_item_id from cxpp_db.cxpp_learning_item where specialization in (:specialization) ";
+
 }
 
 
