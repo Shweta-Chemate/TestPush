@@ -109,9 +109,9 @@ public class PartnerProfileServiceImpl implements PartnerProfileService {
 	public boolean isPLSActive(String xMasheryHandshake, String partnerId) throws Exception{
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
-		HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
+		HttpEntity<String> requestEntity = new HttpEntity<>(null, headers);
 		ResponseEntity<String> result = restTemplate.exchange(config.getPlsURL().replace("{puid}", partnerId), HttpMethod.GET, requestEntity, String.class);
-		LOGGER.info("PLS url response = {}",  result.getStatusCode().value()!= HttpStatus.OK.value()?result.getBody():"call completed.");
+		LOGGER.info("PLS url response = {}",  result.getStatusCode().value()!= HttpStatus.OK.value()?result.getBody():"pls response successful.");
 		PLSResponse plsResponse = null;
 		try {
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);

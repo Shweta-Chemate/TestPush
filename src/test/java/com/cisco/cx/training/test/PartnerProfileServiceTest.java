@@ -26,6 +26,7 @@ import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.app.service.impl.PartnerProfileServiceImpl;
 import com.cisco.cx.training.models.Company;
+import com.cisco.cx.training.models.PLSResponse;
 import com.cisco.cx.training.models.UserDetails;
 import com.cisco.cx.training.models.UserDetailsWithCompanyList;
 import com.cisco.cx.training.models.UserProfile;
@@ -112,6 +113,20 @@ public class PartnerProfileServiceTest {
 		UserDetails response = partnerProfileService.fetchUserDetails(xMasheryHandshake);
 		Assert.isNull(response);
 	}
+
+	@Test
+	public void isPLSActive() throws Exception {
+		HttpHeaders headers = new HttpHeaders();
+		String xMasheryHandshake = new String(Base64.encodeBase64(loadFromFile("mock/auth-mashery-user1.json").getBytes()));
+		headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
+		//headers.set("Authorization", "Basic " + "");
+		HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
+		when(config.getPlsURL()).thenReturn("http:/test.com/{puid}");
+		ResponseEntity<String> result = new ResponseEntity<>(getplsresponse(), HttpStatus.OK);
+		when(restTemplate.exchange(config.getPlsURL().replace("{puid}", "101"), HttpMethod.GET, requestEntity, String.class)).thenReturn(result);
+		partnerProfileService.isPLSActive(xMasheryHandshake, "101");
+		
+	}
 	
 	private String getUserDetails() throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
@@ -156,5 +171,13 @@ public class PartnerProfileServiceTest {
 	private String loadFromFile(String filePath) throws IOException {
 		return new String(Files.readAllBytes(resourceLoader.getResource("classpath:" + filePath).getFile().toPath()));
 	}
-
+	
+	private String getplsresponse() throws JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		PLSResponse plsResponse = new PLSResponse();
+		plsResponse.setStatus(false);
+		
+		return mapper.writeValueAsString(plsResponse);
+	}
 }
