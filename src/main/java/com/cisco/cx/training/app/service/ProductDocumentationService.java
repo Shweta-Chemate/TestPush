@@ -887,7 +887,7 @@ public class ProductDocumentationService{
 	void sortDateRating(List<GenericLearningModel> learningCards, Direction order)
 	{
 		Collections.sort(learningCards, Comparator.comparing(
-				GenericLearningModel::getSpecialization,Comparator.nullsLast(Comparator.naturalOrder()))
+				GenericLearningModel::getSpecialization,Comparator.nullsFirst(Comparator.naturalOrder()))
 				.thenComparing(GenericLearningModel::getCreatedTimeStamp,Comparator.nullsFirst(Comparator.naturalOrder()))
 				.thenComparing(
 						GenericLearningModel::getAvgRatingPercentage, Comparator.nullsFirst(Comparator.naturalOrder()))
