@@ -207,21 +207,29 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 
 	@Override
 	public LearningRecordsAndFiltersModel getMyPreferredLearnings(String xMasheryHandshake, String search,
-			HashMap<String, Object> filters, String sortBy, String sortOrder, String puid,Integer limit) {		
-		try {
-			partnerProfileService.isPLSActive(xMasheryHandshake, puid);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		String ccoId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
-		//get specialization info
+			HashMap<String, Object> filters, String sortBy, String sortOrder, String puid, Integer limit) {
+			String ccoId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
+			List<String> specializations = getSpecialization(xMasheryHandshake, puid);
+			HashMap<String, Object> preferences = userLearningPreferencesDAO.getULPPreferencesDDB(ccoId);
+			preferences.put(Constants.SPECIALIZATION_FILTER, specializations);
+			return productDocumentationService.fetchMyPreferredLearnings(ccoId, search, filters, sortBy, sortOrder,
+					puid, preferences, limit);
+	}
+
+	List<String> getSpecialization(String xMasheryHandshake, String puid) {
+		//get specializations for the logged in user
 		List<String> specializations = new ArrayList<>();
-		specializations.add("pls");
-		specializations.add("offer");
-		HashMap<String, Object> preferences = userLearningPreferencesDAO.getULPPreferencesDDB(ccoId);
-		preferences.put(Constants.SPECIALIZATION_FILTER, specializations);
-		return productDocumentationService.fetchMyPreferredLearnings(ccoId,search,filters,sortBy, sortOrder,puid,preferences,limit);
-		
+		try {
+			specializations.add(Constants.PLS_SPEC_TYPE);
+			boolean plsStatus;
+			plsStatus = partnerProfileService.isPLSActive(xMasheryHandshake, puid);
+			if (!plsStatus) {
+				specializations.add(Constants.OFFER_SPEC_TYPE);
+			}
+		} catch (Exception e) {
+			LOG.error("ERROR OCCURED :: {}", e);
+		}
+		return specializations;
 	}
 }
 
