@@ -208,6 +208,11 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	@Override
 	public LearningRecordsAndFiltersModel getMyPreferredLearnings(String xMasheryHandshake, String search,
 			HashMap<String, Object> filters, String sortBy, String sortOrder, String puid,Integer limit) {		
+		try {
+			partnerProfileService.isPLSActive(xMasheryHandshake, puid);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		String ccoId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		//get specialization info
 		List<String> specializations = new ArrayList<>();
