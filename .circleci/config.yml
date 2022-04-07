@@ -274,7 +274,6 @@ workflows:
             branches:
               only: 
                 - master
-                - pls_changes
                 - sogandha/TE_master
                 - /^pull.*/
           context: aws-devops-context
@@ -284,7 +283,6 @@ workflows:
             branches:
               only: 
                 - master
-                - pls_changes
                 - sogandha/TE_master
                 - /^pull.*/
           context: aws-devops-context
@@ -296,7 +294,6 @@ workflows:
             branches:
               only: 
                 - master
-                - pls_changes
                 - sogandha/TE_master
                 - /^pull.*/
           context: aws-devops-context
@@ -307,7 +304,6 @@ workflows:
             branches:
               only:
                 - master
-                - pls_changes
                 - sogandha/TE_master
                 - /^pull.*/
           context: aws-devops-context    
