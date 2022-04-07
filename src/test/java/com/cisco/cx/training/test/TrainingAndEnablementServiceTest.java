@@ -158,7 +158,7 @@ public class TrainingAndEnablementServiceTest {
 		Set<String> bookMarks = new HashSet<String>();
 		bookMarks.add("1");
 		when(learningDAO.getBookmarks(Mockito.anyString())).thenReturn(bookMarks);
-		List<SuccessAcademyLearning> learnings = trainingAndEnablementService.getAllSuccessAcademyLearnings("");
+		List<SuccessAcademyLearning> learnings = trainingAndEnablementService.getAllSuccessAcademyLearnings(xMasheryHeader);
 		assertEquals(learnings.size(), 2);
 		assertTrue(learnings.get(0).getIsBookMarked());
 		assertFalse(learnings.get(1).getIsBookMarked());
@@ -287,8 +287,8 @@ public class TrainingAndEnablementServiceTest {
 	@Test
 	public void testFailureBookmarkLearningForUser(){		
 		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(null);
-		assertThrows(BadRequestException.class, () -> {
-			trainingAndEnablementService.bookmarkLearningForUser(null, "", "test");
+		assertThrows(NullPointerException.class, () -> {
+			trainingAndEnablementService.bookmarkLearningForUser(null, xMasheryHeader, "test");
 		});
 	}
 	
