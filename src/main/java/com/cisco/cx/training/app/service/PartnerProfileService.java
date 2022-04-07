@@ -12,5 +12,6 @@ public interface PartnerProfileService {
 	void setEntitlementUrl(String entitlementUrl);
 	
 	String getEntitlementUrl();
-	
+
+	boolean isPLSActive(String xMasheryHandshake, String partnerId) throws Exception;
 }
