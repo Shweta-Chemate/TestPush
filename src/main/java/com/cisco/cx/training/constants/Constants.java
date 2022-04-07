@@ -74,8 +74,8 @@ public final class Constants {
 	public static final String POPULAR_AT_PARTNER_PATH = "popularAtPartner";
 	public static final String FEATURED_CONTENT = "Featured";
 	public static final String SPECIALIZATION_FILTER = "specialization";
-	public static final String PLS_SPEC_TYPE = "pls";
-	public static final String OFFER_SPEC_TYPE = "offer";
+	public static final String PLS_SPEC_TYPE = "PLS";
+	public static final String OFFER_SPEC_TYPE = "ATX/ACC";
 
 
 
