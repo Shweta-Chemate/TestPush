@@ -125,7 +125,12 @@ public class PartnerProfileServiceTest {
 		when(config.getPlsURL()).thenReturn("http:/test.com/{puid}");
 		ResponseEntity<String> result = new ResponseEntity<>(getplsresponse(), HttpStatus.OK);
 		when(restTemplate.exchange(config.getPlsURL().replace("{puid}", "101"), HttpMethod.GET, requestEntity, String.class)).thenReturn(result);
+		Assertions.assertTrue(partnerProfileService.isPLSActive(xMasheryHandshake, "101"));
 		Assert.isTrue(partnerProfileService.isPLSActive(xMasheryHandshake, "101"));
+		
+		ResponseEntity<String> result1 = new ResponseEntity<>(getplsresponseforinactive(), HttpStatus.OK);
+		when(restTemplate.exchange(config.getPlsURL().replace("{puid}", "101"), HttpMethod.GET, requestEntity, String.class)).thenReturn(result1);
+		Assertions.assertFalse(partnerProfileService.isPLSActive(xMasheryHandshake, "101"));
 	}
 
 	@Test
@@ -189,7 +194,15 @@ public class PartnerProfileServiceTest {
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		PLSResponse plsResponse = new PLSResponse();
 		plsResponse.setStatus(true);
-		
+		return mapper.writeValueAsString(plsResponse);
+	}
+	
+	private String getplsresponseforinactive() throws JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		PLSResponse plsResponse = new PLSResponse();
+		plsResponse.setStatus(false);
+		plsResponse.setGracePeriod(false);
 		return mapper.writeValueAsString(plsResponse);
 	}
 }
