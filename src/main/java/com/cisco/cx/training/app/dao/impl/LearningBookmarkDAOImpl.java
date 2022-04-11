@@ -25,6 +25,8 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClientBuilder;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.DeleteItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest.Builder;
 import software.amazon.awssdk.services.dynamodb.model.PutItemResponse;
@@ -58,7 +60,9 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 
 	private static final String USERID_SUFFIX = "-academybookmark";
 	
-	private static final String BOOKMARK_KEY = "bookmarks";
+	private static final String USERID_KEY = "userid";
+	private static final String BOOKMARK_KEY = "bookmark";	
+	private static final String TIMESTAMP_KEY = "timestamp";
 	
 	private DynamoDbClient dbClient;
 	
@@ -98,44 +102,58 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 			BookmarkResponseSchema bookmarkResponseSchema, String puid) {
 		LOG.info("Entering the createOrUpdate");
 		long requestStartTime = System.currentTimeMillis();	
-		Map<String, AttributeValue> itemValue = new HashMap<String, AttributeValue>();
-		Set<String> currentBookMarks = new HashSet<String>();
+		Map<String, AttributeValue> itemValue = new HashMap<String, AttributeValue>();		
 		Map<String,Object> currentBookMarksMap = getBookmarksWithTime(bookmarkResponseSchema.getCcoid());
-		if(null == currentBookMarksMap) {
-			currentBookMarksMap = new HashMap<String,Object>();
-		}
-		if(bookmarkResponseSchema.isBookmark()) {
-			currentBookMarksMap.put(bookmarkResponseSchema.getLearningid(), getTime());
-		}
-		else {					
-			currentBookMarksMap.remove(bookmarkResponseSchema.getLearningid());	
-		}
-		if(currentBookMarksMap.isEmpty()) {
-			currentBookMarks.add("");
-		}
-		else
-		{	
-			currentBookMarksMap.forEach((k,v)->{
-				Map<String,Object> oneBK = new HashMap<String,Object>();oneBK.put(k, v);
-				try
+		boolean opSuccess=false;
+		String learningId = bookmarkResponseSchema.getLearningid();
+		itemValue.put(USERID_KEY, AttributeValue.builder().s(bookmarkResponseSchema.getCcoid().concat(USERID_SUFFIX)).build());	
+		if(bookmarkResponseSchema.isBookmark()) {			
+			if(currentBookMarksMap.keySet().contains(learningId))
+			{				
+				LOG.info("PREVIOUS entry found - for insert."); //should not be real scenario				
+				itemValue.put(TIMESTAMP_KEY, AttributeValue.builder().n((String)currentBookMarksMap.get(learningId)).build());// old time
+				DeleteItemRequest.Builder getDeleteItemReq = DeleteItemRequest.builder();
+				getDeleteItemReq.key(itemValue);
+				getDeleteItemReq.tableName(propertyConfig.getBookmarkTableName());
+				LOG.info("get del Preprocessing done in {} ", (System.currentTimeMillis() - requestStartTime));
+				requestStartTime = System.currentTimeMillis();		
+				DeleteItemResponse getDelResponse = dbClient.deleteItem(getDeleteItemReq.build());
+				LOG.info("get del response received in {} ", (System.currentTimeMillis() - requestStartTime));
+				if(getDelResponse.sdkHttpResponse().isSuccessful()) 
 				{
-					currentBookMarks.add(mapper.writeValueAsString(oneBK));					
-				} 
-				catch (JsonProcessingException e)
-				{
-					LOG.error("Error during mark {} {}",bookmarkResponseSchema.getLearningid(),e);
+					LOG.info("PREVIOUS entry deleted.");
 				}
-			});
+			}	
+			itemValue.put(TIMESTAMP_KEY, AttributeValue.builder().n(Long.toString(getTime())).build()); //new time
+			itemValue.put(BOOKMARK_KEY, AttributeValue.builder().s(learningId).build());	
+			Builder putItemReq = PutItemRequest.builder();
+			putItemReq.tableName(propertyConfig.getBookmarkTableName()).item(itemValue);			
+			LOG.info("put Preprocessing done in {} ", (System.currentTimeMillis() - requestStartTime));
+			requestStartTime = System.currentTimeMillis();				
+			PutItemResponse putResponse = dbClient.putItem(putItemReq.build());
+			LOG.info("put response received in {} ", (System.currentTimeMillis() - requestStartTime));
+			if(putResponse.sdkHttpResponse().isSuccessful()) {
+				opSuccess = true;
+			}
+		}
+		else {
+			if(currentBookMarksMap.keySet().contains(learningId))
+			{				
+				LOG.info("PREVIOUS entry found - for delete.");
+				itemValue.put(TIMESTAMP_KEY, AttributeValue.builder().n((String)currentBookMarksMap.get(learningId)).build());
+				DeleteItemRequest.Builder deleteItemReq = DeleteItemRequest.builder();
+				deleteItemReq.key(itemValue);
+				deleteItemReq.tableName(propertyConfig.getBookmarkTableName());
+				LOG.info("del Preprocessing done in {} ", (System.currentTimeMillis() - requestStartTime));
+				requestStartTime = System.currentTimeMillis();			
+				DeleteItemResponse delResponse = dbClient.deleteItem(deleteItemReq.build());
+				LOG.info("del response received in {} ", (System.currentTimeMillis() - requestStartTime));
+				if(delResponse.sdkHttpResponse().isSuccessful()) {
+					opSuccess = true;					
+				}
+			}		
 		}	
-		itemValue.put("userid", AttributeValue.builder().s(bookmarkResponseSchema.getCcoid().concat(USERID_SUFFIX)).build());
-		itemValue.put(BOOKMARK_KEY, AttributeValue.builder().ss(currentBookMarks).build());
-		Builder putItemReq = PutItemRequest.builder();
-		LOG.info("Preprocessing done in {} ", (System.currentTimeMillis() - requestStartTime));
-		requestStartTime = System.currentTimeMillis();	
-		putItemReq.tableName(propertyConfig.getBookmarkTableName()).item(itemValue);
-		PutItemResponse response = dbClient.putItem(putItemReq.build());
-		LOG.info("response received in {} ", (System.currentTimeMillis() - requestStartTime));
-		if(response.sdkHttpResponse().isSuccessful()){
+		if(opSuccess){
 			//update bookmark count in aurora
 			BookmarkCountsEntity bookMarkCountsEntity = bookmarkCountsRepo.findByLearningItemIdAndPuid(bookmarkResponseSchema.getLearningid(), puid);
 			if(bookMarkCountsEntity != null) {
@@ -177,7 +195,7 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 		LOG.info("Entering the fetch bookmarks");
 		Map<String, Object> userBookMarksMap = new HashMap<String,Object>();
 		long requestStartTime = System.currentTimeMillis();	
-		Set<String> userBookMarks = null;
+		
 		Map<String,String> expressionAttributesNames = new HashMap<>();
 	    expressionAttributesNames.put("#userid","userid");
 	    
@@ -197,18 +215,14 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 	    requestStartTime = System.currentTimeMillis();	
 	    List<Map<String,AttributeValue>> attributeValues = queryResult.items();	    
 	    if(attributeValues.size()>0) {
-	    	Map<String,AttributeValue> userBookmarks = attributeValues.get(0);
-	    	AttributeValue bookMarkSet = userBookmarks.get(BOOKMARK_KEY);
-	    	userBookMarks = new HashSet<String>(bookMarkSet.ss());	
-	    	userBookMarks.forEach(str -> {
-				try {
-					Map<String,Object> ddbBookmark= mapper.readValue(str, Map.class);
-					userBookMarksMap.putAll(ddbBookmark);						
-				} catch (JsonProcessingException e) {
-					LOG.error("Error during bkmap {} {}",str,e);
-				}
-			});	    	
+	    	attributeValues.forEach(record -> {
+		    	String bookmark = record.get(BOOKMARK_KEY).s();
+		    	String timestamp  = record.get(TIMESTAMP_KEY).n();
+		    	userBookMarksMap.put(bookmark,timestamp);		    	 
+	    	});
+	    		
 	    }	    
+	    LOG.info("Fetched bookmarks {} " , userBookMarksMap );
 	    LOG.info("final response in {}", (System.currentTimeMillis() - requestStartTime));
 	    return userBookMarksMap;
 	}
