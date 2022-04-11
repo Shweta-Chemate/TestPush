@@ -685,7 +685,7 @@ public class ProductDocumentationService{
 	private static final String PM = "PM";
 	private static final String UTC_MINUS = "UTC-";
 
-	private String getUserRole(String userId, String puId)
+	private String getUserRole()
 	{
 		long requestStartTime = System.currentTimeMillis();
 		String userRoleId = (String) httpServletRequest.getServletContext().getAttribute(Constants.ROLE_ID);
@@ -700,7 +700,7 @@ public class ProductDocumentationService{
 	public LearningRecordsAndFiltersModel fetchMyPreferredLearnings(String userId, String search, //NOSONAR
 			HashMap<String, Object> filters, String sortBy, String sortOrder, String puid,			//NOSONAR
 			HashMap<String, Object> preferences, Integer limit) {
-		String userRole = getUserRole(userId,puid);		
+		String userRole = getUserRole();
 		HashMap<String, Object> prefFilters = new HashMap<String,Object>();	
 		if(preferences!=null && preferences.size()>0)
 		{
@@ -760,7 +760,7 @@ public class ProductDocumentationService{
 	public void addLearningsViewedForRole(String userId,String cardId, String puid) {		
 		try
 		{
-			String userRole = getUserRole(userId,puid);
+			String userRole = getUserRole();
 			PeerViewedEntityPK pvPK = new PeerViewedEntityPK();
 			pvPK.setCardId(cardId);
 			pvPK.setRoleName(userRole);

@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -57,13 +58,13 @@ public class TrainingAndEnablementController {
 	@Autowired
 	private TrainingAndEnablementService trainingAndEnablementService;
 	
-	@RequestMapping(method = RequestMethod.GET, path = "/ready", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/ready", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Template API Readiness probe", hidden = true)
 	public Map<String, String> checkReady() throws HealthCheckException {
 		return new HashMap<>();
 	}
 	
-	@RequestMapping(method = RequestMethod.GET, path="/live")
+	@GetMapping(path="/live")
 	@ApiOperation(value = "Training And Enablement API Liveness Probe", hidden = true)
 	public String checkAlive() {
 		return "Yes I am alive.";
