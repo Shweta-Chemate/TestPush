@@ -5,14 +5,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PLSResponse {
 
-	private String gracePeriod;
+	private boolean gracePeriod;
 	private boolean status;
 
-	public String getGracePeriod() {
+	public boolean getGracePeriod() {
 		return gracePeriod;
 	}
 
-	public void setGracePeriod(String gracePeriod) {
+	public void setGracePeriod(boolean gracePeriod) {
 		this.gracePeriod = gracePeriod;
 	}
 
