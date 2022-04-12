@@ -16,9 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import software.amazon.awssdk.auth.credentials.AwsCredentials;
-import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.http.SdkHttpClient;
 import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
@@ -34,9 +31,7 @@ import software.amazon.awssdk.services.dynamodb.model.QueryResponse;
 import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
 import com.cisco.cx.training.app.entities.BookmarkCountsEntity;
-import com.cisco.cx.training.app.entities.BookmarkCountsEntityPK;
 import com.cisco.cx.training.app.repo.BookmarkCountsRepo;
-import com.cisco.cx.training.app.repo.NewLearningContentRepo;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -89,8 +84,7 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 	private long getTime()
 	{
 		final Instant now = Clock.systemUTC().instant();
-		long time = now.toEpochMilli();
-		return time;
+		return now.toEpochMilli();
 	}
 
 	@Override
@@ -98,11 +92,11 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 			BookmarkResponseSchema bookmarkResponseSchema, String puid) {
 		LOG.info("Entering the createOrUpdate");
 		long requestStartTime = System.currentTimeMillis();	
-		Map<String, AttributeValue> itemValue = new HashMap<String, AttributeValue>();
-		Set<String> currentBookMarks = new HashSet<String>();
+		Map<String, AttributeValue> itemValue = new HashMap<>();
+		Set<String> currentBookMarks = new HashSet<>();
 		Map<String,Object> currentBookMarksMap = getBookmarksWithTime(bookmarkResponseSchema.getCcoid());
 		if(null == currentBookMarksMap) {
-			currentBookMarksMap = new HashMap<String,Object>();
+			currentBookMarksMap = new HashMap<>();
 		}
 		if(bookmarkResponseSchema.isBookmark()) {
 			currentBookMarksMap.put(bookmarkResponseSchema.getLearningid(), getTime());
@@ -116,7 +110,7 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 		else
 		{	
 			currentBookMarksMap.forEach((k,v)->{
-				Map<String,Object> oneBK = new HashMap<String,Object>();oneBK.put(k, v);
+				Map<String,Object> oneBK = new HashMap<>();oneBK.put(k, v);
 				try
 				{
 					currentBookMarks.add(mapper.writeValueAsString(oneBK));					
@@ -175,7 +169,7 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 	@Override
 	public Map<String,Object> getBookmarksWithTime(String email){
 		LOG.info("Entering the fetch bookmarks");
-		Map<String, Object> userBookMarksMap = new HashMap<String,Object>();
+		Map<String, Object> userBookMarksMap = new HashMap<>();
 		long requestStartTime = System.currentTimeMillis();	
 		Set<String> userBookMarks = null;
 		Map<String,String> expressionAttributesNames = new HashMap<>();
@@ -196,18 +190,18 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 	    LOG.info("response received in {} ", (System.currentTimeMillis() - requestStartTime));
 	    requestStartTime = System.currentTimeMillis();	
 	    List<Map<String,AttributeValue>> attributeValues = queryResult.items();	    
-	    if(attributeValues.size()>0) {
-	    	Map<String,AttributeValue> userBookmarks = attributeValues.get(0);
-	    	AttributeValue bookMarkSet = userBookmarks.get(BOOKMARK_KEY);
-	    	userBookMarks = new HashSet<String>(bookMarkSet.ss());	
-	    	userBookMarks.forEach(str -> {
+	    if(!attributeValues.isEmpty()) {
+			Map<String, AttributeValue> userBookmarks = attributeValues.get(0);
+			AttributeValue bookMarkSet = userBookmarks.get(BOOKMARK_KEY);
+			userBookMarks = new HashSet<>(bookMarkSet.ss());
+			userBookMarks.forEach(str -> {
 				try {
-					Map<String,Object> ddbBookmark= mapper.readValue(str, Map.class);
-					userBookMarksMap.putAll(ddbBookmark);						
+					Map<String, Object> ddbBookmark = mapper.readValue(str, Map.class);
+					userBookMarksMap.putAll(ddbBookmark);
 				} catch (JsonProcessingException e) {
-					LOG.error("Error during bkmap {} {}",str,e);
+					LOG.error("Error during bkmap {} {}", str, e);
 				}
-			});	    	
+			});   	
 	    }	    
 	    LOG.info("final response in {}", (System.currentTimeMillis() - requestStartTime));
 	    return userBookMarksMap;
