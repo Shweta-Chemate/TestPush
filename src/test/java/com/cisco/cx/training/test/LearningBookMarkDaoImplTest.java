@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -87,7 +88,7 @@ public class LearningBookMarkDaoImplTest {
 		PutItemResponse response = Mockito.mock(PutItemResponse.class);
 		when(response.sdkHttpResponse()).thenReturn(httpResponse);
 		when(dbClient.putItem(Mockito.any(PutItemRequest.class))).thenReturn(response);
-		learningBookMarkImpl.createOrUpdate(responseSchema, "test");
+		Assertions.assertNotNull(learningBookMarkImpl.createOrUpdate(responseSchema, "test"));
 	}
 
 	@Test
@@ -110,7 +111,7 @@ public class LearningBookMarkDaoImplTest {
 		when(response.sdkHttpResponse()).thenReturn(httpResponse);
 		when(dbClient.putItem(Mockito.any(PutItemRequest.class))).thenReturn(response);
 
-		learningBookMarkImpl.createOrUpdate(responseSchema, "test");
+		Assertions.assertNotNull(learningBookMarkImpl.createOrUpdate(responseSchema, "test"));
 	}
 
 	
@@ -133,5 +134,6 @@ public class LearningBookMarkDaoImplTest {
 		Mockito.when(dbClient.putItem(Mockito.any(PutItemRequest.class))).thenReturn(response);
 		
 		BookmarkResponseSchema bookmarkResponseSchema = learningBookMarkImpl.createOrUpdate(responseSchema, "test");
+		Assertions.assertNotNull(bookmarkResponseSchema);
 	}
 }

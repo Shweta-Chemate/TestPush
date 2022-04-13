@@ -143,10 +143,12 @@ public class LearningContentServiceTest {
 	public void testUpdateUserStatusLearningEntityNull()
 	{
 		LearningStatusSchema testLearningStatusSchema = getLearningStatusSchema();
+		LearningStatusEntity entity =  getLearningStatusEntity();
 		String testUserId = "sntccbr5@hotmail.com";
 		when(partnerProfileService.fetchUserDetailsWithCompanyList(this.XMasheryHeader)).thenReturn(getUserDetails());
 		when(learningStatusRepo.findByLearningItemIdAndUserIdAndPuid(testLearningStatusSchema.getLearningItemId(), testUserId, this.puid)).thenReturn(null);
-		learningContentService.updateUserStatus(testUserId, this.puid, getLearningStatusSchema(), this.XMasheryHeader);
+		when(learningStatusRepo.save(Mockito.any())).thenReturn(entity);
+		assertNotNull(learningContentService.updateUserStatus(testUserId, this.puid, getLearningStatusSchema(), this.XMasheryHeader));
 	}
 
 	@Test
@@ -154,9 +156,11 @@ public class LearningContentServiceTest {
 	{
 		LearningStatusSchema testLearningStatusSchema = getLearningStatusSchema();
 		String testUserId = "sntccbr5@hotmail.com";
+		LearningStatusEntity entity = getLearningStatusEntity();
 		when(partnerProfileService.fetchUserDetailsWithCompanyList(this.XMasheryHeader)).thenReturn(getUserDetails());
 		when(learningStatusRepo.findByLearningItemIdAndUserIdAndPuid(testLearningStatusSchema.getLearningItemId(), testUserId, this.puid)).thenReturn(getLearningStatusEntity());
-		learningContentService.updateUserStatus(testUserId, this.puid, getLearningStatusSchema(), this.XMasheryHeader);
+		when(learningStatusRepo.save(Mockito.any())).thenReturn(entity);
+		assertNotNull(learningContentService.updateUserStatus(testUserId, this.puid, getLearningStatusSchema(), this.XMasheryHeader));
 	}
 
 	@Test

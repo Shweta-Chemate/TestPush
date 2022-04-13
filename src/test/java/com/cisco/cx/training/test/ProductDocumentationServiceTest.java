@@ -18,6 +18,7 @@ import java.util.Set;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -250,8 +251,8 @@ public class ProductDocumentationServiceTest {
 		when(request.getServletContext()).thenReturn(servletContext);
 		when(servletContext.getAttribute(Constants.ROLE_ID)).thenReturn("101");
 		
-		productDocumentationService.fetchMyPreferredLearnings(
-				"userId", null, null, "sortBy", "sortOrder", "puid", preferences, 25);
+		Assertions.assertNotNull(productDocumentationService.fetchMyPreferredLearnings(
+				"userId", null, null, "sortBy", "sortOrder", "puid", preferences, 25).getLearningData());
 	}
 	
 	@Test
@@ -282,8 +283,8 @@ public class ProductDocumentationServiceTest {
 		time.put("startTime", "9:00 AM");time.put("endTime", "4:00 PM");time.put("timeZone", "PDT(UTC-7)"); 
 		ti.add(new ObjectMapper().writeValueAsString(time));
 		
-		productDocumentationService.fetchMyPreferredLearnings(
-				"userId", null, null, "sortBy", "sortOrder", "puid", preferences, 25);
+		Assertions.assertNotNull(productDocumentationService.fetchMyPreferredLearnings(
+				"userId", null, null, "sortBy", "sortOrder", "puid", preferences, 25));
 	}
 	
 	@Test
@@ -310,8 +311,8 @@ public class ProductDocumentationServiceTest {
 		when(peerViewedRepo.findByRoleName(Mockito.anyString())).thenReturn(a);
 		when(productDocumentationDAO.getAllLearningCardsByFilter(Mockito.anyString(), Mockito.anySet(), Mockito.any(Sort.class)))
 		.thenReturn(v);
-		productDocumentationService.fetchMyPreferredLearnings(
-				"userId", null, null, "sortBy", "sortOrder", "puid", null, 5);
+		Assertions.assertNotNull(productDocumentationService.fetchMyPreferredLearnings(
+				"userId", null, null, "sortBy", "sortOrder", "puid", null, 5));
 
 	}
 	
@@ -383,8 +384,8 @@ public class ProductDocumentationServiceTest {
 		when(request.getServletContext()).thenReturn(servletContext);
 		when(servletContext.getAttribute(Constants.ROLE_ID)).thenReturn("101");
 		
-		productDocumentationService.fetchMyPreferredLearnings(
-				"userId", null, null, "sortBy", "sortOrder", "puid", preferences, 25);
+		Assertions.assertNotNull(productDocumentationService.fetchMyPreferredLearnings(
+				"userId", null, null, "sortBy", "sortOrder", "puid", preferences, 25));
 	}
 }
 
