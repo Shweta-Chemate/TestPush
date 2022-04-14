@@ -412,7 +412,7 @@ public class LearningContentServiceTest {
 
 	private Map<String, Object> getBookmarksWithTime() {
 		Map<String, Object> userBookmarks=new HashMap<>();
-		userBookmarks.put("test", (long) 87987868);
+		userBookmarks.put("test", "87987868");
 		return userBookmarks;
 	}
 
