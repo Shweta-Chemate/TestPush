@@ -45,6 +45,7 @@ public class PropertyConfiguration {
 	
 	private SealedObject awsRegion;
 	
+	@Value("${cxpp.learning.bookmark.table.new}")
 	private String bookmarkTableName;
  
 	private SealedObject rbacExcludedEndPoints;
@@ -191,8 +192,7 @@ public class PropertyConfiguration {
 	public String getBookmarkTableName() {
 		return bookmarkTableName;
 	}
-
-	@Value("${cxpp.learning.bookmark.table}")
+	
 	public void setBookmarkTableName(String bookmarkTableName) {
 		this.bookmarkTableName = bookmarkTableName;
 	}
