@@ -16,9 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import software.amazon.awssdk.auth.credentials.AwsCredentials;
-import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.http.SdkHttpClient;
 import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
@@ -36,9 +33,7 @@ import software.amazon.awssdk.services.dynamodb.model.QueryResponse;
 import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
 import com.cisco.cx.training.app.entities.BookmarkCountsEntity;
-import com.cisco.cx.training.app.entities.BookmarkCountsEntityPK;
 import com.cisco.cx.training.app.repo.BookmarkCountsRepo;
-import com.cisco.cx.training.app.repo.NewLearningContentRepo;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -93,15 +88,14 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 	private long getTime()
 	{
 		final Instant now = Clock.systemUTC().instant();
-		long time = now.toEpochMilli();
-		return time;
+		return now.toEpochMilli();
 	}
 
 	@Override
 	public BookmarkResponseSchema createOrUpdate(
 			BookmarkResponseSchema bookmarkResponseSchema, String puid) {
 		LOG.info("Entering the createOrUpdate");
-		long requestStartTime = System.currentTimeMillis();	
+		long requestStartTime = System.currentTimeMillis();
 		Map<String, AttributeValue> itemValue = new HashMap<String, AttributeValue>();		
 		Map<String,Object> currentBookMarksMap = getBookmarksWithTime(bookmarkResponseSchema.getCcoid());
 		boolean opSuccess=false;
@@ -119,7 +113,7 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 				requestStartTime = System.currentTimeMillis();		
 				DeleteItemResponse getDelResponse = dbClient.deleteItem(getDeleteItemReq.build());
 				LOG.info("get del response received in {} ", (System.currentTimeMillis() - requestStartTime));
-				if(getDelResponse.sdkHttpResponse().isSuccessful()) 
+				if(getDelResponse.sdkHttpResponse().isSuccessful())
 				{
 					LOG.info("PREVIOUS entry deleted.");
 				}
@@ -193,7 +187,7 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 	@Override
 	public Map<String,Object> getBookmarksWithTime(String email){
 		LOG.info("Entering the fetch bookmarks");
-		Map<String, Object> userBookMarksMap = new HashMap<String,Object>();
+		Map<String, Object> userBookMarksMap = new HashMap<>();
 		long requestStartTime = System.currentTimeMillis();	
 		
 		Map<String,String> expressionAttributesNames = new HashMap<>();
@@ -219,8 +213,7 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 		    	String bookmark = record.get(BOOKMARK_KEY).s();
 		    	String timestamp  = record.get(TIMESTAMP_KEY).n();
 		    	userBookMarksMap.put(bookmark,timestamp);		    	 
-	    	});
-	    		
+	    	}); 
 	    }	    
 	    LOG.info("Fetched bookmarks {} " , userBookMarksMap );
 	    LOG.info("final response in {}", (System.currentTimeMillis() - requestStartTime));

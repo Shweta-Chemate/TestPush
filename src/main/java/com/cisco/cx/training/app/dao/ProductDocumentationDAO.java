@@ -150,6 +150,9 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 	@Query(value=ProductDocumentationConstants.GET_UPCOMING_WEBINARS, nativeQuery=true)
 	List<LearningItemEntity>  getUpcomingWebinars(String joinTable);
 
+	@Query(value=ProductDocumentationConstants.GET_SPECIALIZED_CARDS, nativeQuery=true)
+	Set<String> getCardIdsBySpecialization(Set<String> specializations);
+
 }
 
 

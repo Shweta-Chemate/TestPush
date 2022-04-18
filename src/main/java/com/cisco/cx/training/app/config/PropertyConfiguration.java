@@ -61,6 +61,9 @@ public class PropertyConfiguration {
 	@Value("${cxpp.user.learning.preferences.table}")
 	private String ulPreferencesTableName;
 
+	@Value("${get.partner.status}")
+	private String plsURL;
+
 	public String getPartnerUserDetails() {
 		return cryptoAccess.unseal(partnerUserDetails);
 	}
@@ -236,5 +239,12 @@ public class PropertyConfiguration {
 	public void setUlPreferencesTableName(String ulPreferencesTableName) {
 		this.ulPreferencesTableName = ulPreferencesTableName;
 	}
-	
+
+	public String getPlsURL() {
+		return plsURL;
+	}
+
+	public void setPlsURL(String plsURL) {
+		this.plsURL = plsURL;
+	}
 }

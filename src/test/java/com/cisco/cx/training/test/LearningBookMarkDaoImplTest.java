@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -108,7 +109,6 @@ public class LearningBookMarkDaoImplTest {
 		DeleteItemResponse response = Mockito.mock(DeleteItemResponse.class);
 		when(response.sdkHttpResponse()).thenReturn(httpResponse);
 		when(dbClient.deleteItem(Mockito.any(DeleteItemRequest.class))).thenReturn(response);
-
 		BookmarkResponseSchema bookmarkResponseSchema = learningBookMarkImpl.createOrUpdate(responseSchema, "test");
 		assertNotNull(bookmarkResponseSchema.getId());
 	}
