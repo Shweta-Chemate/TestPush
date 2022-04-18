@@ -136,7 +136,7 @@ public class NewLearningContentController {
 	}
 	
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/new")
-	@ApiOperation(value = "Fetch New Learning Content", response = String.class, nickname = "fetchlearningcontent")
+	@ApiOperation(value = "Fetch New Learning Content", nickname = "fetchlearningcontent")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
