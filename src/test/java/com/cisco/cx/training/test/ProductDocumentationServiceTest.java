@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,16 +19,18 @@ import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-
-import org.junit.jupiter.api.Assertions;
+import org.apache.commons.codec.binary.Base64;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
@@ -73,25 +77,37 @@ public class ProductDocumentationServiceTest {
 	@InjectMocks
 	private ProductDocumentationService productDocumentationService;
 	
+	@Autowired
+	ResourceLoader resourceLoader;
+	
 	String learningTab = "Technology";
 
+	private String XMasheryHeader;
+	
+	@BeforeEach
+	public void init() throws IOException {
+		this.XMasheryHeader = new String(Base64.encodeBase64(loadFromFile("mock/auth-mashery-user1.json").getBytes()));
+	}
+	private String loadFromFile(String filePath) throws IOException {
+		return new String(Files.readAllBytes(resourceLoader.getResource("classpath:" + filePath).getFile().toPath()));
+	}
 	
 	@Test
 	public void getAllLearningInfo()
 	{		
-		LearningRecordsAndFiltersModel a1 = productDocumentationService.getAllLearningInfo("mashery",null,null,"sortBy","sortOrder",learningTab);		
+		LearningRecordsAndFiltersModel a1 = productDocumentationService.getAllLearningInfo(this.XMasheryHeader,null,null,"sortBy","sortOrder",learningTab);		
 		assertEquals(0, a1.getLearningData().size());
 		
-		LearningRecordsAndFiltersModel a2 = productDocumentationService.getAllLearningInfo("mashery","searchToken",null,"sortBy","sortOrder",learningTab);		
+		LearningRecordsAndFiltersModel a2 = productDocumentationService.getAllLearningInfo(this.XMasheryHeader,"searchToken",null,"sortBy","sortOrder",learningTab);		
 		assertEquals(0, a2.getLearningData().size());
 		
 		HashMap<String, Object> aMock = new HashMap<String, Object>();	
 		aMock.put("For You", Arrays.asList(new String[]{"New"}));
 		
-		LearningRecordsAndFiltersModel a3 = productDocumentationService.getAllLearningInfo("mashery",null,aMock,"sortBy","sortOrder",learningTab);		
+		LearningRecordsAndFiltersModel a3 = productDocumentationService.getAllLearningInfo(this.XMasheryHeader,null,aMock,"sortBy","sortOrder",learningTab);		
 		assertEquals(0, a3.getLearningData().size());
 		
-		LearningRecordsAndFiltersModel a4 = productDocumentationService.getAllLearningInfo("mashery","searchToken",aMock,"sortBy","sortOrder",learningTab);		
+		LearningRecordsAndFiltersModel a4 = productDocumentationService.getAllLearningInfo(this.XMasheryHeader,"searchToken",aMock,"sortBy","sortOrder",learningTab);		
 		assertEquals(0, a4.getLearningData().size());
 		
 		NewLearningContentEntity n1 = new NewLearningContentEntity(); n1.setId("101");
@@ -99,7 +115,7 @@ public class ProductDocumentationServiceTest {
 		when(learningContentRepo.findNew()).thenReturn(result); Set<String> hs = new HashSet<String>();hs.add("101");
 		when(productDocumentationDAO.getAllNewCardIdsByCards(Mockito.anyString(),Mockito.anySet())).thenReturn(hs);
 		
-		LearningRecordsAndFiltersModel a5 = productDocumentationService.getAllLearningInfo("mashery","searchToken",aMock,"sortBy","sortOrder",learningTab);		
+		LearningRecordsAndFiltersModel a5 = productDocumentationService.getAllLearningInfo(this.XMasheryHeader,"searchToken",aMock,"sortBy","sortOrder",learningTab);		
 		assertEquals(0, a5.getLearningData().size());
 		
 		List<LearningItemEntity> dbCards = new ArrayList<LearningItemEntity>();
@@ -107,7 +123,7 @@ public class ProductDocumentationServiceTest {
 		learningItemEntity.setSortByDate("2016-02-03 00:00:00.0");
 		dbCards.add(learningItemEntity);
 		when(productDocumentationDAO.getAllLearningCardsByFilter(Mockito.anyString(),Mockito.anySet(),Mockito.any(Sort.class))).thenReturn(dbCards);
-		LearningRecordsAndFiltersModel a6 = productDocumentationService.getAllLearningInfo("mashery",null,aMock,"sortBy","sortOrder",learningTab);		
+		LearningRecordsAndFiltersModel a6 = productDocumentationService.getAllLearningInfo(this.XMasheryHeader,null,aMock,"sortBy","sortOrder",learningTab);		
 		assertEquals(1, a6.getLearningData().size());
 	}
 	
@@ -230,10 +246,10 @@ public class ProductDocumentationServiceTest {
 		le1.setTitle("abc");le2.setTitle("xyz");aL.add(le1); aL.add(le2);
 		when(productDocumentationDAO.getAllLearningCards(Mockito.anyString(),Mockito.any(Sort.class))).thenReturn(aL);
 		
-		LearningRecordsAndFiltersModel a2t = productDocumentationService.getAllLearningInfo("mashery",null,null,"title","asc",learningTab);		
+		LearningRecordsAndFiltersModel a2t = productDocumentationService.getAllLearningInfo(this.XMasheryHeader,null,null,"title","asc",learningTab);		
 		assertEquals("abc", a2t.getLearningData().get(0).getTitle());
 		
-		LearningRecordsAndFiltersModel a2t2 = productDocumentationService.getAllLearningInfo("mashery",null,null,"title","desc",learningTab);		
+		LearningRecordsAndFiltersModel a2t2 = productDocumentationService.getAllLearningInfo(this.XMasheryHeader,null,null,"title","desc",learningTab);		
 		assertEquals("xyz", a2t2.getLearningData().get(0).getTitle());
 	}
 	

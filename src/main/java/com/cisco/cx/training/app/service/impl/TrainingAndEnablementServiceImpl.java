@@ -75,16 +75,13 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	public List<SuccessAcademyLearning> getAllSuccessAcademyLearnings(String xMasheryHandshake) {		
 		LOG.info("Entering the getAllSuccessAcademyLearnings");
 		long requestStartTime = System.currentTimeMillis();
-		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
+		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		LOG.info("Received user details in {} ", (System.currentTimeMillis() - requestStartTime));
 		requestStartTime = System.currentTimeMillis();
 		List<SuccessAcademyLearningEntity> entities = successAcademyDAO.findAll();
 		LOG.info("Fetched all learning in {} ", (System.currentTimeMillis() - requestStartTime));
 		requestStartTime = System.currentTimeMillis();
-		Set<String> userBookmarks = null;
-		if(null != userDetails){
-			userBookmarks = learningDAO.getBookmarks(userDetails.getCecId());
-		}
+		Set<String> userBookmarks =  learningDAO.getBookmarks(userId);
 		LOG.info("Fetched user bookmarks in {} ", (System.currentTimeMillis() - requestStartTime));
 		requestStartTime = System.currentTimeMillis();
 		List<SuccessAcademyLearning> learnings = new ArrayList<>();
@@ -154,20 +151,17 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 			String xMasheryHandshake, String puid) {
 		LOG.info("Entering the getSuccessAcademyFilters");
 		long requestStartTime = System.currentTimeMillis();	
-		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
+		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		LOG.info("Fetched user data in {} ", (System.currentTimeMillis() - requestStartTime));
-		if(null == userDetails){
-			throw new BadRequestException("Error from Entitlement System");
-		}else{
-			BookmarkResponseSchema bookmarkResponseSchema = new BookmarkResponseSchema();
-			bookmarkResponseSchema.setCcoid(userDetails.getCecId());
-			bookmarkResponseSchema.setLearningid(bookmarkRequestSchema.getLearningid());
-			bookmarkResponseSchema.setBookmark(bookmarkRequestSchema.isBookmark());
-			requestStartTime = System.currentTimeMillis();
-			learningDAO.createOrUpdate(bookmarkResponseSchema, puid);
-			LOG.info("Updated bookmark in {} ", (System.currentTimeMillis() - requestStartTime));
-			return bookmarkResponseSchema;
-		}
+		BookmarkResponseSchema bookmarkResponseSchema = new BookmarkResponseSchema();
+		bookmarkResponseSchema.setCcoid(userId);
+		bookmarkResponseSchema.setLearningid(bookmarkRequestSchema.getLearningid());
+		bookmarkResponseSchema.setBookmark(bookmarkRequestSchema.isBookmark());
+		requestStartTime = System.currentTimeMillis();
+		learningDAO.createOrUpdate(bookmarkResponseSchema, puid);
+		LOG.info("Updated bookmark in {} ", (System.currentTimeMillis() - requestStartTime));
+		return bookmarkResponseSchema;
+
 	}
 	
 	
