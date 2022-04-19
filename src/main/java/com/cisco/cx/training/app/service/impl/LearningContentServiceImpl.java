@@ -488,7 +488,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 				if(null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
 						&& userBookmarks.keySet().contains(entity.getId())){
 					learningItem.setBookmark(true);
-					learningItem.setBookmarkTimeStamp(Instant.ofEpochMilli((long)userBookmarks.get(entity.getId())).toString());
+					learningItem.setBookmarkTimeStamp(Instant.ofEpochMilli(Long.valueOf((String)userBookmarks.get(entity.getId()))).toString());
 					result.add(learningItem);
 					LearningStatusEntity userRegistration = userRegistrations.stream()
 							.filter(userRegistrationInStream -> userRegistrationInStream.getLearningItemId()

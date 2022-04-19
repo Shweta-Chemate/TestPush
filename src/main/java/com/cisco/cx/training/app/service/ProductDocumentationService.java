@@ -38,6 +38,7 @@ import com.cisco.cx.training.app.repo.PeerViewedRepo;
 import com.cisco.cx.training.constants.Constants;
 import com.cisco.cx.training.models.GenericLearningModel;
 import com.cisco.cx.training.models.LearningRecordsAndFiltersModel;
+import com.cisco.cx.training.models.MasheryObject;
 import com.cisco.cx.training.models.UserDetails;
 import com.cisco.cx.training.util.ProductDocumentationUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -588,9 +589,8 @@ public class ProductDocumentationService{
 		if(sortOrder!=null && sortOrder.equalsIgnoreCase("asc")) { order = Sort.Direction.ASC;}		
 		LOG.info("sort={} {}",sort, order);
 
-		UserDetails userDetails = partnerProfileService.fetchUserDetails(xMasheryHandshake);
-		Set<String> userBookmarks = null;
-		if(null != userDetails){userBookmarks = learningDAO.getBookmarks(userDetails.getCecId());}
+		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
+		Set<String> userBookmarks = learningDAO.getBookmarks(userId);
 
 		LearningRecordsAndFiltersModel responseModel = new LearningRecordsAndFiltersModel();
 		List<GenericLearningModel> learningCards = new ArrayList<>();
