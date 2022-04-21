@@ -38,7 +38,7 @@ import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@SuppressWarnings({"squid:S1200"})
+@SuppressWarnings({"squid:S1200","java:S3776"})
 @Repository
 public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 	
@@ -191,7 +191,7 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 		long requestStartTime = System.currentTimeMillis();	
 		
 		Map<String,String> expressionAttributesNames = new HashMap<>();
-	    expressionAttributesNames.put("#userid","userid");
+	    expressionAttributesNames.put("#userid",USERID_KEY);
 	    
 	    Map<String,AttributeValue> expressionAttributeValues = new HashMap<>();
 	    

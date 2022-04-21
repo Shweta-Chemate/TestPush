@@ -32,6 +32,7 @@ import com.cisco.cx.training.models.LearningContentItem;
 import com.cisco.cx.training.models.LearningMap;
 import com.cisco.cx.training.models.LearningModule;
 
+@SuppressWarnings({"java:S3776"})
 @Repository
 public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	private static final HashMap<String, List<String>> APIFilterGroupMappings=getAPIFilterGroupMappings();

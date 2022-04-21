@@ -43,7 +43,7 @@ import com.cisco.cx.training.models.SuccessTalkSession;
 import com.cisco.cx.training.models.UserDetailsWithCompanyList;
 import com.cisco.cx.training.util.LearningContentUtil;
 
-@SuppressWarnings({"squid:S2221","squid:S5361","squid:S134","squid:S1200","squid:S00104"})
+@SuppressWarnings({"squid:S2221","squid:S5361","squid:S134","squid:S1200","squid:S00104","java:S3776"})
 @Service
 public class LearningContentServiceImpl implements LearningContentService {
 

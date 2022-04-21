@@ -43,7 +43,7 @@ import com.cisco.cx.training.models.UserDetails;
 import com.cisco.cx.training.util.ProductDocumentationUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@SuppressWarnings({"squid:S134","squid:CommentedOutCodeLine","squid:S1200"})
+@SuppressWarnings({"squid:S134","squid:CommentedOutCodeLine","squid:S1200","java:S3776"})
 @Service
 public class ProductDocumentationService{
 	private final Logger LOG = LoggerFactory.getLogger(this.getClass().getName());
