@@ -43,7 +43,7 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-@SuppressWarnings({"squid:S00112"})
+@SuppressWarnings({"squid:S00112","java:S3740"})
 @RestController
 @Validated
 @RequestMapping("/v1/partner/learning")
