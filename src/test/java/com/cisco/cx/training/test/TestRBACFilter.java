@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -80,19 +81,19 @@ public class TestRBACFilter {
 	@Test
 	public void testInit() throws ServletException
 	{
-		rbacFilter.init(filterConfig);
+		Assertions.assertDoesNotThrow(()->rbacFilter.init(filterConfig));
 	}
 
 	@Test
 	public void testDestroy()
 	{
-		rbacFilter.destroy();
+		Assertions.assertDoesNotThrow(()->rbacFilter.destroy());
 	}
 	
 	@Test
 	public void testFilterNoRBACRequired() throws IOException, ServletException
 	{
-		rbacFilter.doFilter(req, response, chain);
+		Assertions.assertDoesNotThrow(()->rbacFilter.doFilter(req, response, chain));
 		
 	}
 	

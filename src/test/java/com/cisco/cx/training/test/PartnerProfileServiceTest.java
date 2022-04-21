@@ -1,5 +1,7 @@
 package com.cisco.cx.training.test;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -64,8 +66,8 @@ public class PartnerProfileServiceTest {
 
 		ResponseEntity<String> result = new ResponseEntity<>(getUserDetails(), HttpStatus.OK);
 		when(restTemplate.exchange("/sntccbr5@hotmail.com", HttpMethod.GET, requestEntity, String.class)).thenReturn(result);
-		partnerProfileService.fetchUserDetails(xMasheryHandshake);
-		partnerProfileService.getEntitlementUrl();
+		assertNotNull(partnerProfileService.fetchUserDetails(xMasheryHandshake));
+		assertNotNull(partnerProfileService.getEntitlementUrl());
 	}
 	
 	@Test
@@ -80,8 +82,8 @@ public class PartnerProfileServiceTest {
 		
 		ResponseEntity<String> result = new ResponseEntity<>(getUserDetailsWithCompanyList(), HttpStatus.OK);
 		when(restTemplate.exchange(config.getPartnerUserDetails(), HttpMethod.GET, requestEntity, String.class)).thenReturn(result);
-		partnerProfileService.fetchUserDetailsWithCompanyList(xMasheryHandshake);
-		partnerProfileService.getEntitlementUrl();
+		assertNotNull(partnerProfileService.fetchUserDetailsWithCompanyList(xMasheryHandshake));
+		assertNotNull(partnerProfileService.getEntitlementUrl());
 	}
 
 	@Test
@@ -97,7 +99,7 @@ public class PartnerProfileServiceTest {
 		ResponseEntity<String> result = new ResponseEntity<>("", HttpStatus.OK);
 		when(restTemplate.exchange("/sntccbr5@hotmail.com", HttpMethod.GET, requestEntity, String.class)).thenReturn(result);
 		UserDetails response = partnerProfileService.fetchUserDetails(xMasheryHandshake);
-		Assert.isNull(response);
+		assertNull(response);
 	}
 	
 	@Test
@@ -113,7 +115,7 @@ public class PartnerProfileServiceTest {
 		ResponseEntity<String> result = new ResponseEntity<>("some @ data", HttpStatus.OK);
 		when(restTemplate.exchange("/sntccbr5@hotmail.com", HttpMethod.GET, requestEntity, String.class)).thenReturn(result);
 		UserDetails response = partnerProfileService.fetchUserDetails(xMasheryHandshake);
-		Assert.isNull(response);
+		assertNull(response);
 	}
 
 	@Test

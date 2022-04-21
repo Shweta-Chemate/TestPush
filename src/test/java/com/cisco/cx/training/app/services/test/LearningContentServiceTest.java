@@ -103,7 +103,7 @@ public class LearningContentServiceTest {
 
 	@Test
 	public void getIndexCounts() {
-		learningContentService.getIndexCounts();
+		assertNotNull(learningContentService.getIndexCounts());
 	}
 
 	@Test

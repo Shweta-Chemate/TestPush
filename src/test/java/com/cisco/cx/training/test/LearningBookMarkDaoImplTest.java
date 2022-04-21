@@ -55,7 +55,7 @@ public class LearningBookMarkDaoImplTest {
 	public void testInit() {
 		when(propertyConfig.getBookmarkTableName()).thenReturn("abc");
 		when(propertyConfig.getAwsRegion()).thenReturn("abc");
-		learningBookMarkImpl.init();
+		Assertions.assertDoesNotThrow(()->learningBookMarkImpl.init());
 	}
 	
 	@Test

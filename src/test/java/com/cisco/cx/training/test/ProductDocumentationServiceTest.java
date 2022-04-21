@@ -282,7 +282,7 @@ public class ProductDocumentationServiceTest {
 		en.setCardId("cardId");en.setRole_name("role");en.setUpdatedTime(Timestamp.valueOf("2019-10-24 18:30:00"));
 		Optional<PeerViewedEntity> enOp = Optional.of(en);
 		when(peerViewedRepo.findById(Mockito.any(PeerViewedEntityPK.class))).thenReturn(enOp);
-		productDocumentationService.addLearningsViewedForRole("userId", "cardId", "puid");
+		Assertions.assertDoesNotThrow(()->productDocumentationService.addLearningsViewedForRole("userId", "cardId", "puid"));
 	}
 	
 	@Test

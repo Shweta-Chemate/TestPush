@@ -77,7 +77,7 @@ public class FilterCountsDaoTest {
 		when(learningContentRepo.getRecentlyViewedContentFilteredIds(Mockito.anyString(), Mockito.any()))
 				.thenReturn(cardIds);
 		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(cardIds);
-		filterCountsDao.setFilterCounts(cardIds, filterCountsMap, filterGroup, userId);
+		Assertions.assertDoesNotThrow(()->filterCountsDao.setFilterCounts(cardIds, filterCountsMap, filterGroup, userId));
 	}
 
 	@Test
@@ -114,7 +114,7 @@ public class FilterCountsDaoTest {
 		when(learningContentRepo.getRecentlyViewedContentFilteredIds(Mockito.anyString(), Mockito.any()))
 				.thenReturn(cardIds);
 		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(cardIds);
-		filterCountsDao.setFilterCounts(cardIds, filterCountsMap, filteredCardsMap, userId);
+		Assertions.assertDoesNotThrow(()->filterCountsDao.setFilterCounts(cardIds, filterCountsMap, filteredCardsMap, userId));
 	}
 
 	@Test
@@ -150,7 +150,7 @@ public class FilterCountsDaoTest {
 		when(learningContentRepo.getRecentlyViewedContentFilteredIds(Mockito.anyString(), Mockito.any()))
 				.thenReturn(cardIds);
 		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(cardIds);
-		filterCountsDao.setFilterCounts(cardIds, filterCountsMap, filteredCardsMap, userId);
+		Assertions.assertDoesNotThrow(()->filterCountsDao.setFilterCounts(cardIds, filterCountsMap, filteredCardsMap, userId));
 	}
 
 	@Test
