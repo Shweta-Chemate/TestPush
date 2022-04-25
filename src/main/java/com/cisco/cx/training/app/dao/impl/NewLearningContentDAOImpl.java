@@ -417,7 +417,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 			SpecificationBuilder builder=new SpecificationBuilder();			
 			Specification<NewLearningContentEntity> specification=getSpecificationForCuratedTags(queryMap ,stMap, null);
 			specification = specification.and(builder.filter(queryMap));
-			List<NewLearningContentEntity> filteredList = learningContentRepo.findAll(specification);
+			List<NewLearningContentEntity> filteredList = learningContentRepo.findAll(specification);//NOSONAR
 			result=learningContentRepo.getPopularAtPartnerFiltered(puid, learningItemIdsList, popularAtPartnerCompanyLimit, extendedLimit, userBookmarks);
 		}
 		return result;
@@ -426,8 +426,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	@Override
 	public List<NewLearningContentEntity> fetchCXInsightsContent(String userId, Map<String, List<String>> queryMap, Object stMap, String searchToken,
 			String sortField, String sortType) {
-		List<NewLearningContentEntity> result;
-		Set<String> learningItemIdsList = new HashSet<>();		
+		List<NewLearningContentEntity> result;				
 		//get ids tagged with pitstop
 		List<String> learningItemIdsListCXInsights=learningContentRepo.getPitstopTaggedContent();
 		SpecificationBuilder builder=new SpecificationBuilder();
@@ -439,7 +438,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		if(sortField.equals(Constants.TITLE))
 		{
 			result=learningContentRepo.findAll(specification);
-			learningItemIdsList = getIdsFromLearnings(result);
+			Set<String> learningItemIdsList = getIdsFromLearnings(result);
 			result=sortType.equals(Constants.ASC)?learningContentRepo.getSortedByTitleAsc(learningItemIdsList):learningContentRepo.getSortedByTitleDesc(learningItemIdsList);
 			
 		}
@@ -598,14 +597,11 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 			result = learningContentRepo.findFeatured();
 		}
 		else {
-			List<NewLearningContentEntity> filteredList = new ArrayList<>();
-			Set<String> learningItemIdsList = new HashSet<>();
-			Specification<NewLearningContentEntity> specification = Specification.where(null);
 			SpecificationBuilder builder = new SpecificationBuilder();
-			specification = getSpecificationForCuratedTags(queryMap, stMap, null);
+			Specification<NewLearningContentEntity> specification = getSpecificationForCuratedTags(queryMap, stMap, null);
 			specification = specification.and(builder.filter(queryMap));
-			filteredList = learningContentRepo.findAll(specification);
-			learningItemIdsList = getIdsFromLearnings(filteredList);
+			List<NewLearningContentEntity> filteredList = learningContentRepo.findAll(specification);
+			Set<String> learningItemIdsList = getIdsFromLearnings(filteredList);
 			result = learningContentRepo.findFeaturedFiltered(learningItemIdsList);
 		}
 		return result;

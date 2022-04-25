@@ -70,7 +70,7 @@ public class LearningBookMarkDaoImplTest {
 		Mockito.when(dbClient.query(Mockito.any(QueryRequest.class))).thenReturn(response);
 		
 		Set<String> bookMarks = learningBookMarkImpl.getBookmarks("user1");		
-		assertEquals(bookMarks.size(), 1);
+		assertEquals(1, bookMarks.size());
 	}
 	
 	@Test
