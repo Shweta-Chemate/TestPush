@@ -16,8 +16,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.codec.binary.Base64;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,6 +50,7 @@ import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.app.service.ProductDocumentationService;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
 import com.cisco.cx.training.app.service.impl.TrainingAndEnablementServiceImpl;
+import com.cisco.cx.training.constants.Constants;
 import com.cisco.cx.training.models.BookmarkRequestSchema;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.cisco.cx.training.models.Community;
@@ -159,7 +163,7 @@ public class TrainingAndEnablementServiceTest {
 		bookMarks.add("1");
 		when(learningDAO.getBookmarks(Mockito.anyString())).thenReturn(bookMarks);
 		List<SuccessAcademyLearning> learnings = trainingAndEnablementService.getAllSuccessAcademyLearnings(xMasheryHeader);
-		assertEquals(learnings.size(), 2);
+		assertEquals(2,learnings.size());
 		assertTrue(learnings.get(0).getIsBookMarked());
 		assertFalse(learnings.get(1).getIsBookMarked());
 	}
@@ -169,7 +173,7 @@ public class TrainingAndEnablementServiceTest {
 		Community community = getCommunity();
 		List<Community> communities = Arrays.asList(community);
 		when(communityDAO.getCommunities()).thenReturn(communities);
-		trainingAndEnablementService.getAllCommunities();
+		Assertions.assertNotNull(trainingAndEnablementService.getAllCommunities());
 	}
 
 
@@ -191,7 +195,7 @@ public class TrainingAndEnablementServiceTest {
 	
 	@Test
 	public void getCommunityCount() {
-		trainingAndEnablementService.getCommunityCount();
+		Assertions.assertNotNull(trainingAndEnablementService.getCommunityCount());
 	}
 	
 	private Community getCommunity() {
@@ -265,9 +269,9 @@ public class TrainingAndEnablementServiceTest {
 		when(partnerPortalLookupDAO.getTabLocations()).thenReturn(entityList);	
 		
 		List<SuccessAcademyFilter> learningAcademyFilter = trainingAndEnablementService.getSuccessAcademyFilters();
-		assertEquals(learningAcademyFilter.size(), 2);
-		assertEquals(learningAcademyFilter.get(0).getTabLocationOnUI(), "1");
-		assertEquals(learningAcademyFilter.get(1).getTabLocationOnUI(), "2");
+		assertEquals(2,learningAcademyFilter.size());
+		assertEquals("1",learningAcademyFilter.get(0).getTabLocationOnUI());
+		assertEquals("2",learningAcademyFilter.get(1).getTabLocationOnUI());
 	}
 	
 	public void testBookmarkLearningForUser(){
@@ -280,8 +284,8 @@ public class TrainingAndEnablementServiceTest {
 		when(learningDAO.createOrUpdate(Mockito.any(BookmarkResponseSchema.class), "test")).thenReturn(null);
 		BookmarkResponseSchema response = trainingAndEnablementService.bookmarkLearningForUser(null, "", "test");
 		
-		assertEquals(response.getLearningid(),"1");
-		assertEquals(response.getCcoid(),"ccoid");		
+		assertEquals("1",response.getLearningid());
+		assertEquals("ccoid",response.getCcoid());		
 	}
 		
 	@Test
@@ -357,17 +361,44 @@ public class TrainingAndEnablementServiceTest {
 		trainingAndEnablementService.postUserLearningPreferences(xMasheryHeader, ulps);
 		
 		when(userLearningPreferencesDAO.fetchUserLearningPreferences(userDetails.getCecId())).thenReturn(ulps);
-		trainingAndEnablementService.getUserLearningPreferences(xMasheryHeader);
+		Assertions.assertNotNull(trainingAndEnablementService.getUserLearningPreferences(xMasheryHeader));
 	}
 	
 	@Test
-	public void testTopPicks() {
+	public void testTopPicksPLSNonActive() throws Exception {
 		UserDetails userDetails = new UserDetails();
-		userDetails.setCecId("email");
+		userDetails.setCecId("sntccbr5@hotmail.com");
 		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(userDetails);
 		HashMap<String, Object> prefMap = new HashMap<String,Object>();
+		prefMap.put(Constants.SPECIALIZATION_FILTER, Stream.of(Constants.PLS_SPEC_TYPE, Constants.OFFER_SPEC_TYPE).collect(Collectors.toList()));
+		when(partnerProfileService.isPLSActive(xMasheryHeader, "puid")).thenReturn(false);
 		when(userLearningPreferencesDAO.getULPPreferencesDDB(Mockito.anyString())).thenReturn(prefMap);
-		trainingAndEnablementService.getMyPreferredLearnings(xMasheryHeader, "search", null, "sortBy", "sortOrder", "puid" ,25);
+		when(productDocumentationService.fetchMyPreferredLearnings("sntccbr5@hotmail.com", "search", null, "sortBy", "sortOrder",
+				"puid", prefMap, 25)).thenReturn(getLearnings());
+		Assertions.assertNotNull(trainingAndEnablementService.getMyPreferredLearnings(xMasheryHeader, "search", null, "sortBy", "sortOrder", "puid" , 25));
+	}
+
+	@Test
+	public void testTopPicksPLSActive() throws Exception {
+		UserDetails userDetails = new UserDetails();
+		userDetails.setCecId("sntccbr5@hotmail.com");
+		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(userDetails);
+		HashMap<String, Object> prefMap = new HashMap<String,Object>();
+		when(partnerProfileService.isPLSActive(xMasheryHeader, "puid")).thenReturn(true);
+		prefMap.put(Constants.SPECIALIZATION_FILTER, Stream.of(Constants.PLS_SPEC_TYPE).collect(Collectors.toList()));
+		when(userLearningPreferencesDAO.getULPPreferencesDDB(Mockito.anyString())).thenReturn(prefMap);
+		when(productDocumentationService.fetchMyPreferredLearnings("sntccbr5@hotmail.com", "search", null, "sortBy", "sortOrder",
+				"puid", prefMap, 25)).thenReturn(getLearnings());
+		Assertions.assertNotNull(trainingAndEnablementService.getMyPreferredLearnings(xMasheryHeader, "search", null, "sortBy", "sortOrder", "puid" , 25));
+	}
+	private LearningRecordsAndFiltersModel getLearnings() {
+		LearningRecordsAndFiltersModel resp = new LearningRecordsAndFiltersModel();
+		List<GenericLearningModel> items = new ArrayList<>();
+		GenericLearningModel item = new GenericLearningModel();
+		item.setId("test");
+		items.add(item);
+		resp.setLearningData(items);
+		return resp;
 	}
 	
 }

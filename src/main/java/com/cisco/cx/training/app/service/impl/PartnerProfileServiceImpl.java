@@ -17,10 +17,12 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.cisco.cx.training.app.config.PropertyConfiguration;
+import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.exception.GenericException;
 import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.constants.LoggerConstants;
 import com.cisco.cx.training.models.MasheryObject;
+import com.cisco.cx.training.models.PLSResponse;
 import com.cisco.cx.training.models.UserDetails;
 import com.cisco.cx.training.models.UserDetailsWithCompanyList;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -102,5 +104,26 @@ public class PartnerProfileServiceImpl implements PartnerProfileService {
 		{			
 			requestHeaders.add(LoggerConstants.X_REQUEST_ID, xRequestId);		
 		}			
+	}
+	
+	@Override
+	public boolean isPLSActive(String xMasheryHandshake, String partnerId) throws Exception{
+		HttpHeaders headers = new HttpHeaders();
+		headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
+		HttpEntity<String> requestEntity = new HttpEntity<>(null, headers);
+		ResponseEntity<String> result = restTemplate.exchange(config.getPlsURL().replace("{puid}", partnerId), HttpMethod.GET, requestEntity, String.class);
+		LOGGER.info("PLS url response = {}",  result.getStatusCode().value() == HttpStatus.OK.value()?result.getBody():"pls response successful.");
+		PLSResponse plsResponse = null;
+		try {
+			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+			plsResponse = mapper.readValue(result.getBody(), PLSResponse.class);
+			LOGGER.info("PLS status: {} ,gracePeriod: {}" ,  plsResponse.getStatus(), plsResponse.getGracePeriod());
+			if(plsResponse.getStatus() || plsResponse.getGracePeriod())
+				return true;
+			else
+				return false;
+		} catch (IOException | HttpClientErrorException e) {
+			throw new BadRequestException("Error while invoking the PLS API" + e);
+		} 
 	}
 }

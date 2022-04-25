@@ -1,10 +1,6 @@
 package com.cisco.cx.training.app.dao.impl;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.time.Clock;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -20,9 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import software.amazon.awssdk.auth.credentials.AwsCredentials;
-import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.http.SdkHttpClient;
 import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
@@ -36,17 +29,13 @@ import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
 import software.amazon.awssdk.services.dynamodb.model.QueryResponse;
 
 import com.cisco.cx.training.app.config.PropertyConfiguration;
-import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
 import com.cisco.cx.training.app.dao.ProductDocumentationDAO;
 import com.cisco.cx.training.app.dao.UserLearningPreferencesDAO;
-import com.cisco.cx.training.models.BookmarkResponseSchema;
-import com.cisco.cx.training.models.LearningStatusSchema;
-import com.cisco.cx.training.models.UserDetailsWithCompanyList;
 import com.cisco.cx.training.models.UserLearningPreference;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@SuppressWarnings({"squid:S134","squid:S1200"})
+@SuppressWarnings({"squid:S134","squid:S1200","java:S3776"})
 @Repository
 public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDAO {
 	
@@ -107,7 +96,7 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
 		Arrays.asList(PREFERENCES_KEYS.values()).forEach( preferenceKey ->{
 			if(ulPreferences.containsKey(preferenceKey.name()) )
 			{
-				Set<String> preferenceNames = new HashSet<String>();
+				Set<String> preferenceNames = new HashSet<>();
 				List<UserLearningPreference> ulpList = ulPreferences.get(preferenceKey.name());
 				//LOG.info("preferenceKey {} ulpList {}",preferenceKey, ulpList);  //NOSONAR
 				if(ulpList!=null && !ulpList.isEmpty())
@@ -174,16 +163,16 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
 	{			
 		LOG.info("Entering get DDB ULPs");
 		long requestStartTime = System.currentTimeMillis();	
-		HashMap<String, Object> prefFilters = new HashMap<String,Object>();	
+		HashMap<String, Object> prefFilters = new HashMap<>();
 		QueryResponse queryResult = fetchULPPreferencesDDB(userId);		
 		List<Map<String,AttributeValue>> attributeValues = queryResult.items();		
-		if(attributeValues.size()>0) {
+		if(!attributeValues.isEmpty()) {
 			Map<String,AttributeValue> userLearningPreferences = attributeValues.get(0);			
 			Arrays.asList(PREFERENCES_KEYS.values()).forEach( preferenceKey ->{
 				AttributeValue preferenceSet = userLearningPreferences.get(preferenceKey.name());				
 				if(preferenceSet != null)
 				{
-					List<Object> ulps = new ArrayList<Object>(preferenceSet.ss());	
+					List<Object> ulps = new ArrayList<>(preferenceSet.ss());
 					prefFilters.put(preferenceKey.name(), ulps);
 				}
 			});
@@ -195,7 +184,7 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
 	@Override
 	public Map<String, List<UserLearningPreference>> fetchUserLearningPreferences(String userId) {
 		LOG.info("Entering the fetch ULPs");
-		Map<String, List<UserLearningPreference>> ulpMap = new HashMap<String, List<UserLearningPreference>>();
+		Map<String, List<UserLearningPreference>> ulpMap = new HashMap<>();
 		ulpMap.putAll(getAllLatestPreferencesCategories());
 		QueryResponse queryResult = fetchULPPreferencesDDB(userId);		
 		long requestStartTime = System.currentTimeMillis();	
@@ -207,11 +196,11 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
 				AttributeValue preferenceSet = userLearningPreferences.get(preferenceKey.name());
 				if(preferenceSet != null)
 				{
-					Set<String> ulps = new HashSet<String>(preferenceSet.ss());	
+					Set<String> ulps = new HashSet<>(preferenceSet.ss());
 					//LOG.info(" preferenceKey {} ulps {}",preferenceKey, ulps);  //NOSONAR
 					if(preferenceKey.equals(PREFERENCES_KEYS.timeinterval))
 					{
-						List<UserLearningPreference> listTI = new ArrayList<UserLearningPreference>();
+						List<UserLearningPreference> listTI = new ArrayList<>();
 						ulps.forEach(timeInterval -> {							
 							try {
 								UserLearningPreference timeULP = new UserLearningPreference();
@@ -243,7 +232,7 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
 	}
 
 	private Map<? extends String, ? extends List<UserLearningPreference>> getAllLatestPreferencesCategories() {
-		Map<String, List<UserLearningPreference>> dbMap = new HashMap<String, List<UserLearningPreference>>();
+		Map<String, List<UserLearningPreference>> dbMap = new HashMap<>();
 		List<String> roles = productDocumentationDAO.getAllRolesForPreferences();
 		dbMap.put(PREFERENCES_KEYS.role.name(),setULP(roles));
 		List<String> technologies = productDocumentationDAO.getAllTechnologyForPreferences();
@@ -257,7 +246,7 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
 	
 	private List<UserLearningPreference> setULP(List<String> dbPrefList)
 	{
-		List<UserLearningPreference> dbPrefs = new ArrayList<UserLearningPreference>();
+		List<UserLearningPreference> dbPrefs = new ArrayList<>();
 		dbPrefList.forEach(dbPref -> {
 			UserLearningPreference ulp= new UserLearningPreference();
 			ulp.setName(dbPref);ulp.setSelected(false);

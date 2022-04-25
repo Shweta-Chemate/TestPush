@@ -19,11 +19,11 @@ import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
 import com.cisco.cx.training.app.repo.NewLearningContentRepo;
 import com.cisco.cx.training.constants.Constants;
 
-@SuppressWarnings({"squid:S134"})
+@SuppressWarnings({"squid:S134","java:S3776"})
 @Repository  
 public class FilterCountsDAOImpl implements FilterCountsDAO{
 
-	private final static Logger LOG = LoggerFactory.getLogger(FilterCountsDAOImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(FilterCountsDAOImpl.class);
 
 	@Autowired
 	private NewLearningContentRepo learningContentRepo;
@@ -34,7 +34,7 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 	@Override
 	public Set<String> andFilters(Map<String, Set<String>> filteredCards)
 	{
-		Set<String> cardIds =  new HashSet<String>();
+		Set<String> cardIds =  new HashSet<>();
 
 		/** AND **/
 		if(!filteredCards.isEmpty())
@@ -190,7 +190,7 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 	 * get learning items ids pertaining to all the filter groups selected and ignoring the excludeKey filter group
 	 */
 	private Set<String> andFiltersWithExcludeKey(Map<String, Set<String>> filteredCardsMap, String excludeKey) {
-		Set<String> cardIds = new HashSet<String>();
+		Set<String> cardIds = new HashSet<>();
 
 		/** AND **/
 		if (!filteredCardsMap.isEmpty()) {
@@ -217,7 +217,7 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 	@Override
 	public Map<String, Set<String>> filterCards(Map<String, Object> filtersSelected, Set<String> learningItemIdsList, String userId){
 		LOG.info("applyFilters = {}",filtersSelected);
-		Map<String, Set<String>> filteredCards = new HashMap<String, Set<String>>();
+		Map<String, Set<String>> filteredCards = new HashMap<>();
 		if(filtersSelected==null || filtersSelected.isEmpty()) {return filteredCards;}
 
 		/** OR **/
@@ -227,28 +227,28 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 			if(v instanceof List) {
 				list= (List<String>)v;
 				switch(filterGroup) {
-				case Constants.CONTENT_TYPE : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByCT(new HashSet<String>(list),learningItemIdsList));break;
-				case Constants.LANGUAGE : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByLang(new HashSet<String>(list),learningItemIdsList));break;
-				case Constants.LIVE_EVENTS : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByReg(new HashSet<String>(list),learningItemIdsList));break;
-				case Constants.ROLE : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByRole(new HashSet<String>(list),learningItemIdsList));break;
-				case Constants.TECHNOLOGY : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByTech(new HashSet<String>(list),learningItemIdsList));break;
-				case Constants.LIFECYCLE : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByLFC(new HashSet<String>(list),learningItemIdsList));break;
+				case Constants.CONTENT_TYPE : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByCT(new HashSet<>(list),learningItemIdsList));break;
+				case Constants.LANGUAGE : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByLang(new HashSet<>(list),learningItemIdsList));break;
+				case Constants.LIVE_EVENTS : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByReg(new HashSet<>(list),learningItemIdsList));break;
+				case Constants.ROLE : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByRole(new HashSet<>(list),learningItemIdsList));break;
+				case Constants.TECHNOLOGY : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByTech(new HashSet<>(list),learningItemIdsList));break;
+				case Constants.LIFECYCLE : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByLFC(new HashSet<>(list),learningItemIdsList));break;
 				case Constants.FOR_YOU_FILTER : {Set<String> cardIds=new HashSet<>();
 					if(list.contains(Constants.RECENTLY_VIEWED)) {cardIds.addAll(learningContentRepo.getRecentlyViewedContentFilteredIds(userId, learningItemIdsList));}
 					if(list.contains(Constants.BOOKMARKED_FOR_YOU)){Set<String> bookmarkIds=getBookMarkedIds(userId);bookmarkIds.retainAll(learningItemIdsList);cardIds.addAll(bookmarkIds);}
 					filteredCards.put(filterGroup, cardIds);} break;
 				default : LOG.info("other {}={}",filterGroup,list);
-				};
+				}
 			}
 			else if ( v instanceof Map) {
-				Set<String> cardIdsStUc = new HashSet<String>();
+				Set<String> cardIdsStUc = new HashSet<>();
 				//LOG.info("ST="+((Map) v).keySet()); //NOSONAR
 				((Map) v).keySet().forEach(ik->{
 					Object iv = ((Map)v).get(ik);
-					List<String> ilist;
 					if(iv instanceof Map) {
 						//LOG.info("UC="+((Map) iv).keySet()); //NOSONAR
-						Set<String> usecases= ((Map) iv).keySet(); String successtrack = ik.toString();
+						Set<String> usecases= ((Map) iv).keySet();
+						String successtrack = ik.toString();
 						cardIdsStUc.addAll(learningContentRepo.getCardIdsByUcStFilter(successtrack, usecases, learningItemIdsList));
 					}
 				});
@@ -381,7 +381,7 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 
 	private Map<String,String> listToMap(List<Map<String,Object>> dbList)
 	{
-		Map<String,String> countMap = new TreeMap<String,String>();
+		Map<String,String> countMap = new TreeMap<>();
 		for(Map<String,Object> dbMap : dbList)
 		{
 			String dbKey = String.valueOf(dbMap.get("label"));
@@ -393,14 +393,14 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 
 	private Map<String,Object> listToSTMap(List<Map<String,Object>> dbList, final Map<String,Object> stFilter)
 	{
-		Map<String,Object> stAllKeysMap = new HashMap<String,Object>();
-		Map<String,Object> stCountMap = new HashMap<String,Object>();
+		Map<String,Object> stAllKeysMap = new HashMap<>();
+		Map<String,Object> stCountMap = new HashMap<>();
 
-		Map<String,Object> stMap = new HashMap<String,Object>();
+		Map<String,Object> stMap = new HashMap<>();
 
-		Set<String> distinctST = new HashSet<String>();
-		Map<String,List<String>> distinctUCForST = new HashMap<String,List<String>>();
-		Map<String,List<String>> distinctPSForUC = new HashMap<String,List<String>>();
+		Set<String> distinctST = new HashSet<>();
+		Map<String,List<String>> distinctUCForST = new HashMap<>();
+		Map<String,List<String>> distinctPSForUC = new HashMap<>();
 
 		for(Map<String,Object> dbMap : dbList)
 		{
@@ -411,9 +411,9 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 			String dbValue = String.valueOf(dbMap.get("dbvalue"));
 
 			distinctST.add(st);
-			if(!distinctUCForST.keySet().contains(st)) { distinctUCForST.put(st, new ArrayList<String>());}
+			if(!distinctUCForST.keySet().contains(st)) { distinctUCForST.put(st, new ArrayList<>());}
 			distinctUCForST.get(st).add(uc);
-			if(!distinctPSForUC.keySet().contains(uc)) {distinctPSForUC.put(uc, new ArrayList<String>());}
+			if(!distinctPSForUC.keySet().contains(uc)) {distinctPSForUC.put(uc, new ArrayList<>());}
 			distinctPSForUC.get(uc).add(ps);
 
 			if(!stMap.keySet().contains(st)) {stMap.put(st, new HashMap<String,Map<String,String>>()) ;}
@@ -422,7 +422,7 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 
 			if(stFilter!=null)
 			{
-				if(!stAllKeysMap.keySet().contains(st)) { stAllKeysMap.put(st, new HashMap<String,Map<String,String>>()) ;}
+				if(!stAllKeysMap.keySet().contains(st)) { stAllKeysMap.put(st, new HashMap<>()) ;}
 				if(!((Map)stAllKeysMap.get(st)).keySet().contains(uc)) {((Map)stAllKeysMap.get(st)).put(uc, "0");}//.put(uc, new HashMap<String,String>());//NOSONAR
 				//if(!((Map)((Map)stAllKeysMap.get(st)).get(uc)).keySet().contains(ps)) ((Map)((Map)stAllKeysMap.get(st)).get(uc)).put(ps, "0"); //NOSONAR
 			}
@@ -442,9 +442,8 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 				Map<String,Object> stFilterFromDB = (Map<String,Object>)entry.getValue();
 				for(Entry<String, Object> useCaseEntry : stFilterFromDB.entrySet()) {
 					String useCaseKey = useCaseEntry.getKey();
-					if(stFilter.containsKey(useCaseKey)) {
-						stFilter.put(useCaseKey, useCaseEntry.getValue());
-					}
+					stFilter.computeIfPresent(useCaseKey, (key, value)->
+						useCaseEntry.getValue());
 				}
 			}
 		}

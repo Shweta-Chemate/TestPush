@@ -1,5 +1,7 @@
 package com.cisco.cx.training.test;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -7,6 +9,7 @@ import java.nio.file.Files;
 import java.util.Arrays;
 
 import org.apache.commons.codec.binary.Base64;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,9 +26,11 @@ import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
 import com.cisco.cx.training.app.config.PropertyConfiguration;
+import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.app.service.impl.PartnerProfileServiceImpl;
 import com.cisco.cx.training.models.Company;
+import com.cisco.cx.training.models.PLSResponse;
 import com.cisco.cx.training.models.UserDetails;
 import com.cisco.cx.training.models.UserDetailsWithCompanyList;
 import com.cisco.cx.training.models.UserProfile;
@@ -61,8 +66,8 @@ public class PartnerProfileServiceTest {
 
 		ResponseEntity<String> result = new ResponseEntity<>(getUserDetails(), HttpStatus.OK);
 		when(restTemplate.exchange("/sntccbr5@hotmail.com", HttpMethod.GET, requestEntity, String.class)).thenReturn(result);
-		partnerProfileService.fetchUserDetails(xMasheryHandshake);
-		partnerProfileService.getEntitlementUrl();
+		assertNotNull(partnerProfileService.fetchUserDetails(xMasheryHandshake));
+		assertNotNull(partnerProfileService.getEntitlementUrl());
 	}
 	
 	@Test
@@ -77,8 +82,8 @@ public class PartnerProfileServiceTest {
 		
 		ResponseEntity<String> result = new ResponseEntity<>(getUserDetailsWithCompanyList(), HttpStatus.OK);
 		when(restTemplate.exchange(config.getPartnerUserDetails(), HttpMethod.GET, requestEntity, String.class)).thenReturn(result);
-		partnerProfileService.fetchUserDetailsWithCompanyList(xMasheryHandshake);
-		partnerProfileService.getEntitlementUrl();
+		assertNotNull(partnerProfileService.fetchUserDetailsWithCompanyList(xMasheryHandshake));
+		assertNotNull(partnerProfileService.getEntitlementUrl());
 	}
 
 	@Test
@@ -94,7 +99,7 @@ public class PartnerProfileServiceTest {
 		ResponseEntity<String> result = new ResponseEntity<>("", HttpStatus.OK);
 		when(restTemplate.exchange("/sntccbr5@hotmail.com", HttpMethod.GET, requestEntity, String.class)).thenReturn(result);
 		UserDetails response = partnerProfileService.fetchUserDetails(xMasheryHandshake);
-		Assert.isNull(response);
+		assertNull(response);
 	}
 	
 	@Test
@@ -110,9 +115,38 @@ public class PartnerProfileServiceTest {
 		ResponseEntity<String> result = new ResponseEntity<>("some @ data", HttpStatus.OK);
 		when(restTemplate.exchange("/sntccbr5@hotmail.com", HttpMethod.GET, requestEntity, String.class)).thenReturn(result);
 		UserDetails response = partnerProfileService.fetchUserDetails(xMasheryHandshake);
-		Assert.isNull(response);
+		assertNull(response);
 	}
-	
+
+	@Test
+	void testisPLSActive() throws Exception {
+		HttpHeaders headers = new HttpHeaders();
+		String xMasheryHandshake = new String(Base64.encodeBase64(loadFromFile("mock/auth-mashery-user1.json").getBytes()));
+		headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
+		HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
+		when(config.getPlsURL()).thenReturn("http:/test.com/{puid}");
+		ResponseEntity<String> result = new ResponseEntity<>(getplsresponse(), HttpStatus.OK);
+		when(restTemplate.exchange(config.getPlsURL().replace("{puid}", "101"), HttpMethod.GET, requestEntity, String.class)).thenReturn(result);
+		Assertions.assertTrue(partnerProfileService.isPLSActive(xMasheryHandshake, "101"));
+		Assert.isTrue(partnerProfileService.isPLSActive(xMasheryHandshake, "101"));
+		
+		ResponseEntity<String> result1 = new ResponseEntity<>(getplsresponseforinactive(), HttpStatus.OK);
+		when(restTemplate.exchange(config.getPlsURL().replace("{puid}", "101"), HttpMethod.GET, requestEntity, String.class)).thenReturn(result1);
+		Assertions.assertFalse(partnerProfileService.isPLSActive(xMasheryHandshake, "101"));
+	}
+
+	@Test
+	void testisPLSActiveError() throws Exception {
+		HttpHeaders headers = new HttpHeaders();
+		String xMasheryHandshake = new String(Base64.encodeBase64(loadFromFile("mock/auth-mashery-user1.json").getBytes()));
+		headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
+		HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
+		when(config.getPlsURL()).thenReturn("http:/test.com/{puid}");
+		ResponseEntity<String> result = new ResponseEntity<>("test", HttpStatus.OK);
+		when(restTemplate.exchange(config.getPlsURL().replace("{puid}", "101"), HttpMethod.GET, requestEntity, String.class)).thenReturn(result);
+		Assertions.assertThrows(BadRequestException.class, ()-> partnerProfileService.isPLSActive(xMasheryHandshake, "101"));
+	}
+
 	private String getUserDetails() throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -156,5 +190,21 @@ public class PartnerProfileServiceTest {
 	private String loadFromFile(String filePath) throws IOException {
 		return new String(Files.readAllBytes(resourceLoader.getResource("classpath:" + filePath).getFile().toPath()));
 	}
-
+	
+	private String getplsresponse() throws JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		PLSResponse plsResponse = new PLSResponse();
+		plsResponse.setStatus(true);
+		return mapper.writeValueAsString(plsResponse);
+	}
+	
+	private String getplsresponseforinactive() throws JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		PLSResponse plsResponse = new PLSResponse();
+		plsResponse.setStatus(false);
+		plsResponse.setGracePeriod(false);
+		return mapper.writeValueAsString(plsResponse);
+	}
 }

@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -42,7 +43,7 @@ import com.cisco.cx.training.models.UserDetails;
 import com.cisco.cx.training.util.ProductDocumentationUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@SuppressWarnings({"squid:S134","squid:CommentedOutCodeLine","squid:S1200"})
+@SuppressWarnings({"squid:S134","squid:CommentedOutCodeLine","squid:S1200","java:S3776"})
 @Service
 public class ProductDocumentationService{
 	private final Logger LOG = LoggerFactory.getLogger(this.getClass().getName());
@@ -91,6 +92,7 @@ public class ProductDocumentationService{
 				case FOR_YOU_FILTER : filteredCards.put(k, getCardIdsByYou(contentTab,new HashSet<String>(list)));break;
 				case ROLE_FILTER : filteredCards.put(k, productDocumentationDAO.getCardIdsByRole(contentTab, new HashSet<String>(list)));break;
 				case LIFECYCLE_FILTER : filteredCards.put(k, productDocumentationDAO.getCardIdsByPsUcSt(contentTab,new HashSet<String>(list)));break;
+				case Constants.SPECIALIZATION_FILTER : filteredCards.put(k, productDocumentationDAO.getCardIdsBySpecialization(new HashSet<String>(list)));break;
 				default : LOG.info("other {}={}",k,list);
 				};
 			}
@@ -147,6 +149,7 @@ public class ProductDocumentationService{
 			card.setTitle(learning.getTitle());
 			card.setType(learning.getLearning_type());
 			card.setRating(learning.getPiw_score());
+			card.setSpecialization(learning.getSpecialization());
 
 			card.setRegistrationUrl(learning.getRegistrationUrl());
 			card.setRecordingUrl(learning.getRecordingUrl());
@@ -444,7 +447,7 @@ public class ProductDocumentationService{
 				Map<String,Object> stFilterFromDB = (Map<String,Object>)entry.getValue();
 				for(Entry<String, Object> useCaseEntry : stFilterFromDB.entrySet()) {
 					String useCaseKey = useCaseEntry.getKey();
-					if(stFilter.containsKey(useCaseKey)) {
+					if(stFilter.containsKey(useCaseKey)) {  //NOSONAR
 						stFilter.put(useCaseKey, useCaseEntry.getValue()); //addition
 						/*
 						 * Map<String,Object> useCaseFilter =
@@ -478,7 +481,7 @@ public class ProductDocumentationService{
 
 		initializeFilters(filters,countFilters,contentTab);
 
-		Set<String> cardIds =  new HashSet<String>();
+		Set<String> cardIds =  new HashSet<String>(); //NOSONAR
 		Map<String, Set<String>> filteredCardsMap = new HashMap<String, Set<String>>();
 		boolean search=false;
 		Set<String> searchCardIds =  new HashSet<String>();
@@ -667,6 +670,8 @@ public class ProductDocumentationService{
 		PREFERENCE_FILTER_MAPPING.put("language", LANGUAGE_FILTER);
 		PREFERENCE_FILTER_MAPPING.put("region", LIVE_EVENTS_FILTER);
 		PREFERENCE_FILTER_MAPPING.put("timeinterval", TIME_INTERVAL_FILTER);
+		PREFERENCE_FILTER_MAPPING.put("specialization", Constants.SPECIALIZATION_FILTER);
+
 	}
 	private static final Integer TOP_PICKS_LIMIT = 25;
 	private static final String TI_START_TIME = "startTime";
@@ -680,7 +685,7 @@ public class ProductDocumentationService{
 	private static final String PM = "PM";
 	private static final String UTC_MINUS = "UTC-";
 
-	private String getUserRole(String userId, String puId)
+	private String getUserRole()
 	{
 		long requestStartTime = System.currentTimeMillis();
 		String userRoleId = (String) httpServletRequest.getServletContext().getAttribute(Constants.ROLE_ID);
@@ -695,7 +700,7 @@ public class ProductDocumentationService{
 	public LearningRecordsAndFiltersModel fetchMyPreferredLearnings(String userId, String search, //NOSONAR
 			HashMap<String, Object> filters, String sortBy, String sortOrder, String puid,			//NOSONAR
 			HashMap<String, Object> preferences, Integer limit) {
-		String userRole = getUserRole(userId,puid);		
+		String userRole = getUserRole();
 		HashMap<String, Object> prefFilters = new HashMap<String,Object>();	
 		if(preferences!=null && preferences.size()>0)
 		{
@@ -719,12 +724,20 @@ public class ProductDocumentationService{
 
 		int limitEnd = (topicksLimit == null || topicksLimit < 0)?TOP_PICKS_LIMIT:topicksLimit; 
 		prioratizeCards(allCards,DEFAULT_SORT_ORDER);
-		randomizeCards(allCards,limitEnd);
+		int specializedEndIndex = getSpecializedEndIndex(allCards);
+		LOG.info("specialization index :: {}", specializedEndIndex);
+		randomizeCards(allCards,limitEnd,specializedEndIndex);
 		limitCards(allCards, limitEnd);
 
 		return allCards;		
-	}	
+	}
 
+	int getSpecializedEndIndex(LearningRecordsAndFiltersModel allCards) {
+		int index = allCards.getLearningData().stream().filter(model -> {
+			return model.getSpecialization()!=null;
+		}).collect(Collectors.toList()).size();
+		return index;
+	}
 
 	private Set<String> getPeerViewedCards(String userRole)
 	{
@@ -744,10 +757,11 @@ public class ProductDocumentationService{
 		return peerViewed;
 	}
 
-	public void addLearningsViewedForRole(String userId,String cardId, String puid) {		
+	public void addLearningsViewedForRole(String userId,String cardId, String puid) {	
+		LOG.info("Viewed addition {} {} {} ",userId , cardId, puid );
 		try
 		{
-			String userRole = getUserRole(userId,puid);
+			String userRole = getUserRole();
 			PeerViewedEntityPK pvPK = new PeerViewedEntityPK();
 			pvPK.setCardId(cardId);
 			pvPK.setRoleName(userRole);
@@ -757,8 +771,8 @@ public class ProductDocumentationService{
 				PeerViewedEntity dbEntry = peerViewExist.get();
 				if(dbEntry!=null){
 					dbEntry.setUpdatedTime(Timestamp.valueOf(ProductDocumentationUtil.getNowDateUTCStr()));
-				}				
-				peerViewedRepo.save(dbEntry);
+					peerViewedRepo.save(dbEntry);
+				}
 			}
 			else
 			{
@@ -874,14 +888,15 @@ public class ProductDocumentationService{
 	void sortDateRating(List<GenericLearningModel> learningCards, Direction order)
 	{
 		Collections.sort(learningCards, Comparator.comparing(
-				GenericLearningModel::getCreatedTimeStamp,Comparator.nullsFirst(Comparator.naturalOrder()))
+				GenericLearningModel::getSpecialization,Comparator.nullsFirst(Comparator.naturalOrder()))
+				.thenComparing(GenericLearningModel::getCreatedTimeStamp,Comparator.nullsFirst(Comparator.naturalOrder()))
 				.thenComparing(
 						GenericLearningModel::getAvgRatingPercentage, Comparator.nullsFirst(Comparator.naturalOrder()))
 				);
 		if(order.isDescending()) {Collections.reverse(learningCards);}
 	}
 
-	private void randomizeCards(LearningRecordsAndFiltersModel learningCards, Integer limitEnd)
+	private void randomizeCards(LearningRecordsAndFiltersModel learningCards, Integer limitEnd, int specializationIndex)
 	{		
 		int orgSize = learningCards.getLearningData().size();
 		if(orgSize > limitEnd) //25
@@ -893,7 +908,7 @@ public class ProductDocumentationService{
 			//while(randomIndexes.size()<randomNums) ---may take more time
 			for(int i=0;i<=randomNums;i++)
 			{
-				int randomNum = r.nextInt(boundry);
+				int randomNum = r.nextInt(boundry-specializationIndex) + specializationIndex;
 				randomIndexes.add(randomNum);
 			}
 			LOG.info("Randomly removed {} {}", randomIndexes.size(),randomIndexes);

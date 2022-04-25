@@ -43,7 +43,7 @@ import com.cisco.cx.training.models.SuccessTalkSession;
 import com.cisco.cx.training.models.UserDetailsWithCompanyList;
 import com.cisco.cx.training.util.LearningContentUtil;
 
-@SuppressWarnings({"squid:S2221","squid:S5361","squid:S134","squid:S1200","squid:S00104"})
+@SuppressWarnings({"squid:S2221","squid:S5361","squid:S134","squid:S1200","squid:S00104","java:S3776"})
 @Service
 public class LearningContentServiceImpl implements LearningContentService {
 
@@ -85,9 +85,8 @@ public class LearningContentServiceImpl implements LearningContentService {
 		SuccessTalkResponseSchema successTalkResponseSchema = new SuccessTalkResponseSchema();
 		try
 		{
-			Map<String, String> query_map = LearningContentUtil.filterStringtoMap(filter);
-			List<NewLearningContentEntity> successTalkEntityList = new ArrayList<NewLearningContentEntity>();
-			successTalkEntityList = learningContentDAO.fetchSuccesstalks(sortField, sortType, query_map, search);
+			Map<String, String> query_map = LearningContentUtil.filterStringtoMap(filter);			
+			List<NewLearningContentEntity> successTalkEntityList = learningContentDAO.fetchSuccesstalks(sortField, sortType, query_map, search);
 			List<SuccessTalk> successtalkList = new ArrayList<>();
 			successTalkResponseSchema.setItems(successtalkList);	
 			//populate bookmark and registration info
@@ -115,7 +114,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 			}
 		}
 		catch (Exception e) {
-			LOG.error("fetchSuccesstalks failed: {} ", e);
+			LOG.error("fetchSuccesstalks failed: ", e);
 			throw new GenericException("There was a problem in fetching Successtalks.");
 		}
 		return successTalkResponseSchema;
@@ -179,7 +178,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 			
 
 		}catch (Exception e) {
-			LOG.error("listByRegion failed: {} ", e);
+			LOG.error("listByRegion failed: ", e);
 			throw new GenericException("There was a problem in fetching PIWs by Region.");
 		}
 		
@@ -221,10 +220,8 @@ public class LearningContentServiceImpl implements LearningContentService {
 
 			countResponse.setLearningStatus(indexCounts);
 
-		} catch (Exception e) {
-			LOG.error("Could not fetch index counts", e);
+		} catch (Exception e) {			
 			throw new GenericException("Could not fetch index counts", e);
-
 		}
 
 		return countResponse;
@@ -277,7 +274,6 @@ public class LearningContentServiceImpl implements LearningContentService {
 
 	@Override
 	public List<LearningContentItem> fetchNewLearningContent(String ccoid, HashMap<String, Object> filtersSelected) {
-		List<NewLearningContentEntity> learningContentList = new ArrayList<>();
 		List<LearningContentItem> result = new ArrayList<>();
 		Map<String, List<String>> queryMap=new HashMap<>();
 		Object stMap=null;
@@ -294,7 +290,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 		}
 		try
 		{
-			learningContentList = learningContentDAO.fetchNewLearningContent(queryMap, stMap);
+			List<NewLearningContentEntity> learningContentList = learningContentDAO.fetchNewLearningContent(queryMap, stMap);
 			// populate bookmark and registration info
 			Set<String> userBookmarks = null;
 			if (null != ccoid) {
@@ -396,7 +392,6 @@ public class LearningContentServiceImpl implements LearningContentService {
 
 	@Override
 	public List<LearningContentItem> fetchRecentlyViewedContent(String ccoid, HashMap<String, Object> filtersSelected) {
-		List<NewLearningContentEntity> learningContentList = new ArrayList<>();
 		List<LearningContentItem> result = new ArrayList<>();
 		Map<String, List<String>> queryMap=new HashMap<>();
 		Object stMap=null;
@@ -413,7 +408,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 		}
 		try
 		{
-			learningContentList=learningContentDAO.fetchRecentlyViewedContent(ccoid, queryMap, stMap);
+			List<NewLearningContentEntity> learningContentList=learningContentDAO.fetchRecentlyViewedContent(ccoid, queryMap, stMap);
 			//populate bookmark info  and registration info
 			Set<String> userBookmarks = null;
 			if(null != ccoid){
@@ -461,7 +456,6 @@ public class LearningContentServiceImpl implements LearningContentService {
 
 	@Override
 	public List<LearningContentItem> fetchBookMarkedContent(String ccoid, HashMap<String, Object> filtersSelected) {
-		List<NewLearningContentEntity> learningFilteredList = new ArrayList<>();
 		List<LearningContentItem> result = new ArrayList<>();
 		Map<String, List<String>> queryMap=new HashMap<>();
 		Object stMap=null;
@@ -478,7 +472,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 		}
 		try
 		{
-			learningFilteredList=learningContentDAO.fetchFilteredContent(queryMap, stMap);
+			List<NewLearningContentEntity> learningFilteredList=learningContentDAO.fetchFilteredContent(queryMap, stMap);
 			//get bookmarked content
 			Map<String,Object> userBookmarks = null;
 			userBookmarks = learningBookmarkDAO.getBookmarksWithTime(ccoid);
@@ -488,7 +482,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 				if(null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
 						&& userBookmarks.keySet().contains(entity.getId())){
 					learningItem.setBookmark(true);
-					learningItem.setBookmarkTimeStamp(Instant.ofEpochMilli((long)userBookmarks.get(entity.getId())).toString());
+					learningItem.setBookmarkTimeStamp(Instant.ofEpochMilli(Long.valueOf((String)userBookmarks.get(entity.getId()))).toString());
 					result.add(learningItem);
 					LearningStatusEntity userRegistration = userRegistrations.stream()
 							.filter(userRegistrationInStream -> userRegistrationInStream.getLearningItemId()
@@ -515,8 +509,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 		Map<String, Object>  result;
 		try
 		{
-			List<LearningContentItem> bookmarkedList = new ArrayList<>();
-			bookmarkedList = fetchBookMarkedContent(ccoid, new HashMap<String, Object>());
+			List<LearningContentItem> bookmarkedList = fetchBookMarkedContent(ccoid, new HashMap<String, Object>());
 			bookmarkedCounts = learningContentDAO.getBookmarkedFiltersWithCount(filtersSelected, bookmarkedList);
 		}catch (Exception e) {
 			LOG.error("There was a problem in fetching bookmarked filter counts", e);
@@ -528,13 +521,13 @@ public class LearningContentServiceImpl implements LearningContentService {
 	
 	@Override
 	public List<LearningContentItem> fetchUpcomingContent(String ccoid, HashMap<String, Object> filtersSelected) {
-		List<NewLearningContentEntity> upcomingContentList = new ArrayList<>();
 		List<LearningContentItem> result = new ArrayList<>();
 		Map<String, List<String>> queryMap=new HashMap<>();
 		Object stMap=null;
 		if(filtersSelected!=null) {
 			filtersSelected.keySet().forEach(filterGroup->{
 				if(!filterGroup.equals(Constants.ST_FILTER_KEY)) {
+
 					@SuppressWarnings("unchecked")
 					List<String> values = (List<String>)filtersSelected.get(filterGroup);
 					queryMap.put(LearningContentServiceImpl.filterNameMappings.get(filterGroup), values);
@@ -544,7 +537,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 		}
 		try
 		{
-			upcomingContentList = learningContentDAO.fetchUpcomingContent(queryMap, stMap);
+			List<NewLearningContentEntity> upcomingContentList = learningContentDAO.fetchUpcomingContent(queryMap, stMap);
 			// populate bookmark and registration info
 			Set<String> userBookmarks = null;
 			if (null != ccoid) {
@@ -668,7 +661,6 @@ public class LearningContentServiceImpl implements LearningContentService {
 	@Override
 	public List<LearningContentItem> fetchCXInsightsContent(String ccoid, HashMap<String, Object> filtersSelected, String searchToken,
 			String sortField, String sortType) {
-		List<NewLearningContentEntity> contentList = new ArrayList<>();
 		List<LearningContentItem> result = new ArrayList<>();
 		Map<String, List<String>> queryMap=new HashMap<>();
 		Object stMap=null;
@@ -684,7 +676,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 		}
 		try
 		{
-			contentList = learningContentDAO.fetchCXInsightsContent(ccoid, queryMap, stMap, searchToken, sortField, sortType);
+			List<NewLearningContentEntity>  contentList = learningContentDAO.fetchCXInsightsContent(ccoid, queryMap, stMap, searchToken, sortField, sortType);
 			// populate bookmark and registration info
 			Set<String> userBookmarks = null;
 			if (null != ccoid) {
@@ -763,7 +755,6 @@ public class LearningContentServiceImpl implements LearningContentService {
 	
 	@Override
 	public List<LearningContentItem> fetchFeaturedContent(String ccoid, HashMap<String, Object> filtersSelected) {
-		List<NewLearningContentEntity> featuredContentList = new ArrayList<>();
 		List<LearningContentItem> result = new ArrayList<>();
 		Map<String, List<String>> queryMap = new HashMap<>();
 		Object stMap = null;
@@ -778,7 +769,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 			stMap = filtersSelected.get(Constants.ST_FILTER_KEY);
 		}
 		try {
-			featuredContentList = learningContentDAO.fetchFeaturedContent(queryMap, stMap);
+			List<NewLearningContentEntity> featuredContentList = learningContentDAO.fetchFeaturedContent(queryMap, stMap);
 			// populate bookmark and registration info
 			Set<String> userBookmarks = null;
 			if (null != ccoid) {

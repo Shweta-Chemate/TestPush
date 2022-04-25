@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -57,13 +58,13 @@ public class TrainingAndEnablementController {
 	@Autowired
 	private TrainingAndEnablementService trainingAndEnablementService;
 	
-	@RequestMapping(method = RequestMethod.GET, path = "/ready", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/ready", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Template API Readiness probe", hidden = true)
 	public Map<String, String> checkReady() throws HealthCheckException {
 		return new HashMap<>();
 	}
 	
-	@RequestMapping(method = RequestMethod.GET, path="/live")
+	@GetMapping(path="/live")
 	@ApiOperation(value = "Training And Enablement API Liveness Probe", hidden = true)
 	public String checkAlive() {
 		return "Yes I am alive.";
@@ -89,7 +90,8 @@ public class TrainingAndEnablementController {
             @ApiResponse(code = 400, message = "Bad Request", response = ErrorResponse.class),
             @ApiResponse(code = 403, message = "Operation forbidden due to business policies", response = ErrorResponse.class),
             @ApiResponse(code = 500, message = "Internal server error occured", response = ErrorResponse.class)})
-    public ResponseEntity addOrRemoveLearningBookmarks(@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
+    public ResponseEntity addOrRemoveLearningBookmarks(  //NOSONAR
+    		@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
             @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
             @ApiParam(value = "JSON Body to Bookmark", required = true) @RequestBody BookmarkRequestSchema bookmarkRequestSchema) {
 		if(null != bookmarkRequestSchema && StringUtils.isNotBlank(bookmarkRequestSchema.getLearningid())){
@@ -165,7 +167,7 @@ public class TrainingAndEnablementController {
 			@ApiParam(value = "preferences") @RequestBody(required = false) Map<String, List<UserLearningPreference>> userPreferences
 			)
 			throws Exception {    
-		Map<String, List<UserLearningPreference>> userPreferencesDb = trainingAndEnablementService.postUserLearningPreferences(xMasheryHandshake,userPreferences);
+		Map<String, List<UserLearningPreference>> userPreferencesDb = trainingAndEnablementService.postUserLearningPreferences(xMasheryHandshake,userPreferences);//NOSONAR
 		return new ResponseEntity<String>("Preferences updated successfully.", HttpStatus.OK);
 	}
 	

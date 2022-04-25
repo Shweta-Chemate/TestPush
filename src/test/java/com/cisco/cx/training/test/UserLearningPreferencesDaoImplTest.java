@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -121,6 +122,7 @@ public class UserLearningPreferencesDaoImplTest {
 		Map<String, List<UserLearningPreference>> ulpsDB = ulpDAOImpl.createOrUpdateULP("user123",ulps);
 		ulps.clear();
 		ulpsDB = ulpDAOImpl.createOrUpdateULP("user123",ulps);
+		Assertions.assertEquals(0,ulpsDB.size());
 	}
 	
 	@Test
@@ -140,6 +142,7 @@ public class UserLearningPreferencesDaoImplTest {
 		Mockito.when(dbClient.query(Mockito.any(QueryRequest.class))).thenReturn(response);
 		
 		Map<String, Object> ulps = ulpDAOImpl.getULPPreferencesDDB("user123");
+		Assertions.assertEquals(2,ulps.size());
 	
 	}
 }

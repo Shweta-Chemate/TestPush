@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -39,10 +40,10 @@ public class FilterCountsDaoTest {
 		Set<String> testSet1 = new HashSet<>();
 		Set<String> testSet2 = new HashSet<>();
 		testSet1.add("testvalue1");
-		testSet2.add("testvalue2");
+		testSet2.add("testvalue1");
 		filteredCards.put("testkey1", testSet1);
 		filteredCards.put("testkey2", testSet2);
-		filterCountsDao.andFilters(filteredCards);
+		Assertions.assertFalse(filterCountsDao.andFilters(filteredCards).isEmpty());
 	}
 
 	@Test
@@ -76,7 +77,7 @@ public class FilterCountsDaoTest {
 		when(learningContentRepo.getRecentlyViewedContentFilteredIds(Mockito.anyString(), Mockito.any()))
 				.thenReturn(cardIds);
 		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(cardIds);
-		filterCountsDao.setFilterCounts(cardIds, filterCountsMap, filterGroup, userId);
+		Assertions.assertDoesNotThrow(()->filterCountsDao.setFilterCounts(cardIds, filterCountsMap, filterGroup, userId));
 	}
 
 	@Test
@@ -113,7 +114,7 @@ public class FilterCountsDaoTest {
 		when(learningContentRepo.getRecentlyViewedContentFilteredIds(Mockito.anyString(), Mockito.any()))
 				.thenReturn(cardIds);
 		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(cardIds);
-		filterCountsDao.setFilterCounts(cardIds, filterCountsMap, filteredCardsMap, userId);
+		Assertions.assertDoesNotThrow(()->filterCountsDao.setFilterCounts(cardIds, filterCountsMap, filteredCardsMap, userId));
 	}
 
 	@Test
@@ -149,7 +150,7 @@ public class FilterCountsDaoTest {
 		when(learningContentRepo.getRecentlyViewedContentFilteredIds(Mockito.anyString(), Mockito.any()))
 				.thenReturn(cardIds);
 		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(cardIds);
-		filterCountsDao.setFilterCounts(cardIds, filterCountsMap, filteredCardsMap, userId);
+		Assertions.assertDoesNotThrow(()->filterCountsDao.setFilterCounts(cardIds, filterCountsMap, filteredCardsMap, userId));
 	}
 
 	@Test
@@ -191,7 +192,7 @@ public class FilterCountsDaoTest {
 				.thenReturn(learningItemIdsList);
 		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(learningItemIdsList);
 
-		filterCountsDao.filterCards(filtersSelected, learningItemIdsList, userId);
+		Assertions.assertFalse(filterCountsDao.filterCards(filtersSelected, learningItemIdsList, userId).isEmpty());
 	}
 
 	@Test
@@ -231,6 +232,7 @@ public class FilterCountsDaoTest {
 				.thenReturn(learningItemIdsList);
 		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(learningItemIdsList);
 		filterCountsDao.initializeFiltersWithCounts(filterGroups, filters, countFilters, learningItemIdsList, userId);
+		Assertions.assertFalse(countFilters.isEmpty());
 	}
 	
 	@Test
@@ -274,5 +276,6 @@ public class FilterCountsDaoTest {
 		dbList.add(ctMap); ctMap.put("label","PDF"); ctMap.put("count", 10);
 		when(learningContentRepo.getAllContentTypeWithCountByCards(Mockito.any())).thenReturn(dbList);
 		filterCountsDao.initializeFiltersWithCounts(filterGroups, filters, countFilters, learningItemIdsList, userId);
+		Assertions.assertFalse(filters.isEmpty());
 	}
 }

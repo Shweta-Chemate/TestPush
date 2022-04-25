@@ -4,7 +4,7 @@ public class ProductDocumentationConstants{
 	
 	public static final String FIELDS_CL = " cl.learning_item_id, cl.learning_type, cl.title , cl.description, cl.status, "
 			+ " cl.registrationurl, cl.presentername, cl.recordingurl, cl.duration, cl.piw_region, "
-			+ " cl.piw_score, cl.piw_language, cl.sort_by_date, cl.learning_map_id, cl.avg_rating_percentage, cl.total_completions, cl.votes_percentage ";
+			+ " cl.piw_score, cl.piw_language, cl.sort_by_date, cl.learning_map_id, cl.avg_rating_percentage, cl.total_completions, cl.votes_percentage, cl.specialization ";
 	
 	
 	public static final String CASE_CLAUSE = " ( "
@@ -47,7 +47,7 @@ public class ProductDocumentationConstants{
 			+ " null as status, null as registrationurl, null as presentername, "
 			+ " null as recordingurl, null as duration, null as piw_region, "
 			+ " null as piw_score, null as piw_language, null as sort_by_date, null as learning_map_id, "
-			+ " avg_rating_percentage, total_completions, votes_percentage, "
+			+ " avg_rating_percentage, total_completions, votes_percentage, specialization, "
 			+ " null as asset_types, link as asset_links, null as learning_map"
 			+ " from cxpp_db.cxpp_learning_map where learning_map_id in "
 			+ " ( "
@@ -596,6 +596,9 @@ public static final String GET_PD_DOCUMENTATION_WITH_COUNT_BY_CARD = "select arc
 	/** for preferences **/	
 	public static final String GET_UPCOMING_WEBINARS = " select * from ( " + ALL_CARDS + " ) as UW "
 			+ " where UW.asset_types like '%Live Webinar%' and  UW.sort_by_date > current_date() and UW.status!='cancelled' " ;
+
+
+	public static final String GET_SPECIALIZED_CARDS = "select learning_item_id from cxpp_db.cxpp_learning_item where specialization in (:specializations) ";
 
 }
 

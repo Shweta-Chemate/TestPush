@@ -103,7 +103,7 @@ public class LearningContentServiceTest {
 
 	@Test
 	public void getIndexCounts() {
-		learningContentService.getIndexCounts();
+		assertNotNull(learningContentService.getIndexCounts());
 	}
 
 	@Test
@@ -143,10 +143,12 @@ public class LearningContentServiceTest {
 	public void testUpdateUserStatusLearningEntityNull()
 	{
 		LearningStatusSchema testLearningStatusSchema = getLearningStatusSchema();
+		LearningStatusEntity entity =  getLearningStatusEntity();
 		String testUserId = "sntccbr5@hotmail.com";
 		when(partnerProfileService.fetchUserDetailsWithCompanyList(this.XMasheryHeader)).thenReturn(getUserDetails());
 		when(learningStatusRepo.findByLearningItemIdAndUserIdAndPuid(testLearningStatusSchema.getLearningItemId(), testUserId, this.puid)).thenReturn(null);
-		learningContentService.updateUserStatus(testUserId, this.puid, getLearningStatusSchema(), this.XMasheryHeader);
+		when(learningStatusRepo.save(Mockito.any())).thenReturn(entity);
+		assertNotNull(learningContentService.updateUserStatus(testUserId, this.puid, getLearningStatusSchema(), this.XMasheryHeader));
 	}
 
 	@Test
@@ -154,9 +156,11 @@ public class LearningContentServiceTest {
 	{
 		LearningStatusSchema testLearningStatusSchema = getLearningStatusSchema();
 		String testUserId = "sntccbr5@hotmail.com";
+		LearningStatusEntity entity = getLearningStatusEntity();
 		when(partnerProfileService.fetchUserDetailsWithCompanyList(this.XMasheryHeader)).thenReturn(getUserDetails());
 		when(learningStatusRepo.findByLearningItemIdAndUserIdAndPuid(testLearningStatusSchema.getLearningItemId(), testUserId, this.puid)).thenReturn(getLearningStatusEntity());
-		learningContentService.updateUserStatus(testUserId, this.puid, getLearningStatusSchema(), this.XMasheryHeader);
+		when(learningStatusRepo.save(Mockito.any())).thenReturn(entity);
+		assertNotNull(learningContentService.updateUserStatus(testUserId, this.puid, getLearningStatusSchema(), this.XMasheryHeader));
 	}
 
 	@Test
@@ -412,7 +416,7 @@ public class LearningContentServiceTest {
 
 	private Map<String, Object> getBookmarksWithTime() {
 		Map<String, Object> userBookmarks=new HashMap<>();
-		userBookmarks.put("test", (long) 87987868);
+		userBookmarks.put("test", "87987868");
 		return userBookmarks;
 	}
 

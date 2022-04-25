@@ -14,15 +14,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.entities.LearningStatusEntity;
 import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.exception.ErrorResponse;
@@ -43,7 +43,7 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-@SuppressWarnings({"squid:S00112"})
+@SuppressWarnings({"squid:S00112","java:S3740"})
 @RestController
 @Validated
 @RequestMapping("/v1/partner/learning")
@@ -56,7 +56,7 @@ public class NewLearningContentController {
 	@Autowired
 	private LearningContentService learningContentService;
 
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalks")
+	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/successTalks")
 	@ApiOperation(value = "Fetch SuccessTalks For User", response = SuccessTalkResponseSchema.class, nickname = "fetchUserSuccessTalks")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
@@ -84,10 +84,10 @@ public class NewLearningContentController {
 		}
 		String ccoId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		SuccessTalkResponseSchema successTalkResponseSchema = learningContentService.fetchSuccesstalks(ccoId, sortField, sortType, filter, search);
-		return new ResponseEntity<SuccessTalkResponseSchema>(successTalkResponseSchema, HttpStatus.OK);
+		return new ResponseEntity<>(successTalkResponseSchema, HttpStatus.OK);
 	}
 
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/piws")
+	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/piws")
 	@ApiOperation(value = "Fetch PIWs", response = String.class, nickname = "listByRegion")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
@@ -114,12 +114,12 @@ public class NewLearningContentController {
 			sortType = "asc";
 		}
 		String ccoId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
-		List<PIW> piw_items = learningContentService.fetchPIWs(ccoId, region, sortField, sortType, filter, search);
+		List<PIW> piwItems = learningContentService.fetchPIWs(ccoId, region, sortField, sortType, filter, search);
 		LOG.info("Received PIWs content in {} ", (System.currentTimeMillis() - requestStartTime));
-		return piw_items;
+		return piwItems;
 	}
 	
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/indexCounts")
+	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/indexCounts")
 	@ApiOperation(value = "Fetch all index counts", response = SuccessTalkResponseSchema.class, nickname = "fetchIndexCounts")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
@@ -132,11 +132,11 @@ public class NewLearningContentController {
             throw new BadRequestException(MASHERY_MISSING_MSG);
         }
 		CountResponseSchema countResponseSchema = learningContentService.getIndexCounts();
-		return new ResponseEntity<CountResponseSchema>(countResponseSchema, HttpStatus.OK);
+		return new ResponseEntity<>(countResponseSchema, HttpStatus.OK);
 	}
 	
-	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/new")
-	@ApiOperation(value = "Fetch New Learning Content", response = String.class, nickname = "fetchlearningcontent")
+	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/new")
+	@ApiOperation(value = "Fetch New Learning Content", nickname = "fetchlearningcontent")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
@@ -154,10 +154,10 @@ public class NewLearningContentController {
 		String ccoId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		List<LearningContentItem> newLearningContentList = learningContentService.fetchNewLearningContent(ccoId, filtersSelected);
 		LOG.info("Received new learning content in {} ", (System.currentTimeMillis() - requestStartTime));
-		return new ResponseEntity<List<LearningContentItem>>(newLearningContentList, HttpStatus.OK);
+		return new ResponseEntity<>(newLearningContentList, HttpStatus.OK);
 	}
 	
-	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/viewmore/new/filters")
+	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/viewmore/new/filters")
 	@ApiOperation(value = "Fetch All Learnings Filters", response = String.class, nickname = "fetchallViewMoreFilters")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
@@ -165,16 +165,15 @@ public class NewLearningContentController {
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
 	public ResponseEntity<Map<String, Object>> getNewLearningsFilters(
 			@ApiParam(value = "JSON Body to update filters", required = false) @RequestBody(required=false) HashMap<String, Object> filtersSelected,
-			@ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid)
-			throws Exception {
+			@ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid) {
 		LOG.info("Entering the getNewLearningsFilters method");
 		long requestStartTime = System.currentTimeMillis();
 		Map<String, Object> learningFilters = learningContentService.getViewMoreNewFiltersWithCount(filtersSelected);
 		LOG.info("Received new learning content in {} ", (System.currentTimeMillis() - requestStartTime));
-		return new ResponseEntity<Map<String, Object>>(learningFilters, HttpStatus.OK);
+		return new ResponseEntity<>(learningFilters, HttpStatus.OK);
 	}
 
-	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/user/status")
+	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/user/status")
 	@ApiOperation(value = "Update registration or view status for users", nickname = "updateUserStatus", response = LearningStatusEntity.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully updated"),
 			@ApiResponse(code = 400, message = "Bad Request", response = ErrorResponse.class),
@@ -197,7 +196,7 @@ public class NewLearningContentController {
 		}
 	}
 
-	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/recentlyviewed")
+	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/recentlyviewed")
 	@ApiOperation(value = "Fetch recently viewed Learning Content", response = String.class, nickname = "fetchrecentlyviewedlearningcontent")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
@@ -216,10 +215,10 @@ public class NewLearningContentController {
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		List<LearningContentItem> learningContentList = learningContentService.fetchRecentlyViewedContent(userId, filtersSelected);
 		LOG.info("Received recently viewed learning content in {} ", (System.currentTimeMillis() - requestStartTime));
-		return new ResponseEntity<List<LearningContentItem>>(learningContentList, HttpStatus.OK);
+		return new ResponseEntity<>(learningContentList, HttpStatus.OK);
 	}
 
-	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/viewmore/recentlyviewed/filters")
+	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/viewmore/recentlyviewed/filters")
 	@ApiOperation(value = "Fetch All Learnings Filters for recently viewed section", response = String.class, nickname = "fetchallrecentlyViewedFilters")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
@@ -238,10 +237,10 @@ public class NewLearningContentController {
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		Map<String, Object> learningFilters = learningContentService.getRecentlyViewedFiltersWithCount(userId, filtersSelected);
 		LOG.info("Received recently viewed filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
-		return new ResponseEntity<Map<String, Object>>(learningFilters, HttpStatus.OK);
+		return new ResponseEntity<>(learningFilters, HttpStatus.OK);
 	}
 	
-	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/bookmarked")
+	@PostMapping( produces = MediaType.APPLICATION_JSON_VALUE, path = "/bookmarked")
 	@ApiOperation(value = "Fetch bookmarked Learning Content", response = String.class, nickname = "fetchbookmarkedlearningcontent")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
@@ -260,10 +259,10 @@ public class NewLearningContentController {
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		List<LearningContentItem> learningContentList = learningContentService.fetchBookMarkedContent(userId, filtersSelected);
 		LOG.info("Received bookmarked learning content in {} ", (System.currentTimeMillis() - requestStartTime));
-		return new ResponseEntity<List<LearningContentItem>>(learningContentList, HttpStatus.OK);
+		return new ResponseEntity<>(learningContentList, HttpStatus.OK);
 	}
 	
-	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/viewmore/bookmarked/filters")
+	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/viewmore/bookmarked/filters")
 	@ApiOperation(value = "Fetch All Learnings Filters for recently viewed section", response = String.class, nickname = "fetchallBookmarkedFilters")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
@@ -282,10 +281,10 @@ public class NewLearningContentController {
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		Map<String, Object> learningFilters = learningContentService.getBookmarkedFiltersWithCount(userId, filtersSelected);
 		LOG.info("Received bookmarked filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
-		return new ResponseEntity<Map<String, Object>>(learningFilters, HttpStatus.OK);
+		return new ResponseEntity<>(learningFilters, HttpStatus.OK);
 	}
 	
-	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/upcoming")
+	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/upcoming")
 	@ApiOperation(value = "Fetch bookmarked Learning Content", response = String.class, nickname = "fetchupcominglearningcontent")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
@@ -304,10 +303,10 @@ public class NewLearningContentController {
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		List<LearningContentItem> learningContentList = learningContentService.fetchUpcomingContent(userId, filtersSelected);
 		LOG.info("Received bookmarked learning content in {} ", (System.currentTimeMillis() - requestStartTime));
-		return new ResponseEntity<List<LearningContentItem>>(learningContentList, HttpStatus.OK);
+		return new ResponseEntity<>(learningContentList, HttpStatus.OK);
 	}
 	
-	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/viewmore/upcoming/filters")
+	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/viewmore/upcoming/filters")
 	@ApiOperation(value = "Fetch All Learnings Filters for recently viewed section", response = String.class, nickname = "fetchallUpcomingFilters")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
@@ -321,10 +320,10 @@ public class NewLearningContentController {
 		long requestStartTime = System.currentTimeMillis();
 		Map<String, Object> learningFilters = learningContentService.getUpcomingFiltersWithCount(filtersSelected);
 		LOG.info("Received upcoming filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
-		return new ResponseEntity<Map<String, Object>>(learningFilters, HttpStatus.OK);
+		return new ResponseEntity<>(learningFilters, HttpStatus.OK);
 	}
 
-	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/cxinsights")
+	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/cxinsights")
 	@ApiOperation(value = "Fetch CX Insights Content", response = String.class, nickname = "fetchcxinsightscontent")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
@@ -352,10 +351,10 @@ public class NewLearningContentController {
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		List<LearningContentItem> learningContentList = learningContentService.fetchCXInsightsContent(userId, filtersSelected, searchToken, sortField, sortType);
 		LOG.info("Received cxinsights content in {} ", (System.currentTimeMillis() - requestStartTime));
-		return new ResponseEntity<List<LearningContentItem>>(learningContentList, HttpStatus.OK);
+		return new ResponseEntity<>(learningContentList, HttpStatus.OK);
 	}
 
-	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/cxinsights/filters")
+	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/cxinsights/filters")
 	@ApiOperation(value = "Fetch All Learnings Filters for cx insights section", response = String.class, nickname = "fetchallCXInsightsFilters")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
@@ -377,10 +376,10 @@ public class NewLearningContentController {
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		Map<String, Object> learningFilters = learningContentService.getCXInsightsFiltersWithCount(userId, searchToken, filtersSelected);
 		LOG.info("Received cx insights filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
-		return new ResponseEntity<Map<String, Object>>(learningFilters, HttpStatus.OK);
+		return new ResponseEntity<>(learningFilters, HttpStatus.OK);
 	}
 	
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/learningmap")
+	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/learningmap")
 	@ApiOperation(value = "Fetch learning map", response = String.class, nickname = "fetchlearningmap")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
@@ -399,10 +398,10 @@ public class NewLearningContentController {
 		}
 		LearningMap learningMap = learningContentService.getLearningMap(id, title);
 		LOG.info("Retrieved Learning Map in {} ", (System.currentTimeMillis() - requestStartTime));
-		return new ResponseEntity<LearningMap>(learningMap, HttpStatus.OK);
+		return new ResponseEntity<>(learningMap, HttpStatus.OK);
 	}
 
-	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/popular/{popularityType}")
+	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/popular/{popularityType}")
 	@ApiOperation(value = "Fetch popular content across or within a partner company", response = String.class, nickname = "fetchPopularContent")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
@@ -426,10 +425,10 @@ public class NewLearningContentController {
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		List<LearningContentItem> learningContentList = learningContentService.fetchPopularContent(userId, filtersSelected, popularityType, puid);
 		LOG.info("Received popular content in {} ", (System.currentTimeMillis() - requestStartTime));
-		return new ResponseEntity<List<LearningContentItem>>(learningContentList, HttpStatus.OK);
+		return new ResponseEntity<>(learningContentList, HttpStatus.OK);
 	}
 
-	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/viewmore/popular/{popularityType}/filters")
+	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/viewmore/popular/{popularityType}/filters")
 	@ApiOperation(value = "Fetch Learning Filters for popularAcrossPartners or popularAtPartners section", response = String.class, nickname = "fetchPopularContentFilters")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
@@ -448,15 +447,15 @@ public class NewLearningContentController {
 		LOG.info("Entering the getPopularContentFilters method");
 		long requestStartTime = System.currentTimeMillis();
 		if (StringUtils.isBlank(xMasheryHandshake)) {
-			throw new BadRequestException("X-Mashery-Handshake header missing in request");
+			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		Map<String, Object> learningFilters = learningContentService.getPopularContentFiltersWithCount(filtersSelected, puid, popularityType, userId);
 		LOG.info("Received popular content filters counts in {} ", (System.currentTimeMillis() - requestStartTime));
-		return new ResponseEntity<Map<String, Object>>(learningFilters, HttpStatus.OK);
+		return new ResponseEntity<>(learningFilters, HttpStatus.OK);
 	}
 	
-	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/featured")
+	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/featured")
 	@ApiOperation(value = "Fetch bookmarked Learning Content", response = String.class, nickname = "fetchfeaturedlearningcontent")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
@@ -475,10 +474,10 @@ public class NewLearningContentController {
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		List<LearningContentItem> learningContentList = learningContentService.fetchFeaturedContent(userId, filtersSelected);
 		LOG.info("Received featured learning content in {} ", (System.currentTimeMillis() - requestStartTime));
-		return new ResponseEntity<List<LearningContentItem>>(learningContentList, HttpStatus.OK);
+		return new ResponseEntity<>(learningContentList, HttpStatus.OK);
 	}
 	
-	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/featured/filters")
+	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/featured/filters")
 	@ApiOperation(value = "Fetch All Learnings Filters for recently viewed section", response = String.class, nickname = "fetchallFeaturedFilters")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
@@ -492,7 +491,7 @@ public class NewLearningContentController {
 		long requestStartTime = System.currentTimeMillis();
 		Map<String, Object> learningFilters = learningContentService.getFeaturedFiltersWithCount(filtersSelected);
 		LOG.info("Received featured filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
-		return new ResponseEntity<Map<String, Object>>(learningFilters, HttpStatus.OK);
+		return new ResponseEntity<>(learningFilters, HttpStatus.OK);
 	}
 
 }
