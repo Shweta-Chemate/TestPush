@@ -108,7 +108,7 @@ public class LearningContentDaoTest {
 	@Test
 	public void testGetPIWCount() {
 		when(learningContentRepo.countByLearningType(Constants.PIW)).thenReturn(1);
-		learningContentDAO.getPIWCount();
+		Assertions.assertEquals(1,learningContentDAO.getPIWCount());
 	}
 
 	@Test

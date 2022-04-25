@@ -32,6 +32,7 @@ import com.cisco.cx.training.models.LearningContentItem;
 import com.cisco.cx.training.models.LearningMap;
 import com.cisco.cx.training.models.LearningModule;
 
+@SuppressWarnings({"java:S3776"})
 @Repository
 public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	private static final HashMap<String, List<String>> APIFilterGroupMappings=getAPIFilterGroupMappings();
@@ -107,18 +108,14 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 
 	@Override
 	public HashMap<String, Object> getViewMoreNewFiltersWithCount(HashMap<String, Object> filtersSelected) {
-		Map<String, Set<String>> filteredCardsMap = new HashMap<>();
-		List<NewLearningContentEntity> filteredList = new ArrayList<>();
-		Set<String> learningItemIdsList = new HashSet<>();
-		Set<String> cardIds =  new HashSet<>();
 		HashMap<String, Object> filters = new HashMap<>();
 		HashMap<String, Object> countFilters = new HashMap<>();
 
 		//get all filter groups to be considered for the section
 		List<String> filterGroups=NewLearningContentDAOImpl.APIFilterGroupMappings.get(Constants.NEW);
 		//fetch learning content for the section
-		filteredList = fetchNewLearningContent(new HashMap<>(), null);
-		learningItemIdsList = getIdsFromLearnings(filteredList);
+		List<NewLearningContentEntity>filteredList = fetchNewLearningContent(new HashMap<>(), null);
+		Set<String> learningItemIdsList = getIdsFromLearnings(filteredList);
 		//initialize filter counts
 		filterCountsDAO.initializeFiltersWithCounts(filterGroups, filters, countFilters, learningItemIdsList, null);
 
@@ -126,8 +123,8 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		{
 			return countFilters;
 		}else {
-			filteredCardsMap = filterCountsDAO.filterCards(filtersSelected, learningItemIdsList, null);
-			cardIds = filterCountsDAO.andFilters(filteredCardsMap);
+			Map<String, Set<String>> filteredCardsMap = filterCountsDAO.filterCards(filtersSelected, learningItemIdsList, null);
+			Set<String> cardIds = filterCountsDAO.andFilters(filteredCardsMap);
 			if(cardIds.isEmpty()) {
 				return filters;
 			}
@@ -143,16 +140,12 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 
 	@Override
 	public HashMap<String, Object> getRecentlyViewedFiltersWithCount(String userId, HashMap<String, Object> filtersSelected) {
-		Map<String, Set<String>> filteredCardsMap = new HashMap<>();
-		List<NewLearningContentEntity> filteredList = new ArrayList<>();
-		Set<String> learningItemIdsList = new HashSet<>();
-		Set<String> cardIds =  new HashSet<>();
 		HashMap<String, Object> filters = new HashMap<>();
 		HashMap<String, Object> countFilters = new HashMap<>();
 
 		List<String> filterGroups=NewLearningContentDAOImpl.APIFilterGroupMappings.get(Constants.RECENTLY_VIEWED);
-		filteredList = fetchRecentlyViewedContent(userId, new HashMap<>(), null);
-		learningItemIdsList = getIdsFromLearnings(filteredList);
+		List<NewLearningContentEntity> filteredList = fetchRecentlyViewedContent(userId, new HashMap<>(), null);
+		Set<String> learningItemIdsList = getIdsFromLearnings(filteredList);
 
 		filterCountsDAO.initializeFiltersWithCounts(filterGroups, filters, countFilters, learningItemIdsList, null);
 
@@ -160,8 +153,8 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		{
 			return countFilters;
 		}else {
-			filteredCardsMap = filterCountsDAO.filterCards(filtersSelected, learningItemIdsList, null);
-			cardIds = filterCountsDAO.andFilters(filteredCardsMap);
+			Map<String, Set<String>> filteredCardsMap = filterCountsDAO.filterCards(filtersSelected, learningItemIdsList, null);
+			Set<String>  cardIds = filterCountsDAO.andFilters(filteredCardsMap);
 			if(cardIds.isEmpty()) {
 				return filters;
 			}
@@ -177,16 +170,12 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 
 	@Override
 	public HashMap<String, Object> getUpcomingFiltersWithCount(HashMap<String, Object> filtersSelected) {
-		Map<String, Set<String>> filteredCardsMap = new HashMap<>();
-		List<NewLearningContentEntity> filteredList = new ArrayList<>();
-		Set<String> learningItemIdsList = new HashSet<>();
-		Set<String> cardIds =  new HashSet<>();
 		HashMap<String, Object> filters = new HashMap<>();
 		HashMap<String, Object> countFilters = new HashMap<>();
 
 		List<String> filterGroups=NewLearningContentDAOImpl.APIFilterGroupMappings.get(Constants.UPCOMING_EVENTS);
-		filteredList = fetchUpcomingContent( new HashMap<>(), null);
-		learningItemIdsList =  getIdsFromLearnings(filteredList);
+		List<NewLearningContentEntity>  filteredList = fetchUpcomingContent( new HashMap<>(), null);
+		Set<String>  learningItemIdsList =  getIdsFromLearnings(filteredList);
 
 		filterCountsDAO.initializeFiltersWithCounts(filterGroups, filters, countFilters, learningItemIdsList, null);
 
@@ -194,8 +183,8 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		{
 			return countFilters;
 		}else {
-			filteredCardsMap = filterCountsDAO.filterCards(filtersSelected, learningItemIdsList, null);
-			cardIds = filterCountsDAO.andFilters(filteredCardsMap);
+			Map<String, Set<String>>  filteredCardsMap = filterCountsDAO.filterCards(filtersSelected, learningItemIdsList, null);
+			Set<String>  cardIds = filterCountsDAO.andFilters(filteredCardsMap);
 			if(cardIds.isEmpty()) {
 				return filters;
 			}
@@ -211,14 +200,11 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 
 	@Override
 	public HashMap<String, Object> getBookmarkedFiltersWithCount(HashMap<String, Object> filtersSelected, List<LearningContentItem> bookmarkedList) {
-		Map<String, Set<String>> filteredCardsMap = new HashMap<String, Set<String>>();
-		Set<String> learningItemIdsList = new HashSet<>();
-		Set<String> cardIds =  new HashSet<>();
 		HashMap<String, Object> filters = new HashMap<>();
 		HashMap<String, Object> countFilters = new HashMap<>();
 
 		List<String> filterGroups=NewLearningContentDAOImpl.APIFilterGroupMappings.get(Constants.BOOKMARKED);
-		learningItemIdsList = bookmarkedList.stream().map(learningItem -> learningItem.getId())
+		Set<String> learningItemIdsList = bookmarkedList.stream().map(learningItem -> learningItem.getId())
 				.collect(Collectors.toSet());
 
 		filterCountsDAO.initializeFiltersWithCounts(filterGroups, filters, countFilters, learningItemIdsList, null);
@@ -227,8 +213,8 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		{
 			return countFilters;
 		}else {
-			filteredCardsMap = filterCountsDAO.filterCards(filtersSelected, learningItemIdsList, null);
-			cardIds = filterCountsDAO.andFilters(filteredCardsMap);
+			Map<String, Set<String>> filteredCardsMap = filterCountsDAO.filterCards(filtersSelected, learningItemIdsList, null);
+			Set<String> cardIds = filterCountsDAO.andFilters(filteredCardsMap);
 			if(cardIds.isEmpty()) {
 				return filters;
 			}
@@ -244,16 +230,12 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 
 	@Override
 	public HashMap<String, Object> getPopularAcrossPartnersFiltersWithCount(HashMap<String, Object> filtersSelected, Set<String> userBookmarks) {
-		Map<String, Set<String>> filteredCardsMap = new HashMap<>();
-		List<NewLearningContentEntity> filteredList = new ArrayList<>();
-		Set<String> learningItemIdsList = new HashSet<>();
-		Set<String> cardIds =  new HashSet<>();
 		HashMap<String, Object> filters = new HashMap<>();
 		HashMap<String, Object> countFilters = new HashMap<>();
 
 		List<String> filterGroups=NewLearningContentDAOImpl.APIFilterGroupMappings.get(Constants.POPULAR_ACROSS_PARTNERS);
-		filteredList = fetchPopularAcrossPartnersContent(new HashMap<>(), null, userBookmarks);
-		learningItemIdsList = getIdsFromLearnings(filteredList);
+		List<NewLearningContentEntity> filteredList = fetchPopularAcrossPartnersContent(new HashMap<>(), null, userBookmarks);
+		Set<String> learningItemIdsList = getIdsFromLearnings(filteredList);
 
 		filterCountsDAO.initializeFiltersWithCounts(filterGroups, filters, countFilters, learningItemIdsList, null);
 
@@ -261,8 +243,8 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		{
 			return countFilters;
 		}else {
-			filteredCardsMap = filterCountsDAO.filterCards(filtersSelected, learningItemIdsList, null);
-			cardIds = filterCountsDAO.andFilters(filteredCardsMap);
+			Map<String, Set<String>>  filteredCardsMap = filterCountsDAO.filterCards(filtersSelected, learningItemIdsList, null);
+			Set<String> cardIds = filterCountsDAO.andFilters(filteredCardsMap);
 			if(cardIds.isEmpty()) {
 				return filters;
 			}
@@ -278,17 +260,13 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 
 	@Override
 	public HashMap<String, Object> getPopularAtPartnerFiltersWithCount(HashMap<String, Object> filtersSelected,
-			String puid, Set<String> userBookmarks) {
-		Map<String, Set<String>> filteredCardsMap = new HashMap<>();
-		List<NewLearningContentEntity> filteredList = new ArrayList<>();
-		Set<String> learningItemIdsList = new HashSet<>();
-		Set<String> cardIds =  new HashSet<>();
+			String puid, Set<String> userBookmarks) {		
 		HashMap<String, Object> filters = new HashMap<>();
 		HashMap<String, Object> countFilters = new HashMap<>();
 
 		List<String> filterGroups=NewLearningContentDAOImpl.APIFilterGroupMappings.get(Constants.POPULAR_ACROSS_PARTNERS);
-		filteredList = fetchPopularAtPartnerContent(new HashMap<>(), null, puid, userBookmarks);
-		learningItemIdsList = getIdsFromLearnings(filteredList);
+		List<NewLearningContentEntity> filteredList = fetchPopularAtPartnerContent(new HashMap<>(), null, puid, userBookmarks);
+		Set<String> learningItemIdsList = getIdsFromLearnings(filteredList);
 
 		filterCountsDAO.initializeFiltersWithCounts(filterGroups, filters, countFilters, learningItemIdsList, null);
 
@@ -296,8 +274,8 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		{
 			return countFilters;
 		}else {
-			filteredCardsMap = filterCountsDAO.filterCards(filtersSelected, learningItemIdsList, null);
-			cardIds = filterCountsDAO.andFilters(filteredCardsMap);
+			Map<String, Set<String>> filteredCardsMap = filterCountsDAO.filterCards(filtersSelected, learningItemIdsList, null);
+			Set<String> cardIds = filterCountsDAO.andFilters(filteredCardsMap);
 			if(cardIds.isEmpty()) {
 				return filters;
 			}
@@ -313,16 +291,12 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 
 	@Override
 	public HashMap<String, Object> getCXInsightsFiltersWithCount(String userId, String searchToken, HashMap<String, Object> filtersSelected) {
-		Map<String, Set<String>> filteredCardsMap = new HashMap<>();
-		List<NewLearningContentEntity> filteredList = new ArrayList<>();
-		Set<String> learningItemIdsList = new HashSet<>();
-		Set<String> cardIds =  new HashSet<>();
 		HashMap<String, Object> filters = new HashMap<>();
 		HashMap<String, Object> countFilters = new HashMap<>();
 
 		List<String> filterGroups=NewLearningContentDAOImpl.APIFilterGroupMappings.get(Constants.CX_INSIGHTS);
-		filteredList = fetchCXInsightsContent(userId, new HashMap<>(), null, null, Constants.SORTDATE, Constants.DESC);
-		learningItemIdsList = getIdsFromLearnings(filteredList);
+		List<NewLearningContentEntity> filteredList = fetchCXInsightsContent(userId, new HashMap<>(), null, null, Constants.SORTDATE, Constants.DESC);
+		Set<String> learningItemIdsList = getIdsFromLearnings(filteredList);
 
 		filterCountsDAO.initializeFiltersWithCounts(filterGroups, filters, countFilters, learningItemIdsList, userId);
 
@@ -338,8 +312,8 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		{
 			return countFilters;
 		}else {
-			filteredCardsMap = filterCountsDAO.filterCards(filtersSelected, learningItemIdsList, userId);
-			cardIds = filterCountsDAO.andFilters(filteredCardsMap);
+			Map<String, Set<String>> filteredCardsMap = filterCountsDAO.filterCards(filtersSelected, learningItemIdsList, userId);
+			Set<String> cardIds = filterCountsDAO.andFilters(filteredCardsMap);
 			if(cardIds.isEmpty()) {
 				return filters;
 			}
@@ -381,14 +355,11 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 			result= learningContentRepo.findNew();
 			}
 		else {
-			List<NewLearningContentEntity> filteredList = new ArrayList<>();
-			Set<String> learningItemIdsList = new HashSet<>();
-			Specification<NewLearningContentEntity> specification = Specification.where(null);
 			SpecificationBuilder builder=new SpecificationBuilder();
-			specification=getSpecificationForCuratedTags(queryMap ,stMap, null);
+			Specification<NewLearningContentEntity> specification=getSpecificationForCuratedTags(queryMap ,stMap, null);
 			specification = specification.and(builder.filter(queryMap));
-			filteredList = learningContentRepo.findAll(specification);
-			learningItemIdsList = getIdsFromLearnings(filteredList);
+			List<NewLearningContentEntity> filteredList = learningContentRepo.findAll(specification);
+			Set<String> learningItemIdsList = getIdsFromLearnings(filteredList);
 			result=learningContentRepo.findNewFiltered(learningItemIdsList);
 		}
 		return result;
@@ -401,14 +372,11 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 			result= learningContentRepo.getRecentlyViewedContent(userId);
 		}
 		else {
-			List<NewLearningContentEntity> filteredList = new ArrayList<>();
-			Set<String> learningItemIdsList = new HashSet<>();
-			SpecificationBuilder builder=new SpecificationBuilder();
-			Specification<NewLearningContentEntity> specification = Specification.where(null);
-			specification=getSpecificationForCuratedTags(queryMap ,stMap, null);
+			SpecificationBuilder builder=new SpecificationBuilder();			
+			Specification<NewLearningContentEntity> specification=getSpecificationForCuratedTags(queryMap ,stMap, null);
 			specification = specification.and(builder.filter(queryMap));
-			filteredList = learningContentRepo.findAll(specification);
-			learningItemIdsList = getIdsFromLearnings(filteredList);
+			List<NewLearningContentEntity> filteredList = learningContentRepo.findAll(specification);
+			Set<String> learningItemIdsList = getIdsFromLearnings(filteredList);
 			result=learningContentRepo.getRecentlyViewedContentFiltered(userId, learningItemIdsList);
 		}
 		return result;
@@ -427,14 +395,11 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 			result= learningContentRepo.getPopularAcrossPartners(popularAcrossPartnersCategoryLiimit, extendedLimit, maxBookmarkValue, userBookmarks);
 		}
 		else {
-			List<NewLearningContentEntity> filteredList = new ArrayList<>();
-			Set<String> learningItemIdsList = new HashSet<>();
-			SpecificationBuilder builder=new SpecificationBuilder();
-			Specification<NewLearningContentEntity> specification = Specification.where(null);
-			specification=getSpecificationForCuratedTags(queryMap ,stMap, null);
+			SpecificationBuilder builder=new SpecificationBuilder();			
+			Specification<NewLearningContentEntity> specification=getSpecificationForCuratedTags(queryMap ,stMap, null);
 			specification = specification.and(builder.filter(queryMap));
-			filteredList = learningContentRepo.findAll(specification);
-			learningItemIdsList = getIdsFromLearnings(filteredList);
+			List<NewLearningContentEntity> filteredList = learningContentRepo.findAll(specification);
+			Set<String> learningItemIdsList = getIdsFromLearnings(filteredList);
 			result=learningContentRepo.getPopularAcrossPartnersFiltered(learningItemIdsList, popularAcrossPartnersCategoryLiimit, extendedLimit, maxBookmarkValue, userBookmarks);
 		}
 		return result;
@@ -447,14 +412,12 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		int extendedLimit = popularAtPartnerCompanyLimit+(userBookmarks!=null?userBookmarks.size():0);
 		if(queryMap.isEmpty() && stMap==null)
 			result= learningContentRepo.getPopularAtPartner(puid, popularAtPartnerCompanyLimit, extendedLimit, userBookmarks);
-		else {
-			List<NewLearningContentEntity> filteredList = new ArrayList<>();
+		else {			
 			Set<String> learningItemIdsList = new HashSet<>();
-			SpecificationBuilder builder=new SpecificationBuilder();
-			Specification<NewLearningContentEntity> specification = Specification.where(null);
-			specification=getSpecificationForCuratedTags(queryMap ,stMap, null);
+			SpecificationBuilder builder=new SpecificationBuilder();			
+			Specification<NewLearningContentEntity> specification=getSpecificationForCuratedTags(queryMap ,stMap, null);
 			specification = specification.and(builder.filter(queryMap));
-			filteredList = learningContentRepo.findAll(specification);
+			List<NewLearningContentEntity> filteredList = learningContentRepo.findAll(specification);//NOSONAR
 			result=learningContentRepo.getPopularAtPartnerFiltered(puid, learningItemIdsList, popularAtPartnerCompanyLimit, extendedLimit, userBookmarks);
 		}
 		return result;
@@ -463,14 +426,11 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	@Override
 	public List<NewLearningContentEntity> fetchCXInsightsContent(String userId, Map<String, List<String>> queryMap, Object stMap, String searchToken,
 			String sortField, String sortType) {
-		List<NewLearningContentEntity> result;
-		Set<String> learningItemIdsList = new HashSet<>();
-		List<String> learningItemIdsListCXInsights = new ArrayList<>();
+		List<NewLearningContentEntity> result;				
 		//get ids tagged with pitstop
-		learningItemIdsListCXInsights=learningContentRepo.getPitstopTaggedContent();
+		List<String> learningItemIdsListCXInsights=learningContentRepo.getPitstopTaggedContent();
 		SpecificationBuilder builder=new SpecificationBuilder();
-		Specification<NewLearningContentEntity> specification = Specification.where(null);
-		specification = getSpecificationForCuratedTags(queryMap ,stMap, userId);
+		Specification<NewLearningContentEntity> specification = getSpecificationForCuratedTags(queryMap ,stMap, userId);
 		specification = specification.and(builder.filter(queryMap));
 		specification = specification.and(builder.buildSearchSpecification(searchToken));
 		specification = specification.and(builder.filterById(learningItemIdsListCXInsights));
@@ -478,7 +438,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		if(sortField.equals(Constants.TITLE))
 		{
 			result=learningContentRepo.findAll(specification);
-			learningItemIdsList = getIdsFromLearnings(result);
+			Set<String> learningItemIdsList = getIdsFromLearnings(result);
 			result=sortType.equals(Constants.ASC)?learningContentRepo.getSortedByTitleAsc(learningItemIdsList):learningContentRepo.getSortedByTitleDesc(learningItemIdsList);
 			
 		}
@@ -492,12 +452,10 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 
 	@Override
 	public List<NewLearningContentEntity> fetchFilteredContent(Map<String, List<String>> queryMap, Object stMap) {
-		List<NewLearningContentEntity> filteredList = new ArrayList<>();
-		Specification<NewLearningContentEntity> specification = Specification.where(null);
 		SpecificationBuilder builder=new SpecificationBuilder();
-		specification=getSpecificationForCuratedTags(queryMap ,stMap, null);
+		Specification<NewLearningContentEntity> specification=getSpecificationForCuratedTags(queryMap ,stMap, null);
 		specification = specification.and(builder.filter(queryMap));
-		filteredList = learningContentRepo.findAll(specification);
+		List<NewLearningContentEntity> filteredList = learningContentRepo.findAll(specification);
 		return filteredList;
 	}
 	
@@ -507,15 +465,12 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		if(queryMap.isEmpty() && stMap==null) {
 			result= learningContentRepo.findUpcoming();
 		}
-		else {
-			List<NewLearningContentEntity> filteredList = new ArrayList<>();
-			Set<String> learningItemIdsList = new HashSet<>();
-			Specification<NewLearningContentEntity> specification = Specification.where(null);
+		else {			
 			SpecificationBuilder builder=new SpecificationBuilder();
-			specification=getSpecificationForCuratedTags(queryMap ,stMap, null);
+			Specification<NewLearningContentEntity> specification=getSpecificationForCuratedTags(queryMap ,stMap, null);
 			specification = specification.and(builder.filter(queryMap));
-			filteredList = learningContentRepo.findAll(specification);
-			learningItemIdsList = getIdsFromLearnings(filteredList);
+			List<NewLearningContentEntity> filteredList = learningContentRepo.findAll(specification);
+			Set<String> learningItemIdsList = getIdsFromLearnings(filteredList);
 			result=learningContentRepo.findUpcomingFiltered(learningItemIdsList);
 		}
 		return result;
@@ -642,14 +597,11 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 			result = learningContentRepo.findFeatured();
 		}
 		else {
-			List<NewLearningContentEntity> filteredList = new ArrayList<>();
-			Set<String> learningItemIdsList = new HashSet<>();
-			Specification<NewLearningContentEntity> specification = Specification.where(null);
 			SpecificationBuilder builder = new SpecificationBuilder();
-			specification = getSpecificationForCuratedTags(queryMap, stMap, null);
+			Specification<NewLearningContentEntity> specification = getSpecificationForCuratedTags(queryMap, stMap, null);
 			specification = specification.and(builder.filter(queryMap));
-			filteredList = learningContentRepo.findAll(specification);
-			learningItemIdsList = getIdsFromLearnings(filteredList);
+			List<NewLearningContentEntity> filteredList = learningContentRepo.findAll(specification);
+			Set<String> learningItemIdsList = getIdsFromLearnings(filteredList);
 			result = learningContentRepo.findFeaturedFiltered(learningItemIdsList);
 		}
 		return result;
@@ -657,16 +609,12 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 
 	@Override
 	public HashMap<String, Object> getFeaturedFiltersWithCount(HashMap<String, Object> filtersSelected) {
-		Map<String, Set<String>> filteredCardsMap = new HashMap<>();
-		List<NewLearningContentEntity> filteredList = new ArrayList<>();
-		Set<String> learningItemIdsList = new HashSet<>();
-		Set<String> cardIds = new HashSet<>();
 		HashMap<String, Object> filters = new HashMap<>();
 		HashMap<String, Object> countFilters = new HashMap<>();
 
 		List<String> filterGroups = NewLearningContentDAOImpl.APIFilterGroupMappings.get(Constants.FEATURED_CONTENT);
-		filteredList = fetchFeaturedContent(new HashMap<>(), null);
-		learningItemIdsList = filteredList.stream().map(learningItem -> learningItem.getId())
+		List<NewLearningContentEntity> filteredList = fetchFeaturedContent(new HashMap<>(), null);
+		Set<String> learningItemIdsList = filteredList.stream().map(learningItem -> learningItem.getId())
 				.collect(Collectors.toSet());
 
 		filterCountsDAO.initializeFiltersWithCounts(filterGroups, filters, countFilters, learningItemIdsList, null);
@@ -674,8 +622,8 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		if (filtersSelected == null || filtersSelected.isEmpty()) {
 			return countFilters;
 		} else {
-			filteredCardsMap = filterCountsDAO.filterCards(filtersSelected, learningItemIdsList, null);
-			cardIds = filterCountsDAO.andFilters(filteredCardsMap);
+			Map<String, Set<String>> filteredCardsMap = filterCountsDAO.filterCards(filtersSelected, learningItemIdsList, null);
+			Set<String> cardIds = filterCountsDAO.andFilters(filteredCardsMap);
 			if (cardIds.isEmpty()) {
 				return filters;
 			}

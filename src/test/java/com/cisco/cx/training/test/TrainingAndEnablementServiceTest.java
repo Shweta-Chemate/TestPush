@@ -163,7 +163,7 @@ public class TrainingAndEnablementServiceTest {
 		bookMarks.add("1");
 		when(learningDAO.getBookmarks(Mockito.anyString())).thenReturn(bookMarks);
 		List<SuccessAcademyLearning> learnings = trainingAndEnablementService.getAllSuccessAcademyLearnings(xMasheryHeader);
-		assertEquals(learnings.size(), 2);
+		assertEquals(2,learnings.size());
 		assertTrue(learnings.get(0).getIsBookMarked());
 		assertFalse(learnings.get(1).getIsBookMarked());
 	}
@@ -269,9 +269,9 @@ public class TrainingAndEnablementServiceTest {
 		when(partnerPortalLookupDAO.getTabLocations()).thenReturn(entityList);	
 		
 		List<SuccessAcademyFilter> learningAcademyFilter = trainingAndEnablementService.getSuccessAcademyFilters();
-		assertEquals(learningAcademyFilter.size(), 2);
-		assertEquals(learningAcademyFilter.get(0).getTabLocationOnUI(), "1");
-		assertEquals(learningAcademyFilter.get(1).getTabLocationOnUI(), "2");
+		assertEquals(2,learningAcademyFilter.size());
+		assertEquals("1",learningAcademyFilter.get(0).getTabLocationOnUI());
+		assertEquals("2",learningAcademyFilter.get(1).getTabLocationOnUI());
 	}
 	
 	public void testBookmarkLearningForUser(){
@@ -284,8 +284,8 @@ public class TrainingAndEnablementServiceTest {
 		when(learningDAO.createOrUpdate(Mockito.any(BookmarkResponseSchema.class), "test")).thenReturn(null);
 		BookmarkResponseSchema response = trainingAndEnablementService.bookmarkLearningForUser(null, "", "test");
 		
-		assertEquals(response.getLearningid(),"1");
-		assertEquals(response.getCcoid(),"ccoid");		
+		assertEquals("1",response.getLearningid());
+		assertEquals("ccoid",response.getCcoid());		
 	}
 		
 	@Test

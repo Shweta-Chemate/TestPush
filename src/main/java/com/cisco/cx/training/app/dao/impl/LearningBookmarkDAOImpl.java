@@ -4,7 +4,6 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,10 +34,8 @@ import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
 import com.cisco.cx.training.app.entities.BookmarkCountsEntity;
 import com.cisco.cx.training.app.repo.BookmarkCountsRepo;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-@SuppressWarnings({"squid:S1200"})
+@SuppressWarnings({"squid:S1200","java:S3776"})
 @Repository
 public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 	
@@ -60,8 +57,6 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 	private static final String TIMESTAMP_KEY = "timestamp";
 	
 	private DynamoDbClient dbClient;
-	
-	private static ObjectMapper mapper = new ObjectMapper();
 	
 	public DynamoDbClient getDbClient() {
 		return dbClient;
@@ -191,7 +186,7 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 		long requestStartTime = System.currentTimeMillis();	
 		
 		Map<String,String> expressionAttributesNames = new HashMap<>();
-	    expressionAttributesNames.put("#userid","userid");
+	    expressionAttributesNames.put("#userid",USERID_KEY);
 	    
 	    Map<String,AttributeValue> expressionAttributeValues = new HashMap<>();
 	    
@@ -209,9 +204,9 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 	    requestStartTime = System.currentTimeMillis();	
 	    List<Map<String,AttributeValue>> attributeValues = queryResult.items();	    
 	    if(attributeValues.size()>0) {
-	    	attributeValues.forEach(record -> {
-		    	String bookmark = record.get(BOOKMARK_KEY).s();
-		    	String timestamp  = record.get(TIMESTAMP_KEY).n();
+	    	attributeValues.forEach(bkRecord -> {
+		    	String bookmark = bkRecord.get(BOOKMARK_KEY).s();
+		    	String timestamp  = bkRecord.get(TIMESTAMP_KEY).n();
 		    	userBookMarksMap.put(bookmark,timestamp);		    	 
 	    	}); 
 	    }	    

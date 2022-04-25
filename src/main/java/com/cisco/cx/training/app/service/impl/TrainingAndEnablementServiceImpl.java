@@ -221,7 +221,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 				specializations.add(Constants.OFFER_SPEC_TYPE);
 			}
 		} catch (Exception e) {
-			LOG.error("ERROR OCCURED :: {}", e);
+			LOG.error("ERROR OCCURED :: ", e);
 		}
 		return specializations;
 	}

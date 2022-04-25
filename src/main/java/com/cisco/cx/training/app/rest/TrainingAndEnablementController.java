@@ -90,7 +90,8 @@ public class TrainingAndEnablementController {
             @ApiResponse(code = 400, message = "Bad Request", response = ErrorResponse.class),
             @ApiResponse(code = 403, message = "Operation forbidden due to business policies", response = ErrorResponse.class),
             @ApiResponse(code = 500, message = "Internal server error occured", response = ErrorResponse.class)})
-    public ResponseEntity addOrRemoveLearningBookmarks(@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
+    public ResponseEntity addOrRemoveLearningBookmarks(  //NOSONAR
+    		@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
             @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
             @ApiParam(value = "JSON Body to Bookmark", required = true) @RequestBody BookmarkRequestSchema bookmarkRequestSchema) {
 		if(null != bookmarkRequestSchema && StringUtils.isNotBlank(bookmarkRequestSchema.getLearningid())){
@@ -166,7 +167,7 @@ public class TrainingAndEnablementController {
 			@ApiParam(value = "preferences") @RequestBody(required = false) Map<String, List<UserLearningPreference>> userPreferences
 			)
 			throws Exception {    
-		Map<String, List<UserLearningPreference>> userPreferencesDb = trainingAndEnablementService.postUserLearningPreferences(xMasheryHandshake,userPreferences);
+		Map<String, List<UserLearningPreference>> userPreferencesDb = trainingAndEnablementService.postUserLearningPreferences(xMasheryHandshake,userPreferences);//NOSONAR
 		return new ResponseEntity<String>("Preferences updated successfully.", HttpStatus.OK);
 	}
 	

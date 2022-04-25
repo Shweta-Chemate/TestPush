@@ -117,7 +117,7 @@ public class PartnerProfileServiceImpl implements PartnerProfileService {
 		try {
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			plsResponse = mapper.readValue(result.getBody(), PLSResponse.class);
-			LOGGER.info("PLS status: {}" + plsResponse.getStatus() ,"gracePeriod: {}" +plsResponse.getGracePeriod());
+			LOGGER.info("PLS status: {} ,gracePeriod: {}" ,  plsResponse.getStatus(), plsResponse.getGracePeriod());
 			if(plsResponse.getStatus() || plsResponse.getGracePeriod())
 				return true;
 			else

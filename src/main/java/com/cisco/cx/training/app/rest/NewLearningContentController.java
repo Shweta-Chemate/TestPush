@@ -43,7 +43,7 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-@SuppressWarnings({"squid:S00112"})
+@SuppressWarnings({"squid:S00112","java:S3740"})
 @RestController
 @Validated
 @RequestMapping("/v1/partner/learning")
@@ -447,7 +447,7 @@ public class NewLearningContentController {
 		LOG.info("Entering the getPopularContentFilters method");
 		long requestStartTime = System.currentTimeMillis();
 		if (StringUtils.isBlank(xMasheryHandshake)) {
-			throw new BadRequestException("X-Mashery-Handshake header missing in request");
+			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 		Map<String, Object> learningFilters = learningContentService.getPopularContentFiltersWithCount(filtersSelected, puid, popularityType, userId);

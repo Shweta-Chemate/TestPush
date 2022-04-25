@@ -43,7 +43,7 @@ import com.cisco.cx.training.models.UserDetails;
 import com.cisco.cx.training.util.ProductDocumentationUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@SuppressWarnings({"squid:S134","squid:CommentedOutCodeLine","squid:S1200"})
+@SuppressWarnings({"squid:S134","squid:CommentedOutCodeLine","squid:S1200","java:S3776"})
 @Service
 public class ProductDocumentationService{
 	private final Logger LOG = LoggerFactory.getLogger(this.getClass().getName());
@@ -447,7 +447,7 @@ public class ProductDocumentationService{
 				Map<String,Object> stFilterFromDB = (Map<String,Object>)entry.getValue();
 				for(Entry<String, Object> useCaseEntry : stFilterFromDB.entrySet()) {
 					String useCaseKey = useCaseEntry.getKey();
-					if(stFilter.containsKey(useCaseKey)) {
+					if(stFilter.containsKey(useCaseKey)) {  //NOSONAR
 						stFilter.put(useCaseKey, useCaseEntry.getValue()); //addition
 						/*
 						 * Map<String,Object> useCaseFilter =
@@ -481,7 +481,7 @@ public class ProductDocumentationService{
 
 		initializeFilters(filters,countFilters,contentTab);
 
-		Set<String> cardIds =  new HashSet<String>();
+		Set<String> cardIds =  new HashSet<String>(); //NOSONAR
 		Map<String, Set<String>> filteredCardsMap = new HashMap<String, Set<String>>();
 		boolean search=false;
 		Set<String> searchCardIds =  new HashSet<String>();
@@ -757,7 +757,8 @@ public class ProductDocumentationService{
 		return peerViewed;
 	}
 
-	public void addLearningsViewedForRole(String userId,String cardId, String puid) {		
+	public void addLearningsViewedForRole(String userId,String cardId, String puid) {	
+		LOG.info("Viewed addition {} {} {} ",userId , cardId, puid );
 		try
 		{
 			String userRole = getUserRole();
@@ -770,8 +771,8 @@ public class ProductDocumentationService{
 				PeerViewedEntity dbEntry = peerViewExist.get();
 				if(dbEntry!=null){
 					dbEntry.setUpdatedTime(Timestamp.valueOf(ProductDocumentationUtil.getNowDateUTCStr()));
-				}				
-				peerViewedRepo.save(dbEntry);
+					peerViewedRepo.save(dbEntry);
+				}
 			}
 			else
 			{
