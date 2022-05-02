@@ -413,11 +413,11 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		if(queryMap.isEmpty() && stMap==null)
 			result= learningContentRepo.getPopularAtPartner(puid, popularAtPartnerCompanyLimit, extendedLimit, userBookmarks);
 		else {			
-			Set<String> learningItemIdsList = new HashSet<>();
 			SpecificationBuilder builder=new SpecificationBuilder();			
 			Specification<NewLearningContentEntity> specification=getSpecificationForCuratedTags(queryMap ,stMap, null);
 			specification = specification.and(builder.filter(queryMap));
 			List<NewLearningContentEntity> filteredList = learningContentRepo.findAll(specification);//NOSONAR
+			Set<String> learningItemIdsList = getIdsFromLearnings(filteredList);
 			result=learningContentRepo.getPopularAtPartnerFiltered(puid, learningItemIdsList, popularAtPartnerCompanyLimit, extendedLimit, userBookmarks);
 		}
 		return result;
