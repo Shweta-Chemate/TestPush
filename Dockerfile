@@ -21,7 +21,8 @@ LABEL org.opencontainers.image.title="cxpp-training-enablement" \
 RUN mkdir -p /app
 WORKDIR /app
 
-COPY target/cxpp-training-enablement-0.0.1-SNAPSHOT.jar ./cxpp-training-enablement.jar
+ARG JAR_VERSION
+COPY target/cxpp-training-enablement-${JAR_VERSION}.jar ./cxpp-training-enablement.jar
 
 #AppD environment variables
 ENV APPD_CONF=""

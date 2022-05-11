@@ -6,7 +6,7 @@
 
 	<groupId>com.cisco.services</groupId>
 	<artifactId>cxpp-training-enablement</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.4-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>cxpp-training-enablement</name>
 	<description>cxpp training and enablement application</description>
@@ -20,11 +20,19 @@
 		<version>1-CXE-SNAPSHOT</version>
 	</parent>
 
+	<scm>
+		<!--suppress UnresolvedMavenProperty -->
+		<connection>scm:git:${env.CIRCLE_REPOSITORY_URL}</connection>
+		<!--suppress UnresolvedMavenProperty -->
+		<developerConnection>scm:git:${env.CIRCLE_REPOSITORY_URL}</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
 
 	<!-- + ========================================================== + Some 
 		properties and versions are managed by cxe-parent-pom + ========================================================== 
 		+ -->
 	<properties>
+		<maven-release.plugin.version>2.5.3</maven-release.plugin.version>
 		<sonar.exclusions>
 			**/resources/**,
 			**/models/**,
@@ -182,6 +190,39 @@
 			<url>https://cxaf.jfrog.io/artifactory/cx-platform</url>
 		</repository>
 	</repositories>
+
+	<profiles>
+		<profile>
+			<id>circleci</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-release-plugin</artifactId>
+						<version>${maven-release.plugin.version}</version>
+						<configuration>
+							<scmCommentPrefix>[maven-release-plugin] [skip ci]: </scmCommentPrefix>
+							<tagNameFormat>v@{project.version}</tagNameFormat>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+			<distributionManagement>
+				<repository>
+					<id>cxepi</id>
+					<url>https://cxaf.jfrog.io/artifactory/cx-platform</url>
+				</repository>
+				<snapshotRepository>
+					<id>cxepi-snapshots</id>
+					<url>https://cxaf.jfrog.io/artifactory/cx-platform</url>
+				</snapshotRepository>
+			</distributionManagement>
+		</profile>
+	</profiles>
+
 	<distributionManagement>
 		<repository>
 			<id>cxepi</id>
