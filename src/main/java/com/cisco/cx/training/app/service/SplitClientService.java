@@ -13,8 +13,12 @@ public class SplitClientService {
     private static final String BACKEND_SPLIT_IO_KEY = Constants.BE_SPLIT_IO_FLAG;
     private static final String SPLIT_IO_USER = "username"; //TODO : Need to know username
 
-    @Autowired
     private SplitClient splitClient;
+    
+    @Autowired
+    SplitClientService(SplitClient splitClient){
+    	this.splitClient = splitClient;
+    }
 
     public boolean useAuthZ() {
         String response = splitClient.getTreatment(SPLIT_IO_USER, BACKEND_SPLIT_IO_KEY);

@@ -43,11 +43,11 @@ import com.cisco.cx.training.models.SuccessTalkSession;
 import com.cisco.cx.training.models.UserDetailsWithCompanyList;
 import com.cisco.cx.training.util.LearningContentUtil;
 
-@SuppressWarnings({"squid:S2221","squid:S5361","squid:S134","squid:S1200","squid:S00104","java:S3776"})
+@SuppressWarnings({"squid:S2221","squid:S5361","squid:S134","squid:S1200","squid:S00104","java:S3776","java:S4288"})
 @Service
 public class LearningContentServiceImpl implements LearningContentService {
 
-	private final Logger LOG = LoggerFactory.getLogger(this.getClass().getName());
+	private static final Logger LOG = LoggerFactory.getLogger(LearningContentServiceImpl.class);
 
 	static final HashMap<String, String> filterNameMappings= LearningContentUtil.getMappings();
 
@@ -606,10 +606,10 @@ public class LearningContentServiceImpl implements LearningContentService {
 			if (null != ccoid) {
 				userBookmarks = learningBookmarkDAO.getBookmarks(ccoid);
 			}
-			if(popularityType.equals(Constants.POPULAR_ACROSS_PARTNERS_PATH))
-				contentList = learningContentDAO.fetchPopularAcrossPartnersContent(queryMap, stMap, userBookmarks);
-			if(popularityType.equals(Constants.POPULAR_AT_PARTNER_PATH))
-				contentList = learningContentDAO.fetchPopularAtPartnerContent(queryMap, stMap, puid, userBookmarks);
+			if(popularityType.equals(Constants.POPULAR_ACROSS_PARTNERS_PATH)) {
+				contentList = learningContentDAO.fetchPopularAcrossPartnersContent(queryMap, stMap, userBookmarks);}
+			if(popularityType.equals(Constants.POPULAR_AT_PARTNER_PATH)) {
+				contentList = learningContentDAO.fetchPopularAtPartnerContent(queryMap, stMap, puid, userBookmarks);}
 			// populate bookmark and registration info
 			List<LearningStatusEntity> userRegistrations = learningStatusRepo.findByUserId(ccoid);
 			for (NewLearningContentEntity entity : contentList) {
@@ -646,10 +646,10 @@ public class LearningContentServiceImpl implements LearningContentService {
 			if (null != userId) {
 				userBookmarks = learningBookmarkDAO.getBookmarks(userId);
 			}
-			if(popularityType.equals(Constants.POPULAR_ACROSS_PARTNERS_PATH))
-				popularContentCounts = learningContentDAO.getPopularAcrossPartnersFiltersWithCount(filtersSelected, userBookmarks);
-			if(popularityType.equals(Constants.POPULAR_AT_PARTNER_PATH))
-				popularContentCounts = learningContentDAO.getPopularAtPartnerFiltersWithCount(filtersSelected, puid, userBookmarks);
+			if(popularityType.equals(Constants.POPULAR_ACROSS_PARTNERS_PATH)) {
+				popularContentCounts = learningContentDAO.getPopularAcrossPartnersFiltersWithCount(filtersSelected, userBookmarks);}
+			if(popularityType.equals(Constants.POPULAR_AT_PARTNER_PATH)) {
+				popularContentCounts = learningContentDAO.getPopularAtPartnerFiltersWithCount(filtersSelected, puid, userBookmarks);}
 		}catch (Exception e) {
 			LOG.error("There was a problem in fetching popular across partners filter counts", e);
 			throw new GenericException("There was a problem in fetching popular across partners filter counts");

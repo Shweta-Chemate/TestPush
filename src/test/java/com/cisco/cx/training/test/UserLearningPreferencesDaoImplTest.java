@@ -49,7 +49,7 @@ public class UserLearningPreferencesDaoImplTest {
 	ProductDocumentationDAO productDocumentationDAO;
 	
 	@InjectMocks
-	private UserLearningPreferencesDAOImpl ulpDAOImpl = new UserLearningPreferencesDAOImpl();
+	private UserLearningPreferencesDAOImpl ulpDAOImpl = new UserLearningPreferencesDAOImpl(propertyConfig,productDocumentationDAO);
 
 	@Test
 	public void testInit() {

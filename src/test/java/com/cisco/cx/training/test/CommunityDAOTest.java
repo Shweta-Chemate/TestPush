@@ -17,7 +17,7 @@ public class CommunityDAOTest {
 	private PropertyConfiguration config;
 
 	@InjectMocks
-	private CommunityDAO communityDAO = new CommunityDAOImpl();
+	private CommunityDAO communityDAO = new CommunityDAOImpl(config);
 
 	@Test
 	public void getCommunities() throws IOException {

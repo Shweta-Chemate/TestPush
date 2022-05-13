@@ -35,20 +35,25 @@ import com.cisco.cx.training.app.entities.BookmarkCountsEntity;
 import com.cisco.cx.training.app.repo.BookmarkCountsRepo;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
 
-@SuppressWarnings({"squid:S1200","java:S3776"})
+@SuppressWarnings({"squid:S1200","java:S3776","java:S3749","java:S138"})
 @Repository
 public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 	
-	private final Logger LOG = LoggerFactory.getLogger(this.getClass().getName());
+	private static final Logger LOG = LoggerFactory.getLogger(LearningBookmarkDAOImpl.class);
 	
 	private static final int CONN_TIMEOUT = 20;
 	private static final int SOCKET_TIMEOUT = 20;
 	
-	@Autowired
 	private PropertyConfiguration propertyConfig;
 
-	@Autowired
 	private BookmarkCountsRepo bookmarkCountsRepo;
+	
+	@Autowired
+	public LearningBookmarkDAOImpl(PropertyConfiguration propertyConfig, BookmarkCountsRepo bookmarkCountsRepo)
+	{
+		this.propertyConfig = propertyConfig;
+		this.bookmarkCountsRepo = bookmarkCountsRepo;
+	}
 
 	private static final String USERID_SUFFIX = "-academybookmark";
 	

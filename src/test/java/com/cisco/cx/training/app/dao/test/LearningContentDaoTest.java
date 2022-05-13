@@ -48,7 +48,7 @@ public class LearningContentDaoTest {
 	private LearningBookmarkDAO learningBookmarkDAO;
 
 	@InjectMocks
-	private NewLearningContentDAO learningContentDAO = new NewLearningContentDAOImpl();
+	private NewLearningContentDAO learningContentDAO = new NewLearningContentDAOImpl(learningContentRepo);
 
 	@Test
 	public void testListPIWs() {

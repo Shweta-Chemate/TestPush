@@ -32,13 +32,18 @@ import com.cisco.cx.training.models.LearningContentItem;
 import com.cisco.cx.training.models.LearningMap;
 import com.cisco.cx.training.models.LearningModule;
 
-@SuppressWarnings({"java:S3776"})
+@SuppressWarnings({"java:S3776","java:S4288"})
 @Repository
 public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	private static final HashMap<String, List<String>> APIFilterGroupMappings=getAPIFilterGroupMappings();
 
+	private NewLearningContentRepo learningContentRepo;	
+	
 	@Autowired
-	private NewLearningContentRepo learningContentRepo;
+	public NewLearningContentDAOImpl(NewLearningContentRepo learningContentRepo)
+	{
+		this.learningContentRepo = learningContentRepo;
+	}
 
 	@Autowired
 	private FilterCountsDAO filterCountsDAO;
@@ -410,8 +415,8 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 			Object stMap, String puid, Set<String> userBookmarks) {
 		List<NewLearningContentEntity> result;
 		int extendedLimit = popularAtPartnerCompanyLimit+(userBookmarks!=null?userBookmarks.size():0);
-		if(queryMap.isEmpty() && stMap==null)
-			result= learningContentRepo.getPopularAtPartner(puid, popularAtPartnerCompanyLimit, extendedLimit, userBookmarks);
+		if(queryMap.isEmpty() && stMap==null){
+			result= learningContentRepo.getPopularAtPartner(puid, popularAtPartnerCompanyLimit, extendedLimit, userBookmarks);}			
 		else {			
 			SpecificationBuilder builder=new SpecificationBuilder();			
 			Specification<NewLearningContentEntity> specification=getSpecificationForCuratedTags(queryMap ,stMap, null);

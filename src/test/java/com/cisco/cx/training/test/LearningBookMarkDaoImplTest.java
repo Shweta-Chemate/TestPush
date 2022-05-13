@@ -49,7 +49,7 @@ public class LearningBookMarkDaoImplTest {
 	private BookmarkCountsRepo bookmarkCountsRepo;
 	
 	@InjectMocks
-	private LearningBookmarkDAOImpl learningBookMarkImpl = new LearningBookmarkDAOImpl();
+	private LearningBookmarkDAOImpl learningBookMarkImpl = new LearningBookmarkDAOImpl(propertyConfig, bookmarkCountsRepo);
 
 	@Test
 	public void testInit() {

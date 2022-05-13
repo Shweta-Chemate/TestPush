@@ -17,8 +17,13 @@ public class CommunityDAOImpl implements CommunityDAO {
 	@SuppressWarnings("unused")
 	private static final Logger LOG = LoggerFactory.getLogger(CommunityDAOImpl.class);
 	
-	@Autowired
     private PropertyConfiguration config;
+    
+    @Autowired
+	public CommunityDAOImpl(PropertyConfiguration config)
+	{
+		this.config = config;
+	}
 
 	public List<Community> getCommunities() {
 		Community community = new Community();

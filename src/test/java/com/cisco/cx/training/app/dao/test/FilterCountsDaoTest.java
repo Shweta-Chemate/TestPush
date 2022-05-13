@@ -32,7 +32,7 @@ public class FilterCountsDaoTest {
 	private LearningBookmarkDAO learningBookmarkDAO;
 
 	@InjectMocks
-	private FilterCountsDAO filterCountsDao = new FilterCountsDAOImpl();
+	private FilterCountsDAO filterCountsDao = new FilterCountsDAOImpl(learningContentRepo);
 
 	@Test
 	public void testAndFilters() {

@@ -50,7 +50,7 @@ public class PartnerProfileServiceTest {
 	RestTemplate restTemplate;
 
 	@InjectMocks
-	private PartnerProfileService partnerProfileService = new PartnerProfileServiceImpl();
+	private PartnerProfileService partnerProfileService = new PartnerProfileServiceImpl(restTemplate, config);
 
 	private static final String X_MASHERY_HANSHAKE = "X-Mashery-Handshake";	
 	

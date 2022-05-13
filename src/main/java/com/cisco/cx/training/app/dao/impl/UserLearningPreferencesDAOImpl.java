@@ -35,18 +35,25 @@ import com.cisco.cx.training.models.UserLearningPreference;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@SuppressWarnings({"squid:S134","squid:S1200","java:S3776"})
+@SuppressWarnings({"squid:S134","squid:S1200","java:S3776","java:S3749"})
 @Repository
 public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDAO {
 	
-	private final Logger LOG = LoggerFactory.getLogger(this.getClass().getName());
+	private static final Logger LOG = LoggerFactory.getLogger(UserLearningPreferencesDAOImpl.class);
 	private static final int CONN_TIMEOUT = 20;
 	private static final int SOCKET_TIMEOUT = 20;
 	
-	@Autowired
 	private PropertyConfiguration propertyConfig;	
+
+	ProductDocumentationDAO productDocumentationDAO;	
+	
 	@Autowired
-	ProductDocumentationDAO productDocumentationDAO;
+	public UserLearningPreferencesDAOImpl(PropertyConfiguration propertyConfig, ProductDocumentationDAO productDocumentationDAO)
+	{
+		this.propertyConfig = propertyConfig;
+		this.productDocumentationDAO =  productDocumentationDAO;
+	}
+	
 	
 	private static final String USERID_SUFFIX = "";//_ulp
 	private static final String USERID_KEY="userid";	

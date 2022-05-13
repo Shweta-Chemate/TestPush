@@ -32,17 +32,23 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class PartnerProfileServiceImpl implements PartnerProfileService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PartnerProfileServiceImpl.class);
 
-	RestTemplate restTemplate = new RestTemplate();
+	RestTemplate restTemplate;
 
-	@Autowired
 	PropertyConfiguration config;
+	
+	@Autowired
+	public PartnerProfileServiceImpl(RestTemplate restTemplate, PropertyConfiguration config)
+	{
+		this.restTemplate = restTemplate;
+		this.config = config;
+	}
 
 	@Value("${cxpp.entitlement.user.profile.url}")
 	public String entitlementUrl;
 
 	private static final String X_MASHERY_HANSHAKE = "X-Mashery-Handshake";
 	
-	private ObjectMapper mapper = new ObjectMapper();
+	private static final ObjectMapper mapper = new ObjectMapper();
 	
 	@Override
 	public UserDetails fetchUserDetails(String xMasheryHandshake) {
@@ -118,10 +124,10 @@ public class PartnerProfileServiceImpl implements PartnerProfileService {
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			plsResponse = mapper.readValue(result.getBody(), PLSResponse.class);
 			LOGGER.info("PLS status: {} ,gracePeriod: {}" ,  plsResponse.getStatus(), plsResponse.getGracePeriod());
-			if(plsResponse.getStatus() || plsResponse.getGracePeriod())
-				return true;
-			else
-				return false;
+			if(plsResponse.getStatus() || plsResponse.getGracePeriod()) {
+				return true;}
+			else {
+				return false;}
 		} catch (IOException | HttpClientErrorException e) {
 			throw new BadRequestException("Error while invoking the PLS API" + e);
 		} 

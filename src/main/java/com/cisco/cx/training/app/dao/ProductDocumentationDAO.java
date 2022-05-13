@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import com.cisco.cx.training.app.entities.LearningItemEntity;
 import com.cisco.cx.training.constants.ProductDocumentationConstants;
 
+@SuppressWarnings({"java:S1448"})
 public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntity,String>{
 	
 	/** all cards **/
