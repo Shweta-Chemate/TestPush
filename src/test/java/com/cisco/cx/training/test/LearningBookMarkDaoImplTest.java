@@ -52,14 +52,14 @@ public class LearningBookMarkDaoImplTest {
 	private LearningBookmarkDAOImpl learningBookMarkImpl = new LearningBookmarkDAOImpl(propertyConfig, bookmarkCountsRepo);
 
 	@Test
-	public void testInit() {
+	void testInit() {
 		when(propertyConfig.getBookmarkTableName()).thenReturn("abc");
 		when(propertyConfig.getAwsRegion()).thenReturn("abc");
 		Assertions.assertDoesNotThrow(()->learningBookMarkImpl.init());
 	}
 	
 	@Test
-	public void testGetBookmarks(){
+	void testGetBookmarks(){
 		Map<String,AttributeValue> userBookmarks = new HashMap<String, AttributeValue>();
 		AttributeValue attrValue = AttributeValue.builder().s("bookMar1").build();
 		userBookmarks.put("bookmark", attrValue);
@@ -74,7 +74,7 @@ public class LearningBookMarkDaoImplTest {
 	}
 	
 	@Test
-	public void testCreateOrUpdateNull() {
+	void testCreateOrUpdateNull() {
 		BookmarkResponseSchema responseSchema = new BookmarkResponseSchema();
 		responseSchema.setCcoid("ccoid");
 		responseSchema.setBookmark(true);		
@@ -90,7 +90,7 @@ public class LearningBookMarkDaoImplTest {
 	}
 
 	@Test
-	public void testCreateOrUpdateEmpty() {
+	void testCreateOrUpdateEmpty() {
 		BookmarkResponseSchema responseSchema = new BookmarkResponseSchema();
 		responseSchema.setId("1");
 		responseSchema.setLearningid("1");
@@ -115,7 +115,7 @@ public class LearningBookMarkDaoImplTest {
 
 	
 	@Test
-	public void testCreateOrUpdate(){
+	void testCreateOrUpdate(){
 		BookmarkResponseSchema responseSchema = new BookmarkResponseSchema();
 		responseSchema.setId("2");
 		responseSchema.setLearningid("2");

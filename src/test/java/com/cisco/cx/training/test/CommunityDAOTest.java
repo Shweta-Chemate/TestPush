@@ -20,7 +20,7 @@ public class CommunityDAOTest {
 	private CommunityDAO communityDAO = new CommunityDAOImpl(config);
 
 	@Test
-	public void getCommunities() throws IOException {
+	void getCommunities() throws IOException {
 		Assertions.assertNotNull(communityDAO.getCommunities());
 	}
 

@@ -1,17 +1,9 @@
 package com.cisco.cx.training.app.entities;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.UpdateTimestamp;
 
 
 @Entity
@@ -74,7 +66,9 @@ public class LearningItemEntity {
 	private String asset_types;	
 	private String asset_links;
 	private String learning_map;
-
+	private String asset_description;
+	private String asset_titles;
+	
 	public String getLearning_item_id() {
 		return learning_item_id;
 	}
@@ -233,6 +227,22 @@ public class LearningItemEntity {
 
 	public void setSpecialization(String specialization) {
 		this.specialization = specialization;
+	}
+
+	public String getAsset_description() {
+		return asset_description;
+	}
+
+	public void setAsset_description(String asset_description) {
+		this.asset_description = asset_description;
+	}
+
+	public String getAsset_titles() {
+		return asset_titles;
+	}
+
+	public void setAsset_titles(String asset_titles) {
+		this.asset_titles = asset_titles;
 	}
 
 }

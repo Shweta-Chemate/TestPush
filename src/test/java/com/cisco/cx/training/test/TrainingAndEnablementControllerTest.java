@@ -20,9 +20,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.NestedServletException;
@@ -37,6 +39,7 @@ import com.cisco.cx.training.app.repo.BookmarkCountsRepo;
 import com.cisco.cx.training.app.rest.TrainingAndEnablementController;
 import com.cisco.cx.training.app.service.SplitClientService;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
+import com.cisco.cx.training.constants.Constants;
 import com.cisco.cx.training.models.BookmarkRequestSchema;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -90,7 +93,7 @@ public class TrainingAndEnablementControllerTest {
 	}
 
 	@Test
-	public void testFetchCommunities() throws Exception {
+	void testFetchCommunities() throws Exception {
 		this.mockMvc
 				.perform(get("/v1/partner/training/communities").contentType(MediaType.APPLICATION_JSON_VALUE)
 						.header("X-Mashery-Handshake", this.XMasheryHeader)
@@ -100,7 +103,7 @@ public class TrainingAndEnablementControllerTest {
 	}
 	
 	@Test
-	public void testFetchCommunitiesNoMasheryHeader() throws Exception {
+	void testFetchCommunitiesNoMasheryHeader() throws Exception {
 		assertThrows(Exception.class, () -> {
 			this.mockMvc
 			.perform(get("/v1/partner/training/communities").contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -109,7 +112,7 @@ public class TrainingAndEnablementControllerTest {
 	}
 
 	@Test
-	public void testCheckReady() throws Exception {
+	void testCheckReady() throws Exception {
 		this.mockMvc
 				.perform(get("/v1/partner/training/ready").contentType(MediaType.APPLICATION_JSON_VALUE)
 						.header("X-Mashery-Handshake", this.XMasheryHeader)
@@ -119,7 +122,7 @@ public class TrainingAndEnablementControllerTest {
 	}
 
 	@Test
-	public void testLive() throws Exception {
+	void testLive() throws Exception {
 
 		this.mockMvc
 				.perform(get("/v1/partner/training/live").contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -139,7 +142,7 @@ public class TrainingAndEnablementControllerTest {
 	}*/
 	
 	@Test
-	public void createorUpdateLearningBookmarkstatus500() throws Exception {
+	void createorUpdateLearningBookmarkstatus500() throws Exception {
 		BookmarkRequestSchema bookMark = new BookmarkRequestSchema();
 		bookMark.setBookmark(true);
 		bookMark.setId("1");
@@ -160,7 +163,7 @@ public class TrainingAndEnablementControllerTest {
 	}
 	
 	@Test
-	public void createorUpdateLearningBookmarkstatus200() throws Exception {
+	void createorUpdateLearningBookmarkstatus200() throws Exception {
 		BookmarkRequestSchema bookMark = new BookmarkRequestSchema();
 		bookMark.setBookmark(true);
 		bookMark.setId("1");
@@ -181,7 +184,7 @@ public class TrainingAndEnablementControllerTest {
 	}
 	
 	@Test
-	public void createorUpdateLearningBookmarkFailure() throws Exception {
+	void createorUpdateLearningBookmarkFailure() throws Exception {
 		BookmarkRequestSchema bookMark = new BookmarkRequestSchema();
 		bookMark.setBookmark(true);
 		bookMark.setId("1");
@@ -207,23 +210,35 @@ public class TrainingAndEnablementControllerTest {
 	
 	
 	@Test
-	public void getAllLearningsInfoPost() throws Exception {
+	void getAllLearningsInfoPost() throws Exception {
 		this.mockMvc
 				.perform(post("/v1/partner/training/getAllLearningInfo/Technology").contentType(MediaType.APPLICATION_JSON_VALUE)
+						.with(new RequestPostProcessor() {
+							public MockHttpServletRequest postProcessRequest(MockHttpServletRequest request) {
+								request.getServletContext().setAttribute(Constants.HCAAS_FLAG, true);
+								return request;
+							}
+						})
 						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
 				.andDo(print()).andExpect(status().isOk());
 	}
 	
 	@Test
-	public void getAllLearningFiltersPost() throws Exception {
+	void getAllLearningFiltersPost() throws Exception {
 		this.mockMvc
 				.perform(post("/v1/partner/training/getAllLearningFilters/Technology").contentType(MediaType.APPLICATION_JSON_VALUE)
+						.with(new RequestPostProcessor() {
+							public MockHttpServletRequest postProcessRequest(MockHttpServletRequest request) {
+								request.getServletContext().setAttribute(Constants.HCAAS_FLAG, true);
+								return request;
+							}
+						})
 						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
 				.andDo(print()).andExpect(status().isOk());
 	}
 	
 	@Test
-	public void testLearningPreferences() throws Exception {
+	void testLearningPreferences() throws Exception {
 		this.mockMvc
 				.perform(get("/v1/partner/training/myLearningPreferences").contentType(MediaType.APPLICATION_JSON_VALUE)
 						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
@@ -236,16 +251,28 @@ public class TrainingAndEnablementControllerTest {
 	}
 	
 	@Test
-	public void testTopPicks() throws Exception {
+	void testTopPicks() throws Exception {
 		
 		this.mockMvc
 		.perform(get("/v1/partner/training/myPreferredLearnings").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.with(new RequestPostProcessor() {
+					public MockHttpServletRequest postProcessRequest(MockHttpServletRequest request) {
+						request.getServletContext().setAttribute(Constants.HCAAS_FLAG, true);
+						return request;
+					}
+				})
 				.header("X-Mashery-Handshake", this.XMasheryHeader).header("puid", this.puid).characterEncoding("utf-8"))
 		.andDo(print()).andExpect(status().isOk());
 		
 		assertThrows(NestedServletException.class, () -> {
 		this.mockMvc
 		.perform(get("/v1/partner/training/myPreferredLearnings").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.with(new RequestPostProcessor() {
+					public MockHttpServletRequest postProcessRequest(MockHttpServletRequest request) {
+						request.getServletContext().setAttribute(Constants.HCAAS_FLAG, true);
+						return request;
+					}
+				})
 				.header("X-Mashery-Handshake", this.XMasheryHeader).header("puid", this.puid).characterEncoding("utf-8")
 				.param("limit", "-10")
 				);

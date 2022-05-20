@@ -79,26 +79,26 @@ public class TestRBACFilter {
 	}
 	
 	@Test
-	public void testInit() throws ServletException
+	void testInit() throws ServletException
 	{
 		Assertions.assertDoesNotThrow(()->rbacFilter.init(filterConfig));
 	}
 
 	@Test
-	public void testDestroy()
+	void testDestroy()
 	{
 		Assertions.assertDoesNotThrow(()->rbacFilter.destroy());
 	}
 	
 	@Test
-	public void testFilterNoRBACRequired() throws IOException, ServletException
+	void testFilterNoRBACRequired() throws IOException, ServletException
 	{
 		Assertions.assertDoesNotThrow(()->rbacFilter.doFilter(req, response, chain));
 		
 	}
 	
 	@Test
-	public void testFilterMissingMashery() throws IOException, ServletException
+	void testFilterMissingMashery() throws IOException, ServletException
 	{
 		when(req.getRequestURI()).thenReturn("/testpath");
 		when(propertyConfig.getRbacExcludedEndPoints()).thenReturn("/excludedpath");
@@ -108,7 +108,7 @@ public class TestRBACFilter {
 	}
 	
 	@Test
-	public void testFilterMissingPuid() throws IOException, ServletException
+	void testFilterMissingPuid() throws IOException, ServletException
 	{
 		when(req.getRequestURI()).thenReturn("/testpath");
 		when(propertyConfig.getRbacExcludedEndPoints()).thenReturn("/excludedpath");
@@ -119,7 +119,7 @@ public class TestRBACFilter {
 	}
 	
 	@Test
-	public void testFilterAuthResultNull() throws IOException, ServletException
+	void testFilterAuthResultNull() throws IOException, ServletException
 	{
 		when(req.getRequestURI()).thenReturn("/testpath");
 		when(propertyConfig.getRbacExcludedEndPoints()).thenReturn("/excludedpath");

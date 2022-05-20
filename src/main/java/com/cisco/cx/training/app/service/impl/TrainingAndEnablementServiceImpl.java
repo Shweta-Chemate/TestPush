@@ -16,12 +16,10 @@ import org.springframework.util.CollectionUtils;
 import com.cisco.cx.training.app.dao.CommunityDAO;
 import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
 import com.cisco.cx.training.app.dao.PartnerPortalLookupDAO;
-import com.cisco.cx.training.app.dao.SmartsheetDAO;
 import com.cisco.cx.training.app.dao.SuccessAcademyDAO;
 import com.cisco.cx.training.app.dao.UserLearningPreferencesDAO;
 import com.cisco.cx.training.app.entities.PartnerPortalLookUpEntity;
 import com.cisco.cx.training.app.entities.SuccessAcademyLearningEntity;
-import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.app.service.ProductDocumentationService;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
@@ -34,7 +32,6 @@ import com.cisco.cx.training.models.LearningRecordsAndFiltersModel;
 import com.cisco.cx.training.models.MasheryObject;
 import com.cisco.cx.training.models.SuccessAcademyFilter;
 import com.cisco.cx.training.models.SuccessAcademyLearning;
-import com.cisco.cx.training.models.UserDetails;
 import com.cisco.cx.training.models.UserLearningPreference;
 import com.cisco.cx.training.util.SuccessAcademyMapper;
 
@@ -51,10 +48,6 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	
 	@Autowired
 	private PartnerPortalLookupDAO partnerPortalLookupDAO;
-
-	@SuppressWarnings("unused")
-	@Autowired
-	private SmartsheetDAO smartsheetDAO;
 
 	@Autowired
 	private PartnerProfileService partnerProfileService;
@@ -116,8 +109,8 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	public List<SuccessAcademyFilter> getSuccessAcademyFilters() {
 		LOG.info("Entering the getSuccessAcademyFilters");
 		long requestStartTime = System.currentTimeMillis();	
-		Map<String, List<String>> mapData = new HashMap<String, List<String>>();
-		List<SuccessAcademyFilter> filters = new ArrayList<SuccessAcademyFilter>();
+		Map<String, List<String>> mapData = new HashMap<>();
+		List<SuccessAcademyFilter> filters = new ArrayList<>();
 		List<Object[]> filterData = successAcademyDAO.getLearningFilters();
 		LOG.info("Received filtered data in {} ", (System.currentTimeMillis() - requestStartTime));
 		requestStartTime = System.currentTimeMillis();	
@@ -126,7 +119,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 		requestStartTime = System.currentTimeMillis();
 		Map<String, String> lookupValues = getLookUpMapFromEntity(tabLocationEntities);
 		for(Object[] objectData : filterData){
-			List<String> subFilters = new ArrayList<String>();
+			List<String> subFilters = new ArrayList<>();
 			if(null != mapData.get(objectData[0])){	
 				subFilters = mapData.get(objectData[0]);
 			}
@@ -166,7 +159,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	
 	
 	private Map<String,String> getLookUpMapFromEntity(List<PartnerPortalLookUpEntity> entityList){
-		HashMap<String, String> lookUpValues = new HashMap<String, String>();
+		HashMap<String, String> lookUpValues = new HashMap<>();
 		for(PartnerPortalLookUpEntity entity : entityList){
 			String key = entity.getPartnerPortalKey().replaceAll(CXPP_UI_TAB_PREFIX, ""); //NOSONAR
 			lookUpValues.put(key.toLowerCase(), entity.getPartnerPortalKeyValue());
@@ -176,14 +169,14 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 
 	@Override
 	public LearningRecordsAndFiltersModel getAllLearningInfoPost(String xMasheryHandshake, String searchToken,
-			HashMap<String, Object> filters, String sortBy, String sortOrder, String contentTab) {
+			HashMap<String, Object> filters, String sortBy, String sortOrder, String contentTab, boolean hcaasStatus) {
 		
-		return productDocumentationService.getAllLearningInfo(xMasheryHandshake,searchToken,filters,sortBy, sortOrder,contentTab);
+		return productDocumentationService.getAllLearningInfo(xMasheryHandshake,searchToken,filters,sortBy, sortOrder,contentTab,hcaasStatus);
 	}
 
 	@Override
-	public Map<String, Object> getAllLearningFiltersPost(String searchToken, HashMap<String, Object> filters, String contentTab) {
-		return productDocumentationService.getAllLearningFilters(searchToken,filters,contentTab);
+	public Map<String, Object> getAllLearningFiltersPost(String searchToken, Map<String, Object> filters, String contentTab, boolean hcaasStatus) {
+		return productDocumentationService.getAllLearningFilters(searchToken,filters,contentTab,hcaasStatus);
 	}
 
 	@Override
@@ -201,13 +194,13 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 
 	@Override
 	public LearningRecordsAndFiltersModel getMyPreferredLearnings(String xMasheryHandshake, String search,
-			HashMap<String, Object> filters, String sortBy, String sortOrder, String puid, Integer limit) {
+			HashMap<String, Object> filters, String sortBy, String sortOrder, String puid, Integer limit, boolean hcaasStatus) {
 			String ccoId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 			List<String> specializations = getSpecialization(xMasheryHandshake, puid);
 			HashMap<String, Object> preferences = userLearningPreferencesDAO.getULPPreferencesDDB(ccoId);
 			preferences.put(Constants.SPECIALIZATION_FILTER, specializations);
 			return productDocumentationService.fetchMyPreferredLearnings(ccoId, search, filters, sortBy, sortOrder,
-					puid, preferences, limit);
+					puid, preferences, limit, hcaasStatus);
 	}
 
 	List<String> getSpecialization(String xMasheryHandshake, String puid) {

@@ -1,6 +1,5 @@
 package com.cisco.cx.training.app.service;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,38 +18,38 @@ public interface LearningContentService {
 	List<PIW> fetchPIWs(String ccoId, String region, String sortField, String sortType, String filter,
 			String search);
 
-	CountResponseSchema getIndexCounts();
+	CountResponseSchema getIndexCounts(boolean hcaasStatus);
 	
-	List<LearningContentItem> fetchNewLearningContent(String ccoId, HashMap<String, Object> filtersSelected);
+	List<LearningContentItem> fetchNewLearningContent(String ccoId, Map<String, Object> filtersSelected, boolean hcaasStatus);
 
-	Map<String, Object> getViewMoreNewFiltersWithCount(HashMap<String, Object> filtersSelected);
+	Map<String, Object> getViewMoreNewFiltersWithCount(Map<String, Object> filtersSelected, boolean hcaasStatus);
 
 	LearningStatusEntity updateUserStatus(String userId, String puid, LearningStatusSchema learningStatusSchema, String xMasheryHandshake);
 
-	List<LearningContentItem> fetchRecentlyViewedContent(String userId, HashMap<String, Object> filtersSelected);
+	List<LearningContentItem> fetchRecentlyViewedContent(String userId, Map<String, Object> filtersSelected, boolean hcaasStatus);
 
-	Map<String, Object> getRecentlyViewedFiltersWithCount(String userId, HashMap<String, Object> filtersSelected);
+	Map<String, Object> getRecentlyViewedFiltersWithCount(String userId, Map<String, Object> filtersSelected, boolean hcaasStatus);
 
-	List<LearningContentItem> fetchBookMarkedContent(String userId, HashMap<String, Object> filtersSelected);
+	List<LearningContentItem> fetchBookMarkedContent(String userId, Map<String, Object> filtersSelected, boolean hcaasStatus);
 	
-	Map<String, Object> getBookmarkedFiltersWithCount(String ccoid, HashMap<String, Object> filtersSelected);
+	Map<String, Object> getBookmarkedFiltersWithCount(String ccoid, Map<String, Object> filtersSelected, boolean hcaasStatus);
 	
-	List<LearningContentItem> fetchUpcomingContent(String userId, HashMap<String, Object> filtersSelected);
+	List<LearningContentItem> fetchUpcomingContent(String userId, Map<String, Object> filtersSelected, boolean hcaasStatus);
 	
-	Map<String, Object> getUpcomingFiltersWithCount(HashMap<String, Object> filtersSelected);
+	Map<String, Object> getUpcomingFiltersWithCount(Map<String, Object> filtersSelected, boolean hcaasStatus);
 
-	List<LearningContentItem> fetchCXInsightsContent(String userId, HashMap<String, Object> filtersSelected, String searchToken, String sortField,
-			String sortType);
+	List<LearningContentItem> fetchCXInsightsContent(String userId, Map<String, Object> filtersSelected, String searchToken, String sortField,
+			String sortType, boolean hcaasStatus);
 
-	Map<String, Object> getCXInsightsFiltersWithCount(String userId, String searchToken, HashMap<String, Object> filtersSelected);
+	Map<String, Object> getCXInsightsFiltersWithCount(String userId, String searchToken, Map<String, Object> filtersSelected, boolean hcaasStatus);
 
 	LearningMap getLearningMap(String id, String title);
 
-	List<LearningContentItem> fetchPopularContent(String ccoid, HashMap<String, Object> filtersSelected, String popularityType, String puid);
+	List<LearningContentItem> fetchPopularContent(String ccoid, Map<String, Object> filtersSelected, String popularityType, String puid, boolean hcaasStatus);
 
-	Map<String, Object> getPopularContentFiltersWithCount(HashMap<String, Object> filtersSelected, String puid, String popularityType, String userId);
+	Map<String, Object> getPopularContentFiltersWithCount(Map<String, Object> filtersSelected, String puid, String popularityType, String userId, boolean hcaasStatus);
 	
-	List<LearningContentItem> fetchFeaturedContent(String userId, HashMap<String, Object> filtersSelected);
+	List<LearningContentItem> fetchFeaturedContent(String userId, Map<String, Object> filtersSelected, boolean hcaasStatus);
 	
-	Map<String, Object> getFeaturedFiltersWithCount(HashMap<String, Object> filtersSelected);
+	Map<String, Object> getFeaturedFiltersWithCount(Map<String, Object> filtersSelected, boolean hcaasStatus);
 }

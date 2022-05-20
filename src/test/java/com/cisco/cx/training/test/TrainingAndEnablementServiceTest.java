@@ -43,7 +43,6 @@ import com.cisco.cx.training.app.entities.LearningStatusEntity;
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.app.entities.PartnerPortalLookUpEntity;
 import com.cisco.cx.training.app.entities.SuccessAcademyLearningEntity;
-import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.repo.BookmarkCountsRepo;
 import com.cisco.cx.training.app.repo.LearningStatusRepo;
 import com.cisco.cx.training.app.service.PartnerProfileService;
@@ -129,7 +128,7 @@ public class TrainingAndEnablementServiceTest {
 
 
 	@Test
-	public void testGetSuccessAcademy() {
+	void testGetSuccessAcademy() {
 		UserDetails userDetails = new UserDetails();
 		userDetails.setCecId("email");
 		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(userDetails);
@@ -169,7 +168,7 @@ public class TrainingAndEnablementServiceTest {
 	}
 	
 	@Test
-	public void getAllCommunitiesTest() {
+	void getAllCommunitiesTest() {
 		Community community = getCommunity();
 		List<Community> communities = Arrays.asList(community);
 		when(communityDAO.getCommunities()).thenReturn(communities);
@@ -194,7 +193,7 @@ public class TrainingAndEnablementServiceTest {
 
 	
 	@Test
-	public void getCommunityCount() {
+	void getCommunityCount() {
 		Assertions.assertNotNull(trainingAndEnablementService.getCommunityCount());
 	}
 	
@@ -232,7 +231,7 @@ public class TrainingAndEnablementServiceTest {
 	}
 	
 	@Test
-	public void testGetSuccessAcademyLearningFilters() {
+	void testGetSuccessAcademyLearningFilters() {
 		Object[] str1 = new Object[2];
 		str1[0]="A";
 		str1[1]="a";
@@ -289,7 +288,7 @@ public class TrainingAndEnablementServiceTest {
 	}
 		
 	@Test
-	public void testFailureBookmarkLearningForUser(){		
+	void testFailureBookmarkLearningForUser(){		
 		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(null);
 		assertThrows(NullPointerException.class, () -> {
 			trainingAndEnablementService.bookmarkLearningForUser(null, xMasheryHeader, "test");
@@ -297,22 +296,22 @@ public class TrainingAndEnablementServiceTest {
 	}
 	
 	@Test
-	public void getAllLearningInfoPost()
+	void getAllLearningInfoPost()
 	{
 		List<GenericLearningModel> cards = new ArrayList<GenericLearningModel>();
 		LearningRecordsAndFiltersModel aMock = new LearningRecordsAndFiltersModel();
 		aMock.setLearningData(cards);
-		when(productDocumentationService.getAllLearningInfo(xMasheryHeader,"searchToken",null,"sortBy","sortOrder",learningTab)).thenReturn(aMock);
-		LearningRecordsAndFiltersModel a = trainingAndEnablementService.getAllLearningInfoPost(xMasheryHeader,"searchToken",null,"sortBy","sortOrder",learningTab);		
+		when(productDocumentationService.getAllLearningInfo(xMasheryHeader,"searchToken",null,"sortBy","sortOrder",learningTab,true)).thenReturn(aMock);
+		LearningRecordsAndFiltersModel a = trainingAndEnablementService.getAllLearningInfoPost(xMasheryHeader,"searchToken",null,"sortBy","sortOrder",learningTab,true);
 		assertEquals(0, a.getLearningData().size());
 	}
 	
 	@Test
-	public void getAllLearningFiltersPost()
+	void getAllLearningFiltersPost()
 	{
 		HashMap<String, Object> aMock = new HashMap<String, Object>();		
-		when(productDocumentationService.getAllLearningFilters("searchToken",null,learningTab)).thenReturn(aMock);
-		Map<String, Object> a = trainingAndEnablementService.getAllLearningFiltersPost("searchToken",null,learningTab);
+		when(productDocumentationService.getAllLearningFilters("searchToken",null,learningTab,true)).thenReturn(aMock);
+		Map<String, Object> a = trainingAndEnablementService.getAllLearningFiltersPost("searchToken",null,learningTab,true);
 		assertEquals(0, a.size());
 	}
 	
@@ -343,7 +342,7 @@ public class TrainingAndEnablementServiceTest {
 	}
 	
 	@Test
-	public void testULP() {
+	void testULP() {
 		UserDetails userDetails = new UserDetails();
 		userDetails.setCecId("email");
 		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(userDetails);
@@ -365,7 +364,7 @@ public class TrainingAndEnablementServiceTest {
 	}
 	
 	@Test
-	public void testTopPicksPLSNonActive() throws Exception {
+	void testTopPicksPLSNonActive() throws Exception {
 		UserDetails userDetails = new UserDetails();
 		userDetails.setCecId("sntccbr5@hotmail.com");
 		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(userDetails);
@@ -374,12 +373,12 @@ public class TrainingAndEnablementServiceTest {
 		when(partnerProfileService.isPLSActive(xMasheryHeader, "puid")).thenReturn(false);
 		when(userLearningPreferencesDAO.getULPPreferencesDDB(Mockito.anyString())).thenReturn(prefMap);
 		when(productDocumentationService.fetchMyPreferredLearnings("sntccbr5@hotmail.com", "search", null, "sortBy", "sortOrder",
-				"puid", prefMap, 25)).thenReturn(getLearnings());
-		Assertions.assertNotNull(trainingAndEnablementService.getMyPreferredLearnings(xMasheryHeader, "search", null, "sortBy", "sortOrder", "puid" , 25));
+				"puid", prefMap, 25, true)).thenReturn(getLearnings());
+		Assertions.assertNotNull(trainingAndEnablementService.getMyPreferredLearnings(xMasheryHeader, "search", null, "sortBy", "sortOrder", "puid" , 25, true));
 	}
 
 	@Test
-	public void testTopPicksPLSActive() throws Exception {
+	void testTopPicksPLSActive() throws Exception {
 		UserDetails userDetails = new UserDetails();
 		userDetails.setCecId("sntccbr5@hotmail.com");
 		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(userDetails);
@@ -388,8 +387,8 @@ public class TrainingAndEnablementServiceTest {
 		prefMap.put(Constants.SPECIALIZATION_FILTER, Stream.of(Constants.PLS_SPEC_TYPE).collect(Collectors.toList()));
 		when(userLearningPreferencesDAO.getULPPreferencesDDB(Mockito.anyString())).thenReturn(prefMap);
 		when(productDocumentationService.fetchMyPreferredLearnings("sntccbr5@hotmail.com", "search", null, "sortBy", "sortOrder",
-				"puid", prefMap, 25)).thenReturn(getLearnings());
-		Assertions.assertNotNull(trainingAndEnablementService.getMyPreferredLearnings(xMasheryHeader, "search", null, "sortBy", "sortOrder", "puid" , 25));
+				"puid", prefMap, 25, true)).thenReturn(getLearnings());
+		Assertions.assertNotNull(trainingAndEnablementService.getMyPreferredLearnings(xMasheryHeader, "search", null, "sortBy", "sortOrder", "puid" , 25, true));
 	}
 	private LearningRecordsAndFiltersModel getLearnings() {
 		LearningRecordsAndFiltersModel resp = new LearningRecordsAndFiltersModel();

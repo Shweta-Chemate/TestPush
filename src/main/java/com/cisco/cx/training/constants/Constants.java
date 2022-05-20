@@ -40,6 +40,7 @@ public final class Constants {
 	public static final String SPEAKERS = "presenterName";
 	public static final String LEARNING_TYPE = "learningType";
 	public static final String DOCUMENTATION = "product_documentation";
+	public static final String SUCCESSTIPS = "success_tips";
 	public static final String CONTENT_TYPE = "Content Type";
 	public static final String CONTENT_TYPE_PRM = "contentType";
 	public static final String LIVE_EVENTS = "Live Events";
@@ -76,7 +77,16 @@ public final class Constants {
 	public static final String SPECIALIZATION_FILTER = "specialization";
 	public static final String PLS_SPEC_TYPE = "PLS";
 	public static final String OFFER_SPEC_TYPE = "ATX/ACC";
-
-
+	public static final String CISCO_PLUS_FILTER = "Cisco+";
+	public static final String CISCO_PLUS_FILTER_PRM = "ciscoplus";
+	public static final String SUCCESS_TIPS_VIDEO = "st_video";
+	public static final String RECOMMENDED_RESOURCE = "Recommended Resource";
+	public static final String SUCCESS_TIPS_RECOMMENDED_RESOURCE = "st_recommended_resource";
+	public static final String HCAAS_SPECIALIZATION_QUERY_TERM = "hcaasStatus";
+	public static final String PLS_SPECIALIZATION_QUERY_TERM = "plsStatus";
+	public static final String HCAAS_SPECIALIZATION_TERM = "HcaaS";
+	public static final String HCAAS_FLAG = "hcaasflag";
+	public static final String SUCCESSTRACK_FLAG = "successTrackFlag";
+	public static final String SUCCESS_TIPS_SPLIT_KEY="be_PXC-26267-displaySuccessTips";
 
 }

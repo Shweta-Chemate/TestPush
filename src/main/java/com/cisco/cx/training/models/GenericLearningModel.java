@@ -1,6 +1,6 @@
 package com.cisco.cx.training.models;
 
-import java.sql.Timestamp;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -48,6 +48,7 @@ public class GenericLearningModel {
 	private String registrationUrl;
 	private String recordingUrl;
 	private String contentType;
+	private String urlDescrption;
 	
 	private String modulecount;
 	private String learning_map;
@@ -55,6 +56,10 @@ public class GenericLearningModel {
 	private Integer avgRatingPercentage;
 	private Integer votesPercentage;
 	private Integer totalCompletions;
+	
+	private List<SuccessTipsAttachment> successTipsVideos;
+	
+	private List<SuccessTipsAttachment> successTipsFiles;
 
 	public Integer getAvgRatingPercentage() {
 		return avgRatingPercentage;
@@ -223,6 +228,30 @@ public class GenericLearningModel {
 
 	public void setSpecialization(String specialization) {
 		this.specialization = specialization;
+	}
+
+	public List<SuccessTipsAttachment> getSuccessTipsVideos() {
+		return successTipsVideos;
+	}
+
+	public void setSuccessTipsVideos(List<SuccessTipsAttachment> successTipsVideos) {
+		this.successTipsVideos = successTipsVideos;
+	}
+
+	public List<SuccessTipsAttachment> getSuccessTipsFiles() {
+		return successTipsFiles;
+	}
+
+	public void setSuccessTipsFiles(List<SuccessTipsAttachment> successTipsFiles) {
+		this.successTipsFiles = successTipsFiles;
+	}
+
+	public String getUrlDescrption() {
+		return urlDescrption;
+	}
+
+	public void setUrlDescrption(String urlDescrption) {
+		this.urlDescrption = urlDescrption;
 	}
 
 }

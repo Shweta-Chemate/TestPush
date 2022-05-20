@@ -14,4 +14,6 @@ public interface PartnerProfileService {
 	String getEntitlementUrl();
 
 	boolean isPLSActive(String xMasheryHandshake, String partnerId) throws Exception; //NOSONAR
+
+	public boolean getHcaasStatusForPartner(String xMasheryHandshake);
 }

@@ -26,9 +26,9 @@ public interface TrainingAndEnablementService {
 	BookmarkResponseSchema bookmarkLearningForUser(BookmarkRequestSchema bookmarkRequestSchema , String xMasheryHandshake, String puid);
 
 	LearningRecordsAndFiltersModel getAllLearningInfoPost(String xMasheryHandshake, String searchToken, HashMap<String, Object> filters,
-			String sortBy, String sortOrder, String contentTab);
+			String sortBy, String sortOrder, String contentTab, boolean hcaasStatus);
 	
-	Map<String, Object> getAllLearningFiltersPost(String searchToken, HashMap<String, Object> filters, String contentTab);
+	Map<String, Object> getAllLearningFiltersPost(String searchToken, Map<String, Object> filters, String contentTab, boolean hcaasStatus);
 
 	Map<String, List<UserLearningPreference>> postUserLearningPreferences(String xMasheryHandshake,
 			Map<String, List<UserLearningPreference>> userPreferences);
@@ -36,7 +36,7 @@ public interface TrainingAndEnablementService {
 	Map<String, List<UserLearningPreference>> getUserLearningPreferences(String xMasheryHandshake);
 
 	LearningRecordsAndFiltersModel getMyPreferredLearnings(String xMasheryHandshake, String search,
-			HashMap<String, Object> filters, String sortBy, String sortOrder, String puid, Integer limit);
+			HashMap<String, Object> filters, String sortBy, String sortOrder, String puid, Integer limit, boolean hcaasStatus);
 
 
 

@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -27,12 +27,11 @@ import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.exception.ErrorResponse;
 import com.cisco.cx.training.app.exception.HealthCheckException;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
+import com.cisco.cx.training.constants.Constants;
 import com.cisco.cx.training.models.BookmarkRequestSchema;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.cisco.cx.training.models.Community;
 import com.cisco.cx.training.models.LearningRecordsAndFiltersModel;
-import com.cisco.cx.training.models.SuccessAcademyFilter;
-import com.cisco.cx.training.models.SuccessAcademyLearning;
 import com.cisco.cx.training.models.UserLearningPreference;
 
 import io.swagger.annotations.Api;
@@ -54,10 +53,9 @@ public class TrainingAndEnablementController {
 	@SuppressWarnings("unused")
 	private final Map<String, Callable<Boolean>> optionalDependencies = new HashMap<>();
 
-	
 	@Autowired
 	private TrainingAndEnablementService trainingAndEnablementService;
-	
+
 	@GetMapping(path = "/ready", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Template API Readiness probe", hidden = true)
 	public Map<String, String> checkReady() throws HealthCheckException {
@@ -107,7 +105,7 @@ public class TrainingAndEnablementController {
     }	
 	
 	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/getAllLearningInfo/{learningTab}")
-	@ApiOperation(value = "Fetch All Learnings Information", response = String.class, nickname = "fetchalllearningsInfo")
+	@ApiOperation(value = "Fetch All Learnings Information", nickname = "fetchalllearningsInfo")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
@@ -118,16 +116,17 @@ public class TrainingAndEnablementController {
 			@ApiParam(value = "Filters") @RequestBody(required = false) HashMap<String, Object> filters,
 			@ApiParam(value = "sortBy - date, title ") @RequestParam(value = "sortBy", required = false) String sortBy,
 			@ApiParam(value = "sortOrder - asc, desc") @RequestParam(value = "sortOrder", required = false) String sortOrder,
-			@ApiParam(value = "learningTab - Technology, Skill") @PathVariable(value = "learningTab", required = true) String learningTab
-			)
+			@ApiParam(value = "learningTab - Technology, Skill") @PathVariable(value = "learningTab", required = true) String learningTab,
+			HttpServletRequest request)
 			throws Exception {
+		boolean hcaasStatus = getHcaasStatus(request);
 		LearningRecordsAndFiltersModel learningCardsAndFilters = trainingAndEnablementService.
-				getAllLearningInfoPost(xMasheryHandshake,search,filters,sortBy,sortOrder,learningTab);
+				getAllLearningInfoPost(xMasheryHandshake,search,filters,sortBy,sortOrder,learningTab,hcaasStatus);
 		return new ResponseEntity<LearningRecordsAndFiltersModel>(learningCardsAndFilters, HttpStatus.OK);
 	}
 	
 	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/getAllLearningFilters/{learningTab}")
-	@ApiOperation(value = "Fetch All Learnings Filters", response = String.class, nickname = "fetchalllearningsFilters")
+	@ApiOperation(value = "Fetch All Learnings Filters", nickname = "fetchalllearningsFilters")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
@@ -135,15 +134,16 @@ public class TrainingAndEnablementController {
 	public ResponseEntity<Map<String, Object>> getAllLearningsFiltersPost(
 			@ApiParam(value = "Search - tiltle, description, author") @RequestParam(value = "searchToken", required = false) String searchToken,
 			@ApiParam(value = "learningTab - Technology, Skill") @PathVariable(value = "learningTab", required = true) String learningTab,
-			@ApiParam(value = "Filters") @RequestBody(required = false) HashMap<String, Object> filters
-			)
+			@ApiParam(value = "Filters") @RequestBody(required = false) Map<String, Object> filters,
+			HttpServletRequest request)
 			throws Exception {
-		Map<String, Object> learningFilters = trainingAndEnablementService.getAllLearningFiltersPost(searchToken,filters,learningTab);
+		boolean hcaasStatus = getHcaasStatus(request);
+		Map<String, Object> learningFilters = trainingAndEnablementService.getAllLearningFiltersPost(searchToken,filters,learningTab,hcaasStatus);
 		return new ResponseEntity<Map<String, Object>>(learningFilters, HttpStatus.OK);
 	}
 	
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/myLearningPreferences")
-	@ApiOperation(value = "Fetch All Learnings Preferences", response = String.class, nickname = "fetchMyLearningPreferences")
+	@ApiOperation(value = "Fetch All Learnings Preferences", nickname = "fetchMyLearningPreferences")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
@@ -157,7 +157,7 @@ public class TrainingAndEnablementController {
 	}
 	
 	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/myLearningPreferences")
-	@ApiOperation(value = "Set User Learnings Preferences", response = String.class, nickname = "setMyLearningPreferences")
+	@ApiOperation(value = "Set User Learnings Preferences", nickname = "setMyLearningPreferences")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Preferences updated successfully."),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
@@ -172,7 +172,7 @@ public class TrainingAndEnablementController {
 	}
 	
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/myPreferredLearnings")
-	@ApiOperation(value = "Fetch Preferred Learnings Information", response = String.class, nickname = "fetchPreferredLearningsInfo")
+	@ApiOperation(value = "Fetch Preferred Learnings Information", nickname = "fetchPreferredLearningsInfo")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
@@ -183,14 +183,18 @@ public class TrainingAndEnablementController {
 			@ApiParam(value = "Search - tiltle, description, author") @RequestParam(value = "searchToken", required = false) String search,
 			@ApiParam(value = "sortBy - date, title ") @RequestParam(value = "sortBy", required = false) String sortBy,
 			@ApiParam(value = "sortOrder - asc, desc") @RequestParam(value = "sortOrder", required = false) String sortOrder,
-			@ApiParam(value = "limit - Number of cards") @RequestParam(value = "limit", required = false) Integer limit			
-			)
+			@ApiParam(value = "limit - Number of cards") @RequestParam(value = "limit", required = false) Integer limit,
+			HttpServletRequest request)
 			throws Exception {
+		boolean hcaasStatus = getHcaasStatus(request);
 		HashMap<String, Object> filters = new HashMap<String, Object>();
 		LearningRecordsAndFiltersModel learningCards = trainingAndEnablementService.
-				getMyPreferredLearnings(xMasheryHandshake,search,filters,sortBy,sortOrder,puid, limit);
+				getMyPreferredLearnings(xMasheryHandshake,search,filters,sortBy,sortOrder,puid, limit, hcaasStatus);
 		if(limit!=null && limit < 0) {throw new BadRequestException(LIMIT_MSG);}
 		return new ResponseEntity<LearningRecordsAndFiltersModel>(learningCards, HttpStatus.OK);
 	}
-	
+
+	public boolean getHcaasStatus(HttpServletRequest request) {
+		return (boolean) request.getServletContext().getAttribute(Constants.HCAAS_FLAG);
+	}
 }

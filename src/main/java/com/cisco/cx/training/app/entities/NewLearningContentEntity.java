@@ -116,6 +116,9 @@ public class NewLearningContentEntity {
 	@Column(name = "votes_percentage")
 	private Integer votesPercentage;
 
+	@Column(name = "ciscoplus")
+	private String ciscoplus;
+
 	public Integer getTotalCompletions() {
 		return totalCompletions;
 	}
@@ -378,5 +381,13 @@ public class NewLearningContentEntity {
 
 	public void setRegion(String region) {
 		this.region = region;
+	}
+
+	public String getCiscoplus() {
+		return ciscoplus;
+	}
+
+	public void setCiscoplus(String ciscoplus) {
+		this.ciscoplus = ciscoplus;
 	}
 }

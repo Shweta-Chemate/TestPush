@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,8 @@ import software.amazon.awssdk.services.dynamodb.model.QueryResponse;
 import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.dao.ProductDocumentationDAO;
 import com.cisco.cx.training.app.dao.UserLearningPreferencesDAO;
+import com.cisco.cx.training.app.service.PartnerProfileService;
+import com.cisco.cx.training.constants.Constants;
 import com.cisco.cx.training.models.UserLearningPreference;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -42,19 +45,24 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
 	private static final Logger LOG = LoggerFactory.getLogger(UserLearningPreferencesDAOImpl.class);
 	private static final int CONN_TIMEOUT = 20;
 	private static final int SOCKET_TIMEOUT = 20;
-	
-	private PropertyConfiguration propertyConfig;	
+
+	private PropertyConfiguration propertyConfig;
+
+	private HttpServletRequest request;
 
 	ProductDocumentationDAO productDocumentationDAO;	
 	
 	@Autowired
-	public UserLearningPreferencesDAOImpl(PropertyConfiguration propertyConfig, ProductDocumentationDAO productDocumentationDAO)
-	{
+	public UserLearningPreferencesDAOImpl(PropertyConfiguration propertyConfig,
+			ProductDocumentationDAO productDocumentationDAO, HttpServletRequest request)	{
 		this.propertyConfig = propertyConfig;
 		this.productDocumentationDAO =  productDocumentationDAO;
+		this.request =  request;
 	}
-	
-	
+
+	@Autowired
+	private PartnerProfileService partnerProfileService;
+
 	private static final String USERID_SUFFIX = "";//_ulp
 	private static final String USERID_KEY="userid";	
 	private static enum PREFERENCES_KEYS {role,technology,language,region,timeinterval};  //NOSONAR 
@@ -93,7 +101,7 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
 		long requestStartTime = System.currentTimeMillis();		
 		Map<String, List<UserLearningPreference>> currentULPs = ulPreferences;//getULPs not required
 		
-		Map<String, AttributeValue> itemValue = new HashMap<String, AttributeValue>();
+		Map<String, AttributeValue> itemValue = new HashMap<>();
 		itemValue.put(USERID_KEY, AttributeValue.builder().s(userId.concat(USERID_SUFFIX)).build());
 		if(currentULPs==null || currentULPs.isEmpty())
 		{
@@ -191,8 +199,10 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
 	@Override
 	public Map<String, List<UserLearningPreference>> fetchUserLearningPreferences(String userId) {
 		LOG.info("Entering the fetch ULPs");
+		String hcaasStatus = String.valueOf(partnerProfileService
+				.getHcaasStatusForPartner((String) request.getServletContext().getAttribute(Constants.MASHERY_HANDSHAKE_HEADER_NAME)));
 		Map<String, List<UserLearningPreference>> ulpMap = new HashMap<>();
-		ulpMap.putAll(getAllLatestPreferencesCategories());
+		ulpMap.putAll(getAllLatestPreferencesCategories(hcaasStatus));
 		QueryResponse queryResult = fetchULPPreferencesDDB(userId);		
 		long requestStartTime = System.currentTimeMillis();	
 		List<Map<String,AttributeValue>> attributeValues = queryResult.items();		
@@ -238,15 +248,15 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
 		return ulpMap;
 	}
 
-	private Map<? extends String, ? extends List<UserLearningPreference>> getAllLatestPreferencesCategories() {
+	private Map<? extends String, ? extends List<UserLearningPreference>> getAllLatestPreferencesCategories(String hcaasStatus) {
 		Map<String, List<UserLearningPreference>> dbMap = new HashMap<>();
-		List<String> roles = productDocumentationDAO.getAllRolesForPreferences();
+		List<String> roles = productDocumentationDAO.getAllRolesForPreferences(hcaasStatus);
 		dbMap.put(PREFERENCES_KEYS.role.name(),setULP(roles));
-		List<String> technologies = productDocumentationDAO.getAllTechnologyForPreferences();
+		List<String> technologies = productDocumentationDAO.getAllTechnologyForPreferences(hcaasStatus);
 		dbMap.put(PREFERENCES_KEYS.technology.name(),setULP(technologies));
-		List<String> regions = productDocumentationDAO.getAllRegionForPreferences();
+		List<String> regions = productDocumentationDAO.getAllRegionForPreferences(hcaasStatus);
 		dbMap.put(PREFERENCES_KEYS.region.name(),setULP(regions));	
-		List<String> languages = productDocumentationDAO.getAllLanguagesForPreferences();
+		List<String> languages = productDocumentationDAO.getAllLanguagesForPreferences(hcaasStatus);
 		dbMap.put(PREFERENCES_KEYS.language.name(),setULP(languages));	
 		return dbMap;
 	}

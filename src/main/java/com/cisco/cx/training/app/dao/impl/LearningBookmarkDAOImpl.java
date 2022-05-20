@@ -96,7 +96,7 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
 			BookmarkResponseSchema bookmarkResponseSchema, String puid) {
 		LOG.info("Entering the createOrUpdate");
 		long requestStartTime = System.currentTimeMillis();
-		Map<String, AttributeValue> itemValue = new HashMap<String, AttributeValue>();		
+		Map<String, AttributeValue> itemValue = new HashMap<>();		
 		Map<String,Object> currentBookMarksMap = getBookmarksWithTime(bookmarkResponseSchema.getCcoid());
 		boolean opSuccess=false;
 		String learningId = bookmarkResponseSchema.getLearningid();

@@ -35,7 +35,7 @@ public class FilterCountsDaoTest {
 	private FilterCountsDAO filterCountsDao = new FilterCountsDAOImpl(learningContentRepo);
 
 	@Test
-	public void testAndFilters() {
+	void testAndFilters() {
 		Map<String, Set<String>> filteredCards = new HashMap<>();
 		Set<String> testSet1 = new HashSet<>();
 		Set<String> testSet2 = new HashSet<>();
@@ -43,15 +43,18 @@ public class FilterCountsDaoTest {
 		testSet2.add("testvalue1");
 		filteredCards.put("testkey1", testSet1);
 		filteredCards.put("testkey2", testSet2);
-		Assertions.assertFalse(filterCountsDao.andFilters(filteredCards).isEmpty());
+		Set<String> resp = filterCountsDao.andFilters(filteredCards);
+		Assertions.assertFalse(resp.isEmpty());
+		Assertions.assertTrue(resp.size()==1 && resp.contains("testvalue1"));
 	}
 
 	@Test
-	public void testSetFilterCounts() {
+	void testSetFilterCounts() {
 		HashMap<String, Object> filterCountsMap = new HashMap<>();
 		Map testValues = new HashMap<>();
 		testValues.put("testValueKey", "testValue");
 		filterCountsMap.put("testKey", testValues);
+		String hcaasStatus = String.valueOf(true);
 		Set<String> cardIds = new HashSet<>();
 		cardIds.add("testString");
 		String filterGroup = "testFilterGroup";
@@ -64,30 +67,32 @@ public class FilterCountsDaoTest {
 		filterCountsMap.put(Constants.SUCCESS_TRACK, testValues);
 		filterCountsMap.put(Constants.LIFECYCLE, testValues);
 		filterCountsMap.put(Constants.FOR_YOU_FILTER, testValues);
+		filterCountsMap.put(Constants.CISCO_PLUS_FILTER, testValues);
 		List<Map<String, Object>> dbList = new ArrayList<>();
 		when(learningContentRepo.getAllContentTypeWithCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningContentRepo.getAllLanguagesWithCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningContentRepo.getAllRegionsWithCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningContentRepo.getAllRoleCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningContentRepo.getAllTechCountByCards(Mockito.any())).thenReturn(dbList);
-		when(learningContentRepo.getDocFilterCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningContentRepo.getAllLFCWithCountByCards((Mockito.any()))).thenReturn(dbList);
 		when(learningContentRepo.getAllStUcWithCount((Mockito.any()))).thenReturn(dbList);
-		when(learningContentRepo.findNewFilteredIds(Mockito.any())).thenReturn(cardIds);
-		when(learningContentRepo.getRecentlyViewedContentFilteredIds(Mockito.anyString(), Mockito.any()))
+		when(learningContentRepo.findNewFilteredIds(Mockito.any(), Mockito.any())).thenReturn(cardIds);
+		when(learningContentRepo.getRecentlyViewedContentFilteredIds(Mockito.anyString(), Mockito.any(), Mockito.anyString()))
 				.thenReturn(cardIds);
+		when(learningContentRepo.getAllCiscoPlusCountByCards(Mockito.anySet())).thenReturn(dbList);
 		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(cardIds);
-		Assertions.assertDoesNotThrow(()->filterCountsDao.setFilterCounts(cardIds, filterCountsMap, filterGroup, userId));
+		Assertions.assertDoesNotThrow(()->filterCountsDao.setFilterCounts(cardIds, filterCountsMap, filterGroup, userId, "True"));
 	}
 
 	@Test
-	public void testSetFilterCountsWithFilteredMapMultiple() {
+	void testSetFilterCountsWithFilteredMapMultiple() {
 		HashMap<String, Object> filterCountsMap = new HashMap<>();
 		Map testValues = new HashMap<>();
 		testValues.put("testValueKey", "testValue");
 		filterCountsMap.put("testKey", testValues);
 		Set<String> cardIds = new HashSet<>();
 		cardIds.add("testString");
+		String hcaasStatus = String.valueOf(true);
 		String filterGroup = "testFilterGroup";
 		String userId = "testUserId";
 		filterCountsMap.put(Constants.CONTENT_TYPE, testValues);
@@ -98,6 +103,7 @@ public class FilterCountsDaoTest {
 		filterCountsMap.put(Constants.SUCCESS_TRACK, testValues);
 		filterCountsMap.put(Constants.LIFECYCLE, testValues);
 		filterCountsMap.put(Constants.FOR_YOU_FILTER, testValues);
+		filterCountsMap.put(Constants.CISCO_PLUS_FILTER, testValues);
 		Map<String, Set<String>> filteredCardsMap = new HashMap<>();
 		filteredCardsMap.put("testKey1", cardIds);
 		filteredCardsMap.put("testKey2", cardIds);
@@ -107,18 +113,18 @@ public class FilterCountsDaoTest {
 		when(learningContentRepo.getAllRegionsWithCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningContentRepo.getAllRoleCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningContentRepo.getAllTechCountByCards(Mockito.any())).thenReturn(dbList);
-		when(learningContentRepo.getDocFilterCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningContentRepo.getAllLFCWithCountByCards((Mockito.any()))).thenReturn(dbList);
 		when(learningContentRepo.getAllStUcWithCount((Mockito.any()))).thenReturn(dbList);
-		when(learningContentRepo.findNewFilteredIds(Mockito.any())).thenReturn(cardIds);
-		when(learningContentRepo.getRecentlyViewedContentFilteredIds(Mockito.anyString(), Mockito.any()))
+		when(learningContentRepo.findNewFilteredIds(Mockito.any(), Mockito.any())).thenReturn(cardIds);
+		when(learningContentRepo.getRecentlyViewedContentFilteredIds(Mockito.anyString(), Mockito.any(), Mockito.any()))
 				.thenReturn(cardIds);
+		when(learningContentRepo.getAllCiscoPlusCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(cardIds);
-		Assertions.assertDoesNotThrow(()->filterCountsDao.setFilterCounts(cardIds, filterCountsMap, filteredCardsMap, userId));
+		Assertions.assertDoesNotThrow(()->filterCountsDao.setFilterCounts(cardIds, filterCountsMap, filteredCardsMap, userId, hcaasStatus));
 	}
 
 	@Test
-	public void testSetFilterCountsWithFilteredMap() {
+	void testSetFilterCountsWithFilteredMap() {
 		HashMap<String, Object> filterCountsMap = new HashMap<>();
 		Map testValues = new HashMap<>();
 		testValues.put("testValueKey", "testValue");
@@ -127,6 +133,7 @@ public class FilterCountsDaoTest {
 		cardIds.add("testString");
 		String filterGroup = "testFilterGroup";
 		String userId = "testUserId";
+		String hcaasStatus = String.valueOf(true);
 		filterCountsMap.put(Constants.CONTENT_TYPE, testValues);
 		filterCountsMap.put(Constants.LANGUAGE, testValues);
 		filterCountsMap.put(Constants.LIVE_EVENTS, testValues);
@@ -135,6 +142,7 @@ public class FilterCountsDaoTest {
 		filterCountsMap.put(Constants.SUCCESS_TRACK, testValues);
 		filterCountsMap.put(Constants.LIFECYCLE, testValues);
 		filterCountsMap.put(Constants.FOR_YOU_FILTER, testValues);
+		filterCountsMap.put(Constants.CISCO_PLUS_FILTER, testValues);
 		Map<String, Set<String>> filteredCardsMap = new HashMap<>();
 		filteredCardsMap.put("testKey", cardIds);
 		List<Map<String, Object>> dbList = new ArrayList<>();
@@ -143,24 +151,25 @@ public class FilterCountsDaoTest {
 		when(learningContentRepo.getAllRegionsWithCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningContentRepo.getAllRoleCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningContentRepo.getAllTechCountByCards(Mockito.any())).thenReturn(dbList);
-		when(learningContentRepo.getDocFilterCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningContentRepo.getAllLFCWithCountByCards((Mockito.any()))).thenReturn(dbList);
 		when(learningContentRepo.getAllStUcWithCount((Mockito.any()))).thenReturn(dbList);
-		when(learningContentRepo.findNewFilteredIds(Mockito.any())).thenReturn(cardIds);
-		when(learningContentRepo.getRecentlyViewedContentFilteredIds(Mockito.anyString(), Mockito.any()))
+		when(learningContentRepo.findNewFilteredIds(Mockito.any(), Mockito.any())).thenReturn(cardIds);
+		when(learningContentRepo.getRecentlyViewedContentFilteredIds(Mockito.anyString(), Mockito.any(), Mockito.any()))
 				.thenReturn(cardIds);
+		when(learningContentRepo.getAllCiscoPlusCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(cardIds);
-		Assertions.assertDoesNotThrow(()->filterCountsDao.setFilterCounts(cardIds, filterCountsMap, filteredCardsMap, userId));
+		Assertions.assertDoesNotThrow(()->filterCountsDao.setFilterCounts(cardIds, filterCountsMap, filteredCardsMap, userId, hcaasStatus));
 	}
 
 	@Test
-	public void testFilterCards() {
+	void testFilterCards() {
 		Map<String, Object> filtersSelected = new HashMap<>();
 		Set<String> learningItemIdsList = new HashSet<>();
 		learningItemIdsList.add("testId");
 		String userId = "testUserId";
 		List<String> testValues = new ArrayList<>();
 		testValues.add("testValue");
+		String hcaasStatus = String.valueOf(true);
 		List<String> testValuesForYouFilter = new ArrayList<>();
 		testValuesForYouFilter.add(Constants.NEW);
 		testValuesForYouFilter.add(Constants.RECENTLY_VIEWED);
@@ -174,6 +183,7 @@ public class FilterCountsDaoTest {
 		filtersSelected.put(Constants.SUCCESS_TRACK, testValues);
 		filtersSelected.put(Constants.LIFECYCLE, testValues);
 		filtersSelected.put(Constants.FOR_YOU_FILTER, testValuesForYouFilter);
+		filtersSelected.put(Constants.CISCO_PLUS_FILTER, testValues);
 		Map stMap = new HashMap<>();
 		Map pitstopMap = new HashMap<>();
 		stMap.put("testKeyMao", pitstopMap);
@@ -184,23 +194,23 @@ public class FilterCountsDaoTest {
 		when(learningContentRepo.getAllRegionsWithCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningContentRepo.getAllRoleCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningContentRepo.getAllTechCountByCards(Mockito.any())).thenReturn(dbList);
-		when(learningContentRepo.getDocFilterCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningContentRepo.getAllLFCWithCountByCards((Mockito.any()))).thenReturn(dbList);
 		when(learningContentRepo.getAllStUcWithCount((Mockito.any()))).thenReturn(dbList);
-		when(learningContentRepo.findNewFilteredIds(Mockito.any())).thenReturn(learningItemIdsList);
-		when(learningContentRepo.getRecentlyViewedContentFilteredIds(Mockito.anyString(), Mockito.any()))
+		when(learningContentRepo.findNewFilteredIds(Mockito.any(), Mockito.anyString())).thenReturn(learningItemIdsList);
+		when(learningContentRepo.getRecentlyViewedContentFilteredIds(Mockito.anyString(), Mockito.any(), Mockito.anyString()))
 				.thenReturn(learningItemIdsList);
 		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(learningItemIdsList);
 
-		Assertions.assertFalse(filterCountsDao.filterCards(filtersSelected, learningItemIdsList, userId).isEmpty());
+		Assertions.assertFalse(filterCountsDao.filterCards(filtersSelected, learningItemIdsList, userId, hcaasStatus).isEmpty());
 	}
 
 	@Test
-	public void testInitializeFiltersWithCounts() {
+	void testInitializeFiltersWithCounts() {
 		List<String> filterGroups = new ArrayList<>();
 		HashMap<String, Object> filters = new HashMap<>();
 		HashMap<String, Object> countFilters = new HashMap<>();
 		Set<String> learningItemIdsList = new HashSet<>();
+		String hcaasStatus = String.valueOf(true);
 		String userId = "testUserId";
 		learningItemIdsList.add("testId");
 		List<String> testValues = new ArrayList<>();
@@ -218,25 +228,25 @@ public class FilterCountsDaoTest {
 		filterGroups.add(Constants.LIFECYCLE);
 		filterGroups.add(Constants.FOR_YOU_FILTER);
 		filterGroups.add(Constants.SUCCESS_TRACK);
+		filterGroups.add(Constants.CISCO_PLUS_FILTER);
 		List<Map<String, Object>> dbList = new ArrayList<>();
 		when(learningContentRepo.getAllContentTypeWithCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningContentRepo.getAllLanguagesWithCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningContentRepo.getAllRegionsWithCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningContentRepo.getAllRoleCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningContentRepo.getAllTechCountByCards(Mockito.any())).thenReturn(dbList);
-		when(learningContentRepo.getDocFilterCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningContentRepo.getAllLFCWithCountByCards((Mockito.any()))).thenReturn(dbList);
 		when(learningContentRepo.getAllStUcWithCount((Mockito.any()))).thenReturn(dbList);
-		when(learningContentRepo.findNewFilteredIds(Mockito.any())).thenReturn(learningItemIdsList);
-		when(learningContentRepo.getRecentlyViewedContentFilteredIds(Mockito.anyString(), Mockito.any()))
+		when(learningContentRepo.findNewFilteredIds(Mockito.any(), Mockito.any())).thenReturn(learningItemIdsList);
+		when(learningContentRepo.getRecentlyViewedContentFilteredIds(Mockito.anyString(), Mockito.any(), Mockito.any()))
 				.thenReturn(learningItemIdsList);
 		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(learningItemIdsList);
-		filterCountsDao.initializeFiltersWithCounts(filterGroups, filters, countFilters, learningItemIdsList, userId);
+		filterCountsDao.initializeFiltersWithCounts(filterGroups, filters, countFilters, learningItemIdsList, userId, hcaasStatus);
 		Assertions.assertFalse(countFilters.isEmpty());
 	}
 	
 	@Test
-	public void testDBList() {
+	void testDBList() {
 		List<String> filterGroups = new ArrayList<>();
 		HashMap<String, Object> filters = new HashMap<>();
 		HashMap<String, Object> countFilters = new HashMap<>();
@@ -245,6 +255,7 @@ public class FilterCountsDaoTest {
 		learningItemIdsList.add("testId");
 		List<String> testValues = new ArrayList<>();
 		testValues.add("testValue");
+		String hcaasStatus = String.valueOf(true);
 		List<String> testValuesForYouFilter = new ArrayList<>();
 		testValuesForYouFilter.add(Constants.NEW);
 		testValuesForYouFilter.add(Constants.RECENTLY_VIEWED);
@@ -258,24 +269,24 @@ public class FilterCountsDaoTest {
 		filterGroups.add(Constants.LIFECYCLE);
 		filterGroups.add(Constants.FOR_YOU_FILTER);
 		filterGroups.add(Constants.SUCCESS_TRACK);
+		filterGroups.add(Constants.CISCO_PLUS_FILTER);
 		List<Map<String, Object>> dbList = new ArrayList<>();
 		
 		when(learningContentRepo.getAllLanguagesWithCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningContentRepo.getAllRegionsWithCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningContentRepo.getAllRoleCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningContentRepo.getAllTechCountByCards(Mockito.any())).thenReturn(dbList);
-		when(learningContentRepo.getDocFilterCountByCards(Mockito.any())).thenReturn(dbList);
 		when(learningContentRepo.getAllLFCWithCountByCards((Mockito.any()))).thenReturn(dbList);
 		when(learningContentRepo.getAllStUcWithCount((Mockito.any()))).thenReturn(dbList);
-		when(learningContentRepo.findNewFilteredIds(Mockito.any())).thenReturn(learningItemIdsList);
-		when(learningContentRepo.getRecentlyViewedContentFilteredIds(Mockito.anyString(), Mockito.any()))
+		when(learningContentRepo.findNewFilteredIds(Mockito.any(), Mockito.any())).thenReturn(learningItemIdsList);
+		when(learningContentRepo.getRecentlyViewedContentFilteredIds(Mockito.anyString(), Mockito.any(), Mockito.anyString()))
 				.thenReturn(learningItemIdsList);
 		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(learningItemIdsList);
 		
 		Map<String,Object> ctMap = new HashMap<String,Object>();
 		dbList.add(ctMap); ctMap.put("label","PDF"); ctMap.put("count", 10);
 		when(learningContentRepo.getAllContentTypeWithCountByCards(Mockito.any())).thenReturn(dbList);
-		filterCountsDao.initializeFiltersWithCounts(filterGroups, filters, countFilters, learningItemIdsList, userId);
+		filterCountsDao.initializeFiltersWithCounts(filterGroups, filters, countFilters, learningItemIdsList, userId, hcaasStatus);
 		Assertions.assertFalse(filters.isEmpty());
 	}
 }

@@ -13,7 +13,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,9 +27,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.dao.ProductDocumentationDAO;
-import com.cisco.cx.training.app.dao.impl.LearningBookmarkDAOImpl;
 import com.cisco.cx.training.app.dao.impl.UserLearningPreferencesDAOImpl;
-import com.cisco.cx.training.models.BookmarkResponseSchema;
+import com.cisco.cx.training.app.service.PartnerProfileService;
+import com.cisco.cx.training.constants.Constants;
 import com.cisco.cx.training.models.UserLearningPreference;
 
 import software.amazon.awssdk.http.SdkHttpResponse;
@@ -39,6 +43,8 @@ import software.amazon.awssdk.services.dynamodb.model.QueryResponse;
 @ExtendWith(SpringExtension.class)
 public class UserLearningPreferencesDaoImplTest {
 	
+	private static final String MASHERY_TEST = "test-mashery";
+
 	@Mock
 	DynamoDbClient dbClient;
 	
@@ -47,12 +53,25 @@ public class UserLearningPreferencesDaoImplTest {
 	
 	@Mock
 	ProductDocumentationDAO productDocumentationDAO;
-	
+
+	@Mock
+	private HttpServletRequest request;
+
+	@Mock
+	private PartnerProfileService partnerProfileService;
+
 	@InjectMocks
-	private UserLearningPreferencesDAOImpl ulpDAOImpl = new UserLearningPreferencesDAOImpl(propertyConfig,productDocumentationDAO);
+	private UserLearningPreferencesDAOImpl ulpDAOImpl = new UserLearningPreferencesDAOImpl(propertyConfig,productDocumentationDAO,request);
+
+	@BeforeEach
+	public void initCommon() {
+		ServletContext context = Mockito.mock(ServletContext.class);
+		when(request.getServletContext()).thenReturn(context);
+		when(context.getAttribute(Constants.MASHERY_HANDSHAKE_HEADER_NAME)).thenReturn(MASHERY_TEST);
+	}
 
 	@Test
-	public void testInit() {
+	void testInit() {
 		when(propertyConfig.getUlPreferencesTableName()).thenReturn("abc");
 		when(propertyConfig.getAwsRegion()).thenReturn("abc");
 		ulpDAOImpl.init();
@@ -61,7 +80,7 @@ public class UserLearningPreferencesDaoImplTest {
 	}
 	
 	@Test
-	public void testFetchULPs(){
+	void testFetchULPs(){
 		Map<String,AttributeValue> ulp = new HashMap<String, AttributeValue>();
 		Set<String> role = new HashSet<String>();
 		role.add("Customer Success manager");
@@ -75,12 +94,13 @@ public class UserLearningPreferencesDaoImplTest {
 		ulp.put("timeinterval", attrValueTI);
 		QueryResponse response = QueryResponse.builder().items(attributeValues).build();
 		Mockito.when(dbClient.query(Mockito.any(QueryRequest.class))).thenReturn(response);
-		
+		when(partnerProfileService.getHcaasStatusForPartner(MASHERY_TEST)).thenReturn(true);
 		List<String> dbList = new ArrayList<String>();
-		when(productDocumentationDAO.getAllTechnologyForPreferences()).thenReturn(dbList);
-		when(productDocumentationDAO.getAllRegionForPreferences()).thenReturn(dbList);
-		when(productDocumentationDAO.getAllLanguagesForPreferences()).thenReturn(dbList);
-		 dbList.add("Customer Success manager");when(productDocumentationDAO.getAllRolesForPreferences()).thenReturn(dbList);
+		when(productDocumentationDAO.getAllTechnologyForPreferences("true")).thenReturn(dbList);
+		when(productDocumentationDAO.getAllRegionForPreferences("true")).thenReturn(dbList);
+		when(productDocumentationDAO.getAllLanguagesForPreferences("true")).thenReturn(dbList);
+		dbList.add("Customer Success manager");
+		when(productDocumentationDAO.getAllRolesForPreferences("true")).thenReturn(dbList);
 		Map<String, List<UserLearningPreference>> ulps = ulpDAOImpl.fetchUserLearningPreferences("user123");
 		//System.out.println("ulps:"+ulps.get("technology").get(0).isSelected()+ ulps);
 		assertEquals(5, ulps.size());
@@ -90,7 +110,7 @@ public class UserLearningPreferencesDaoImplTest {
 	
 		
 	@Test
-	public void testCreateOrUpdate(){
+	void testCreateOrUpdate(){
 		Map<String, List<UserLearningPreference>> ulps = new HashMap<String, List<UserLearningPreference>>();
 		List<UserLearningPreference> roleList = new ArrayList<UserLearningPreference>();
 		UserLearningPreference roleUP = new UserLearningPreference ();
@@ -126,7 +146,7 @@ public class UserLearningPreferencesDaoImplTest {
 	}
 	
 	@Test
-	public void testGetULPPreferencesDDB(){
+	void testGetULPPreferencesDDB(){
 		Map<String,AttributeValue> ulp = new HashMap<String, AttributeValue>();
 		Set<String> role = new HashSet<String>();
 		role.add("Customer Success manager");

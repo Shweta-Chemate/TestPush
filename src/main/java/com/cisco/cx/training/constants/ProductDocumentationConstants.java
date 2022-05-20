@@ -7,36 +7,53 @@ public class ProductDocumentationConstants{
 			+ " cl.piw_score, cl.piw_language, cl.sort_by_date, cl.learning_map_id, cl.avg_rating_percentage, cl.total_completions, cl.votes_percentage, cl.specialization ";
 	
 	
+	public static final String HCAAS_CLAUSE = " ( "
+			+ " case when :hcaasStatus='false' then learning_item_id not in ( "
+			+ " select cp.learning_item_id from cxpp_db.cxpp_learning_ciscoplus cp"
+			+ " ) "
+			+ " else 1=1 end "
+			+ " ) ";
+
+	public static final String HCAAS_CLAUSE_CL = " ( "
+			+ " case when :hcaasStatus='false' then cl.learning_item_id not in ( "
+			+ " select cp.learning_item_id from cxpp_db.cxpp_learning_ciscoplus cp"
+			+ " ) "
+			+ " else 1=1 end "
+			+ " ) ";
+
 	public static final String CASE_CLAUSE = " ( "
 			+ " case when :joinTable='Technology' then learning_item_id in ( "
 			+ " select ct.learning_item_id from cxpp_db.cxpp_learning_technology ct "
 			+ " union "
 			+ " select st.learning_item_id from cxpp_db.cxpp_learning_successtrack st "
+			+ " union "
+			+ " select cp.learning_item_id from cxpp_db.cxpp_learning_ciscoplus cp"
 			+ " ) "
 			+ " when :joinTable='Skill' then learning_item_id in (select cr.learning_item_id from cxpp_db.cxpp_learning_roles cr) "
 			+ " else 1=1 end "
 			+ " ) ";
 	
-	public static final String CASE_CLAUSE_WHERE = " where " + CASE_CLAUSE;			
-	public static final String CASE_CLAUSE_AND = " and " + CASE_CLAUSE;
+	public static final String CASE_CLAUSE_WHERE = " where " + CASE_CLAUSE + "and" + HCAAS_CLAUSE;
+	public static final String CASE_CLAUSE_AND = " and " + CASE_CLAUSE + "and" + HCAAS_CLAUSE;
 	
 	public static final String CASE_CLAUSE_CL = " ( "
 			+ " case when :joinTable='Technology' then cl.learning_item_id in ( "
 			+ " select ct.learning_item_id from cxpp_db.cxpp_learning_technology ct"
 			+ " union "
 			+ " select st.learning_item_id from cxpp_db.cxpp_learning_successtrack st "
+			+ " union"
+			+ " select cp.learning_item_id from cxpp_db.cxpp_learning_ciscoplus cp"
 			+ " ) "
 			+ " when :joinTable='Skill' then cl.learning_item_id in (select cr.learning_item_id from cxpp_db.cxpp_learning_roles cr) "
 			+ " else 1=1 end "
 			+ " ) ";
 	
-	public static final String CASE_CLAUSE_WHERE_CL = " where " + CASE_CLAUSE_CL;			
-	public static final String CASE_CLAUSE_AND_CL = " and " + CASE_CLAUSE_CL;
+	public static final String CASE_CLAUSE_WHERE_CL = " where " + CASE_CLAUSE_CL + "and" + HCAAS_CLAUSE_CL;
+	public static final String CASE_CLAUSE_AND_CL = " and " + CASE_CLAUSE_CL + "and" + HCAAS_CLAUSE_CL;
 	
 	public static final String DYNAMIC_FROM_SUBQUERY = " from ( select " + FIELDS_CL  //cl.* "
 			+ " from cxpp_db.cxpp_learning_item cl "
-			+ " where "
-			+ CASE_CLAUSE_CL
+			+ CASE_CLAUSE_WHERE_CL
 			+ " ) as cl ";
 	
 	/** all cards **/
@@ -48,7 +65,7 @@ public class ProductDocumentationConstants{
 			+ " null as recordingurl, null as duration, null as piw_region, "
 			+ " null as piw_score, null as piw_language, null as sort_by_date, null as learning_map_id, "
 			+ " avg_rating_percentage, total_completions, votes_percentage, specialization, "
-			+ " null as asset_types, link as asset_links, null as learning_map"
+			+ " null as asset_types, link as asset_links, null as learning_map, null as asset_description, null as asset_titles"
 			+ " from cxpp_db.cxpp_learning_map where learning_map_id in "
 			+ " ( "
 			+ " select distinct learning_map_id from cxpp_db.cxpp_learning_item cl "
@@ -58,12 +75,14 @@ public class ProductDocumentationConstants{
 			+ " ) ";
 			
 	
-	public static final String ALL_CARDS = "select cl.*, CT.asset_types,CT.asset_links, mp.title as learning_map  "
+	public static final String ALL_CARDS = "select cl.*, CT.asset_types,CT.asset_links, CT.asset_description, CT.asset_titles, mp.title as learning_map  "
 			+ DYNAMIC_FROM_SUBQUERY
 			+ " left join "
 			+ "	(select learning_item_id, "
 			+ "	group_concat(ifnull(asset_type,'') separator ',') as asset_types, "
-			+ "	group_concat(ifnull(link,'') separator ',') AS asset_links "
+			+ "	group_concat(ifnull(link,'') separator ',') AS asset_links, "
+			+ "	group_concat(ifnull(link_title,'') separator ',') AS asset_titles, "
+			+ "	group_concat(ifnull(link_description,'') separator ':') AS asset_description "
 			+ "	from cxpp_db.cxpp_item_link  "
 			+ "	group by learning_item_id) as CT "
 			+ "	on cl.learning_item_id = CT.learning_item_id "
@@ -379,7 +398,21 @@ public static final String GET_PD_DOCUMENTATION_WITH_COUNT_BY_CARD = "select arc
 			+ "on tc.learning_item_id=lmt.learning_item_id "
 			+ "where lmt.learning_map_id is not null "
 			+ ")";
-	
+
+	public static final String GET_LM_CISCOPLUS_WITH_COUNT = "union (  "
+			+ "select distinct tc.ciscoplus, lmt.learning_map_id as learning_item_id "
+			+ "from cxpp_db.cxpp_learning_ciscoplus tc left join "
+			+ "( "
+			+ "select lm.learning_map_id, lm.title as learning_map, it.learning_item_id  "
+			+ "from cxpp_db.cxpp_learning_map lm "
+			+ "inner join cxpp_db.cxpp_learning_item it "
+			+ "on lm.learning_map_id=it.learning_map_id "
+			+ CASE_CLAUSE_WHERE
+			+ ") lmt "
+			+ "on tc.learning_item_id=lmt.learning_item_id "
+			+ "where lmt.learning_map_id is not null "
+			+ ")";
+
 	public static final String GET_LM_ROLE_WITH_COUNT_BY_CARDS = "union (  "
 			+ "select distinct tc.roles, lmt.learning_map_id as learning_item_id "
 			+ "from cxpp_db.cxpp_learning_roles tc left join "
@@ -394,15 +427,35 @@ public static final String GET_PD_DOCUMENTATION_WITH_COUNT_BY_CARD = "select arc
 			+ "where lmt.learning_map_id is not null "
 			+ " and lmt.learning_map_id in (:cardIds) "
 			+ ")";
-	
-	
-	
+
+	public static final String GET_LM_CISCOPLUS_WITH_COUNT_BY_CARDS = "union (  "
+			+ "select distinct tc.ciscoplus, lmt.learning_map_id as learning_item_id "
+			+ "from cxpp_db.cxpp_learning_ciscoplus tc left join "
+			+ "( "
+			+ "select lm.learning_map_id, lm.title as learning_map, it.learning_item_id  "
+			+ "from cxpp_db.cxpp_learning_map lm "
+			+ "inner join cxpp_db.cxpp_learning_item it "
+			+ "on lm.learning_map_id=it.learning_map_id "
+			+ CASE_CLAUSE_WHERE
+			+ ") lmt "
+			+ "on tc.learning_item_id=lmt.learning_item_id "
+			+ "where lmt.learning_map_id is not null "
+			+ " and lmt.learning_map_id in (:cardIds) "
+			+ ")";
+
 	public static final String GET_PD_ROLE_WITH_COUNT = "select roles as dbkey, count(*) as dbvalue "
 			+ " from ( select roles, learning_item_id "
 			+ "	from cxpp_db.cxpp_learning_roles 		"
 			+ CASE_CLAUSE_WHERE 
 			+ GET_LM_ROLE_WITH_COUNT + " ) as T "
-			+ " group by roles order by roles ";	
+			+ " group by roles order by roles ";
+
+	public static final String GET_PD_CISCOPLUS_WITH_COUNT = "select ciscoplus as dbkey, count(*) as dbvalue "
+			+ " from ( select ciscoplus, learning_item_id "
+			+ "	from cxpp_db.cxpp_learning_ciscoplus "
+			+ CASE_CLAUSE_WHERE
+			+ GET_LM_CISCOPLUS_WITH_COUNT + " ) as T "
+			+ " group by ciscoplus order by ciscoplus ";
 
 	public static final String GET_PD_CARD_IDS_ROLE = " select learning_item_id from ( "
 			+ " ( select roles, learning_item_id from cxpp_db.cxpp_learning_roles  "
@@ -417,7 +470,21 @@ public static final String GET_PD_DOCUMENTATION_WITH_COUNT_BY_CARD = "select arc
 			+ " ) "
 			+ " ) as T"
 			+ " where roles in (:values) "
-			;										
+			;
+	public static final String GET_PD_CARD_IDS_CISCOPLUS = " select learning_item_id from ( "
+			+ " ( select ciscoplus, learning_item_id from cxpp_db.cxpp_learning_ciscoplus  "
+			+ CASE_CLAUSE_WHERE
+			+ " ) "
+			+ " union "
+			+ " ( select ciscoplus, learning_map_id as learning_item_id from cxpp_db.cxpp_learning_item cl "
+			+ " inner join cxpp_db.cxpp_learning_ciscoplus cp "
+			+ " on cl.learning_item_id=cp.learning_item_id "
+			+ " where  cl.learning_map_id is not null "
+			+ CASE_CLAUSE_AND_CL
+			+ " ) "
+			+ " ) as T"
+			+ " where ciscoplus in (:values) "
+			;
 
 	public static final String GET_PD_ROLE_WITH_COUNT_BY_CARD = " select roles as dbkey, count(*) as dbvalue "
 			+ " from ( select roles, learning_item_id "
@@ -427,6 +494,15 @@ public static final String GET_PD_DOCUMENTATION_WITH_COUNT_BY_CARD = "select arc
 			+ GET_LM_ROLE_WITH_COUNT_BY_CARDS + " ) as T "			
 			+ " group by roles "
 			+ " order by roles;";
+
+	public static final String GET_PD_CISCOPLUS_WITH_COUNT_BY_CARD = " select ciscoplus as dbkey, count(*) as dbvalue "
+			+ " from ( select ciscoplus, learning_item_id "
+			+ " from cxpp_db.cxpp_learning_ciscoplus "
+			+ " where learning_item_id in (:cardIds) "
+			+ CASE_CLAUSE_AND
+			+ GET_LM_CISCOPLUS_WITH_COUNT_BY_CARDS + " ) as T "
+			+ " group by ciscoplus "
+			+ " order by ciscoplus;";
 
 	/** For You - New **/	
 	public static final String GET_PD_YOU_CARD_IDS_BY_CARD = "select learning_item_id "

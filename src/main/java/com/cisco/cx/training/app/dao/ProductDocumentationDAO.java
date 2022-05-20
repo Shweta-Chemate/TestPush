@@ -17,92 +17,101 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 	
 	/** all cards **/
 	@Query(value=ProductDocumentationConstants.GET_PD_LEARNING_CARDS , nativeQuery=true )
-	List<LearningItemEntity> getAllLearningCards(String joinTable,Sort sort);
+	List<LearningItemEntity> getAllLearningCards(String joinTable,Sort sort,String hcaasStatus);
 	
 	
 	/** search **/
 	@Query(value=ProductDocumentationConstants.GET_PD_LEARNING_CARDS_SEARCH , nativeQuery=true)
-	List<LearningItemEntity> getAllLearningCardsBySearch(String joinTable, String likeToken, Sort sort);
+	List<LearningItemEntity> getAllLearningCardsBySearch(String joinTable, String likeToken, Sort sort, String hcaasStatus);
 
 	@Query(value=ProductDocumentationConstants.GET_PD_LEARNING_CARD_IDS_SEARCH , nativeQuery=true)
-	Set<String> getAllLearningCardIdsBySearch(String joinTable,String likeToken);
+	Set<String> getAllLearningCardIdsBySearch(String joinTable,String likeToken, String hcaasStatus);
 	
 	
 	/** Filter **/
 
 	@Query(value=ProductDocumentationConstants.GET_PD_LEARNING_BY_CONTENT_TYPE , nativeQuery=true)
-	Set<String> getLearningsByContentType(String joinTable,Set<String> contentTypeFilter);	
+	Set<String> getLearningsByContentType(String joinTable,Set<String> contentTypeFilter, String hcaasStatus);
 	
 	@Query(value=ProductDocumentationConstants.GET_PD_LEARNING_CARDS_BY_FILTER , nativeQuery=true)
-	List<LearningItemEntity> getAllLearningCardsByFilter(String joinTable,Set<String> filterCards, Sort sort);
+	List<LearningItemEntity> getAllLearningCardsByFilter(String joinTable,Set<String> filterCards, Sort sort, String hcaasStatus);
 	
 	
 	/** filter + search */
 	
 	@Query(value=ProductDocumentationConstants.GET_PD_LEARNING_CARDS_FILTERED_SEARCH , nativeQuery=true)
-	List<LearningItemEntity> getAllLearningCardsByFilterSearch(String joinTable,Set<String> filteredCards, String likeToken, Sort sort);
+	List<LearningItemEntity> getAllLearningCardsByFilterSearch(String joinTable,Set<String> filteredCards, String likeToken, Sort sort, String hcaasStatus);
 	
 	@Query(value=ProductDocumentationConstants.GET_PD_LEARNING_CARD_IDS_FILTERED_SEARCH , nativeQuery=true)
-	Set<String> getAllLearningCardIdsByFilterSearch(String joinTable,Set<String> filteredCards, String likeToken);
+	Set<String> getAllLearningCardIdsByFilterSearch(String joinTable,Set<String> filteredCards, String likeToken, String hcaasStatus);
 	
 	
 	/** other filters **/
 	
 	@Query(value=ProductDocumentationConstants.GET_PD_CARD_IDS_REGION , nativeQuery=true)
-	Set<String> getCardIdsByRegion(String joinTable,Set<String> values);
+	Set<String> getCardIdsByRegion(String joinTable,Set<String> values, String hcaasStatus);
 	
 	@Query(value=ProductDocumentationConstants.GET_PD_CARD_IDS_LG , nativeQuery=true)
-	Set<String> getCardIdsByLanguage(String joinTable,Set<String> values);
+	Set<String> getCardIdsByLanguage(String joinTable,Set<String> values, String hcaasStatus);
 	
 	@Query(value=ProductDocumentationConstants.GET_PD_CARD_IDS_TC , nativeQuery=true)
-	Set<String> getCardIdsByTC(String joinTable,Set<String> values);
+	Set<String> getCardIdsByTC(String joinTable,Set<String> values, String hcaasStatus);
 	
 	/** LM counts **/
 		
 	/** count by cards **/	
 	
 	@Query(value=ProductDocumentationConstants.GET_PD_TECHNOLOGY_WITH_COUNT_BY_CARD , nativeQuery=true)	
-	List<Map<String, Object>> getAllTechnologyWithCountByCards(String joinTable,Set<String> cardIds);	
+	List<Map<String, Object>> getAllTechnologyWithCountByCards(String joinTable,Set<String> cardIds, String hcaasStatus);
 	
 	@Query(value=ProductDocumentationConstants.GET_PD_CONTENT_TYPE_WITH_COUNT_BY_CARD , nativeQuery=true)
-	List<Map<String, Object>> getAllContentTypeWithCountByCards(String joinTable,Set<String> cardIds);
+	List<Map<String, Object>> getAllContentTypeWithCountByCards(String joinTable,Set<String> cardIds, String hcaasStatus);
 	
 	@Query(value=ProductDocumentationConstants.GET_PD_LANGUAGE_WITH_COUNT_BY_CARD , nativeQuery=true)
-	List<Map<String, Object>> getAllLanguageWithCountByCards(String joinTable,Set<String> cardIds);
+	List<Map<String, Object>> getAllLanguageWithCountByCards(String joinTable,Set<String> cardIds, String hcaasStatus);
 	
 	@Query(value=ProductDocumentationConstants.GET_PD_LIVE_EVENTS_WITH_COUNT_BY_CARD , nativeQuery=true)
-	List<Map<String, Object>> getAllLiveEventsWithCountByCards(String joinTable,Set<String> cardIds);
+	List<Map<String, Object>> getAllLiveEventsWithCountByCards(String joinTable,Set<String> cardIds, String hcaasStatus);
 
 	
 	/** all counts **/
 	
 	@Query(value=ProductDocumentationConstants.GET_PD_CONTENT_TYPE_WITH_COUNT , nativeQuery=true)
-	List<Map<String, Object>> getAllContentTypeWithCount(String joinTable);	
+	List<Map<String, Object>> getAllContentTypeWithCount(String joinTable, String hcaasStatus);
 	
 	@Query(value=ProductDocumentationConstants.GET_PD_TECHNOLOGY_WITH_COUNT , nativeQuery=true)
-	List<Map<String, Object>> getAllTechnologyWithCount(String joinTable);	
+	List<Map<String, Object>> getAllTechnologyWithCount(String joinTable, String hcaasStatus);
 	
 	@Query(value=ProductDocumentationConstants.GET_PD_LANGUAGE_WITH_COUNT , nativeQuery=true)
-	List<Map<String, Object>> getAllLanguageWithCount(String joinTable);
+	List<Map<String, Object>> getAllLanguageWithCount(String joinTable, String hcaasStatus);
 
 	@Query(value=ProductDocumentationConstants.GET_PD_LIVE_EVENTS_WITH_COUNT , nativeQuery=true)
-	List<Map<String, Object>> getAllLiveEventsWithCount(String joinTable);
+	List<Map<String, Object>> getAllLiveEventsWithCount(String joinTable, String hcaasStatus);
 	
 	/** skill  - for role no case clause required **/
 	
 	@Query(value=ProductDocumentationConstants.GET_PD_ROLE_WITH_COUNT , nativeQuery=true)
-	List<Map<String, Object>> getAllRoleWithCount(String joinTable);
+	List<Map<String, Object>> getAllRoleWithCount(String joinTable, String hcaasStatus);
+
+	@Query(value=ProductDocumentationConstants.GET_PD_CISCOPLUS_WITH_COUNT , nativeQuery=true)
+	List<Map<String, Object>> getAllCiscoPlusWithCount(String joinTable, String hcaasStatus);
 	
 	@Query(value=ProductDocumentationConstants.GET_PD_CARD_IDS_ROLE , nativeQuery=true)
-	Set<String> getCardIdsByRole(String joinTable, Set<String> values);
+	Set<String> getCardIdsByRole(String joinTable, Set<String> values, String hcaasStatus);
+
+	@Query(value=ProductDocumentationConstants.GET_PD_CARD_IDS_CISCOPLUS , nativeQuery=true)
+	Set<String> getCardIdsByCiscoPlus(String joinTable, Set<String> values, String hcaasStatus);
 	
 	@Query(value=ProductDocumentationConstants.GET_PD_ROLE_WITH_COUNT_BY_CARD , nativeQuery=true)	
-	List<Map<String, Object>> getAllRoleWithCountByCards(String joinTable, Set<String> cardIds);
+	List<Map<String, Object>> getAllRoleWithCountByCards(String joinTable, Set<String> cardIds, String hcaasStatus);
+
+	@Query(value=ProductDocumentationConstants.GET_PD_CISCOPLUS_WITH_COUNT_BY_CARD , nativeQuery=true)
+	List<Map<String, Object>> getAllCiscoPlusWithCountByCards(String joinTable, Set<String> cardIds, String hcaasStatus);
 	
 	/** For You - New **/	
 	
 	@Query(value=ProductDocumentationConstants.GET_PD_YOU_CARD_IDS_BY_CARD , nativeQuery=true)
-	Set<String> getAllNewCardIdsByCards(String joinTable,Set<String> cardIds);
+	Set<String> getAllNewCardIdsByCards(String joinTable,Set<String> cardIds, String hcaasStatus);
 	
 	/** learning map **/
 	
@@ -113,43 +122,43 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 	/** lifecycle **/
 	
 	@Query(value=ProductDocumentationConstants.GET_PD_ST_UC_WITH_COUNT , nativeQuery=true)
-	List<Map<String, Object>> getAllStUcWithCount(String joinTable);
+	List<Map<String, Object>> getAllStUcWithCount(String joinTable, String hcaasStatus);
 	
 	@Query(value=ProductDocumentationConstants.GET_PD_PS_WITH_COUNT , nativeQuery=true)
-	List<Map<String, Object>> getAllPsWithCount(String joinTable);
+	List<Map<String, Object>> getAllPsWithCount(String joinTable, String hcaasStatus);
 	
 	@Query(value=ProductDocumentationConstants.GET_PD_CARD_IDS_BY_PITSTOP , nativeQuery=true)	
-	Set<String> getCardIdsByPsUcSt(String joinTable, HashSet<String> pitstopInp);
+	Set<String> getCardIdsByPsUcSt(String joinTable, HashSet<String> pitstopInp, String hcaasStatus);
 	
 	@Query(value=ProductDocumentationConstants.GET_PD_CARD_IDS_BY_STUC , nativeQuery=true)	
-	Set<String> getCardIdsByPsUcSt(String joinTable, String successtrackInp, Set<String> usecaseInp);
+	Set<String> getCardIdsByPsUcSt(String joinTable, String successtrackInp, Set<String> usecaseInp, String hcaasStatus);
 	
 	@Query(value=ProductDocumentationConstants.GET_PD_ST_UC_WITH_COUNT_BY_CARDS , nativeQuery=true)
-	List<Map<String, Object>> getAllStUcWithCountByCards(String joinTable,Set<String> cardIds);
+	List<Map<String, Object>> getAllStUcWithCountByCards(String joinTable,Set<String> cardIds, String hcaasStatus);
 	
 	@Query(value=ProductDocumentationConstants.GET_PD_PS_WITH_COUNT_BY_CARDS , nativeQuery=true)
-	List<Map<String, Object>> getAllPitstopsWithCountByCards(String joinTable, Set<String> cardIds);	
+	List<Map<String, Object>> getAllPitstopsWithCountByCards(String joinTable, Set<String> cardIds, String hcaasStatus);
 	
 
 	/** for preferences **/
 	
-	@Query(value="select distinct roles from cxpp_db.cxpp_learning_roles where roles is not null order by roles", nativeQuery=true)
-	List<String> getAllRolesForPreferences();
+	@Query(value="select distinct roles from cxpp_db.cxpp_learning_roles where " + ProductDocumentationConstants.HCAAS_CLAUSE + " and roles is not null order by roles", nativeQuery=true)
+	List<String> getAllRolesForPreferences(String hcaasStatus);
 
-	@Query(value="select distinct technology from cxpp_db.cxpp_learning_technology where technology is not null order by technology", nativeQuery=true)
-	List<String> getAllTechnologyForPreferences();
+	@Query(value="select distinct technology from cxpp_db.cxpp_learning_technology where " + ProductDocumentationConstants.HCAAS_CLAUSE + " and technology is not null order by technology", nativeQuery=true)
+	List<String> getAllTechnologyForPreferences(String hcaasStatus);
 
-	@Query(value="select distinct piw_region from cxpp_db.cxpp_learning_item where piw_region is not null order by piw_region", nativeQuery=true)
-	List<String> getAllRegionForPreferences();
+	@Query(value="select distinct piw_region from cxpp_db.cxpp_learning_item where " + ProductDocumentationConstants.HCAAS_CLAUSE + " and piw_region is not null order by piw_region", nativeQuery=true)
+	List<String> getAllRegionForPreferences(String hcaasStatus);
 
-	@Query(value="select distinct piw_language from cxpp_db.cxpp_learning_item where piw_language is not null order by piw_language", nativeQuery=true)
-	List<String> getAllLanguagesForPreferences();
+	@Query(value="select distinct piw_language from cxpp_db.cxpp_learning_item where " + ProductDocumentationConstants.HCAAS_CLAUSE + " and piw_language is not null order by piw_language", nativeQuery=true)
+	List<String> getAllLanguagesForPreferences(String hcaasStatus);
 
 	@Query(value="select role from cxpp_db_um.cxpp_platform_roles where roleid=:userRoleId", nativeQuery=true)
 	String getUserRole(String userRoleId);
 	
 	@Query(value=ProductDocumentationConstants.GET_UPCOMING_WEBINARS, nativeQuery=true)
-	List<LearningItemEntity>  getUpcomingWebinars(String joinTable);
+	List<LearningItemEntity>  getUpcomingWebinars(String joinTable, String hcaasStatus);
 
 	@Query(value=ProductDocumentationConstants.GET_SPECIALIZED_CARDS, nativeQuery=true)
 	Set<String> getCardIdsBySpecialization(Set<String> specializations);

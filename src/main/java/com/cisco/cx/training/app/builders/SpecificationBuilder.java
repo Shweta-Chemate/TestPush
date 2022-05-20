@@ -74,4 +74,10 @@ public class SpecificationBuilder {
 		return searchFields;
 	}
 
+	public <T> Specification<T> rbacOnSpecialization() {
+		Specification<T> specification = Specification.where(null);
+		specification.and(CustomSpecifications.notEqual(Constants.SPECIALIZATION_FILTER, Constants.HCAAS_SPECIALIZATION_TERM));
+		return specification;
+	}
+
 }

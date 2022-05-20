@@ -81,6 +81,7 @@ public class RBACFilter implements Filter {
 				throw new BadRequestException("PUID is missing in input request");
 			}
 			logger.debug("puId: " + puId);
+			request.getServletContext().setAttribute(Constants.MASHERY_HANDSHAKE_HEADER_NAME, xMasheryToken);
 			String userId = MasheryObject.getInstance(xMasheryToken).getCcoId();
 			try {
 				
@@ -117,7 +118,11 @@ public class RBACFilter implements Filter {
 
 						String roleId = JsonPath.using(conf).parse(authResult).read("$.roleId");
 						request.getServletContext().setAttribute(Constants.ROLE_ID, roleId);
-
+						boolean hcaasflag = JsonPath.using(conf).parse(authResult).read("$.hcaas");
+						boolean successTrackFlag = JsonPath.using(conf).parse(authResult).read("$.successTrack");
+						request.getServletContext().setAttribute(Constants.HCAAS_FLAG, hcaasflag);
+						request.getServletContext().setAttribute(Constants.SUCCESSTRACK_FLAG, successTrackFlag);
+						logger.info("hcaas and successtrack flags - {}, {}" ,hcaasflag, successTrackFlag);
 					} else {
 						logger.error("AUTH API Returned invalid response for >> " + request.getRequestURI());
 						throw new NotAllowedException("Not Authorized ");

@@ -55,7 +55,7 @@ public class PartnerProfileServiceTest {
 	private static final String X_MASHERY_HANSHAKE = "X-Mashery-Handshake";	
 	
 	@Test
-	public void fetchUserDetails() throws IOException {
+	void fetchUserDetails() throws IOException {
 		partnerProfileService.setEntitlementUrl("");
 		when(config.createCxpBasicAuthToken()).thenReturn("");
 		HttpHeaders headers = new HttpHeaders();
@@ -71,15 +71,13 @@ public class PartnerProfileServiceTest {
 	}
 	
 	@Test
-	public void fetchUserDetailsWithCompanyList() throws IOException {
+	void fetchUserDetailsWithCompanyList() throws IOException {
 		partnerProfileService.setEntitlementUrl("");
 		when(config.createCxpBasicAuthToken()).thenReturn("");
 		HttpHeaders headers = new HttpHeaders();
 		String xMasheryHandshake = new String(Base64.encodeBase64(loadFromFile("mock/auth-mashery-user1.json").getBytes()));
 		headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
-//		headers.set("Authorization", "Basic " + "");
 		HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
-		
 		ResponseEntity<String> result = new ResponseEntity<>(getUserDetailsWithCompanyList(), HttpStatus.OK);
 		when(restTemplate.exchange(config.getPartnerUserDetails(), HttpMethod.GET, requestEntity, String.class)).thenReturn(result);
 		assertNotNull(partnerProfileService.fetchUserDetailsWithCompanyList(xMasheryHandshake));
@@ -87,7 +85,20 @@ public class PartnerProfileServiceTest {
 	}
 
 	@Test
-	public void fetchUserDetailsJsonMappingError() throws IOException {
+	void fetchUserDetailsWithCompanyListMappingError() throws IOException {
+		partnerProfileService.setEntitlementUrl("");
+		when(config.createCxpBasicAuthToken()).thenReturn("");
+		HttpHeaders headers = new HttpHeaders();
+		String xMasheryHandshake = new String(Base64.encodeBase64(loadFromFile("mock/auth-mashery-user1.json").getBytes()));
+		headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
+		HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
+		ResponseEntity<String> result = new ResponseEntity<>("test", HttpStatus.OK);
+		when(restTemplate.exchange(config.getPartnerUserDetails(), HttpMethod.GET, requestEntity, String.class)).thenReturn(result);
+		assertNull(partnerProfileService.fetchUserDetailsWithCompanyList(xMasheryHandshake));
+	}
+
+	@Test
+	void fetchUserDetailsJsonMappingError() throws IOException {
 		partnerProfileService.setEntitlementUrl("");
 		when(config.createCxpBasicAuthToken()).thenReturn("");
 		HttpHeaders headers = new HttpHeaders();
@@ -103,7 +114,7 @@ public class PartnerProfileServiceTest {
 	}
 	
 	@Test
-	public void fetchUserDetailsJsonParseError() throws IOException {
+	void fetchUserDetailsJsonParseError() throws IOException {
 		partnerProfileService.setEntitlementUrl("");
 		when(config.createCxpBasicAuthToken()).thenReturn("");
 		HttpHeaders headers = new HttpHeaders();
@@ -144,7 +155,21 @@ public class PartnerProfileServiceTest {
 		when(config.getPlsURL()).thenReturn("http:/test.com/{puid}");
 		ResponseEntity<String> result = new ResponseEntity<>("test", HttpStatus.OK);
 		when(restTemplate.exchange(config.getPlsURL().replace("{puid}", "101"), HttpMethod.GET, requestEntity, String.class)).thenReturn(result);
-		Assertions.assertThrows(BadRequestException.class, ()-> partnerProfileService.isPLSActive(xMasheryHandshake, "101"));
+		Assertions.assertThrows(BadRequestException.class, () -> partnerProfileService.isPLSActive(xMasheryHandshake, "101"));
+	}
+
+	@Test
+	void testGetHcaasStatusForPartner() throws Exception {
+		partnerProfileService.setEntitlementUrl("");
+		when(config.createCxpBasicAuthToken()).thenReturn("");
+		HttpHeaders headers = new HttpHeaders();
+		String xMasheryHandshake = new String(Base64.encodeBase64(loadFromFile("mock/auth-mashery-user1.json").getBytes()));
+		headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
+		HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
+		ResponseEntity<String> result = new ResponseEntity<>(getUserDetailsWithCompanyList(), HttpStatus.OK);
+		when(restTemplate.exchange(config.getPartnerUserDetails(), HttpMethod.GET, requestEntity, String.class)).thenReturn(result);
+		boolean hcaasStatus = partnerProfileService.getHcaasStatusForPartner(xMasheryHandshake);
+		Assertions.assertTrue(hcaasStatus);
 	}
 
 	private String getUserDetails() throws JsonProcessingException {
@@ -180,6 +205,7 @@ public class PartnerProfileServiceTest {
 		ciscoUserProfileSchema.setEmailId("test");
 		Company company = new Company();
 		company.setDemoAccount(false);
+		company.setHcaas(true);
 		company.setPuid("123");
 		userDetails.setCiscoUserProfileSchema(ciscoUserProfileSchema);
 		userDetails.setCompanyList(Arrays.asList(company));

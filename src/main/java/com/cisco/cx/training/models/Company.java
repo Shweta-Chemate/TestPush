@@ -14,6 +14,7 @@ public class Company {
 	private String puid;
 	private String domainIdentifier;
 	private boolean demoAccount;
+	private boolean hcaas;
     private List<UserRole> roleList;
     
 	public String getPartnerName() {
@@ -52,5 +53,17 @@ public class Company {
 	public void setDemoAccount(boolean demoAccount) {
 		this.demoAccount = demoAccount;
 	}
-     
+	public boolean isHcaas() {
+		return hcaas;
+	}
+	public void setHcaas(boolean hcaas) {
+		this.hcaas = hcaas;
+	}
+	@Override
+	public String toString() {
+		return "Company [partnerName=" + partnerName + ", partnerId=" + partnerId + ", puid=" + puid
+				+ ", domainIdentifier=" + domainIdentifier + ", demoAccount=" + demoAccount + ", hcaas=" + hcaas
+				+ ", roleList=" + roleList + "]";
+	}
+
 }

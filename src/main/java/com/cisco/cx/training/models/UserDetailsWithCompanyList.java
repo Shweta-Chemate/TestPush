@@ -23,5 +23,9 @@ public class UserDetailsWithCompanyList {
 	public void setCompanyList(List<Company> companyList) {
 		this.companyList = companyList;  //NOSONAR
 	}
-
+	@Override
+	public String toString() {
+		return "UserDetailsWithCompanyList [ciscoUserProfileSchema=" + ciscoUserProfileSchema + ", companyList="
+				+ companyList + "]";
+	}
 }

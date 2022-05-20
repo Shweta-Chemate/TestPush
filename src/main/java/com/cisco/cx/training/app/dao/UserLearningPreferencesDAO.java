@@ -4,11 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.cisco.cx.training.models.LearningStatusSchema;
-import com.cisco.cx.training.models.UserDetailsWithCompanyList;
 import com.cisco.cx.training.models.UserLearningPreference;
-
-import software.amazon.awssdk.services.dynamodb.model.QueryResponse;
 
 public interface UserLearningPreferencesDAO {
 

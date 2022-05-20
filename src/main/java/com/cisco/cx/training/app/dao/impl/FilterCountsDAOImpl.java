@@ -61,7 +61,8 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public void setFilterCounts(Set<String> cardIds, HashMap<String, Object> filterCountsMap, String filterGroup, String userId) {
+	public void setFilterCounts(Set<String> cardIds, HashMap<String, Object> filterCountsMap, String filterGroup,
+			String userId, String hcaasStatus) {
 		if(filterCountsMap.containsKey(Constants.CONTENT_TYPE) && !filterGroup.equals(Constants.CONTENT_TYPE)) {
 			List<Map<String,Object>> dbListCT = learningContentRepo.getAllContentTypeWithCountByCards(cardIds);
 			((Map<String, String>) filterCountsMap.get(Constants.CONTENT_TYPE)).putAll(listToMap(dbListCT));
@@ -95,6 +96,12 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 			((Map<String, String>) filterCountsMap.get(Constants.LIFECYCLE)).putAll(listToMap(dbListLFC));
 		}
 
+		if(filterCountsMap.containsKey(Constants.CISCO_PLUS_FILTER) && !filterGroup.equals(Constants.CISCO_PLUS_FILTER)) {
+			List<Map<String,Object>> dbListCiscoPlus = learningContentRepo
+					.getAllCiscoPlusCountByCards(cardIds);
+			((Map<String, String>) filterCountsMap.get(Constants.CISCO_PLUS_FILTER)).putAll(listToMap(dbListCiscoPlus));
+		}
+
 		if(filterCountsMap.containsKey(Constants.SUCCESS_TRACK) && !filterGroup.equals(Constants.SUCCESS_TRACK))
 		{
 			List<Map<String,Object>> dbListST = learningContentRepo.getAllStUcWithCount(cardIds);
@@ -104,7 +111,7 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 
 		if(filterCountsMap.containsKey(Constants.FOR_YOU_FILTER) && !filterGroup.equals(Constants.FOR_YOU_FILTER)) {
 			Map<String, String> forYouMap=new TreeMap<>();
-			int count = learningContentRepo.getRecentlyViewedContentFilteredIds(userId, cardIds).size();
+			int count = learningContentRepo.getRecentlyViewedContentFilteredIds(userId, cardIds, hcaasStatus).size();
 			if(count>0) {
 				forYouMap.put(Constants.RECENTLY_VIEWED, Integer.toString(count));}
 			Set<String> bookmarkIds=getBookMarkedIds(userId);
@@ -122,10 +129,10 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 	@SuppressWarnings("unchecked")
 	@Override
 	public void setFilterCounts(Set<String> cardIdsInp, HashMap<String, Object> filterCountsMap,
-			Map<String, Set<String>> filteredCardsMap, String userId) {
+			Map<String, Set<String>> filteredCardsMap, String userId, String hcaasStatus) {
 		if(filteredCardsMap.size()==1)
 		{
-			setFilterCounts(cardIdsInp, filterCountsMap, (String)filteredCardsMap.keySet().toArray()[0], userId);
+			setFilterCounts(cardIdsInp, filterCountsMap, (String)filteredCardsMap.keySet().toArray()[0], userId, hcaasStatus);
 			return;
 		}
 		if(filterCountsMap.containsKey(Constants.CONTENT_TYPE)) {
@@ -178,7 +185,7 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 		if(filterCountsMap.containsKey(Constants.FOR_YOU_FILTER)) {
 			Set<String> cardIds = andFiltersWithExcludeKey(filteredCardsMap,Constants.FOR_YOU_FILTER);
 			Map<String, String> forYouMap=new TreeMap<>();
-			int count = learningContentRepo.getRecentlyViewedContentFilteredIds(userId, cardIds).size();
+			int count = learningContentRepo.getRecentlyViewedContentFilteredIds(userId, cardIds, hcaasStatus).size();
 			if(count>0) {
 				forYouMap.put(Constants.RECENTLY_VIEWED, Integer.toString(count));}
 			Set<String> bookmarkIds=getBookMarkedIds(userId);
@@ -188,6 +195,13 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 				forYouMap.put(Constants.BOOKMARKED_FOR_YOU, Integer.toString(count));}
 			((Map<String, String>) filterCountsMap.get(Constants.FOR_YOU_FILTER)).putAll(forYouMap);
 
+		}
+
+		if(filterCountsMap.containsKey(Constants.CISCO_PLUS_FILTER)) {
+			Set<String> cardIds = andFiltersWithExcludeKey(filteredCardsMap,Constants.CISCO_PLUS_FILTER);
+			List<Map<String,Object>> dbListCiscoPlus = learningContentRepo
+					.getAllCiscoPlusCountByCards(cardIds);
+			((Map<String, String>) filterCountsMap.get(Constants.CISCO_PLUS_FILTER)).putAll(listToMap(dbListCiscoPlus));
 		}
 	}
 
@@ -220,7 +234,8 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public Map<String, Set<String>> filterCards(Map<String, Object> filtersSelected, Set<String> learningItemIdsList, String userId){
+	public Map<String, Set<String>> filterCards(Map<String, Object> filtersSelected, Set<String> learningItemIdsList,
+			String userId, String hcaasStatus) {
 		LOG.info("applyFilters = {}",filtersSelected);
 		Map<String, Set<String>> filteredCards = new HashMap<>();
 		if(filtersSelected==null || filtersSelected.isEmpty()) {return filteredCards;}
@@ -238,8 +253,9 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 				case Constants.ROLE : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByRole(new HashSet<>(list),learningItemIdsList));break;
 				case Constants.TECHNOLOGY : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByTech(new HashSet<>(list),learningItemIdsList));break;
 				case Constants.LIFECYCLE : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByLFC(new HashSet<>(list),learningItemIdsList));break;
+				case Constants.CISCO_PLUS_FILTER : filteredCards.put(filterGroup, learningContentRepo.getCardIdsByCiscoPlus(new HashSet<>(list),learningItemIdsList));break;
 				case Constants.FOR_YOU_FILTER : {Set<String> cardIds=new HashSet<>();
-					if(list.contains(Constants.RECENTLY_VIEWED)) {cardIds.addAll(learningContentRepo.getRecentlyViewedContentFilteredIds(userId, learningItemIdsList));}
+					if(list.contains(Constants.RECENTLY_VIEWED)) {cardIds.addAll(learningContentRepo.getRecentlyViewedContentFilteredIds(userId, learningItemIdsList, hcaasStatus));}
 					if(list.contains(Constants.BOOKMARKED_FOR_YOU)){Set<String> bookmarkIds=getBookMarkedIds(userId);bookmarkIds.retainAll(learningItemIdsList);cardIds.addAll(bookmarkIds);}
 					filteredCards.put(filterGroup, cardIds);} break;
 				default : LOG.info("other {}={}",filterGroup,list);
@@ -268,7 +284,8 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 	 * initialize filters with count. This is done to get the initial hierarchy of filters. 
 	 */
 	@Override
-	public void initializeFiltersWithCounts(List<String> filterGroups, HashMap<String, Object> filters, HashMap<String, Object> countFilters, Set<String> learningItemIdsList, String userId) {
+	public void initializeFiltersWithCounts(List<String> filterGroups, HashMap<String, Object> filters,
+			HashMap<String, Object> countFilters, Set<String> learningItemIdsList, String userId, String hcaasStatus) {
 
 		if(filterGroups.contains(Constants.CONTENT_TYPE)) {
 			Map<String, String> contentTypeFilter = new LinkedHashMap<>();
@@ -345,7 +362,19 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 		}
 
 		if(filterGroups.contains(Constants.FOR_YOU_FILTER)) {
-			initializeYouWithCounts(filters, countFilters, learningItemIdsList, userId);
+			initializeYouWithCounts(filters, countFilters, learningItemIdsList, userId, hcaasStatus);
+		}
+
+		if (filterGroups.contains(Constants.CISCO_PLUS_FILTER)) {
+			Map<String, String> ciscoPlusFilter = new LinkedHashMap<>();
+			List<Map<String,Object>> dbListCiscoPlus =  learningContentRepo
+					.getAllCiscoPlusCountByCards(learningItemIdsList);
+			Map<String,String> allContentsRole = listToMap(dbListCiscoPlus);
+			if(!allContentsRole.isEmpty()) {
+				countFilters.put(Constants.CISCO_PLUS_FILTER, allContentsRole);
+				filters.put(Constants.CISCO_PLUS_FILTER, ciscoPlusFilter);
+				allContentsRole.keySet().forEach(k -> ciscoPlusFilter.put(k, "0"));
+			}
 		}
 	}
 	
@@ -363,7 +392,7 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 	}
 	
 	private void initializeYouWithCounts(HashMap<String, Object> filters, 
-	HashMap<String, Object> countFilters, Set<String> learningItemIdsList, String userId) {
+	HashMap<String, Object> countFilters, Set<String> learningItemIdsList, String userId, String hcaasStatus) {
 		Map<String, String> forYouMap=new LinkedHashMap<>();
 		Map<String, String> forYouMapEmpty=new LinkedHashMap<>();
 		Set<String> bookmarkIds=getBookMarkedIds(userId);
@@ -373,7 +402,7 @@ public class FilterCountsDAOImpl implements FilterCountsDAO{
 			forYouMap.put(Constants.BOOKMARKED_FOR_YOU, Integer.toString(count));
 			forYouMapEmpty.put(Constants.BOOKMARKED_FOR_YOU, "0");
 		}
-		count = learningContentRepo.getRecentlyViewedContentFilteredIds(userId, learningItemIdsList).size();
+		count = learningContentRepo.getRecentlyViewedContentFilteredIds(userId, learningItemIdsList, hcaasStatus).size();
 		if(count>0) {
 			forYouMap.put(Constants.RECENTLY_VIEWED, Integer.toString(count));
 			forYouMapEmpty.put(Constants.RECENTLY_VIEWED, "0");

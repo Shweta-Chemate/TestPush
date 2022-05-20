@@ -31,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
@@ -44,6 +43,7 @@ import com.cisco.cx.training.app.repo.NewLearningContentRepo;
 import com.cisco.cx.training.app.repo.PeerViewedRepo;
 import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.app.service.ProductDocumentationService;
+import com.cisco.cx.training.app.service.SplitClientService;
 import com.cisco.cx.training.constants.Constants;
 import com.cisco.cx.training.models.LearningRecordsAndFiltersModel;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -74,7 +74,12 @@ public class ProductDocumentationServiceTest {
 	
     @Mock 
     private ServletContext servletContext;
-	
+    
+    @Mock
+	private SplitClientService splitService;
+
+	private static final String MASHERY_TEST = "test-mashery";
+
 	@InjectMocks
 	private ProductDocumentationService productDocumentationService;
 	
@@ -87,6 +92,9 @@ public class ProductDocumentationServiceTest {
 	
 	@BeforeEach
 	public void init() throws IOException {
+		ServletContext context = Mockito.mock(ServletContext.class);
+		when(request.getServletContext()).thenReturn(context);
+		when(context.getAttribute(Constants.MASHERY_HANDSHAKE_HEADER_NAME)).thenReturn("test");
 		this.XMasheryHeader = new String(Base64.encodeBase64(loadFromFile("mock/auth-mashery-user1.json").getBytes()));
 	}
 	private String loadFromFile(String filePath) throws IOException {
@@ -94,99 +102,104 @@ public class ProductDocumentationServiceTest {
 	}
 	
 	@Test
-	public void getAllLearningInfo()
+	void getAllLearningInfo()
 	{		
-		LearningRecordsAndFiltersModel a1 = productDocumentationService.getAllLearningInfo(this.XMasheryHeader,null,null,"sortBy","sortOrder",learningTab);		
+		LearningRecordsAndFiltersModel a1 = productDocumentationService.getAllLearningInfo(this.XMasheryHeader,null,null,"sortBy","sortOrder",learningTab,true);
 		assertEquals(0, a1.getLearningData().size());
 		
-		LearningRecordsAndFiltersModel a2 = productDocumentationService.getAllLearningInfo(this.XMasheryHeader,"searchToken",null,"sortBy","sortOrder",learningTab);		
+		LearningRecordsAndFiltersModel a2 = productDocumentationService.getAllLearningInfo(this.XMasheryHeader,"searchToken",null,"sortBy","sortOrder",learningTab,true);
 		assertEquals(0, a2.getLearningData().size());
 		
 		HashMap<String, Object> aMock = new HashMap<String, Object>();	
 		aMock.put("For You", Arrays.asList(new String[]{"New"}));
 		
-		LearningRecordsAndFiltersModel a3 = productDocumentationService.getAllLearningInfo(this.XMasheryHeader,null,aMock,"sortBy","sortOrder",learningTab);		
+		LearningRecordsAndFiltersModel a3 = productDocumentationService.getAllLearningInfo(this.XMasheryHeader,null,aMock,"sortBy","sortOrder",learningTab,true);
 		assertEquals(0, a3.getLearningData().size());
 		
-		LearningRecordsAndFiltersModel a4 = productDocumentationService.getAllLearningInfo(this.XMasheryHeader,"searchToken",aMock,"sortBy","sortOrder",learningTab);		
+		LearningRecordsAndFiltersModel a4 = productDocumentationService.getAllLearningInfo(this.XMasheryHeader,"searchToken",aMock,"sortBy","sortOrder",learningTab,true);
 		assertEquals(0, a4.getLearningData().size());
 		
 		NewLearningContentEntity n1 = new NewLearningContentEntity(); n1.setId("101");
 		List<NewLearningContentEntity> result = new ArrayList<NewLearningContentEntity>();result.add(n1);
-		when(learningContentRepo.findNew()).thenReturn(result); Set<String> hs = new HashSet<String>();hs.add("101");
-		when(productDocumentationDAO.getAllNewCardIdsByCards(Mockito.anyString(),Mockito.anySet())).thenReturn(hs);
+		when(learningContentRepo.findNew(Mockito.anyString())).thenReturn(result); Set<String> hs = new HashSet<String>();hs.add("101");
+		when(productDocumentationDAO.getAllNewCardIdsByCards(Mockito.anyString(),Mockito.anySet(), Mockito.anyString())).thenReturn(hs);
 		
-		LearningRecordsAndFiltersModel a5 = productDocumentationService.getAllLearningInfo(this.XMasheryHeader,"searchToken",aMock,"sortBy","sortOrder",learningTab);		
+		LearningRecordsAndFiltersModel a5 = productDocumentationService.getAllLearningInfo(this.XMasheryHeader,"searchToken",aMock,"sortBy","sortOrder",learningTab,true);
 		assertEquals(0, a5.getLearningData().size());
 		
 		List<LearningItemEntity> dbCards = new ArrayList<LearningItemEntity>();
 		LearningItemEntity learningItemEntity = new LearningItemEntity();
 		learningItemEntity.setSortByDate("2016-02-03 00:00:00.0");
+		learningItemEntity.setLearning_type("product_documentation");
 		dbCards.add(learningItemEntity);
-		when(productDocumentationDAO.getAllLearningCardsByFilter(Mockito.anyString(),Mockito.anySet(),Mockito.any(Sort.class))).thenReturn(dbCards);
-		LearningRecordsAndFiltersModel a6 = productDocumentationService.getAllLearningInfo(this.XMasheryHeader,null,aMock,"sortBy","sortOrder",learningTab);		
+		when(productDocumentationDAO.getAllLearningCardsByFilter(Mockito.anyString(),Mockito.anySet(),Mockito.any(Sort.class), Mockito.anyString())).thenReturn(dbCards);
+		when(splitService.getSplitValue(Mockito.anyString())).thenReturn(true);
+		LearningRecordsAndFiltersModel a6 = productDocumentationService.getAllLearningInfo(this.XMasheryHeader,null,aMock,"sortBy","sortOrder",learningTab,true);
 		assertEquals(1, a6.getLearningData().size());
 	}
 	
 	@Test
-	public void getAllLearningFilters()
+	void getAllLearningFilters()
 	{
 		
-		Map<String, Object> a1 = productDocumentationService.getAllLearningFilters(null,null,learningTab);			
+		Map<String, Object> a1 = productDocumentationService.getAllLearningFilters(null,null,learningTab,true);
 		assertTrue(a1.size()>=1); //st=7
 		
-		Map<String, Object> a2 = productDocumentationService.getAllLearningFilters("searchToken",null,learningTab);		
+		Map<String, Object> a2 = productDocumentationService.getAllLearningFilters("searchToken",null,learningTab,true);
 		assertTrue(a2.size()>=1); //st=7		
 		
 		HashMap<String, Object> aMock = new HashMap<String, Object>();	
 		aMock.put("For You", Arrays.asList(new String[]{"New"}));
-		Map<String, Object> a3 = productDocumentationService.getAllLearningFilters(null,aMock,learningTab);		
+		Map<String, Object> a3 = productDocumentationService.getAllLearningFilters(null,aMock,learningTab,true);
 		assertTrue(a3.size()>=1); //st=7
 				
-		Map<String, Object> a4 = productDocumentationService.getAllLearningFilters("searchToken",aMock,learningTab);		
+		Map<String, Object> a4 = productDocumentationService.getAllLearningFilters("searchToken",aMock,learningTab,true);
 		assertTrue(a4.size()>=1); //st=7
 		
 	}
 	
 	@Test
-	public void testLGFilter()
+	void testLGFilter()
 	{
 		HashMap<String, Object> aMock = new HashMap<String, Object>();	
 		aMock.put("Language", Arrays.asList(new String[]{"English"}));
-		 List<Map<String,Object>> dbListLG = new  ArrayList<Map<String,Object>>();
-		 Map<String,Object> lgMap = new HashMap<String,Object>();lgMap.put("dbkey", "English");lgMap.put("dbvalue", "2");
-		 dbListLG.add(lgMap);
-		when(productDocumentationDAO.getAllLanguageWithCount(learningTab)).thenReturn(dbListLG);
-		Map<String, Object> a3 = productDocumentationService.getAllLearningFilters(null,aMock,learningTab);		
+		List<Map<String,Object>> dbListLG = new  ArrayList<Map<String,Object>>();
+		Map<String,Object> lgMap = new HashMap<String,Object>();lgMap.put("dbkey", "English");lgMap.put("dbvalue", "2");
+		dbListLG.add(lgMap);
+		when(partnerProfileService.getHcaasStatusForPartner(MASHERY_TEST)).thenReturn(true);
+		when(productDocumentationDAO.getAllLanguageWithCount(learningTab, "true")).thenReturn(dbListLG);
+		Map<String, Object> a3 = productDocumentationService.getAllLearningFilters(null,aMock,learningTab,true);
 		assertTrue(a3.size()>=1);
 	}
 	
 	@Test
-	public void testYouFilter()
+	void testYouFilter()
 	{
 		HashMap<String, Object> aMock = new HashMap<String, Object>();	
 		aMock.put("For You", Arrays.asList(new String[]{"New"}));
 		aMock.put("Language", Arrays.asList(new String[]{"English"}));
+		String hcaasStatus = "True";
 		NewLearningContentEntity n1 = new NewLearningContentEntity(); n1.setId("101");
 		List<NewLearningContentEntity> result = new ArrayList<NewLearningContentEntity>();result.add(n1);
-		when(learningContentRepo.findNew()).thenReturn(result);
+		when(partnerProfileService.getHcaasStatusForPartner(MASHERY_TEST)).thenReturn(true);
+		when(learningContentRepo.findNew(hcaasStatus)).thenReturn(result);
 		
-		Map<String, Object> a3 = productDocumentationService.getAllLearningFilters(null,aMock,learningTab);		
+		Map<String, Object> a3 = productDocumentationService.getAllLearningFilters(null,aMock,learningTab,true);
 		assertTrue(a3.size()>=1); //st=7
 
 		
 		aMock.put("For You", Arrays.asList(new String[]{"New","Bookmarked","Sth"}));
-		Map<String, Object> a32 = productDocumentationService.getAllLearningFilters(null,aMock,learningTab);		
+		Map<String, Object> a32 = productDocumentationService.getAllLearningFilters(null,aMock,learningTab,true);
 		assertTrue(a32.size()>=1); //st=7
 		
 		
-		when(learningContentRepo.findNew()).thenReturn(null);		
-		Map<String, Object> a31 = productDocumentationService.getAllLearningFilters(null,null,learningTab);		
+		when(learningContentRepo.findNew(hcaasStatus)).thenReturn(null);
+		Map<String, Object> a31 = productDocumentationService.getAllLearningFilters(null,null,learningTab,true);
 		assertTrue(a31.size()>=1); //st=7
 	}
 	
 	@Test
-	public void testAllFilters()
+	void testAllFilters()
 	{
 		HashMap<String, Object> aMock = new HashMap<String, Object>();	
 		aMock.put("For You", Arrays.asList(new String[]{"New"}));
@@ -196,14 +209,16 @@ public class ProductDocumentationServiceTest {
 		aMock.put("Live Events", Arrays.asList(new String[]{"APAC"}));
 		aMock.put("Content Type", Arrays.asList(new String[]{"PPT"}));
 		aMock.put("Success Tracks", mockST());
+		String hcaasStatus = "True";
+		when(partnerProfileService.getHcaasStatusForPartner(MASHERY_TEST)).thenReturn(true);
 		NewLearningContentEntity n1 = new NewLearningContentEntity(); n1.setId("101");
 		List<NewLearningContentEntity> result = new ArrayList<NewLearningContentEntity>();result.add(n1);
-		when(learningContentRepo.findNew()).thenReturn(result);
+		when(learningContentRepo.findNew(hcaasStatus)).thenReturn(result);
 		/*
 		when(productDocumentationDAO.getAllStUcPsWithCount(Mockito.anyString())).thenReturn(mockDbST());
 		when(productDocumentationDAO.getAllStUcPsWithCountByCards(Mockito.anyString(),Mockito.anySet())).thenReturn(mockDbST());
 		*/
-		Map<String, Object> a3 = productDocumentationService.getAllLearningFilters(null,aMock,learningTab);		
+		Map<String, Object> a3 = productDocumentationService.getAllLearningFilters(null,aMock,learningTab,true);
 		assertTrue(a3.size()>=1); //st=7
 	}
 	
@@ -238,24 +253,27 @@ public class ProductDocumentationServiceTest {
 	}
 	
 	@Test
-	public  void testSortSpecial()
+	void testSortSpecial()
 	{
 		when(partnerProfileService.fetchUserDetails(Mockito.anyString())).thenReturn(null);
 		List<LearningItemEntity> aL = new ArrayList<LearningItemEntity>();
 		LearningItemEntity le1 = new LearningItemEntity();
 		LearningItemEntity le2 = new LearningItemEntity();
+		le1.setLearning_type("product_documentation");
+		le2.setLearning_type("product_documentation");
 		le1.setTitle("abc");le2.setTitle("xyz");aL.add(le1); aL.add(le2);
-		when(productDocumentationDAO.getAllLearningCards(Mockito.anyString(),Mockito.any(Sort.class))).thenReturn(aL);
-		
-		LearningRecordsAndFiltersModel a2t = productDocumentationService.getAllLearningInfo(this.XMasheryHeader,null,null,"title","asc",learningTab);		
+		when(partnerProfileService.getHcaasStatusForPartner(MASHERY_TEST)).thenReturn(true);
+		when(productDocumentationDAO.getAllLearningCards(Mockito.anyString(),Mockito.any(Sort.class), Mockito.anyString())).thenReturn(aL);
+		when(splitService.getSplitValue(Mockito.anyString())).thenReturn(true);
+		LearningRecordsAndFiltersModel a2t = productDocumentationService.getAllLearningInfo(this.XMasheryHeader,null,null,"title","asc",learningTab,true);
 		assertEquals("abc", a2t.getLearningData().get(0).getTitle());
 		
-		LearningRecordsAndFiltersModel a2t2 = productDocumentationService.getAllLearningInfo(this.XMasheryHeader,null,null,"title","desc",learningTab);		
+		LearningRecordsAndFiltersModel a2t2 = productDocumentationService.getAllLearningInfo(this.XMasheryHeader,null,null,"title","desc",learningTab,true);
 		assertEquals("xyz", a2t2.getLearningData().get(0).getTitle());
 	}
 	
 	@Test
-	public void fetchMyPreferredLearnings() throws JsonProcessingException
+	void fetchMyPreferredLearnings() throws JsonProcessingException
 	{
 		HashMap<String, Object> preferences = new HashMap<String,Object>();
 		List<String> roles= new ArrayList<String>();preferences.put("role", roles);
@@ -269,11 +287,11 @@ public class ProductDocumentationServiceTest {
 		when(servletContext.getAttribute(Constants.ROLE_ID)).thenReturn("101");
 		
 		Assertions.assertNotNull(productDocumentationService.fetchMyPreferredLearnings(
-				"userId", null, null, "sortBy", "sortOrder", "puid", preferences, 25).getLearningData());
+				"userId", null, null, "sortBy", "sortOrder", "puid", preferences, 25, true).getLearningData());
 	}
 	
 	@Test
-	public void addPeerLearnings() throws JsonProcessingException
+	void addPeerLearnings() throws JsonProcessingException
 	{
 		when(request.getServletContext()).thenReturn(servletContext);
 		when(servletContext.getAttribute(Constants.ROLE_ID)).thenReturn("101");
@@ -286,7 +304,7 @@ public class ProductDocumentationServiceTest {
 	}
 	
 	@Test
-	public void codeCoverTest() throws JsonProcessingException
+	void codeCoverTest() throws JsonProcessingException
 	{		
 		when(request.getServletContext()).thenReturn(servletContext);
 		when(servletContext.getAttribute(Constants.ROLE_ID)).thenReturn("101");
@@ -301,11 +319,11 @@ public class ProductDocumentationServiceTest {
 		ti.add(new ObjectMapper().writeValueAsString(time));
 		
 		Assertions.assertNotNull(productDocumentationService.fetchMyPreferredLearnings(
-				"userId", null, null, "sortBy", "sortOrder", "puid", preferences, 25));
+				"userId", null, null, "sortBy", "sortOrder", "puid", preferences, 25, true));
 	}
 	
 	@Test
-	public void codeCovertest2()
+	void codeCovertest2()
 	{
 		
 		List<PeerViewedEntity> a = new ArrayList<PeerViewedEntity>();
@@ -320,16 +338,19 @@ public class ProductDocumentationServiceTest {
 		{
 			LearningItemEntity ln = new LearningItemEntity();
 			ln.setLearning_item_id(100+i + "");
+			ln.setLearning_type("product_documentation");
 			v.add(ln);
 		}
 		when(request.getServletContext()).thenReturn(servletContext);
 		when(servletContext.getAttribute(Constants.ROLE_ID)).thenReturn("101");
+		when(splitService.getSplitValue(Mockito.anyString())).thenReturn(true);
 		when(productDocumentationDAO.getUserRole(Mockito.anyString())).thenReturn("role101");
 		when(peerViewedRepo.findByRoleName(Mockito.anyString())).thenReturn(a);
-		when(productDocumentationDAO.getAllLearningCardsByFilter(Mockito.anyString(), Mockito.anySet(), Mockito.any(Sort.class)))
+		when(partnerProfileService.getHcaasStatusForPartner(MASHERY_TEST)).thenReturn(true);
+		when(productDocumentationDAO.getAllLearningCardsByFilter(Mockito.anyString(), Mockito.anySet(), Mockito.any(Sort.class), Mockito.anyString()))
 		.thenReturn(v);
 		Assertions.assertNotNull(productDocumentationService.fetchMyPreferredLearnings(
-				"userId", null, null, "sortBy", "sortOrder", "puid", null, 5));
+				"userId", null, null, "sortBy", "sortOrder", "puid", null, 5, true));
 
 	}
 	
@@ -365,26 +386,28 @@ public class ProductDocumentationServiceTest {
 	}
 	
 	@Test
-	public void testAllFiltersCount()
+	void testAllFiltersCount()
 	{	
 		NewLearningContentEntity n1 = new NewLearningContentEntity(); n1.setId("101");
 		List<NewLearningContentEntity> result = new ArrayList<NewLearningContentEntity>();result.add(n1);
-		when(learningContentRepo.findNew()).thenReturn(result);
+		String hcaasStatus = "True";
+		when(partnerProfileService.getHcaasStatusForPartner(MASHERY_TEST)).thenReturn(true);
+		when(learningContentRepo.findNew(hcaasStatus)).thenReturn(result);
 		
-		when(productDocumentationDAO.getAllStUcWithCount(Mockito.anyString())).thenReturn(mockDbSTUCOnly());
-		when(productDocumentationDAO.getAllStUcWithCountByCards(Mockito.anyString(),Mockito.anySet())).thenReturn(mockDbSTUCOnly());
+		when(productDocumentationDAO.getAllStUcWithCount(Mockito.anyString(), Mockito.anyString())).thenReturn(mockDbSTUCOnly());
+		when(productDocumentationDAO.getAllStUcWithCountByCards(Mockito.anyString(),Mockito.anySet(), Mockito.anyString())).thenReturn(mockDbSTUCOnly());
 		
-		Map<String, Object> a3 = productDocumentationService.getAllLearningFilters(null,null,learningTab);		
+		Map<String, Object> a3 = productDocumentationService.getAllLearningFilters(null,null,learningTab,true);
 		assertTrue(a3.size()>=1); //st=7
 		
 		HashMap<String, Object> aMock = new HashMap<String, Object>();		
 		aMock.put("Success Tracks", mockSTUCOnly());
-		Map<String, Object> a4 = productDocumentationService.getAllLearningFilters(null,aMock,learningTab);		
+		Map<String, Object> a4 = productDocumentationService.getAllLearningFilters(null,aMock,learningTab,true);
 		assertTrue(a4.size()>=1); //st=7
 	}
 	
 	@Test
-	public void getRangeLWTest() throws JsonProcessingException
+	void getRangeLWTest() throws JsonProcessingException
 	{
 		HashMap<String, Object> preferences = new HashMap<String,Object>();
 		List<String> ti = new ArrayList<String>(); preferences.put("timeinterval", ti);		
@@ -396,13 +419,14 @@ public class ProductDocumentationServiceTest {
 		LearningItemEntity ln = new LearningItemEntity();len.add(ln);
 		ln.setLearning_item_id("101");ln.setSortByDate("2019-10-24 18:30:00");
 		
-		when(productDocumentationDAO.getUpcomingWebinars(Mockito.anyString())).thenReturn(len);
+		when(partnerProfileService.getHcaasStatusForPartner(MASHERY_TEST)).thenReturn(true);
+		when(productDocumentationDAO.getUpcomingWebinars(Mockito.anyString(), Mockito.anyString())).thenReturn(len);
 		
 		when(request.getServletContext()).thenReturn(servletContext);
 		when(servletContext.getAttribute(Constants.ROLE_ID)).thenReturn("101");
 		
 		Assertions.assertNotNull(productDocumentationService.fetchMyPreferredLearnings(
-				"userId", null, null, "sortBy", "sortOrder", "puid", preferences, 25));
+				"userId", null, null, "sortBy", "sortOrder", "puid", preferences, 25, true));
 	}
 }
 

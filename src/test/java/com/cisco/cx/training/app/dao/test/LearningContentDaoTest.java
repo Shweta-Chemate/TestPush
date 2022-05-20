@@ -11,8 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +22,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -50,8 +50,12 @@ public class LearningContentDaoTest {
 	@InjectMocks
 	private NewLearningContentDAO learningContentDAO = new NewLearningContentDAOImpl(learningContentRepo);
 
+	private static final String hcaasStatusTest = "true";
+
+	private static final boolean hcaasStatusBoolean = true;
+
 	@Test
-	public void testListPIWs() {
+	void testListPIWs() {
 		List<NewLearningContentEntity> piwList = new ArrayList<>();
 		LinkedHashMap<String, String> filter = new LinkedHashMap();
 		filter.put("testKey", "testValue");
@@ -63,7 +67,7 @@ public class LearningContentDaoTest {
 	}
 
 	@Test
-	public void testFetchSuccesstalks() {
+	void testFetchSuccesstalks() {
 		List<NewLearningContentEntity> successtalkList = new ArrayList<>();
 		LinkedHashMap<String, String> filter = new LinkedHashMap();
 		filter.put("testKey", "testValue");
@@ -75,16 +79,18 @@ public class LearningContentDaoTest {
 	}
 
 	@Test
-	public void testFetchNewLearningContentWithoutFilter() {
+	void testFetchNewLearningContentWithoutFilter() {
 		Map<String, List<String>> filterParams = new HashMap<>();
 		List<NewLearningContentEntity> newContentList = new ArrayList<>();
-		when(learningContentRepo.findNew()).thenReturn(newContentList);
+		String hcaasStatus = String.valueOf(true);
+		when(learningContentRepo.findNew(hcaasStatus)).thenReturn(newContentList);
 		Map stMapTest = new HashMap<>();
-		Assertions.assertNotNull(learningContentDAO.fetchNewLearningContent(filterParams, stMapTest));
+		List<NewLearningContentEntity> resp = learningContentDAO.fetchNewLearningContent(filterParams, stMapTest, hcaasStatusTest);
+		Assertions.assertNotNull(resp);
 	}
 
 	@Test
-	public void testFetchNewLearningContentWithFilter() {
+	void testFetchNewLearningContentWithFilter() {
 		Map<String, List<String>> filterParams = new HashMap<>();
 		List<String> testValues = new ArrayList<>();
 		testValues.add("testvalue");
@@ -94,76 +100,46 @@ public class LearningContentDaoTest {
 		List<NewLearningContentEntity> newContentList = new ArrayList<>();
 		newContentList.add(getLearningEntity());
 		when(learningContentRepo.findAll()).thenReturn(newContentList);
-		when(learningContentRepo.findNewFiltered(Mockito.any())).thenReturn(newContentList);
+		when(learningContentRepo.findNewFiltered(Mockito.any(), Mockito.any())).thenReturn(newContentList);
 		Map stMapTest = new HashMap<>();
-		Assertions.assertNotNull(learningContentDAO.fetchNewLearningContent(filterParams, stMapTest));
+		Assertions.assertNotNull(learningContentDAO.fetchNewLearningContent(filterParams, stMapTest, hcaasStatusTest));
 	}
 
 	@Test
-	public void testGetSuccessTalkCount() {
+	void testGetSuccessTalkCount() {
 		when(learningContentRepo.countByLearningType(Constants.SUCCESSTALK)).thenReturn(1);
 		Assertions.assertNotNull(learningContentDAO.getSuccessTalkCount());
 	}
 
 	@Test
-	public void testGetPIWCount() {
+	void testGetPIWCount() {
 		when(learningContentRepo.countByLearningType(Constants.PIW)).thenReturn(1);
 		Assertions.assertEquals(1,learningContentDAO.getPIWCount());
 	}
 
 	@Test
-	public void testGetProductDocumentationCount() {
+	void testGetProductDocumentationCount() {
 		when(learningContentRepo.countByLearningType(Constants.DOCUMENTATION)).thenReturn(1);
 		Assertions.assertNotNull(learningContentDAO.getDocumentationCount());
 	}
 
 	@Test
-	public void testGetViewMoreNewFiltersWithCount() {
+	void testGetViewMoreNewFiltersWithCount() {
 		HashMap<String, Object> filterSelected = new HashMap<>();
-		Assertions.assertNotNull(learningContentDAO.getViewMoreNewFiltersWithCount(filterSelected));
+		Assertions.assertNotNull(learningContentDAO.getViewMoreNewFiltersWithCount(filterSelected, hcaasStatusTest));
 	}
 
 	@Test
-	public void testGetViewMoreNewFiltersWithCountAndFilterAndNoCards() {
-		HashMap<String, Object> filterSelected = new HashMap<>();
-		List<String> testValues = new ArrayList<>();
-		testValues.add("testValue");
-		filterSelected.put("testKey", testValues);
-		Assertions.assertNotNull(learningContentDAO.getViewMoreNewFiltersWithCount(filterSelected));
-	}
-
-	@Test
-	public void testGetViewMoreNewFiltersWithCountAndFilterAndCards() {
-		HashMap<String, Object> filterSelected = new HashMap<>();
-		List<String> testValues = new ArrayList<>();
-		Set<String> testCardIds = new HashSet<>();
-		testCardIds.add("testString");
-		testValues.add("testValue");
-		filterSelected.put("testKey", testValues);
-		when(filterCountsDao.andFilters(Mockito.any())).thenReturn(testCardIds);
-		Assertions.assertNotNull(learningContentDAO.getViewMoreNewFiltersWithCount(filterSelected));
-	}
-
-	@Test
-	public void testGetViewMoreRecentlyFiltersWithCount() {
-		String userId = "testUserId";
-		HashMap<String, Object> filterSelected = new HashMap<>();
-		Assertions.assertNotNull(learningContentDAO.getRecentlyViewedFiltersWithCount(userId, filterSelected));
-	}
-
-	@Test
-	public void testGetViewMoreRecentlyFiltersWithCountAndNoCards() {
-		String userId = "testUserId";
+	void testGetViewMoreNewFiltersWithCountAndFilterAndNoCards() {
 		HashMap<String, Object> filterSelected = new HashMap<>();
 		List<String> testValues = new ArrayList<>();
 		testValues.add("testValue");
 		filterSelected.put("testKey", testValues);
-		Assertions.assertNotNull(learningContentDAO.getRecentlyViewedFiltersWithCount(userId, filterSelected));
+		Assertions.assertNotNull(learningContentDAO.getViewMoreNewFiltersWithCount(filterSelected, hcaasStatusTest));
 	}
 
 	@Test
-	public void testGetViewMoreRecentlyFiltersWithCountAndFilterAndCards() {
-		String userId = "testUserId";
+	void testGetViewMoreNewFiltersWithCountAndFilterAndCards() {
 		HashMap<String, Object> filterSelected = new HashMap<>();
 		List<String> testValues = new ArrayList<>();
 		Set<String> testCardIds = new HashSet<>();
@@ -171,26 +147,29 @@ public class LearningContentDaoTest {
 		testValues.add("testValue");
 		filterSelected.put("testKey", testValues);
 		when(filterCountsDao.andFilters(Mockito.any())).thenReturn(testCardIds);
-		Assertions.assertNotNull(learningContentDAO.getRecentlyViewedFiltersWithCount(userId, filterSelected));
+		Assertions.assertNotNull(learningContentDAO.getViewMoreNewFiltersWithCount(filterSelected, hcaasStatusTest));
 	}
 
 	@Test
-	public void testGetViewMoreUpcomingFiltersWithCount() {
+	void testGetViewMoreRecentlyFiltersWithCount() {
+		String userId = "testUserId";
 		HashMap<String, Object> filterSelected = new HashMap<>();
-		Assertions.assertNotNull(learningContentDAO.getUpcomingFiltersWithCount(filterSelected));
+		Assertions.assertNotNull(learningContentDAO.getRecentlyViewedFiltersWithCount(userId, filterSelected, hcaasStatusTest));
 	}
 
 	@Test
-	public void testGetViewMoreUpcomingFiltersWithCountAndNoCards() {
+	void testGetViewMoreRecentlyFiltersWithCountAndNoCards() {
+		String userId = "testUserId";
 		HashMap<String, Object> filterSelected = new HashMap<>();
 		List<String> testValues = new ArrayList<>();
 		testValues.add("testValue");
 		filterSelected.put("testKey", testValues);
-		Assertions.assertNotNull(learningContentDAO.getUpcomingFiltersWithCount(filterSelected));
+		Assertions.assertNotNull(learningContentDAO.getRecentlyViewedFiltersWithCount(userId, filterSelected, hcaasStatusTest));
 	}
 
 	@Test
-	public void testGetViewMoreUpcomingFiltersWithCountAndFilterAndCards() {
+	void testGetViewMoreRecentlyFiltersWithCountAndFilterAndCards() {
+		String userId = "testUserId";
 		HashMap<String, Object> filterSelected = new HashMap<>();
 		List<String> testValues = new ArrayList<>();
 		Set<String> testCardIds = new HashSet<>();
@@ -198,65 +177,59 @@ public class LearningContentDaoTest {
 		testValues.add("testValue");
 		filterSelected.put("testKey", testValues);
 		when(filterCountsDao.andFilters(Mockito.any())).thenReturn(testCardIds);
-		Assertions.assertNotNull(learningContentDAO.getUpcomingFiltersWithCount(filterSelected));
+		Assertions.assertNotNull(learningContentDAO.getRecentlyViewedFiltersWithCount(userId, filterSelected, hcaasStatusTest));
 	}
 
 	@Test
-	public void testGetViewMoreBookmarkedFiltersWithCount() {
+	void testGetViewMoreUpcomingFiltersWithCount() {
+		HashMap<String, Object> filterSelected = new HashMap<>();
+		Assertions.assertNotNull(learningContentDAO.getUpcomingFiltersWithCount(filterSelected, hcaasStatusTest));
+	}
+
+	@Test
+	void testGetViewMoreUpcomingFiltersWithCountAndNoCards() {
+		HashMap<String, Object> filterSelected = new HashMap<>();
+		List<String> testValues = new ArrayList<>();
+		testValues.add("testValue");
+		filterSelected.put("testKey", testValues);
+		Assertions.assertNotNull(learningContentDAO.getUpcomingFiltersWithCount(filterSelected, hcaasStatusTest));
+	}
+
+	@Test
+	void testGetViewMoreUpcomingFiltersWithCountAndFilterAndCards() {
+		HashMap<String, Object> filterSelected = new HashMap<>();
+		List<String> testValues = new ArrayList<>();
+		Set<String> testCardIds = new HashSet<>();
+		testCardIds.add("testString");
+		testValues.add("testValue");
+		filterSelected.put("testKey", testValues);
+		when(filterCountsDao.andFilters(Mockito.any())).thenReturn(testCardIds);
+		Assertions.assertNotNull(learningContentDAO.getUpcomingFiltersWithCount(filterSelected, hcaasStatusTest));
+	}
+
+	@Test
+	void testGetViewMoreBookmarkedFiltersWithCount() {
 		List<LearningContentItem> bookmarkedList = new ArrayList<>();
 		bookmarkedList.add(getLearningItem());
 		HashMap<String, Object> filterSelected = new HashMap<>();
-		Assertions.assertNotNull(learningContentDAO.getBookmarkedFiltersWithCount(filterSelected, bookmarkedList));
+		Assertions.assertNotNull(learningContentDAO.getBookmarkedFiltersWithCount(filterSelected, bookmarkedList, hcaasStatusTest));
 	}
 
 	@Test
-	public void testGetViewMoreBookmarkedFiltersWithCountAndNoCards() {
-		List<LearningContentItem> bookmarkedList = new ArrayList<>();
-		bookmarkedList.add(getLearningItem());
-		HashMap<String, Object> filterSelected = new HashMap<>();
-		List<String> testValues = new ArrayList<>();
-		testValues.add("testValue");
-		filterSelected.put("testKey", testValues);
-		Assertions.assertNotNull(learningContentDAO.getBookmarkedFiltersWithCount(filterSelected, bookmarkedList));
-	}
-
-	@Test
-	public void testGetViewMoreBookmarkedFiltersWithCountAndFilterAndCards() {
+	void testGetViewMoreBookmarkedFiltersWithCountAndNoCards() {
 		List<LearningContentItem> bookmarkedList = new ArrayList<>();
 		bookmarkedList.add(getLearningItem());
 		HashMap<String, Object> filterSelected = new HashMap<>();
 		List<String> testValues = new ArrayList<>();
-		Set<String> testCardIds = new HashSet<>();
-		testCardIds.add("testString");
 		testValues.add("testValue");
 		filterSelected.put("testKey", testValues);
-		when(filterCountsDao.andFilters(Mockito.any())).thenReturn(testCardIds);
-		Assertions.assertNotNull(learningContentDAO.getBookmarkedFiltersWithCount(filterSelected, bookmarkedList));
+		Assertions.assertNotNull(learningContentDAO.getBookmarkedFiltersWithCount(filterSelected, bookmarkedList, hcaasStatusTest));
 	}
 
 	@Test
-	public void testGetViewMoreCXInsightsFiltersWithCount() {
-		String userId = "testUserId";
-		String searchToken = "testSearchToken";
-		HashMap<String, Object> filterSelected = new HashMap<>();
-		Assertions.assertNotNull(learningContentDAO.getCXInsightsFiltersWithCount(userId, searchToken, filterSelected));
-	}
-
-	@Test
-	public void testGetViewMoreCXInsightsFiltersWithCountAndNoCards() {
-		String userId = "testUserId";
-		String searchToken = "testSearchToken";
-		HashMap<String, Object> filterSelected = new HashMap<>();
-		List<String> testValues = new ArrayList<>();
-		testValues.add("testValue");
-		filterSelected.put("testKey", testValues);
-		Assertions.assertNotNull(learningContentDAO.getCXInsightsFiltersWithCount(userId, searchToken, filterSelected));
-	}
-
-	@Test
-	public void testGetViewMoreCXInsightsFiltersWithCountAndFilterAndCards() {
-		String userId = "testUserId";
-		String searchToken = "testSearchToken";
+	void testGetViewMoreBookmarkedFiltersWithCountAndFilterAndCards() {
+		List<LearningContentItem> bookmarkedList = new ArrayList<>();
+		bookmarkedList.add(getLearningItem());
 		HashMap<String, Object> filterSelected = new HashMap<>();
 		List<String> testValues = new ArrayList<>();
 		Set<String> testCardIds = new HashSet<>();
@@ -264,21 +237,54 @@ public class LearningContentDaoTest {
 		testValues.add("testValue");
 		filterSelected.put("testKey", testValues);
 		when(filterCountsDao.andFilters(Mockito.any())).thenReturn(testCardIds);
-		Assertions.assertNotNull(learningContentDAO.getCXInsightsFiltersWithCount(userId, searchToken, filterSelected));
+		Assertions.assertNotNull(learningContentDAO.getBookmarkedFiltersWithCount(filterSelected, bookmarkedList, hcaasStatusTest));
 	}
 
 	@Test
-	public void testFetchRecentlyViewedLearningContentWithoutFilter() {
+	void testGetViewMoreCXInsightsFiltersWithCount() {
+		String userId = "testUserId";
+		String searchToken = "testSearchToken";
+		HashMap<String, Object> filterSelected = new HashMap<>();
+		Assertions.assertNotNull(learningContentDAO.getCXInsightsFiltersWithCount(userId, searchToken, filterSelected, hcaasStatusBoolean));
+	}
+
+	@Test
+	void testGetViewMoreCXInsightsFiltersWithCountAndNoCards() {
+		String userId = "testUserId";
+		String searchToken = "testSearchToken";
+		HashMap<String, Object> filterSelected = new HashMap<>();
+		List<String> testValues = new ArrayList<>();
+		testValues.add("testValue");
+		filterSelected.put("testKey", testValues);
+		Assertions.assertNotNull(learningContentDAO.getCXInsightsFiltersWithCount(userId, searchToken, filterSelected, hcaasStatusBoolean));
+	}
+
+	@Test
+	void testGetViewMoreCXInsightsFiltersWithCountAndFilterAndCards() {
+		String userId = "testUserId";
+		String searchToken = "testSearchToken";
+		HashMap<String, Object> filterSelected = new HashMap<>();
+		List<String> testValues = new ArrayList<>();
+		Set<String> testCardIds = new HashSet<>();
+		testCardIds.add("testString");
+		testValues.add("testValue");
+		filterSelected.put("testKey", testValues);
+		when(filterCountsDao.andFilters(Mockito.any())).thenReturn(testCardIds);
+		Assertions.assertNotNull(learningContentDAO.getCXInsightsFiltersWithCount(userId, searchToken, filterSelected, hcaasStatusBoolean));
+	}
+
+	@Test
+	void testFetchRecentlyViewedLearningContentWithoutFilter() {
 		String userId = "testUserId";
 		Map<String, List<String>> filterParams = new HashMap<>();
 		List<NewLearningContentEntity> newContentList = new ArrayList<>();
-		when(learningContentRepo.getRecentlyViewedContent(Mockito.anyString())).thenReturn(newContentList);
+		when(learningContentRepo.getRecentlyViewedContent(Mockito.anyString(), Mockito.anyString())).thenReturn(newContentList);
 		HashMap<String, String> stMapTest = new HashMap<>();
-		Assertions.assertNotNull(learningContentDAO.fetchRecentlyViewedContent(userId, filterParams, stMapTest));
+		Assertions.assertNotNull(learningContentDAO.fetchRecentlyViewedContent(userId, filterParams, stMapTest, hcaasStatusTest));
 	}
 
 	@Test
-	public void testFetchRecentlyViewedLearningContentWithFilter() {
+	void testFetchRecentlyViewedLearningContentWithFilter() {
 		String userId = "testUserId";
 		Map<String, List<String>> filterParams = new HashMap<>();
 		List<String> testValues = new ArrayList<>();
@@ -299,85 +305,102 @@ public class LearningContentDaoTest {
 		List<NewLearningContentEntity> newContentList = new ArrayList<>();
 		newContentList.add(getLearningEntity());
 		when(learningContentRepo.findAll()).thenReturn(newContentList);
-		when(learningContentRepo.getRecentlyViewedContentFiltered(Mockito.anyString(), Mockito.any()))
+		when(learningContentRepo.getRecentlyViewedContentFiltered(Mockito.anyString(), Mockito.any(), Mockito.anyString()))
 				.thenReturn(newContentList);
-		when(learningContentRepo.findNew()).thenReturn(newContentList);
+		when(learningContentRepo.findNew(Mockito.anyString())).thenReturn(newContentList);
 		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(testCardIds);
-		when(learningContentRepo.getRecentlyViewedContent(Mockito.anyString())).thenReturn(newContentList);
+		when(learningContentRepo.getRecentlyViewedContent(Mockito.anyString(), Mockito.anyString())).thenReturn(newContentList);
 		HashMap<String, String> stMapTest = new HashMap<>();
-		Assertions.assertNotNull(learningContentDAO.fetchRecentlyViewedContent(userId, filterParams, stMapTest));
+		Assertions.assertNotNull(learningContentDAO.fetchRecentlyViewedContent(userId, filterParams, stMapTest, hcaasStatusTest));
 	}
 
 	@Test
-	public void testFetchCXInsightsContent() {
+	void testFetchCXInsightsContent() {
 		String userId = "testUserId";
 		String searchToken = "testSearchToken";
 		String sortField = "title";
 		String sortType = "asc";
 		Map<String, List<String>> filterParams = new HashMap<>();
 		List<NewLearningContentEntity> newContentList = new ArrayList<>();
-		when(learningContentRepo.getRecentlyViewedContent(Mockito.anyString())).thenReturn(newContentList);
+		when(learningContentRepo.getRecentlyViewedContent(Mockito.anyString(), Mockito.anyString())).thenReturn(newContentList);
 		HashMap<String, String> stMapTest = new HashMap<>();
-		Assertions.assertNotNull(learningContentDAO.fetchCXInsightsContent(userId, filterParams, stMapTest, searchToken, sortField, sortType));
+		Assertions.assertNotNull(learningContentDAO.fetchCXInsightsContent(userId, filterParams, stMapTest, searchToken, sortField, sortType, false));
 	}
 
 	@Test
-	public void testFetchFilteredContent() {
+	void testFetchFilteredContent() {
 		Map<String, List<String>> filterParams = new HashMap<>();
 		HashMap<String, String> stMapTest = new HashMap<>();
-		Assertions.assertNotNull(learningContentDAO.fetchFilteredContent(filterParams, stMapTest));
+		Assertions.assertNotNull(learningContentDAO.fetchFilteredContent(filterParams, stMapTest, false));
 	}
 
 	@Test
-	public void testUpcomingContent() {
+	void testUpcomingContent() {
 		Map<String, List<String>> filterParams = new HashMap<>();
 		List<NewLearningContentEntity> newContentList = new ArrayList<>();
-		when(learningContentRepo.findUpcomingFiltered(Mockito.any())).thenReturn(newContentList);
+		when(learningContentRepo.findUpcomingFiltered(Mockito.any(), Mockito.anyString())).thenReturn(newContentList);
 		HashMap<String, String> stMapTest = new HashMap<>();
-		Assertions.assertNotNull(learningContentDAO.fetchUpcomingContent(filterParams, stMapTest));
+		Assertions.assertNotNull(learningContentDAO.fetchUpcomingContent(filterParams, stMapTest, hcaasStatusTest));
 	}
 
 	@Test
-	public void testFetchPopularAcrossPartnersContent() {
+	void testFetchPopularAcrossPartnersContent() {
         ReflectionTestUtils.setField(learningContentDAO, "popularAcrossPartnersCategoryLiimit", Integer.valueOf(10));
 		Map<String, List<String>> filterParams = new HashMap<>();
-		List<NewLearningContentEntity> newContentList = new ArrayList<>();
+		NewLearningContentEntity entity = getLearningEntity();
+		List<NewLearningContentEntity> newContentList = Stream.of(entity).collect(Collectors.toList());
 		HashSet<String> bookmarks = new HashSet<String>();
 		bookmarks.add("test");
-		when(learningContentRepo.getPopularAcrossPartnersFiltered(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(newContentList);
+		when(learningContentRepo.getMaxBookmark()).thenReturn(5);
+		when(learningContentRepo.getPopularAcrossPartnersFiltered(new HashSet<>(), Integer.valueOf(10), 11, 5, bookmarks, "true")).thenReturn(newContentList);
 		HashMap<String, String> stMapTest = new HashMap<>();
-		Assertions.assertNotNull(learningContentDAO.fetchPopularAcrossPartnersContent(filterParams, stMapTest, bookmarks));
+		List<NewLearningContentEntity> resp = learningContentDAO.fetchPopularAcrossPartnersContent(filterParams, stMapTest, bookmarks, hcaasStatusTest);
+		Assertions.assertTrue(!resp.isEmpty());
 	}
 
 	@Test
-	public void testGetPopularAcrossPartnersFiltersWithCount() {
+	void testGetPopularAcrossPartnersFiltersWithCount() {
         ReflectionTestUtils.setField(learningContentDAO, "popularAcrossPartnersCategoryLiimit", Integer.valueOf(10));
         HashSet<String> bookmarks = new HashSet<String>();
 		bookmarks.add("test");
         HashMap<String, Object> filterSelected = new HashMap<>();
-        Assertions.assertNotNull(learningContentDAO.getPopularAcrossPartnersFiltersWithCount(filterSelected, bookmarks));
+        Assertions.assertNotNull(learningContentDAO.getPopularAcrossPartnersFiltersWithCount(filterSelected, bookmarks, hcaasStatusTest));
 	}
 
 	@Test
-	public void testFetchPopularAtPartnerContent() {
+	void testGetPopularAcrossPartnersFiltersSelectedWithCount() {
+        ReflectionTestUtils.setField(learningContentDAO, "popularAcrossPartnersCategoryLiimit", Integer.valueOf(10));
+        HashMap<String, Object> selection = new HashMap<>();
+        selection.put("test", Stream.of("test").collect(Collectors.toList()));
+        HashSet<String> bookmarks = new HashSet<String>();
+		bookmarks.add("test");
+		Map<String, Set<String>>  filteredCardsMap = new HashMap<>();
+		filteredCardsMap.put("test", Stream.of("test").collect(Collectors.toSet()));
+		when(filterCountsDao.filterCards(selection, new HashSet<>(), null, "true")).thenReturn(filteredCardsMap);
+		HashMap<String, Object> resp = learningContentDAO.getPopularAcrossPartnersFiltersWithCount(selection, bookmarks, hcaasStatusTest);
+        Assertions.assertNotNull(resp);
+	}
+
+	@Test
+	void testFetchPopularAtPartnerContent() {
         ReflectionTestUtils.setField(learningContentDAO, "popularAtPartnerCompanyLimit", Integer.valueOf(10));
 		Map<String, List<String>> filterParams = new HashMap<>();
 		List<NewLearningContentEntity> newContentList = new ArrayList<>();
 		HashSet<String> bookmarks = new HashSet<String>();
 		bookmarks.add("test");
 		Map stMapTest = new HashMap<>();
-		Assertions.assertNotNull(learningContentDAO.fetchPopularAtPartnerContent(filterParams, stMapTest, "puid", bookmarks));
+		Assertions.assertNotNull(learningContentDAO.fetchPopularAtPartnerContent(filterParams, stMapTest, "puid", bookmarks, hcaasStatusTest));
 	}
 
 	@Test
-	public void testGetPopularAtPartnerFiltersWithCount() {
+	void testGetPopularAtPartnerFiltersWithCount() {
         ReflectionTestUtils.setField(learningContentDAO, "popularAtPartnerCompanyLimit", Integer.valueOf(10));
 		HashMap<String, Object> filterSelected = new HashMap<>();
-		Assertions.assertNotNull(learningContentDAO.getPopularAtPartnerFiltersWithCount(filterSelected, "test", new HashSet<String>()));
+		Assertions.assertNotNull(learningContentDAO.getPopularAtPartnerFiltersWithCount(filterSelected, "test", new HashSet<String>(), hcaasStatusTest));
 	}
 
 	@Test
-	public void testGetLearningMap() {
+	void testGetLearningMap() {
 		String id = "testId";
 		String title = "testTitle";
 		List<NewLearningContentEntity> learningEntityList = new ArrayList<>();
@@ -389,7 +412,7 @@ public class LearningContentDaoTest {
 	}
 
 	@Test
-	public void testGetLearningMapIDNull() {
+	void testGetLearningMapIDNull() {
 		String title = "testTitle";
 		List<NewLearningContentEntity> learningEntityList = new ArrayList<>();
 		learningEntityList.add(getLearningEntity());
@@ -400,56 +423,59 @@ public class LearningContentDaoTest {
 	}
 
 	@Test
-	public void testGetSuccessTrackCount() {
+	void testGetSuccessTrackCount() {
 		when(learningContentRepo.getSuccessTracksCount()).thenReturn(1);
 		Assertions.assertNotNull(learningContentDAO.getSuccessTracksCount());
 	}
 
 	@Test
-	public void testGetLifecycleCount() {
+	void testGetLifecycleCount() {
 		when(learningContentRepo.getLifecycleCount()).thenReturn(1);
 		Assertions.assertNotNull(learningContentDAO.getLifecycleCount());
 	}
 
 	@Test
-	public void testGetTechnologyCount() {
+	void testGetTechnologyCount() {
 		when(learningContentRepo.getTechnologyount()).thenReturn(1);
 		Assertions.assertNotNull(learningContentDAO.getTechnologyCount());
 	}
 
 	@Test
-	public void testGetRoleCount() {
+	void testGetRoleCount() {
 		when(learningContentRepo.getRolesCount()).thenReturn(1);
 		Assertions.assertNotNull(learningContentDAO.getRolesCount());
 	}
 	
 	@Test
-	public void testFetchFeaturedContent() {
+	void testFetchFeaturedContent() {
 		Map<String, List<String>> filterParams = new HashMap<>();
 		List<NewLearningContentEntity> featuredContentList = new ArrayList<>();
-		when(learningContentRepo.findFeatured()).thenReturn(featuredContentList);
+		when(learningContentRepo.findFeatured(Mockito.anyString())).thenReturn(featuredContentList);
 		HashMap<String, Object> stMapTest = new HashMap<>();
-		Assertions.assertNotNull(learningContentDAO.fetchFeaturedContent(filterParams, stMapTest));
+		Assertions.assertNotNull(learningContentDAO.fetchFeaturedContent(filterParams, stMapTest, hcaasStatusTest));
 	}
 	
 	@Test
-	public void testFetchFeaturedContentWithoutFilter() {
+	void testFetchFeaturedContentWithoutFilter() {
 		List<NewLearningContentEntity> featuredContentList = new ArrayList<>();
-		when(learningContentRepo.findFeatured()).thenReturn(featuredContentList);
-		Assertions.assertNotNull(learningContentDAO.fetchFeaturedContent(Collections.emptyMap(), null));
+		when(learningContentRepo.findFeatured(Mockito.anyString())).thenReturn(featuredContentList);
+		Assertions.assertNotNull(learningContentDAO.fetchFeaturedContent(Collections.emptyMap(), null, hcaasStatusTest));
 	}
 	
 	@Test
-	public void testGetFeaturedFiltersWithoutFilter() {
+	void testGetFeaturedFiltersWithoutFilter() {
 		HashMap<String, Object> filterSelected = new HashMap<>();
-		Assertions.assertNotNull(learningContentDAO.getFeaturedFiltersWithCount(filterSelected));
+		Assertions.assertNotNull(learningContentDAO.getFeaturedFiltersWithCount(filterSelected, hcaasStatusTest));
 	}
 	
 	@Test
-	public void testGetFeaturedFiltersWithCount() {
+	void testGetFeaturedFiltersWithCount() {
 		HashMap<String, Object> filterSelected = new HashMap<>();
 		filterSelected.put("Content Type", "PDF");
-		Assertions.assertNotNull(learningContentDAO.getFeaturedFiltersWithCount(filterSelected));
+		Map<String, Set<String>>  filteredCardsMap = new HashMap<>();
+		filteredCardsMap.put("test", Stream.of("test").collect(Collectors.toSet()));
+		when(filterCountsDao.filterCards(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(filteredCardsMap);
+		Assertions.assertNotNull(learningContentDAO.getFeaturedFiltersWithCount(filterSelected, hcaasStatusTest));
 	}
 
 

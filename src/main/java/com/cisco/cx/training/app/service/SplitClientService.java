@@ -24,4 +24,9 @@ public class SplitClientService {
         String response = splitClient.getTreatment(SPLIT_IO_USER, BACKEND_SPLIT_IO_KEY);
         return (response.equalsIgnoreCase("on") || response.equalsIgnoreCase("true")) ? true : false;
     }
+    
+    public boolean getSplitValue(String splitKey) {
+    	String response = splitClient.getTreatment(SPLIT_IO_USER, splitKey);
+    	return (response.equalsIgnoreCase("on") || response.equalsIgnoreCase("true")) ? true : false;
+    }
 }

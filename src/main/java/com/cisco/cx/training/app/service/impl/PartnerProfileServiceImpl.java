@@ -18,7 +18,6 @@ import org.springframework.web.client.RestTemplate;
 
 import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.exception.BadRequestException;
-import com.cisco.cx.training.app.exception.GenericException;
 import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.constants.LoggerConstants;
 import com.cisco.cx.training.models.MasheryObject;
@@ -57,7 +56,7 @@ public class PartnerProfileServiceImpl implements PartnerProfileService {
 		headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
 		//headers.set("Authorization", "Basic " + config.createCxpBasicAuthToken()); //NOSONAR
 		addHeaders(headers);
-		HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
+		HttpEntity<String> requestEntity = new HttpEntity<>(null, headers);
 		ResponseEntity<String> result = restTemplate.exchange(entitlementUrl + "/" + userId, HttpMethod.GET, requestEntity, String.class);
 		LOGGER.info("Entitlement url response = {}",  result.getStatusCode().value()!= HttpStatus.OK.value()?result.getBody():"call completed.");
 		UserDetails userDetails = null;
@@ -76,12 +75,11 @@ public class PartnerProfileServiceImpl implements PartnerProfileService {
 		UserDetailsWithCompanyList userDetails = null;
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
-//		requestHeaders.set("Authorization", "Basic " + config.createCxpBasicAuthToken()); //NOSONAR
 		addHeaders(requestHeaders);
-		HttpEntity<String> requestEntity = new HttpEntity<String>(null, requestHeaders);
+		HttpEntity<String> requestEntity = new HttpEntity<>(null, requestHeaders);
 		ResponseEntity<String> result = restTemplate.exchange(config.getPartnerUserDetails(), HttpMethod.GET,requestEntity, String.class);
+		LOGGER.info("Prtner user details URL response body = {}", result.getBody());
 		LOGGER.info("Prtner user details URL response = {}",result.getStatusCode().value() != HttpStatus.OK.value() ? result.getBody() : "call completed.");
-		//if(result==null)throw new GenericException("user details api failed"); //NOSONAR
 		try {
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			userDetails = mapper.readValue(result.getBody(), UserDetailsWithCompanyList.class);
@@ -131,5 +129,12 @@ public class PartnerProfileServiceImpl implements PartnerProfileService {
 		} catch (IOException | HttpClientErrorException e) {
 			throw new BadRequestException("Error while invoking the PLS API" + e);
 		} 
+	}
+
+	@Override
+	public boolean getHcaasStatusForPartner(String xMasheryHandshake) {
+		UserDetailsWithCompanyList userDetails = fetchUserDetailsWithCompanyList(xMasheryHandshake);
+		LOGGER.info("user details response - {} - {}", userDetails, xMasheryHandshake);
+	    return userDetails.getCompanyList().stream().filter(company -> company.isHcaas()).findFirst().isPresent();
 	}
 }

@@ -23,12 +23,14 @@ public class LearningContentUtil {
 		filterGroupMappings.put(Constants.SUCCESS_TRACK, Constants.SUCCESS_TRACK);
 		filterGroupMappings.put(Constants.LIFECYCLE, Constants.LIFECYCLE);
 		filterGroupMappings.put(Constants.FOR_YOU_FILTER, Constants.FOR_YOU_FILTER);
+		filterGroupMappings.put(Constants.CISCO_PLUS_FILTER, Constants.CISCO_PLUS_FILTER_PRM);
 		return filterGroupMappings;
 	}
 
 	public static List<String> getDefaultFilterOrder() {
 		List<String> order = new ArrayList<>();
 		order.add(Constants.ROLE);
+		order.add(Constants.CISCO_PLUS_FILTER);
 		order.add(Constants.SUCCESS_TRACK);
 		order.add(Constants.LIFECYCLE);
 		order.add(Constants.TECHNOLOGY);
@@ -43,6 +45,7 @@ public class LearningContentUtil {
 		order.add(Constants.LIFECYCLE);
 		order.add(Constants.ROLE);
 		order.add(Constants.TECHNOLOGY);
+		order.add(Constants.CISCO_PLUS_FILTER);
 		order.add(Constants.SUCCESS_TRACK);
 		order.add(Constants.LIVE_EVENTS);
 		order.add(Constants.FOR_YOU_FILTER);

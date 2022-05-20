@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.apache.commons.lang3.StringUtils;
@@ -88,7 +89,7 @@ public class NewLearningContentController {
 	}
 
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/piws")
-	@ApiOperation(value = "Fetch PIWs", response = String.class, nickname = "listByRegion")
+	@ApiOperation(value = "Fetch PIWs", nickname = "listByRegion")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
@@ -125,13 +126,14 @@ public class NewLearningContentController {
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during retrieve", response = ErrorResponse.class) })
-	public ResponseEntity<CountResponseSchema> getIndexCounts(@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake" , required=false) String xMasheryHandshake)
+	public ResponseEntity<CountResponseSchema> getIndexCounts(@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake" , required=false) String xMasheryHandshake,
+			HttpServletRequest request)
 			throws Exception {
-		
 		if (StringUtils.isBlank(xMasheryHandshake)) {
             throw new BadRequestException(MASHERY_MISSING_MSG);
         }
-		CountResponseSchema countResponseSchema = learningContentService.getIndexCounts();
+		boolean hcaasStatus = getHcaasStatus(request);
+		CountResponseSchema countResponseSchema = learningContentService.getIndexCounts(hcaasStatus);
 		return new ResponseEntity<>(countResponseSchema, HttpStatus.OK);
 	}
 	
@@ -144,31 +146,35 @@ public class NewLearningContentController {
 	public ResponseEntity<List<LearningContentItem>> getNewLearningContent(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
 			@ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
-			@ApiParam(value = "Filters") @RequestBody(required = false) HashMap<String, Object> filtersSelected)
+			@ApiParam(value = "Filters") @RequestBody(required = false) Map<String, Object> filtersSelected,
+			HttpServletRequest request)
 			throws Exception {
 		LOG.info("Entering the fetchlearningcontent method");
 		long requestStartTime = System.currentTimeMillis();
 		if (StringUtils.isBlank(xMasheryHandshake)) {
 			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
+		boolean hcaasStatus = getHcaasStatus(request);
 		String ccoId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
-		List<LearningContentItem> newLearningContentList = learningContentService.fetchNewLearningContent(ccoId, filtersSelected);
+		List<LearningContentItem> newLearningContentList = learningContentService.fetchNewLearningContent(ccoId, filtersSelected, hcaasStatus);
 		LOG.info("Received new learning content in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<>(newLearningContentList, HttpStatus.OK);
 	}
 	
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/viewmore/new/filters")
-	@ApiOperation(value = "Fetch All Learnings Filters", response = String.class, nickname = "fetchallViewMoreFilters")
+	@ApiOperation(value = "Fetch All Learnings Filters", nickname = "fetchallViewMoreFilters")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
 	public ResponseEntity<Map<String, Object>> getNewLearningsFilters(
-			@ApiParam(value = "JSON Body to update filters", required = false) @RequestBody(required=false) HashMap<String, Object> filtersSelected,
-			@ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid) {
+			@ApiParam(value = "JSON Body to update filters", required = false) @RequestBody(required=false) Map<String, Object> filtersSelected,
+			@ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
+			HttpServletRequest request) {
 		LOG.info("Entering the getNewLearningsFilters method");
 		long requestStartTime = System.currentTimeMillis();
-		Map<String, Object> learningFilters = learningContentService.getViewMoreNewFiltersWithCount(filtersSelected);
+		boolean hcaasStatus = getHcaasStatus(request);
+		Map<String, Object> learningFilters = learningContentService.getViewMoreNewFiltersWithCount(filtersSelected, hcaasStatus);
 		LOG.info("Received new learning content in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<>(learningFilters, HttpStatus.OK);
 	}
@@ -197,7 +203,7 @@ public class NewLearningContentController {
 	}
 
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/recentlyviewed")
-	@ApiOperation(value = "Fetch recently viewed Learning Content", response = String.class, nickname = "fetchrecentlyviewedlearningcontent")
+	@ApiOperation(value = "Fetch recently viewed Learning Content", nickname = "fetchrecentlyviewedlearningcontent")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
@@ -205,21 +211,23 @@ public class NewLearningContentController {
 	public ResponseEntity<List<LearningContentItem>> getRecentlyViewedContent(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
             @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
-			@ApiParam(value = "Filters") @RequestBody(required = false) HashMap<String, Object> filtersSelected)
+			@ApiParam(value = "Filters") @RequestBody(required = false) Map<String, Object> filtersSelected,
+			HttpServletRequest request)
 					throws Exception {
 		LOG.info("Entering the getRecentlyViewedContent method");
 		long requestStartTime = System.currentTimeMillis();
 		if (StringUtils.isBlank(xMasheryHandshake)) {
 			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
+		boolean hcaasStatus = getHcaasStatus(request);
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
-		List<LearningContentItem> learningContentList = learningContentService.fetchRecentlyViewedContent(userId, filtersSelected);
+		List<LearningContentItem> learningContentList = learningContentService.fetchRecentlyViewedContent(userId, filtersSelected, hcaasStatus);
 		LOG.info("Received recently viewed learning content in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<>(learningContentList, HttpStatus.OK);
 	}
 
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/viewmore/recentlyviewed/filters")
-	@ApiOperation(value = "Fetch All Learnings Filters for recently viewed section", response = String.class, nickname = "fetchallrecentlyViewedFilters")
+	@ApiOperation(value = "Fetch All Learnings Filters for recently viewed section", nickname = "fetchallrecentlyViewedFilters")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
@@ -227,21 +235,23 @@ public class NewLearningContentController {
 	public ResponseEntity<Map<String, Object>> getFiltersForRecentlyViewed(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
             @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
-			@ApiParam(value = "JSON Body to update filters", required = false) @RequestBody(required=false) HashMap<String, Object> filtersSelected )
+			@ApiParam(value = "JSON Body to update filters", required = false) @RequestBody(required=false) Map<String, Object> filtersSelected,
+			HttpServletRequest request)
 			throws Exception {
 		LOG.info("Entering the getFiltersForRecentlyViewed method");
 		long requestStartTime = System.currentTimeMillis();
 		if (StringUtils.isBlank(xMasheryHandshake)) {
 			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
+		boolean hcaasStatus = getHcaasStatus(request);
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
-		Map<String, Object> learningFilters = learningContentService.getRecentlyViewedFiltersWithCount(userId, filtersSelected);
+		Map<String, Object> learningFilters = learningContentService.getRecentlyViewedFiltersWithCount(userId, filtersSelected, hcaasStatus);
 		LOG.info("Received recently viewed filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<>(learningFilters, HttpStatus.OK);
 	}
 	
 	@PostMapping( produces = MediaType.APPLICATION_JSON_VALUE, path = "/bookmarked")
-	@ApiOperation(value = "Fetch bookmarked Learning Content", response = String.class, nickname = "fetchbookmarkedlearningcontent")
+	@ApiOperation(value = "Fetch bookmarked Learning Content", nickname = "fetchbookmarkedlearningcontent")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
@@ -249,21 +259,23 @@ public class NewLearningContentController {
 	public ResponseEntity<List<LearningContentItem>> getBookmarkedContent(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
             @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
-			@ApiParam(value = "Filters") @RequestBody(required = false) HashMap<String, Object> filtersSelected)
+			@ApiParam(value = "Filters") @RequestBody(required = false) Map<String, Object> filtersSelected,
+			HttpServletRequest request)
 					throws Exception {
 		LOG.info("Entering the getBookmarkedContent method");
 		long requestStartTime = System.currentTimeMillis();
 		if (StringUtils.isBlank(xMasheryHandshake)) {
 			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
+		boolean hcaasStatus = getHcaasStatus(request);
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
-		List<LearningContentItem> learningContentList = learningContentService.fetchBookMarkedContent(userId, filtersSelected);
+		List<LearningContentItem> learningContentList = learningContentService.fetchBookMarkedContent(userId, filtersSelected, hcaasStatus);
 		LOG.info("Received bookmarked learning content in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<>(learningContentList, HttpStatus.OK);
 	}
 	
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/viewmore/bookmarked/filters")
-	@ApiOperation(value = "Fetch All Learnings Filters for recently viewed section", response = String.class, nickname = "fetchallBookmarkedFilters")
+	@ApiOperation(value = "Fetch All Learnings Filters for recently viewed section", nickname = "fetchallBookmarkedFilters")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
@@ -271,21 +283,23 @@ public class NewLearningContentController {
 	public ResponseEntity<Map<String, Object>> getFiltersForBookmarked(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
             @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
-			@ApiParam(value = "Filters") @RequestBody(required = false) HashMap<String, Object> filtersSelected)
+			@ApiParam(value = "Filters") @RequestBody(required = false) Map<String, Object> filtersSelected,
+			HttpServletRequest request)
 			throws Exception {
 		LOG.info("Entering the getFiltersForBookmarked method");
 		long requestStartTime = System.currentTimeMillis();
 		if (StringUtils.isBlank(xMasheryHandshake)) {
 			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
+		boolean hcaasStatus = getHcaasStatus(request);
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
-		Map<String, Object> learningFilters = learningContentService.getBookmarkedFiltersWithCount(userId, filtersSelected);
+		Map<String, Object> learningFilters = learningContentService.getBookmarkedFiltersWithCount(userId, filtersSelected, hcaasStatus);
 		LOG.info("Received bookmarked filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<>(learningFilters, HttpStatus.OK);
 	}
 	
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/upcoming")
-	@ApiOperation(value = "Fetch bookmarked Learning Content", response = String.class, nickname = "fetchupcominglearningcontent")
+	@ApiOperation(value = "Fetch bookmarked Learning Content", nickname = "fetchupcominglearningcontent")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
@@ -293,38 +307,42 @@ public class NewLearningContentController {
 	public ResponseEntity<List<LearningContentItem>> getUpcomingContent(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
             @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
-			@ApiParam(value = "Filters") @RequestBody(required = false) HashMap<String, Object> filtersSelected)
+			@ApiParam(value = "Filters") @RequestBody(required = false) Map<String, Object> filtersSelected,
+			HttpServletRequest request)
 					throws Exception {
 		LOG.info("Entering the getBookmarkedContent method");
 		long requestStartTime = System.currentTimeMillis();
 		if (StringUtils.isBlank(xMasheryHandshake)) {
 			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
+		boolean hcaasStatus = getHcaasStatus(request);
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
-		List<LearningContentItem> learningContentList = learningContentService.fetchUpcomingContent(userId, filtersSelected);
+		List<LearningContentItem> learningContentList = learningContentService.fetchUpcomingContent(userId, filtersSelected, hcaasStatus);
 		LOG.info("Received bookmarked learning content in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<>(learningContentList, HttpStatus.OK);
 	}
 	
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/viewmore/upcoming/filters")
-	@ApiOperation(value = "Fetch All Learnings Filters for recently viewed section", response = String.class, nickname = "fetchallUpcomingFilters")
+	@ApiOperation(value = "Fetch All Learnings Filters for recently viewed section", nickname = "fetchallUpcomingFilters")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
 	public ResponseEntity<Map<String, Object>> getFiltersForUpcoming(
-			@ApiParam(value = "JSON Body to update filters", required = false) @RequestBody(required=false) HashMap<String, Object> filtersSelected ,
-			@ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid)
+			@ApiParam(value = "JSON Body to update filters", required = false) @RequestBody(required=false) Map<String, Object> filtersSelected ,
+			@ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
+			HttpServletRequest request)
 			throws Exception {
 		LOG.info("Entering the getFiltersForUpcoming method");
 		long requestStartTime = System.currentTimeMillis();
-		Map<String, Object> learningFilters = learningContentService.getUpcomingFiltersWithCount(filtersSelected);
+		boolean hcaasStatus = getHcaasStatus(request);
+		Map<String, Object> learningFilters = learningContentService.getUpcomingFiltersWithCount(filtersSelected, hcaasStatus);
 		LOG.info("Received upcoming filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<>(learningFilters, HttpStatus.OK);
 	}
 
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/cxinsights")
-	@ApiOperation(value = "Fetch CX Insights Content", response = String.class, nickname = "fetchcxinsightscontent")
+	@ApiOperation(value = "Fetch CX Insights Content", nickname = "fetchcxinsightscontent")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
@@ -334,14 +352,16 @@ public class NewLearningContentController {
             @ApiParam(value = "search") @RequestParam(value = "search", required = false) String searchToken,
             @ApiParam(value = "sortfield") @RequestParam(value = "sortfield", required = false) String sortField,
             @ApiParam(value = "sorttype") @RequestParam(value = "sorttype", required = false) String sortType,
-			@ApiParam(value = "Filters") @RequestBody(required = false) HashMap<String, Object> filtersSelected,
-			@ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid)
+			@ApiParam(value = "Filters") @RequestBody(required = false) Map<String, Object> filtersSelected,
+			@ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
+			HttpServletRequest request)
 					throws Exception {
 		LOG.info("Entering the getCXInsightsContent method");
 		long requestStartTime = System.currentTimeMillis();
 		if (StringUtils.isBlank(xMasheryHandshake)) {
 			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
+		boolean hcaasStatus = getHcaasStatus(request);
 		if(sortField==null) {
 			sortField="sortByDate";}
 		if(sortType==null) {
@@ -349,38 +369,40 @@ public class NewLearningContentController {
 		if(searchToken!=null) {
 			searchToken=searchToken.trim();}
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
-		List<LearningContentItem> learningContentList = learningContentService.fetchCXInsightsContent(userId, filtersSelected, searchToken, sortField, sortType);
+		List<LearningContentItem> learningContentList = learningContentService.fetchCXInsightsContent(userId, filtersSelected, searchToken, sortField, sortType, hcaasStatus);
 		LOG.info("Received cxinsights content in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<>(learningContentList, HttpStatus.OK);
 	}
 
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/cxinsights/filters")
-	@ApiOperation(value = "Fetch All Learnings Filters for cx insights section", response = String.class, nickname = "fetchallCXInsightsFilters")
+	@ApiOperation(value = "Fetch All Learnings Filters for cx insights section", nickname = "fetchallCXInsightsFilters")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
 	public ResponseEntity<Map<String, Object>> getFiltersForCXInsights(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
-			@ApiParam(value = "JSON Body to update filters", required = false) @RequestBody(required=false) HashMap<String, Object> filtersSelected ,
+			@ApiParam(value = "JSON Body to update filters", required = false) @RequestBody(required=false) Map<String, Object> filtersSelected ,
 			@ApiParam(value = "search") @RequestParam(value = "search", required = false) String searchToken,
-			@ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid)
+			@ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
+			HttpServletRequest request)
 			throws Exception {
 		LOG.info("Entering the getFiltersForCXInsights method");
 		long requestStartTime = System.currentTimeMillis();
 		if (StringUtils.isBlank(xMasheryHandshake)) {
 			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
+		boolean hcaasStatus = getHcaasStatus(request);
 		if(searchToken!=null) {
 			searchToken=searchToken.trim();}
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
-		Map<String, Object> learningFilters = learningContentService.getCXInsightsFiltersWithCount(userId, searchToken, filtersSelected);
+		Map<String, Object> learningFilters = learningContentService.getCXInsightsFiltersWithCount(userId, searchToken, filtersSelected, hcaasStatus);
 		LOG.info("Received cx insights filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<>(learningFilters, HttpStatus.OK);
 	}
 	
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/learningmap")
-	@ApiOperation(value = "Fetch learning map", response = String.class, nickname = "fetchlearningmap")
+	@ApiOperation(value = "Fetch learning map", nickname = "fetchlearningmap")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
@@ -402,7 +424,7 @@ public class NewLearningContentController {
 	}
 
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/popular/{popularityType}")
-	@ApiOperation(value = "Fetch popular content across or within a partner company", response = String.class, nickname = "fetchPopularContent")
+	@ApiOperation(value = "Fetch popular content across or within a partner company", nickname = "fetchPopularContent")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
@@ -411,7 +433,8 @@ public class NewLearningContentController {
 			@ApiParam(value = "popularity type. It can be 'popularAcrossPartners' or 'popularAtPartner'") @PathVariable(value = "popularityType", required = true) String popularityType,
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
             @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
-			@ApiParam(value = "Filters") @RequestBody(required = false) HashMap<String, Object> filtersSelected)
+			@ApiParam(value = "Filters") @RequestBody(required = false) Map<String, Object> filtersSelected,
+			HttpServletRequest request)
 					throws Exception {
 		if(!(popularityType.equals(Constants.POPULAR_ACROSS_PARTNERS_PATH) || popularityType.equals(Constants.POPULAR_AT_PARTNER_PATH))) 
 		{
@@ -422,14 +445,15 @@ public class NewLearningContentController {
 		if (StringUtils.isBlank(xMasheryHandshake)) {
 			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
+		boolean hcaasStatus = getHcaasStatus(request);
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
-		List<LearningContentItem> learningContentList = learningContentService.fetchPopularContent(userId, filtersSelected, popularityType, puid);
+		List<LearningContentItem> learningContentList = learningContentService.fetchPopularContent(userId, filtersSelected, popularityType, puid, hcaasStatus);
 		LOG.info("Received popular content in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<>(learningContentList, HttpStatus.OK);
 	}
 
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/viewmore/popular/{popularityType}/filters")
-	@ApiOperation(value = "Fetch Learning Filters for popularAcrossPartners or popularAtPartners section", response = String.class, nickname = "fetchPopularContentFilters")
+	@ApiOperation(value = "Fetch Learning Filters for popularAcrossPartners or popularAtPartners section", nickname = "fetchPopularContentFilters")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
@@ -438,7 +462,8 @@ public class NewLearningContentController {
 			@ApiParam(value = "popularity type. It can be 'popularAcrossPartners' or 'popularAtPartner'") @PathVariable(value = "popularityType", required = true) String popularityType,
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
 			@ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
-			@ApiParam(value = "JSON Body to update filters", required = false) @RequestBody(required=false) HashMap<String, Object> filtersSelected)
+			@ApiParam(value = "JSON Body to update filters", required = false) @RequestBody(required=false) Map<String, Object> filtersSelected,
+			HttpServletRequest request)
 			throws Exception {
 		if(!(popularityType.equals(Constants.POPULAR_ACROSS_PARTNERS_PATH) || popularityType.equals(Constants.POPULAR_AT_PARTNER_PATH)))
 		{
@@ -449,14 +474,15 @@ public class NewLearningContentController {
 		if (StringUtils.isBlank(xMasheryHandshake)) {
 			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
+		boolean hcaasStatus = getHcaasStatus(request);
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
-		Map<String, Object> learningFilters = learningContentService.getPopularContentFiltersWithCount(filtersSelected, puid, popularityType, userId);
+		Map<String, Object> learningFilters = learningContentService.getPopularContentFiltersWithCount(filtersSelected, puid, popularityType, userId, hcaasStatus);
 		LOG.info("Received popular content filters counts in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<>(learningFilters, HttpStatus.OK);
 	}
 	
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/featured")
-	@ApiOperation(value = "Fetch bookmarked Learning Content", response = String.class, nickname = "fetchfeaturedlearningcontent")
+	@ApiOperation(value = "Fetch bookmarked Learning Content", nickname = "fetchfeaturedlearningcontent")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
@@ -464,34 +490,42 @@ public class NewLearningContentController {
 	public ResponseEntity<List<LearningContentItem>> getFeaturedContent(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
             @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
-			@ApiParam(value = "Filters") @RequestBody(required = false) HashMap<String, Object> filtersSelected)
+			@ApiParam(value = "Filters") @RequestBody(required = false) Map<String, Object> filtersSelected,
+			HttpServletRequest request)
 					throws Exception {
 		LOG.info("Entering the getFeaturedContent method");
 		long requestStartTime = System.currentTimeMillis();
 		if (StringUtils.isBlank(xMasheryHandshake)) {
 			throw new BadRequestException(MASHERY_MISSING_MSG);
 		}
+		boolean hcaasStatus = getHcaasStatus(request);
 		String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
-		List<LearningContentItem> learningContentList = learningContentService.fetchFeaturedContent(userId, filtersSelected);
+		List<LearningContentItem> learningContentList = learningContentService.fetchFeaturedContent(userId, filtersSelected, hcaasStatus);
 		LOG.info("Received featured learning content in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<>(learningContentList, HttpStatus.OK);
 	}
 	
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/featured/filters")
-	@ApiOperation(value = "Fetch All Learnings Filters for recently viewed section", response = String.class, nickname = "fetchallFeaturedFilters")
+	@ApiOperation(value = "Fetch All Learnings Filters for recently viewed section", nickname = "fetchallFeaturedFilters")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
 			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
 			@ApiResponse(code = 404, message = "Entity Not Found"),
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
 	public ResponseEntity<Map<String, Object>> getFiltersForFeatured(
-			@ApiParam(value = "JSON Body to update filters", required = false) @RequestBody(required=false) HashMap<String, Object> filtersSelected ,
-			@ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid)
+			@ApiParam(value = "JSON Body to update filters", required = false) @RequestBody(required=false) Map<String, Object> filtersSelected ,
+			@ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
+			HttpServletRequest request)
 			throws Exception {
 		LOG.info("Entering the getFiltersForFeatured method");
 		long requestStartTime = System.currentTimeMillis();
-		Map<String, Object> learningFilters = learningContentService.getFeaturedFiltersWithCount(filtersSelected);
+		boolean hcaasStatus = getHcaasStatus(request);
+		Map<String, Object> learningFilters = learningContentService.getFeaturedFiltersWithCount(filtersSelected, hcaasStatus);
 		LOG.info("Received featured filter counts in {} ", (System.currentTimeMillis() - requestStartTime));
 		return new ResponseEntity<>(learningFilters, HttpStatus.OK);
+	}
+
+	public boolean getHcaasStatus(HttpServletRequest request) {
+		return (boolean)request.getServletContext().getAttribute(Constants.HCAAS_FLAG);
 	}
 
 }

@@ -33,11 +33,11 @@ public interface NewLearningContentRepo
 	@Query(value = SQLConstants.GET_ROLE_WITH_COUNT_BY_CARD, nativeQuery = true)
 	List<Map<String, Object>> getAllRoleCountByCards(Set<String> learningItemIds);
 
+	@Query(value = SQLConstants.GET_CISCOPLUS_WITH_COUNT_BY_CARD, nativeQuery = true)
+	List<Map<String, Object>> getAllCiscoPlusCountByCards(Set<String> learningItemIds);
+
 	@Query(value = SQLConstants.GET_TECH_WITH_COUNT_BY_CARD, nativeQuery = true)
 	List<Map<String, Object>> getAllTechCountByCards(Set<String> learningItemIds);
-
-	@Query(value = SQLConstants.GET_DOC_WITH_COUNT_BY_CARD, nativeQuery = true)
-	List<Map<String, Object>> getDocFilterCountByCards(Set<String> learningItemIds);
 
 	@Query(value = SQLConstants.GET_LFC_WITH_COUNT_BY_CARD, nativeQuery = true)
 	List<Map<String, Object>> getAllLFCWithCountByCards(Set<String> learningItemIds);
@@ -46,28 +46,28 @@ public interface NewLearningContentRepo
 	List<Map<String, Object>> getAllStUcWithCount(Set<String> learningItemIds);
 
 	@Query(value = SQLConstants.GET_RECENTLY_VIEWED_CONTENT_BASE, nativeQuery = true)
-	List<NewLearningContentEntity> getRecentlyViewedContent(String userId);
+	List<NewLearningContentEntity> getRecentlyViewedContent(String userId, String hcaasStatus);
 
 	@Query(value = SQLConstants.GET_RECENTLY_VIEWED_CONTENT, nativeQuery = true)
-	List<NewLearningContentEntity> getRecentlyViewedContentFiltered(String userId, Set<String> learningItemIds);
+	List<NewLearningContentEntity> getRecentlyViewedContentFiltered(String userId, Set<String> learningItemIds, String hcaasStatus);
 
 	@Query(value = SQLConstants.GET_RECENTLY_VIEWED_IDs, nativeQuery = true)
-	Set<String> getRecentlyViewedContentFilteredIds(String userId, Set<String> learningItemIds);
+	Set<String> getRecentlyViewedContentFilteredIds(String userId, Set<String> learningItemIds, String hcaasStatus);
 
 	@Query(value = SQLConstants.GET_NEW_CONTENT_BASE, nativeQuery = true)
-	List<NewLearningContentEntity> findNew();
+	List<NewLearningContentEntity> findNew(String hcaasStatus);
 
 	@Query(value = SQLConstants.GET_NEW_CONTENT, nativeQuery = true)
-	List<NewLearningContentEntity> findNewFiltered(Set<String> learningItemIds);
+	List<NewLearningContentEntity> findNewFiltered(Set<String> learningItemIds, String hcaasStatus);
 
 	@Query(value = SQLConstants.GET_NEW_CONTENT_IDs, nativeQuery = true)
-	Set<String> findNewFilteredIds(Set<String> learningItemIds);
+	Set<String> findNewFilteredIds(Set<String> learningItemIds, String hcaasStatus);
 
 	@Query(value = SQLConstants.GET_UPCOMING_CONTENT_BASE, nativeQuery = true)
-	List<NewLearningContentEntity> findUpcoming();
+	List<NewLearningContentEntity> findUpcoming(String hcaasStatus);
 
 	@Query(value = SQLConstants.GET_UPCOMING_CONTENT, nativeQuery = true)
-	List<NewLearningContentEntity> findUpcomingFiltered(Set<String> learningItemIds);
+	List<NewLearningContentEntity> findUpcomingFiltered(Set<String> learningItemIds, String hcaasStatus);
 
 	@Query(value = SQLConstants.GET_CARD_IDs_CT, nativeQuery = true)
 	Set<String> getCardIdsByCT(Set<String> values, Set<String> learningItemIdsList);
@@ -80,6 +80,9 @@ public interface NewLearningContentRepo
 
 	@Query(value = SQLConstants.GET_CARD_IDs_ROLE, nativeQuery = true)
 	Set<String> getCardIdsByRole(Set<String> values, Set<String> learningItemIdsList);
+
+	@Query(value = SQLConstants.GET_CARD_IDs_CISCOPLUS, nativeQuery = true)
+	Set<String> getCardIdsByCiscoPlus(Set<String> values, Set<String> learningItemIdsList);
 
 	@Query(value = SQLConstants.GET_CARD_IDs_TECH, nativeQuery = true)
 	Set<String> getCardIdsByTech(Set<String> values, Set<String> learningItemIdsList);
@@ -130,23 +133,26 @@ public interface NewLearningContentRepo
 	@Query(value = SQLConstants.GET_ROLES_COUNT, nativeQuery = true)
 	Integer getRolesCount();
 
+	@Query(value = SQLConstants.GET_CISCOPLUS_COUNT, nativeQuery = true)
+	Integer getCiscoPlusCount();
+
 	@Query(value = SQLConstants.GET_POPULAR_ACCROSS_PARTNERS, nativeQuery = true)
-	List<NewLearningContentEntity> getPopularAcrossPartners(Integer limitNormal, Integer limitExtended, Integer mx, Set<String> userBookmarks);
+	List<NewLearningContentEntity> getPopularAcrossPartners(Integer limitNormal, Integer limitExtended, Integer mx, Set<String> userBookmarks, String hcaasStatus);
 
 	@Query(value = SQLConstants.GET_POPULAR_ACCROSS_PARTNERS_FILTERED, nativeQuery = true)
-	List<NewLearningContentEntity> getPopularAcrossPartnersFiltered(Set<String> learningItemIds, Integer limitNormal, Integer limitExtended, Integer mx, Set<String> userBookmarks);
+	List<NewLearningContentEntity> getPopularAcrossPartnersFiltered(Set<String> learningItemIds, Integer limitNormal, Integer limitExtended, Integer mx, Set<String> userBookmarks, String hcaasStatus);
 
 	@Query(value = SQLConstants.GET_POPULAR_AT_PARTNER, nativeQuery = true)
-	List<NewLearningContentEntity> getPopularAtPartner(String puid, Integer limit, Integer limitExtended, Set<String> userBookmarks);
+	List<NewLearningContentEntity> getPopularAtPartner(String puid, Integer limit, Integer limitExtended, Set<String> userBookmarks, String hcaasStatus);
 
 	@Query(value = SQLConstants.GET_POPULAR_AT_PARTNER_FILTERED, nativeQuery = true)
-	List<NewLearningContentEntity> getPopularAtPartnerFiltered(String puid, Set<String> learningItemIds, Integer limit, Integer limitExtended, Set<String> userBookmarks);
+	List<NewLearningContentEntity> getPopularAtPartnerFiltered(String puid, Set<String> learningItemIds, Integer limit, Integer limitExtended, Set<String> userBookmarks, String hcaasStatus);
 
 	@Query(value = SQLConstants.GET_FEATURED_CONTENT_BASE, nativeQuery = true)
-	List<NewLearningContentEntity> findFeatured();
+	List<NewLearningContentEntity> findFeatured(String hcaasStatus);
 	
 	@Query(value = SQLConstants.GET_FEATURED_CONTENT, nativeQuery = true)
-	List<NewLearningContentEntity> findFeaturedFiltered(Set<String> learningItemIds);
+	List<NewLearningContentEntity> findFeaturedFiltered(Set<String> learningItemIds, String hcaasStatus);
 
 	@Query(value = SQLConstants.GET_MAX_BOOKMARK, nativeQuery = true)
 	Integer getMaxBookmark();

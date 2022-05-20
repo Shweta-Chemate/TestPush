@@ -12,7 +12,7 @@ import com.cisco.cx.training.app.filters.XSSFilter;
 public class XSSFilterTest {
 
     @Test
-    public void doFilter() throws  Exception{
+    void doFilter() throws  Exception{
         XSSFilter filter = new XSSFilter();
         MockHttpServletResponse servletResponse = new MockHttpServletResponse();
         MockHttpServletRequest servletRequest = new MockHttpServletRequest();
@@ -23,7 +23,7 @@ public class XSSFilterTest {
     }
 
     @Test
-    public void doFilterInvalidInput() throws  Exception{
+   void doFilterInvalidInput() throws  Exception{
     	XSSFilter filter = new XSSFilter();
     	MockHttpServletResponse servletResponse = new MockHttpServletResponse();
     	
