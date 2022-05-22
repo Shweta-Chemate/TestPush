@@ -161,37 +161,35 @@ public class ProductDocumentationService{
 			card.setContentType(learning.getAsset_types());
 			card.setUrlDescrption(learning.getAsset_description());
 			
-			if(splitService.getSplitValue(Constants.SUCCESS_TIPS_SPLIT_KEY)) {
-				if(learning.getLearning_type().equals(Constants.SUCCESSTIPS)
-						&& StringUtils.isNotBlank(learning.getAsset_types())) {
-					List<SuccessTipsAttachment> videoAttachments = new ArrayList<>();
-					List<SuccessTipsAttachment> fileAttachments = new ArrayList<>();
-					String[] asset_types = learning.getAsset_types().split(",");
-					String[] asset_links = learning.getAsset_links().split(",");
-					String[] asset_description = learning.getAsset_description().split(":");
-					String[] asset_titles = learning.getAsset_titles().split(",");
-					for(int i=0 ;i<asset_types.length;i++) {
-						SuccessTipsAttachment successTipAttac = new SuccessTipsAttachment();
-						successTipAttac.setAttachmentType(asset_types[i]);
-						successTipAttac.setUrl(asset_links[i]);
-						if(asset_description.length == 0) {
-							successTipAttac.setUrlDescription("");
-						}else {
-							successTipAttac.setUrlDescription(asset_description[i]);
-						}
-						successTipAttac.setUrlTitle(asset_titles[i]);
-						if(asset_types[i].equalsIgnoreCase(Constants.SUCCESS_TIPS_VIDEO)) {
-							videoAttachments.add(successTipAttac);
-						}else {
-							fileAttachments.add(successTipAttac);
-						}
+			if(learning.getLearning_type().equals(Constants.SUCCESSTIPS)
+					&& StringUtils.isNotBlank(learning.getAsset_types())) {
+				List<SuccessTipsAttachment> videoAttachments = new ArrayList<>();
+				List<SuccessTipsAttachment> fileAttachments = new ArrayList<>();
+				String[] asset_types = learning.getAsset_types().split(",");
+				String[] asset_links = learning.getAsset_links().split(",");
+				String[] asset_description = learning.getAsset_description().split(":");
+				String[] asset_titles = learning.getAsset_titles().split(":");
+				for(int i=0 ;i<asset_types.length;i++) {
+					SuccessTipsAttachment successTipAttac = new SuccessTipsAttachment();
+					successTipAttac.setAttachmentType(asset_types[i]);
+					successTipAttac.setUrl(asset_links[i]);
+					if(asset_description.length == 0) {
+						successTipAttac.setUrlDescription("");
+					}else {
+						successTipAttac.setUrlDescription(asset_description[i]);
 					}
-					if(!videoAttachments.isEmpty()) {
-						card.setSuccessTipsVideos(videoAttachments);
+					successTipAttac.setUrlTitle(asset_titles[i]);
+					if(asset_types[i].equalsIgnoreCase(Constants.SUCCESS_TIPS_VIDEO)) {
+						videoAttachments.add(successTipAttac);
+					}else {
+						fileAttachments.add(successTipAttac);
 					}
-					if(!fileAttachments.isEmpty()) {
-						card.setSuccessTipsFiles(fileAttachments);
-					}
+				}
+				if(!videoAttachments.isEmpty()) {
+					card.setSuccessTipsVideos(videoAttachments);
+				}
+				if(!fileAttachments.isEmpty()) {
+					card.setSuccessTipsFiles(fileAttachments);
 				}
 			}
 			
@@ -205,8 +203,13 @@ public class ProductDocumentationService{
 			{
 				card.setModulecount(lmCounts.get(learning.getLearning_item_id()));
 			}
-
-			cards.add(card);
+			if(Constants.SUCCESSTIPS.equalsIgnoreCase(learning.getLearning_type())) {
+				if(splitService.getSplitValue(Constants.SUCCESS_TIPS_SPLIT_KEY)) {
+					cards.add(card);
+				}
+			}else {
+				cards.add(card);
+			}
 		});
 		return cards;
 	}

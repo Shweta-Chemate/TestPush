@@ -118,6 +118,12 @@ public class NewLearningContentEntity {
 
 	@Column(name = "ciscoplus")
 	private String ciscoplus;
+	
+	@Column(name = "link_title")
+	private String link_title;
+	
+	@Column(name = "link_description")
+	private String link_descrption;
 
 	public Integer getTotalCompletions() {
 		return totalCompletions;
@@ -389,5 +395,21 @@ public class NewLearningContentEntity {
 
 	public void setCiscoplus(String ciscoplus) {
 		this.ciscoplus = ciscoplus;
+	}
+
+	public String getLink_title() {
+		return link_title;
+	}
+
+	public void setLink_title(String link_title) {
+		this.link_title = link_title;
+	}
+
+	public String getLink_descrption() {
+		return link_descrption;
+	}
+
+	public void setLink_descrption(String link_descrption) {
+		this.link_descrption = link_descrption;
 	}
 }

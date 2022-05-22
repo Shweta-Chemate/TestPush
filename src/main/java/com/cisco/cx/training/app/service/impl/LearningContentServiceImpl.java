@@ -488,7 +488,13 @@ public class LearningContentServiceImpl implements LearningContentService {
 						&& userBookmarks.keySet().contains(entity.getId())){
 					learningItem.setBookmark(true);
 					learningItem.setBookmarkTimeStamp(Instant.ofEpochMilli(Long.valueOf((String)userBookmarks.get(entity.getId()))).toString());
-					result.add(learningItem);
+					if(Constants.SUCCESSTIPS.equalsIgnoreCase(learningItem.getLearningType())) {
+						if(splitService.getSplitValue(Constants.SUCCESS_TIPS_SPLIT_KEY)) {
+							result.add(learningItem);
+						}
+					}else {
+						result.add(learningItem);
+					}
 					LearningStatusEntity userRegistration = userRegistrations.stream()
 							.filter(userRegistrationInStream -> userRegistrationInStream.getLearningItemId()
 									.equalsIgnoreCase(learningItem.getId()))
@@ -792,7 +798,13 @@ public class LearningContentServiceImpl implements LearningContentService {
 				learningItem.setStatus(userRegistration.getRegStatus());
 				learningItem.setRegTimestamp(userRegistration.getRegUpdatedTimestamp()!=null?userRegistration.getRegUpdatedTimestamp().toInstant().toString():null);
 			}
-			result.add(learningItem);
+			if(Constants.SUCCESSTIPS.equalsIgnoreCase(learningItem.getLearningType())) {
+				if(splitService.getSplitValue(Constants.SUCCESS_TIPS_SPLIT_KEY)) {
+					result.add(learningItem);
+				}
+			}else {
+				result.add(learningItem);
+			}
 		}
 		return result;
 	}

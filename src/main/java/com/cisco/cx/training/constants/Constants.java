@@ -79,9 +79,9 @@ public final class Constants {
 	public static final String OFFER_SPEC_TYPE = "ATX/ACC";
 	public static final String CISCO_PLUS_FILTER = "Cisco+";
 	public static final String CISCO_PLUS_FILTER_PRM = "ciscoplus";
-	public static final String SUCCESS_TIPS_VIDEO = "st_video";
+	public static final String SUCCESS_TIPS_VIDEO = "Video";
 	public static final String RECOMMENDED_RESOURCE = "Recommended Resource";
-	public static final String SUCCESS_TIPS_RECOMMENDED_RESOURCE = "st_recommended_resource";
+	public static final String SUCCESS_TIPS_RECOMMENDED_RESOURCE = "web";
 	public static final String HCAAS_SPECIALIZATION_QUERY_TERM = "hcaasStatus";
 	public static final String PLS_SPECIALIZATION_QUERY_TERM = "plsStatus";
 	public static final String HCAAS_SPECIALIZATION_TERM = "HcaaS";

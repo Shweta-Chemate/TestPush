@@ -21,7 +21,7 @@ public class SQLConstants {
 			+ " from cxpp_db.cxpp_learning_content " + " where piw_language IS NOT NULL and id in (:learningItemIds) "
 			+ " group by piw_language order by piw_language";
 	
-	public static final String GET_NEW_CONTENT_BASE = "select * from cxpp_db.cxpp_learning_content where sort_by_date  between (current_date() - interval 1 month) and  current_date() and status!='cancelled' "
+	public static final String GET_NEW_CONTENT_BASE = "select * from cxpp_db.cxpp_learning_content where sort_by_date  between (current_date() - interval 1 month) and  (current_date() + interval 1 day) and (status!='cancelled' or status is NULL)"
 			+ " and " + HCAAS_CLAUSE
 			+ " order by sort_by_date desc limit 25";
 

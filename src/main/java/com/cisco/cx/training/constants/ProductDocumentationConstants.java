@@ -81,7 +81,7 @@ public class ProductDocumentationConstants{
 			+ "	(select learning_item_id, "
 			+ "	group_concat(ifnull(asset_type,'') separator ',') as asset_types, "
 			+ "	group_concat(ifnull(link,'') separator ',') AS asset_links, "
-			+ "	group_concat(ifnull(link_title,'') separator ',') AS asset_titles, "
+			+ "	group_concat(ifnull(link_title,'') separator ':') AS asset_titles, "
 			+ "	group_concat(ifnull(link_description,'') separator ':') AS asset_description "
 			+ "	from cxpp_db.cxpp_item_link  "
 			+ "	group by learning_item_id) as CT "
