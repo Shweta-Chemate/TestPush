@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.domain.Specification;
 
+import com.cisco.cx.training.app.entities.NewLearningContentEntity;
 import com.cisco.cx.training.constants.Constants;
 
 public class CustomSpecifications {
@@ -68,8 +69,12 @@ public class CustomSpecifications {
 		return (successtalk, cq, cb) -> cb.like(cb.lower(successtalk.get(columnName)).as(String.class), "%" + withValue + "%");
 	}
 	
-	 public static <T> Specification<T> notEqual(String columnName, String withValue) {
-	        return (customer, cq, cb) -> cb.notEqual(customer.get(columnName), withValue);
-	    }
+	public static <T> Specification<T> notEqual(String columnName, String withValue) {
+		return (customer, cq, cb) -> cb.notEqual(customer.get(columnName), withValue);
+	}
+
+	public static <T> Specification<T> isNull(String columnName) {
+		return (customer, cq, cb) -> cb.isNull(customer.get(columnName));
+	}
 
 }

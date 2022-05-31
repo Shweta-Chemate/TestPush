@@ -88,5 +88,6 @@ public final class Constants {
 	public static final String HCAAS_FLAG = "hcaasflag";
 	public static final String SUCCESSTRACK_FLAG = "successTrackFlag";
 	public static final String SUCCESS_TIPS_SPLIT_KEY="be_PXC-26267-displaySuccessTips";
+	public static final String CISCO_PLUS_DB_FILED = "ciscoplus";
 
 }

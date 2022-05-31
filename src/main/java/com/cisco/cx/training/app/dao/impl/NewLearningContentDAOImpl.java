@@ -448,7 +448,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		Specification<NewLearningContentEntity> specification = getSpecificationForCuratedTags(queryMap ,stMap, userId, hcaasStatusString);
 		specification = specification.and(builder.filter(queryMap));
 		if(!hcaasStatus) {
-			specification = specification.and(builder.rbacOnSpecialization());
+			specification = specification.and(CustomSpecifications.isNull(Constants.CISCO_PLUS_DB_FILED));
 		}
 		specification = specification.and(builder.buildSearchSpecification(searchToken));
 		specification = specification.and(builder.filterById(learningItemIdsListCXInsights));
@@ -475,7 +475,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 		Specification<NewLearningContentEntity> specification=getSpecificationForCuratedTags(queryMap ,stMap, null, hcaasStatusString);
 		specification = specification.and(builder.filter(queryMap));
 		if(!hcaasStatus) {
-			specification = specification.and(builder.rbacOnSpecialization());
+			specification = specification.and(CustomSpecifications.isNull(Constants.CISCO_PLUS_DB_FILED));
 		}
 		List<NewLearningContentEntity> filteredList = learningContentRepo.findAll(specification);
 		return filteredList;
