@@ -26,7 +26,7 @@ public interface NewLearningContentDAO {
 	Integer getPIWCount();
 
 	Integer getDocumentationCount();
-	
+
 	Integer getSuccessTipsCount();
 
 	List<NewLearningContentEntity> fetchRecentlyViewedContent(String userId, Map<String, List<String>> queryMap, Object stMap, String hcaasStatus);

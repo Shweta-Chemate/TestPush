@@ -105,7 +105,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 	public Integer getDocumentationCount() {
 		return learningContentRepo.countByLearningType(Constants.DOCUMENTATION);
 	}
-	
+
 	@Override
 	public Integer getSuccessTipsCount() {
 		return learningContentRepo.countByLearningType(Constants.SUCCESSTIPS);

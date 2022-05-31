@@ -207,12 +207,19 @@ public class LearningContentServiceImpl implements LearningContentService {
 			CountSchema documentationCount = getDocumentationCount();
 			LOG.info("Received documentation count in {} ", (System.currentTimeMillis() - requestStartTime));
 			indexCounts.add(documentationCount);
-			
+
 			requestStartTime = System.currentTimeMillis();	
 			CountSchema successTrackCount = getSuccessTrackCount();
 			LOG.info("Received Success Tracks count in {} ", (System.currentTimeMillis() - requestStartTime));
 			indexCounts.add(successTrackCount);
-			
+
+			if(hcaasStatus) {
+				requestStartTime = System.currentTimeMillis();
+				CountSchema ciscoPlusCount = getCiscoPlusCount();
+				LOG.info("Received Cisco+ count in {} ", (System.currentTimeMillis() - requestStartTime));
+				indexCounts.add(ciscoPlusCount);
+			}
+
 			requestStartTime = System.currentTimeMillis();	
 			CountSchema technologyCount = getTechnologyCount();
 			LOG.info("Received technology count in {} ", (System.currentTimeMillis() - requestStartTime));
@@ -222,18 +229,12 @@ public class LearningContentServiceImpl implements LearningContentService {
 			CountSchema roleCount = getRolesCount();
 			LOG.info("Received roles count in {} ", (System.currentTimeMillis() - requestStartTime));
 			indexCounts.add(roleCount);
+
 			if(splitService.getSplitValue(Constants.SUCCESS_TIPS_SPLIT_KEY)) {
 				requestStartTime = System.currentTimeMillis();	
 				CountSchema successTipsCount = getSuccessTipsCount();
 				LOG.info("Received success tips count in {} ", (System.currentTimeMillis() - requestStartTime));
 				indexCounts.add(successTipsCount);
-			}
-			
-			if(hcaasStatus) {
-				requestStartTime = System.currentTimeMillis();	
-				CountSchema ciscoPlusCount = getCiscoPlusCount();
-				LOG.info("Received Cisco+ count in {} ", (System.currentTimeMillis() - requestStartTime));
-				indexCounts.add(ciscoPlusCount);
 			}
 
 			countResponse.setLearningStatus(indexCounts);
@@ -262,7 +263,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 		return documentationCount;
 
 	}
-	
+
 	private CountSchema getSuccessTipsCount() {
 
 		CountSchema documentationCount = new CountSchema();
