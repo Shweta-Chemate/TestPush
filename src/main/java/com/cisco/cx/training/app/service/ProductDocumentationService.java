@@ -172,13 +172,25 @@ public class ProductDocumentationService{
 				for(int i=0 ;i<asset_types.length;i++) {
 					SuccessTipsAttachment successTipAttac = new SuccessTipsAttachment();
 					successTipAttac.setAttachmentType(asset_types[i]);
-					successTipAttac.setUrl(asset_links[i]);
+					if(i < asset_links.length) {
+						successTipAttac.setUrl(asset_links[i]);
+					}else {
+						successTipAttac.setUrl("");
+					}
 					if(asset_description.length == 0) {
 						successTipAttac.setUrlDescription("");
 					}else {
-						successTipAttac.setUrlDescription(asset_description[i]);
+						if((i+1) > asset_description.length) {
+							successTipAttac.setUrlDescription("");
+						}else {
+							successTipAttac.setUrlDescription(asset_description[i]);
+						}
 					}
-					successTipAttac.setUrlTitle(asset_titles[i]);
+					if(i < asset_titles.length) {
+						successTipAttac.setUrlTitle(asset_titles[i]);
+					}else {
+						successTipAttac.setUrlTitle("");
+					}
 					if(asset_types[i].equalsIgnoreCase(Constants.SUCCESS_TIPS_VIDEO)) {
 						videoAttachments.add(successTipAttac);
 					}else {
