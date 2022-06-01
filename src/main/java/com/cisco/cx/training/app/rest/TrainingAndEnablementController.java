@@ -171,7 +171,10 @@ public class TrainingAndEnablementController {
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake" , required=true) String xMasheryHandshake,
 			@ApiParam(value = "preferences") @RequestBody(required = true) Map<String, List<UserLearningPreference>> userPreferences
 			)
-			throws Exception {    
+			throws Exception { 
+		if(null == userPreferences) {
+			throw new BadRequestException("Bad input in parameters : " + userPreferences);
+		}
 		String userPreferenceInput = userPreferences.toString();
 		if (userPreferenceInput != null && !userPreferenceInput.equalsIgnoreCase(XSSUtil.checkXSS("",userPreferenceInput))){
 			LOG.info("User Preference---"+userPreferenceInput);
