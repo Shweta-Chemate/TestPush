@@ -1,7 +1,16 @@
 package com.cisco.cx.training.models;
 
-public class SuccessTipsAttachment {
+import java.io.Serializable;
+
+public class SuccessTipsAttachment implements Serializable{
 	
+	
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5038905336450032758L;
+
 	private String url;
 	
 	private String urlDescription;

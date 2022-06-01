@@ -9,6 +9,8 @@ import java.util.concurrent.Callable;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -33,6 +35,7 @@ import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.cisco.cx.training.models.Community;
 import com.cisco.cx.training.models.LearningRecordsAndFiltersModel;
 import com.cisco.cx.training.models.UserLearningPreference;
+import com.cisco.cx.training.util.XSSUtil;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -47,6 +50,8 @@ import io.swagger.annotations.ApiResponses;
 @Api(value = "Trainining and Enablement APIs", description = "REST APIs for Training And Enablement")
 public class TrainingAndEnablementController {
 	private static final String LIMIT_MSG = "Invalid limit.";
+	
+	private static final Logger LOG = LoggerFactory.getLogger(TrainingAndEnablementController.class);
 
 	@SuppressWarnings("unused")
 	private final Map<String, Callable<Boolean>> mandatoryDependencies = new HashMap<>();
@@ -164,9 +169,14 @@ public class TrainingAndEnablementController {
 			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
 	public ResponseEntity<String> updateMyLearningPreferences(
 			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake" , required=true) String xMasheryHandshake,
-			@ApiParam(value = "preferences") @RequestBody(required = false) Map<String, List<UserLearningPreference>> userPreferences
+			@ApiParam(value = "preferences") @RequestBody(required = true) Map<String, List<UserLearningPreference>> userPreferences
 			)
 			throws Exception {    
+		String userPreferenceInput = userPreferences.toString();
+		if (userPreferenceInput != null && !userPreferenceInput.equalsIgnoreCase(XSSUtil.checkXSS("",userPreferenceInput))){
+			LOG.info("User Preference---"+userPreferenceInput);
+    		throw new BadRequestException("Bad input in parameters : " + userPreferenceInput);
+    	}
 		Map<String, List<UserLearningPreference>> userPreferencesDb = trainingAndEnablementService.postUserLearningPreferences(xMasheryHandshake,userPreferences);//NOSONAR
 		return new ResponseEntity<String>("Preferences updated successfully.", HttpStatus.OK);
 	}

@@ -43,6 +43,18 @@ public class UserLearningPreference{
 	public void setTimeMap(Map<String, String> timeMap) {
 		this.timeMap = timeMap;
 	}
+	
+	@Override
+	public String toString() {
+		String toString = "Preference [name=" + name + ", selected =" + selected ;
+		if(null != timeMap) {
+			for(String key : timeMap.keySet()) {
+				toString += " key="+key+" value="+timeMap.get(key)+",";
+			}
+		}
+		toString += "]";
+		return toString;
+	}
 
 }
 

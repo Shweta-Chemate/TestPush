@@ -241,12 +241,12 @@ public class TrainingAndEnablementControllerTest {
 	void testLearningPreferences() throws Exception {
 		this.mockMvc
 				.perform(get("/v1/partner/training/myLearningPreferences").contentType(MediaType.APPLICATION_JSON_VALUE)
-						.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
+						.header("X-Mashery-Handshake", this.XMasheryHeader).content(getUserPreference()).characterEncoding("utf-8"))
 				.andDo(print()).andExpect(status().isOk());
 		
 		this.mockMvc
 		.perform(post("/v1/partner/training/myLearningPreferences").contentType(MediaType.APPLICATION_JSON_VALUE)
-				.header("X-Mashery-Handshake", this.XMasheryHeader).characterEncoding("utf-8"))
+				.header("X-Mashery-Handshake", this.XMasheryHeader).content(getUserPreference()).characterEncoding("utf-8"))
 		.andDo(print()).andExpect(status().isOk());
 	}
 	
@@ -280,5 +280,10 @@ public class TrainingAndEnablementControllerTest {
 		
 	
 	}	
+	
+	private String getUserPreference() {
+		return "{\"role\":[{\"name\":\"Customer Success Manager\",\"selected\":true,\"timeMap\":null},"+
+				"{\"name\":\"Customer Success Practice Lead\",\"selected\":true,\"timeMap\":null},{\"name\":\"Customer Success Specialist\",\"selected\":false,\"timeMap\":null},{\"name\":\"Partner Executive\",\"selected\":false,\"timeMap\":null},{\"name\":\"Renewals Manager\",\"selected\":false,\"timeMap\":null},{\"name\":\"Success Programs Manager\",\"selected\":false,\"timeMap\":null},{\"name\":\"Systems Engineer\",\"selected\":false,\"timeMap\":null}],\"language\":[{\"name\":\"English\",\"selected\":true,\"timeMap\":null},{\"name\":\"Japanese\",\"selected\":false,\"timeMap\":null},{\"name\":\"Korean\",\"selected\":false,\"timeMap\":null},{\"name\":\"Portuguese\",\"selected\":false,\"timeMap\":null},{\"name\":\"Spanish\",\"selected\":false,\"timeMap\":null}],\"technology\":[{\"name\":\"Analytics\",\"selected\":true,\"timeMap\":null},{\"name\":\"Cloud\",\"selected\":false,\"timeMap\":null},{\"name\":\"Collaboration\",\"selected\":false,\"timeMap\":null},{\"name\":\"Data Center\",\"selected\":false,\"timeMap\":null},{\"name\":\"Enterprise Networks\",\"selected\":false,\"timeMap\":null},{\"name\":\"IoT\",\"selected\":false,\"timeMap\":null},{\"name\":\"Mobility\",\"selected\":false,\"timeMap\":null},{\"name\":\"Security\",\"selected\":false,\"timeMap\":null}],\"region\":[{\"name\":\"AMER\",\"selected\":false,\"timeMap\":null},{\"name\":\"APJC\",\"selected\":false,\"timeMap\":null},{\"name\":\"EMEAR\",\"selected\":false,\"timeMap\":null}],\"timeinterval\":[{\"timeMap\":{\"startTime\":\"12:00 AM\",\"endTime\":\"12:00 AM\",\"timeZone\":\"HST (UTC-10)\"}}]}'";
+	}
 
 }
