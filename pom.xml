@@ -4,7 +4,7 @@
 
 	<groupId>com.cisco.services</groupId>
 	<artifactId>cxpp-training-enablement</artifactId>
-	<version>1.14</version>
+	<version>1.15-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>cxpp-training-enablement</name>
 	<description>cxpp training and enablement application</description>
@@ -23,7 +23,7 @@
 		<connection>scm:git:${env.CIRCLE_REPOSITORY_URL}</connection>
 		<!--suppress UnresolvedMavenProperty -->
 		<developerConnection>scm:git:${env.CIRCLE_REPOSITORY_URL}</developerConnection>
-		<tag>v1.14</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<!-- + ========================================================== + Some 
