@@ -12,9 +12,6 @@ import com.cisco.cx.training.constants.Constants;
 
 public class LearningContentItem {
 	
-	@Autowired
-	private SplitClientService splitService;
-	
 	public LearningContentItem(NewLearningContentEntity entity) {
 		this.id=entity.getId();
 		this.learningType=entity.getLearningType();
@@ -440,59 +437,57 @@ public class LearningContentItem {
 	
 	private void populateSuccessTipsData() {
 		if(Constants.SUCCESSTIPS.equalsIgnoreCase(this.learningType)) {
-			if(splitService.getSplitValue(Constants.SUCCESS_TIPS_SPLIT_KEY)) {
-				List<SuccessTipsAttachment> videoAttachments = new ArrayList<>();
-				List<SuccessTipsAttachment> fileAttachments = new ArrayList<>();
-				String[] asset_types = new String[0];
-				String[] asset_links = new String[0];
-				if(StringUtils.isNotBlank(this.contentType)) {
-					asset_types = this.contentType.split(",");
+			List<SuccessTipsAttachment> videoAttachments = new ArrayList<>();
+			List<SuccessTipsAttachment> fileAttachments = new ArrayList<>();
+			String[] asset_types = new String[0];
+			String[] asset_links = new String[0];
+			if(StringUtils.isNotBlank(this.contentType)) {
+				asset_types = this.contentType.split(",");
+			}
+			if(StringUtils.isNotBlank(this.link)) {
+				asset_links = this.link.split(",");
+			}
+			String[] asset_description = new String[0];
+			if(StringUtils.isNotBlank(link_description)) {
+				asset_description = this.link_description.split(":");
+			}
+			String[] asset_titles = new String[0];
+			if(StringUtils.isNotBlank(link_title)) {
+				asset_titles = this.link_title.split(":");
+			}
+			for(int i=0 ;i<asset_types.length;i++) {
+				SuccessTipsAttachment successTipAttac = new SuccessTipsAttachment();
+				successTipAttac.setAttachmentType(asset_types[i]);
+				if(i < asset_links.length) {
+					successTipAttac.setUrl(asset_links[i]);
+				}else {
+					successTipAttac.setUrl("");
 				}
-				if(StringUtils.isNotBlank(this.link)) {
-					asset_links = this.link.split(",");
-				}
-				String[] asset_description = new String[0];
-				if(StringUtils.isNotBlank(link_description)) {
-					asset_description = this.link_description.split(":");
-				}
-				String[] asset_titles = new String[0];
-				if(StringUtils.isNotBlank(link_title)) {
-					asset_titles = this.link_title.split(":");
-				}
-				for(int i=0 ;i<asset_types.length;i++) {
-					SuccessTipsAttachment successTipAttac = new SuccessTipsAttachment();
-					successTipAttac.setAttachmentType(asset_types[i]);
-					if(i < asset_links.length) {
-						successTipAttac.setUrl(asset_links[i]);
-					}else {
-						successTipAttac.setUrl("");
-					}
-					if(asset_description.length == 0) {
+				if(asset_description.length == 0) {
+					successTipAttac.setUrlDescription("");
+				}else {
+					if((i+1) > asset_description.length) {
 						successTipAttac.setUrlDescription("");
 					}else {
-						if((i+1) > asset_description.length) {
-							successTipAttac.setUrlDescription("");
-						}else {
-							successTipAttac.setUrlDescription(asset_description[i]);
-						}
-					}
-					if(i < asset_titles.length) {
-						successTipAttac.setUrlTitle(asset_titles[i]);
-					}else {
-						successTipAttac.setUrlTitle("");
-					}
-					if(asset_types[i].equalsIgnoreCase(Constants.SUCCESS_TIPS_VIDEO)) {
-						videoAttachments.add(successTipAttac);
-					}else {
-						fileAttachments.add(successTipAttac);
+						successTipAttac.setUrlDescription(asset_description[i]);
 					}
 				}
-				if(!videoAttachments.isEmpty()) {
-					this.setSuccessTipsVideos(videoAttachments);
+				if(i < asset_titles.length) {
+					successTipAttac.setUrlTitle(asset_titles[i]);
+				}else {
+					successTipAttac.setUrlTitle("");
 				}
-				if(!fileAttachments.isEmpty()) {
-					this.setSuccessTipsFiles(fileAttachments);
+				if(asset_types[i].equalsIgnoreCase(Constants.SUCCESS_TIPS_VIDEO)) {
+					videoAttachments.add(successTipAttac);
+				}else {
+					fileAttachments.add(successTipAttac);
 				}
+			}
+			if(!videoAttachments.isEmpty()) {
+				this.setSuccessTipsVideos(videoAttachments);
+			}
+			if(!fileAttachments.isEmpty()) {
+				this.setSuccessTipsFiles(fileAttachments);
 			}
 		}
 	}
