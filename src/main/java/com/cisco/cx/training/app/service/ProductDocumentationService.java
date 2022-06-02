@@ -613,7 +613,7 @@ public class ProductDocumentationService{
 
 		String sort = DEFAULT_SORT_FIELD ; 
 		Direction order = DEFAULT_SORT_ORDER ; 		
-		if(sortBy!=null  && !sortBy.equalsIgnoreCase("date")) { sort = sortBy;}
+
 		if(sortOrder!=null && sortOrder.equalsIgnoreCase("asc")) { order = Sort.Direction.ASC;}		
 		LOG.info("sort={} {}",sort, order);
 
@@ -650,7 +650,7 @@ public class ProductDocumentationService{
 		LOG.info("dbCards={}",dbCards);
 		learningCards.addAll(mapLearningEntityToCards(dbCards, userBookmarks));
 
-		sortSpecial(learningCards,sort,order);
+		sortSpecial(learningCards,sortBy,order);
 
 		return responseModel;
 
@@ -658,7 +658,7 @@ public class ProductDocumentationService{
 
 	void sortSpecial(List<GenericLearningModel> learningCards , String sortBy, Direction order)
 	{
-		if(sortBy.equalsIgnoreCase("title"))
+		if(sortBy!=null && sortBy.trim().equalsIgnoreCase("title"))
 		{
 			learningCards.sort(new SortTitle());
 			if(order.isDescending()) {
