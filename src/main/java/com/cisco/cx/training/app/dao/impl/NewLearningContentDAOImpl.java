@@ -344,10 +344,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO{
 				Object value=((Map)filter).get(key);
 				if(value instanceof Map) {
 					((Map) value).keySet().forEach(keyUc->{
-						Object valueUc=((Map)value).get(keyUc);
-						((Map) valueUc).keySet().forEach(KeyPt->{
-							((Map) valueUc).put(KeyPt, "0");
-						});
+						((Map) value).put(keyUc, "0");
 					});
 				}
 				else {
