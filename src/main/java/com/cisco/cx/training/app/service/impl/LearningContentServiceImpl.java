@@ -201,39 +201,46 @@ public class LearningContentServiceImpl implements LearningContentService {
 			requestStartTime = System.currentTimeMillis();	
 			CountSchema webinarCount = getWebinarCount();
 			LOG.info("Received webinar count in {} ", (System.currentTimeMillis() - requestStartTime));
+			if(webinarCount.getCount()>0)
 			indexCounts.add(webinarCount);
 
 			requestStartTime = System.currentTimeMillis();	
 			CountSchema documentationCount = getDocumentationCount();
 			LOG.info("Received documentation count in {} ", (System.currentTimeMillis() - requestStartTime));
+			if(documentationCount.getCount()>0)
 			indexCounts.add(documentationCount);
 
 			requestStartTime = System.currentTimeMillis();	
 			CountSchema successTrackCount = getSuccessTrackCount();
 			LOG.info("Received Success Tracks count in {} ", (System.currentTimeMillis() - requestStartTime));
+			if(successTrackCount.getCount()>0)
 			indexCounts.add(successTrackCount);
 
 			if(hcaasStatus) {
 				requestStartTime = System.currentTimeMillis();
 				CountSchema ciscoPlusCount = getCiscoPlusCount();
 				LOG.info("Received Cisco+ count in {} ", (System.currentTimeMillis() - requestStartTime));
+				if(ciscoPlusCount.getCount()>0)
 				indexCounts.add(ciscoPlusCount);
 			}
 
 			requestStartTime = System.currentTimeMillis();	
 			CountSchema technologyCount = getTechnologyCount();
 			LOG.info("Received technology count in {} ", (System.currentTimeMillis() - requestStartTime));
+			if(technologyCount.getCount()>0)
 			indexCounts.add(technologyCount);
 			
 			requestStartTime = System.currentTimeMillis();	
 			CountSchema roleCount = getRolesCount();
 			LOG.info("Received roles count in {} ", (System.currentTimeMillis() - requestStartTime));
+			if(roleCount.getCount()>0)
 			indexCounts.add(roleCount);
 
 			if(splitService.getSplitValue(Constants.SUCCESS_TIPS_SPLIT_KEY)) {
 				requestStartTime = System.currentTimeMillis();	
 				CountSchema successTipsCount = getSuccessTipsCount();
 				LOG.info("Received success tips count in {} ", (System.currentTimeMillis() - requestStartTime));
+				if(successTipsCount.getCount()>0)
 				indexCounts.add(successTipsCount);
 			}
 
