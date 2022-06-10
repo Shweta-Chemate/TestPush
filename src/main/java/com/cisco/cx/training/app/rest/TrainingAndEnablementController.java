@@ -35,6 +35,7 @@ import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.cisco.cx.training.models.Community;
 import com.cisco.cx.training.models.LearningRecordsAndFiltersModel;
 import com.cisco.cx.training.models.UserLearningPreference;
+import com.cisco.cx.training.util.ProductDocumentationUtil;
 import com.cisco.cx.training.util.XSSUtil;
 
 import io.swagger.annotations.Api;
@@ -180,9 +181,13 @@ public class TrainingAndEnablementController {
 			LOG.info("User Preference---"+userPreferenceInput);
     		throw new BadRequestException("Bad input in parameters : " + userPreferenceInput);
     	}
+		if(! ProductDocumentationUtil.isValidPrefTime(userPreferences)) {
+			throw new BadRequestException("Invalid Preference Time : " + userPreferences);			
+		}
 		Map<String, List<UserLearningPreference>> userPreferencesDb = trainingAndEnablementService.postUserLearningPreferences(xMasheryHandshake,userPreferences);//NOSONAR
 		return new ResponseEntity<String>("Preferences updated successfully.", HttpStatus.OK);
 	}
+		
 	
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/myPreferredLearnings")
 	@ApiOperation(value = "Fetch Preferred Learnings Information", nickname = "fetchPreferredLearningsInfo")

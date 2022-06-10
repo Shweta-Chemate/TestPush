@@ -1,7 +1,9 @@
 package com.cisco.cx.training.util;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,12 +11,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
+
+import com.cisco.cx.training.app.exception.BadRequestException;
+import com.cisco.cx.training.models.UserLearningPreference;
 
 public class ProductDocumentationUtil {
 	private static final Logger logger = LoggerFactory.getLogger(ProductDocumentationUtil.class);
 	private static final int THREE = 3;
+	private static String[] FIXED_TIMEZONES = {"MIT (UTC-11)","HST (UTC-10)","AST (UTC-9)","PST (UTC-8)","PNT (UTC-7)","MST (UTC-7)","CST (UTC-6)","EST (UTC-5)","IET (UTC-5)","PRT (UTC-4)","CNT (UTC-3:30)","AGT (UTC-3)","BET (UTC-3)","CAT (UTC-1)","GMT (UTC)","ECT (UTC+1)","EET (UTC+2)","ART (UTC+2)","EAT (UTC+3)","MET (UTC+3:30)","NET (UTC+4)","PLT (UTC+5)","IST (UTC+5:30)","BST (UTC+6)","VST (UTC+7)","CTT (UTC+8)","JST (UTC+9)","ACT (UTC+9:30)","AET (UTC+10)","SST (UTC+11)","NST (UTC+12)"};
 
 	public static String getNowDateUTCStr()
 	{
@@ -165,5 +174,60 @@ public class ProductDocumentationUtil {
 		logger.info("count for exclude key {} = {}", excludeKey, cardIds);	
 		return cardIds;
 	}
+	
+	//"timeinterval":[{"timeMap":{"startTime":"12:30 AM","endTime":"2:00 AM","timeZone":"IST (UTC+5:30)"}}]}
+	public static boolean isValidPrefTime(Map<String, List<UserLearningPreference>> userPreferences)
+	{
+		boolean isValidPrefTime = true;
 
+		if(userPreferences!=null && userPreferences.containsKey("timeinterval"))
+		{
+			List<UserLearningPreference> upl = userPreferences.get("timeinterval");
+			if(!CollectionUtils.isEmpty(upl)) 
+			{
+				UserLearningPreference up = upl.get(0);
+				Map<String, String> tm = up.getTimeMap();
+				if(!CollectionUtils.isEmpty(tm)) 
+				{
+					String st = tm.get("startTime");
+					String et = tm.get("endTime");
+					String tz = tm.get("timeZone");		
+					if(StringUtils.isBlank(st)|| StringUtils.isBlank(et)||StringUtils.isBlank(tz))
+					{
+						logger.error("Missing time params: st={} et={} tz={}" ,st  , et, tz);
+						return false;
+					}
+					SimpleDateFormat target = new SimpleDateFormat("h:mm a");  //12 hr format
+					try {
+						Date stDate = target.parse(st);
+						Date etDate = target.parse(et);
+						logger.info("dates:{} {} ", stDate , etDate);	
+						if(stDate.compareTo(etDate) == 0 )
+						{
+							logger.error("Invalid time range: st={} , et={}" , st ,  et);
+							isValidPrefTime = false;
+						}
+					} catch (ParseException e) {
+						logger.error("Validation Failed for parsing time:" , e);
+						isValidPrefTime = false;
+					}
+					if(!Arrays.asList(FIXED_TIMEZONES).contains(tz)) {
+						logger.error("Invalid timezone:{}" , tz);
+						isValidPrefTime = false;
+					}
+				}
+				else
+				{
+					isValidPrefTime = false;
+				}					
+			}
+			else
+			{
+				isValidPrefTime = false;
+			}
+		}
+
+		return isValidPrefTime;		
+	}	
+	
 }

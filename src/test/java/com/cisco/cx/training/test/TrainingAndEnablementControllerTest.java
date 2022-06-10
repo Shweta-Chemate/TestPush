@@ -1,5 +1,6 @@
 package com.cisco.cx.training.test;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -33,6 +34,7 @@ import com.cisco.cx.training.app.TrainingAndEnablementApplication;
 import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.config.Swagger2Config;
 import com.cisco.cx.training.app.dao.CommunityDAO;
+import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.filters.AuthFilter;
 import com.cisco.cx.training.app.filters.RBACFilter;
 import com.cisco.cx.training.app.repo.BookmarkCountsRepo;
@@ -251,6 +253,33 @@ public class TrainingAndEnablementControllerTest {
 	}
 	
 	@Test
+	void testLearningPreferencesErr() throws Exception {	
+		
+        assertThatThrownBy(
+            () -> mockMvc.perform(post("/v1/partner/training/myLearningPreferences").contentType(MediaType.APPLICATION_JSON_VALUE)
+					.header("X-Mashery-Handshake", this.XMasheryHeader)
+					.content(getUserPreferenceErr1()).characterEncoding("utf-8")))
+        .hasCauseInstanceOf(BadRequestException.class);
+
+
+		assertThrows(NestedServletException.class, () -> {
+			this.mockMvc
+			.perform(post("/v1/partner/training/myLearningPreferences").contentType(MediaType.APPLICATION_JSON_VALUE)
+					.header("X-Mashery-Handshake", this.XMasheryHeader)
+					.content(getUserPreferenceErr2()).characterEncoding("utf-8"))
+			.andDo(print());
+		});
+		
+	     assertThatThrownBy(
+	             () -> mockMvc.perform(post("/v1/partner/training/myLearningPreferences").contentType(MediaType.APPLICATION_JSON_VALUE)
+	 					.header("X-Mashery-Handshake", this.XMasheryHeader)
+	 					.content(getUserPreferenceErr3()).characterEncoding("utf-8")))
+	     .hasMessageContaining("Invalid Preference Time");
+
+	
+	}
+	
+	@Test
 	void testTopPicks() throws Exception {
 		
 		this.mockMvc
@@ -283,7 +312,22 @@ public class TrainingAndEnablementControllerTest {
 	
 	private String getUserPreference() {
 		return "{\"role\":[{\"name\":\"Customer Success Manager\",\"selected\":true,\"timeMap\":null},"+
-				"{\"name\":\"Customer Success Practice Lead\",\"selected\":true,\"timeMap\":null},{\"name\":\"Customer Success Specialist\",\"selected\":false,\"timeMap\":null},{\"name\":\"Partner Executive\",\"selected\":false,\"timeMap\":null},{\"name\":\"Renewals Manager\",\"selected\":false,\"timeMap\":null},{\"name\":\"Success Programs Manager\",\"selected\":false,\"timeMap\":null},{\"name\":\"Systems Engineer\",\"selected\":false,\"timeMap\":null}],\"language\":[{\"name\":\"English\",\"selected\":true,\"timeMap\":null},{\"name\":\"Japanese\",\"selected\":false,\"timeMap\":null},{\"name\":\"Korean\",\"selected\":false,\"timeMap\":null},{\"name\":\"Portuguese\",\"selected\":false,\"timeMap\":null},{\"name\":\"Spanish\",\"selected\":false,\"timeMap\":null}],\"technology\":[{\"name\":\"Analytics\",\"selected\":true,\"timeMap\":null},{\"name\":\"Cloud\",\"selected\":false,\"timeMap\":null},{\"name\":\"Collaboration\",\"selected\":false,\"timeMap\":null},{\"name\":\"Data Center\",\"selected\":false,\"timeMap\":null},{\"name\":\"Enterprise Networks\",\"selected\":false,\"timeMap\":null},{\"name\":\"IoT\",\"selected\":false,\"timeMap\":null},{\"name\":\"Mobility\",\"selected\":false,\"timeMap\":null},{\"name\":\"Security\",\"selected\":false,\"timeMap\":null}],\"region\":[{\"name\":\"AMER\",\"selected\":false,\"timeMap\":null},{\"name\":\"APJC\",\"selected\":false,\"timeMap\":null},{\"name\":\"EMEAR\",\"selected\":false,\"timeMap\":null}],\"timeinterval\":[{\"timeMap\":{\"startTime\":\"12:00 AM\",\"endTime\":\"12:00 AM\",\"timeZone\":\"HST (UTC-10)\"}}]}'";
+				"{\"name\":\"Customer Success Practice Lead\",\"selected\":true,\"timeMap\":null},{\"name\":\"Customer Success Specialist\",\"selected\":false,\"timeMap\":null},{\"name\":\"Partner Executive\",\"selected\":false,\"timeMap\":null},{\"name\":\"Renewals Manager\",\"selected\":false,\"timeMap\":null},{\"name\":\"Success Programs Manager\",\"selected\":false,\"timeMap\":null},{\"name\":\"Systems Engineer\",\"selected\":false,\"timeMap\":null}],\"language\":[{\"name\":\"English\",\"selected\":true,\"timeMap\":null},{\"name\":\"Japanese\",\"selected\":false,\"timeMap\":null},{\"name\":\"Korean\",\"selected\":false,\"timeMap\":null},{\"name\":\"Portuguese\",\"selected\":false,\"timeMap\":null},{\"name\":\"Spanish\",\"selected\":false,\"timeMap\":null}],\"technology\":[{\"name\":\"Analytics\",\"selected\":true,\"timeMap\":null},{\"name\":\"Cloud\",\"selected\":false,\"timeMap\":null},{\"name\":\"Collaboration\",\"selected\":false,\"timeMap\":null},{\"name\":\"Data Center\",\"selected\":false,\"timeMap\":null},{\"name\":\"Enterprise Networks\",\"selected\":false,\"timeMap\":null},{\"name\":\"IoT\",\"selected\":false,\"timeMap\":null},{\"name\":\"Mobility\",\"selected\":false,\"timeMap\":null},{\"name\":\"Security\",\"selected\":false,\"timeMap\":null}],\"region\":[{\"name\":\"AMER\",\"selected\":false,\"timeMap\":null},{\"name\":\"APJC\",\"selected\":false,\"timeMap\":null},{\"name\":\"EMEAR\",\"selected\":false,\"timeMap\":null}],\"timeinterval\":[{\"timeMap\":{\"startTime\":\"12:00 AM\",\"endTime\":\"12:10 AM\",\"timeZone\":\"HST (UTC-10)\"}}]}'";
 	}
 
+	private String getUserPreferenceErr1() {
+		return "{\"role\":[{\"name\":\"Customer Success Manager\",\"selected\":true,\"timeMap\":null},"+
+				"{\"name\":\"Customer Success Practice Lead\",\"selected\":true,\"timeMap\":null},{\"name\":\"Customer Success Specialist\",\"selected\":false,\"timeMap\":null},{\"name\":\"Partner Executive\",\"selected\":false,\"timeMap\":null},{\"name\":\"Renewals Manager\",\"selected\":false,\"timeMap\":null},{\"name\":\"Success Programs Manager\",\"selected\":false,\"timeMap\":null},{\"name\":\"Systems Engineer\",\"selected\":false,\"timeMap\":null}],\"language\":[{\"name\":\"English\",\"selected\":true,\"timeMap\":null},{\"name\":\"Japanese\",\"selected\":false,\"timeMap\":null},{\"name\":\"Korean\",\"selected\":false,\"timeMap\":null},{\"name\":\"Portuguese\",\"selected\":false,\"timeMap\":null},{\"name\":\"Spanish\",\"selected\":false,\"timeMap\":null}],\"technology\":[{\"name\":\"Analytics\",\"selected\":true,\"timeMap\":null},{\"name\":\"Cloud\",\"selected\":false,\"timeMap\":null},{\"name\":\"Collaboration\",\"selected\":false,\"timeMap\":null},{\"name\":\"Data Center\",\"selected\":false,\"timeMap\":null},{\"name\":\"Enterprise Networks\",\"selected\":false,\"timeMap\":null},{\"name\":\"IoT\",\"selected\":false,\"timeMap\":null},{\"name\":\"Mobility\",\"selected\":false,\"timeMap\":null},{\"name\":\"Security\",\"selected\":false,\"timeMap\":null}],\"region\":[{\"name\":\"AMER\",\"selected\":false,\"timeMap\":null},{\"name\":\"APJC\",\"selected\":false,\"timeMap\":null},{\"name\":\"EMEAR\",\"selected\":false,\"timeMap\":null}],\"timeinterval\":[{\"timeMap\":{\"startTime\":\"12:00 AM\",\"endTime\":\"12:00 AM\",\"timeZone\":\"HST (UTC-10)\"}}]}'";
+	}
+	
+	private String getUserPreferenceErr2() {
+		return "{\"role\":[{\"name\":\"Customer Success Manager\",\"selected\":true,\"timeMap\":null},"+
+				"{\"name\":\"Customer Success Practice Lead\",\"selected\":true,\"timeMap\":null},{\"name\":\"Customer Success Specialist\",\"selected\":false,\"timeMap\":null},{\"name\":\"Partner Executive\",\"selected\":false,\"timeMap\":null},{\"name\":\"Renewals Manager\",\"selected\":false,\"timeMap\":null},{\"name\":\"Success Programs Manager\",\"selected\":false,\"timeMap\":null},{\"name\":\"Systems Engineer\",\"selected\":false,\"timeMap\":null}],\"language\":[{\"name\":\"English\",\"selected\":true,\"timeMap\":null},{\"name\":\"Japanese\",\"selected\":false,\"timeMap\":null},{\"name\":\"Korean\",\"selected\":false,\"timeMap\":null},{\"name\":\"Portuguese\",\"selected\":false,\"timeMap\":null},{\"name\":\"Spanish\",\"selected\":false,\"timeMap\":null}],\"technology\":[{\"name\":\"Analytics\",\"selected\":true,\"timeMap\":null},{\"name\":\"Cloud\",\"selected\":false,\"timeMap\":null},{\"name\":\"Collaboration\",\"selected\":false,\"timeMap\":null},{\"name\":\"Data Center\",\"selected\":false,\"timeMap\":null},{\"name\":\"Enterprise Networks\",\"selected\":false,\"timeMap\":null},{\"name\":\"IoT\",\"selected\":false,\"timeMap\":null},{\"name\":\"Mobility\",\"selected\":false,\"timeMap\":null},{\"name\":\"Security\",\"selected\":false,\"timeMap\":null}],\"region\":[{\"name\":\"AMER\",\"selected\":false,\"timeMap\":null},{\"name\":\"APJC\",\"selected\":false,\"timeMap\":null},{\"name\":\"EMEAR\",\"selected\":false,\"timeMap\":null}],\"timeinterval\":[{\"timeMap\":{\"startTime\":\"12:00 AM\",\"endTime\":\"12:10 AM\",\"timeZone\":\"HST\"}}]}'";
+	}
+	
+	private String getUserPreferenceErr3() {
+		return "{\"role\":[{\"name\":\"Customer Success Manager\",\"selected\":true,\"timeMap\":null},"+
+				"{\"name\":\"Customer Success Practice Lead\",\"selected\":true,\"timeMap\":null},{\"name\":\"Customer Success Specialist\",\"selected\":false,\"timeMap\":null},{\"name\":\"Partner Executive\",\"selected\":false,\"timeMap\":null},{\"name\":\"Renewals Manager\",\"selected\":false,\"timeMap\":null},{\"name\":\"Success Programs Manager\",\"selected\":false,\"timeMap\":null},{\"name\":\"Systems Engineer\",\"selected\":false,\"timeMap\":null}],\"language\":[{\"name\":\"English\",\"selected\":true,\"timeMap\":null},{\"name\":\"Japanese\",\"selected\":false,\"timeMap\":null},{\"name\":\"Korean\",\"selected\":false,\"timeMap\":null},{\"name\":\"Portuguese\",\"selected\":false,\"timeMap\":null},{\"name\":\"Spanish\",\"selected\":false,\"timeMap\":null}],\"technology\":[{\"name\":\"Analytics\",\"selected\":true,\"timeMap\":null},{\"name\":\"Cloud\",\"selected\":false,\"timeMap\":null},{\"name\":\"Collaboration\",\"selected\":false,\"timeMap\":null},{\"name\":\"Data Center\",\"selected\":false,\"timeMap\":null},{\"name\":\"Enterprise Networks\",\"selected\":false,\"timeMap\":null},{\"name\":\"IoT\",\"selected\":false,\"timeMap\":null},{\"name\":\"Mobility\",\"selected\":false,\"timeMap\":null},{\"name\":\"Security\",\"selected\":false,\"timeMap\":null}],\"region\":[{\"name\":\"AMER\",\"selected\":false,\"timeMap\":null},{\"name\":\"APJC\",\"selected\":false,\"timeMap\":null},{\"name\":\"EMEAR\",\"selected\":false,\"timeMap\":null}],\"timeinterval\":[{\"timeMap\":{\"startTime\":\"ohhh\",\"endTime\":\"12:10 AM\",\"timeZone\":\"HST (UTC-10)\"}}]}'";
+	}
+	
 }
