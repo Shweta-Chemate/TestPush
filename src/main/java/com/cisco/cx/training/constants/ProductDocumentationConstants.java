@@ -288,12 +288,13 @@ public class ProductDocumentationConstants{
 					+ " group by technology "
 					+ " order by technology;";
 
-	public static final String GET_PD_CONTENT_TYPE_WITH_COUNT_BY_CARD = "select asset_type as dbkey, count(*) as dbvalue "
+	public static final String GET_PD_CONTENT_TYPE_WITH_COUNT_BY_CARD = "select asset_type as dbkey, count(*) as dbvalue from "
+			+ " (select learning_item_id , asset_type "
 			+ " from cxpp_db.cxpp_item_link "
 			+ " where learning_item_id in (:cardIds) "
 			+ CASE_CLAUSE_AND 
-			+ " group by asset_type "
-			+ " order by asset_type ";	
+			+ " group by learning_item_id, asset_type ) as asset_view "
+			+ " group by asset_type order by asset_type ";
 
 	public static final String GET_PD_LANGUAGE_WITH_COUNT_BY_CARD = "select piw_language as dbkey, count(*) as dbvalue "
 			+ " from cxpp_db.cxpp_learning_item "
@@ -321,9 +322,11 @@ public static final String GET_PD_DOCUMENTATION_WITH_COUNT_BY_CARD = "select arc
 	
 	/** all counts **/
 	
-	public static final String GET_PD_CONTENT_TYPE_WITH_COUNT = "select asset_type as dbkey, count(*) as dbvalue "
+	public static final String GET_PD_CONTENT_TYPE_WITH_COUNT = "select asset_type as dbkey, count(*) as dbvalue from "
+			+ " (select learning_item_id , asset_type "
 			+ " from cxpp_db.cxpp_item_link "
 			+ CASE_CLAUSE_WHERE 
+			+ "  group by learning_item_id, asset_type ) as asset_view "
 			+ " group by asset_type order by asset_type ";	
 
 	public static final String GET_PD_TECHNOLOGY_WITH_COUNT = "select technology as dbkey, count(*) as dbvalue "

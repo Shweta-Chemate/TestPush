@@ -10,7 +10,10 @@ public class SQLConstants {
 			+ " else 1=1 end "
 			+ " ) ";
 
-	public static final String GET_CONTENT_TYPE_WITH_COUNT_BY_CARD = "select asset_type as label, count(*) as count from cxpp_db.cxpp_item_link where asset_type IS NOT NULL and asset_type!='null' and learning_item_id in (:learningItemIds) \n"
+	public static final String GET_CONTENT_TYPE_WITH_COUNT_BY_CARD = "select asset_type as label, count(*) as count from \n"
+			+ " (select learning_item_id , asset_type  from "
+			+ " cxpp_db.cxpp_item_link where asset_type IS NOT NULL and asset_type!='null' and learning_item_id in (:learningItemIds) \n"
+			+ " group by learning_item_id , asset_type) as asset_view "
 			+ " group by asset_type order by asset_type";
 	
 	public static final String GET_REGION_WITH_COUNT_BY_CARD = "select piw_region as label, count(*) as count "
