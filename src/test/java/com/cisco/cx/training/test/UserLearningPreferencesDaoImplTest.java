@@ -61,7 +61,7 @@ public class UserLearningPreferencesDaoImplTest {
 	private PartnerProfileService partnerProfileService;
 
 	@InjectMocks
-	private UserLearningPreferencesDAOImpl ulpDAOImpl = new UserLearningPreferencesDAOImpl(propertyConfig,productDocumentationDAO,request);
+	private UserLearningPreferencesDAOImpl ulpDAOImpl = new UserLearningPreferencesDAOImpl(propertyConfig,productDocumentationDAO,request, partnerProfileService);
 
 	@BeforeEach
 	public void initCommon() {

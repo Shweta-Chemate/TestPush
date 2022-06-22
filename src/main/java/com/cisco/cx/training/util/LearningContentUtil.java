@@ -61,7 +61,7 @@ public class LearningContentUtil {
 		order.add("Align"); order.add("Purchase");
 		order.add("Onboard"); order.add("Implement");
 		order.add("Use");  order.add("Engage");
-		order.add("Adopt"); order.add("Optmize");
+		order.add("Adopt"); order.add("Optimize");
 		order.add("Renew"); order.add("Recommend");
 		order.add("Advocate");
 		return order;

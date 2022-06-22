@@ -163,6 +163,34 @@ public interface ProductDocumentationDAO extends JpaRepository<LearningItemEntit
 	@Query(value=ProductDocumentationConstants.GET_SPECIALIZED_CARDS, nativeQuery=true)
 	Set<String> getCardIdsBySpecialization(Set<String> specializations);
 
+	
+	
+	/** for toppicks viewmore **/
+	
+	@Query(value=ProductDocumentationConstants.GET_TP_CARD_IDS_REGION , nativeQuery=true)
+	Set<String> getTpCardIdsByRegion(String joinTable,Set<String> values, String hcaasStatus, Set<String> cardIds);	
+	
+	@Query(value=ProductDocumentationConstants.GET_TP_CARD_IDS_LG , nativeQuery=true)
+	Set<String> getTpCardIdsByLanguage(String joinTable,Set<String> values, String hcaasStatus, Set<String> cardIds);	
+	
+	@Query(value=ProductDocumentationConstants.GET_TP_CARD_IDS_TC , nativeQuery=true)
+	Set<String> getTpCardIdsByTC(String joinTable,Set<String> values, String hcaasStatus, Set<String> cardIds);	
+	
+	@Query(value=ProductDocumentationConstants.GET_TP_CARD_IDS_ROLE , nativeQuery=true)
+	Set<String> getTpCardIdsByRole(String joinTable,Set<String> values, String hcaasStatus, Set<String> cardIds);	
+	
+	@Query(value=ProductDocumentationConstants.GET_TP_LEARNING_BY_CONTENT_TYPE , nativeQuery=true)
+	Set<String> getTpLearningsByContentType(String joinTable,Set<String> contentTypeFilter, String hcaasStatus, Set<String> cardIds);	
+	
+	@Query(value=ProductDocumentationConstants.GET_TP_CARD_IDS_BY_PITSTOP , nativeQuery=true)	
+	Set<String> getTpCardIdsByPs(String joinTable,Set<String> pitstopInp, String hcaasStatus, Set<String> cardIds);	
+
+	@Query(value=ProductDocumentationConstants.GET_TP_CARD_IDS_CISCOPLUS , nativeQuery=true)
+	Set<String> getTpCardIdsByCiscoPlus(String joinTable,Set<String> values, String hcaasStatus, Set<String> cardIds);	
+	
+	@Query(value=ProductDocumentationConstants.GET_TP_CARD_IDS_BY_STUC , nativeQuery=true)	
+	Set<String> getTpCardIdsByPsUcSt(String joinTable,String successtrackInp, Set<String> usecaseInp, String hcaasStatus, Set<String> cardIds);
+
 }
 
 

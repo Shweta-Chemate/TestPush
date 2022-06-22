@@ -532,6 +532,9 @@ public class LearningContentServiceTest {
 		HashMap<String, String> testLanguageCount = new HashMap<>();
 		testLanguageCount.put("English", "1");
 		filterCounts.put("Language", testLanguageCount);
+		HashMap<String, String> testLifecycleCount = new HashMap<>();
+		testLifecycleCount.put("Need", "1");
+		filterCounts.put("Lifecycle", testLifecycleCount);
 		return filterCounts;
 	}
 	

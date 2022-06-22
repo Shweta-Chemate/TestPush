@@ -35,9 +35,13 @@ public interface TrainingAndEnablementService {
 
 	Map<String, List<UserLearningPreference>> getUserLearningPreferences(String xMasheryHandshake);
 
-	LearningRecordsAndFiltersModel getMyPreferredLearnings(String xMasheryHandshake, String search,
-			HashMap<String, Object> filters, String sortBy, String sortOrder, String puid, Integer limit, boolean hcaasStatus);
+	LearningRecordsAndFiltersModel getMyPreferredLearnings(String xMasheryHandshake,
+			HashMap<String, Object> filters, String sortBy, Integer limit, boolean hcaasStatus);
 
 
+	Map<String, Object> getTopPicksFiltersPost(Map<String, Object> filters, boolean hcaasStatus);
+
+	LearningRecordsAndFiltersModel getTopPicksCardsPost(String xMasheryHandshake, Map<String, Object> filters, boolean hcaasStatus);
+	
 
 }

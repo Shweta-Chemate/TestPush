@@ -149,7 +149,7 @@ public class SQLConstants {
 	public static final String GET_CARD_IDs_LFC = "select distinct learning_item_id from " + GET_CARD_IDs_PITSTOP_VIEW 
 			+ " where ptview.pitstop in (:values) and ptview.learning_item_id in (:learningItemIds)";
 
-	public static final String GET_PD_ST_UC_WITH_COUNT = "select count(*) as dbvalue , usecase, successtrack "
+	public static final String GET_PD_ST_UC_WITH_COUNT = "select count(distinct(learning_item_id)) as dbvalue , usecase, successtrack "
 			+ "	from cxpp_db.cxpp_learning_successtrack st  "
 			+ "	inner join cxpp_db.cxpp_learning_usecase uc  "
 			+ "	on uc.successtrack_id = st.successtrack_id where st.learning_item_id in (:learningItemIds) "
@@ -212,4 +212,5 @@ public class SQLConstants {
 
 	public static final String GET_MAX_BOOKMARK = "SELECT MAX(count) AS maxcount FROM\n" +
 			" (SELECT learning_item_id, SUM(count) AS count FROM  cxpp_db.cxpp_learning_bookmark_count  GROUP BY learning_item_id) as countView";
+
 }

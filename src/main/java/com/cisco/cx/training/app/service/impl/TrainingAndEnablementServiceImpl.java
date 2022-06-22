@@ -193,13 +193,13 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 	}
 
 	@Override
-	public LearningRecordsAndFiltersModel getMyPreferredLearnings(String xMasheryHandshake, String search,
-			HashMap<String, Object> filters, String sortBy, String sortOrder, String puid, Integer limit, boolean hcaasStatus) {
+	public LearningRecordsAndFiltersModel getMyPreferredLearnings(String xMasheryHandshake,
+			HashMap<String, Object> filters, String puid, Integer limit, boolean hcaasStatus) {
 			String ccoId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
 			List<String> specializations = getSpecialization(xMasheryHandshake, puid);
 			HashMap<String, Object> preferences = userLearningPreferencesDAO.getULPPreferencesDDB(ccoId);
 			preferences.put(Constants.SPECIALIZATION_FILTER, specializations);
-			return productDocumentationService.fetchMyPreferredLearnings(ccoId, search, filters, sortBy, sortOrder,
+			return productDocumentationService.fetchMyPreferredLearnings(ccoId, filters,
 					puid, preferences, limit, hcaasStatus);
 	}
 
@@ -217,6 +217,18 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 			LOG.error("ERROR OCCURED :: ", e);
 		}
 		return specializations;
+	}
+	
+
+	@Override
+	public Map<String, Object> getTopPicksFiltersPost(Map<String, Object> filters,boolean hcaasStatus) {
+		return productDocumentationService.getTopPicksFiltersPost(filters,hcaasStatus);
+	}
+
+	@Override
+	public LearningRecordsAndFiltersModel getTopPicksCardsPost(String xMasheryHandshake, Map<String, Object> filters, boolean hcaasStatus) {
+		String ccoId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
+		return productDocumentationService.getTopPicksCardsPost(ccoId,filters,hcaasStatus);		
 	}
 }
 

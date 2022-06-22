@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
+import software.amazon.awssdk.auth.credentials.InstanceProfileCredentialsProvider;
 
 @Configuration
 @PropertySource(value = "classpath:environment.properties")
@@ -16,6 +16,8 @@ public class PropertyConfiguration {
 	
 	private final CryptoAccess<String> cryptoAccess = new CryptoAccess<>();
 	
+	public static final InstanceProfileCredentialsProvider credentialProvider = InstanceProfileCredentialsProvider.builder().asyncCredentialUpdateEnabled(true).build();
+
 	@Value("${spring.application.name}")
 	private String applicationName;
 	

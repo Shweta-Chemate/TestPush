@@ -45,7 +45,7 @@ import com.cisco.cx.training.models.SuccessTipsAttachment;
 import com.cisco.cx.training.util.ProductDocumentationUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@SuppressWarnings({"squid:S134","squid:CommentedOutCodeLine","squid:S1200","java:S3776","java:S2221","java:S104","java:S4288"})
+@SuppressWarnings({"squid:S134","squid:CommentedOutCodeLine","squid:S1200","java:S3776","java:S2221","java:S104","java:S4288", "java:S138", "common-java:DuplicatedBlocks"})
 @Service
 public class ProductDocumentationService{
 	private static final Logger LOG = LoggerFactory.getLogger(ProductDocumentationService.class);
@@ -64,6 +64,9 @@ public class ProductDocumentationService{
 	
 	@Autowired
 	private HttpServletRequest httpServletRequest;
+	
+	@Autowired
+	private TPService tpService;
 
 	@Value("${top.picks.learnings.display.limit}")
 	public Integer topicksLimit;
@@ -126,7 +129,7 @@ public class ProductDocumentationService{
 	}
 
 	//"createdTimeStamp": "2021-04-05 17:10:50.0",card.setCreatedTimeStamp(learning.getUpdated_timestamp().toString());//yyyy-mm-dd hh:mm:ss.fffffffff
-	private List<GenericLearningModel>  mapLearningEntityToCards(List<LearningItemEntity> dbList, Set<String> userBookmarks)
+	protected List<GenericLearningModel>  mapLearningEntityToCards(List<LearningItemEntity> dbList, Set<String> userBookmarks)
 	{
 
 		Map<String, String> lmCounts = getLearningMapCounts();
@@ -140,8 +143,8 @@ public class ProductDocumentationService{
 			card.setDescription(learning.getDescription());
 			card.setDuration(learning.getDuration());
 
-			if(null != userBookmarks && !CollectionUtils.isEmpty(userBookmarks)
-					&& userBookmarks.contains(learning.getLearning_item_id())) {
+			if(!CollectionUtils.isEmpty(userBookmarks) && userBookmarks.contains(learning.getLearning_item_id()))
+			{
 				card.setIsBookMarked(true);	
 			}		
 
@@ -251,6 +254,10 @@ public class ProductDocumentationService{
 			ROLE_FILTER, CISCOPLUS_FILTER, SUCCESS_TRACKS_FILTER, LIFECYCLE_FILTER, TECHNOLOGY_FILTER,
 			LIVE_EVENTS_FILTER, FOR_YOU_FILTER, CONTENT_TYPE_FILTER, LANGUAGE_FILTER, CISCOPLUS_FILTER};
 
+	private static final String[] FILTER_CATEGORIES_TOPPICKS = new String[]{ ROLE_FILTER, //CISCOPLUS_FILTER, 
+			SUCCESS_TRACKS_FILTER, LIFECYCLE_FILTER, TECHNOLOGY_FILTER,
+			LIVE_EVENTS_FILTER, CONTENT_TYPE_FILTER, LANGUAGE_FILTER};
+	
 	private static final String[] FOR_YOU_KEYS = new String[]{"New","Top Picks","Based on Your Customers",
 			"Bookmarked","Popular with Partners"};
 
@@ -302,7 +309,7 @@ public class ProductDocumentationService{
 		HashMap<String, Object> youFilter = new HashMap<>();
 		filters.put(FOR_YOU_FILTER, youFilter);		
 		Map<String,String> allContentsYou = getForYouCounts(contentTab,null, hcaasStatus);countFilters.put(FOR_YOU_FILTER, allContentsYou);
-		allContentsYou.keySet().forEach(k -> youFilter.put(k, "0"));		
+		allContentsYou.keySet().forEach(k -> youFilter.put(k, "0"));
 
 		HashMap<String, String> roleFilter = new HashMap<>();
 		filters.put(ROLE_FILTER, roleFilter);		
@@ -371,7 +378,7 @@ public class ProductDocumentationService{
 		return youMap;
 	}
 
-	private void setFilterCounts(Set<String> cardIdsInp, final HashMap<String, Object> filters, 
+	protected void setFilterCounts(Set<String> cardIdsInp, final HashMap<String, Object> filters, 
 			Map<String, Set<String>> filteredCardsMap, boolean search, String contentTab, Set<String> searchCardIds, String hcaasStatus)
 	{
 		LOG.info("filteredCardsMap={}",filteredCardsMap);
@@ -406,18 +413,19 @@ public class ProductDocumentationService{
 			List<Map<String,Object>> dbListLC = productDocumentationDAO.getAllPitstopsWithCountByCards(contentTab,cardIds, hcaasStatus);
 			((Map<String,String>)filters.get(LIFECYCLE_FILTER)).putAll(ProductDocumentationUtil.listToMap(dbListLC));
 
-
+			if(!TOPPICKS.equals(contentTab)) {
 			cardIds = ProductDocumentationUtil.andFiltersWithExcludeKey(filteredCardsMap,FOR_YOU_FILTER,searchCardIds,search);
 			Map<String,String> dbMapYou = getForYouCounts(contentTab,cardIds, hcaasStatus);
-			((Map<String,String>)filters.get(FOR_YOU_FILTER)).putAll(dbMapYou);				
+			((Map<String,String>)filters.get(FOR_YOU_FILTER)).putAll(dbMapYou);	}			
 
 			cardIds = ProductDocumentationUtil.andFiltersWithExcludeKey(filteredCardsMap,ROLE_FILTER,searchCardIds,search);
 			List<Map<String,Object>> dbListRole = productDocumentationDAO.getAllRoleWithCountByCards(contentTab, cardIds, hcaasStatus);
 			((Map<String,String>)filters.get(ROLE_FILTER)).putAll(ProductDocumentationUtil.listToMap(dbListRole));
 
+			if(!TOPPICKS.equals(contentTab)) {
 			cardIds = ProductDocumentationUtil.andFiltersWithExcludeKey(filteredCardsMap,CISCOPLUS_FILTER,searchCardIds,search);
 			List<Map<String,Object>> dbListCiscoPlus = productDocumentationDAO.getAllCiscoPlusWithCountByCards(contentTab, cardIds, hcaasStatus);
-			((Map<String,String>)filters.get(CISCOPLUS_FILTER)).putAll(ProductDocumentationUtil.listToMap(dbListCiscoPlus));
+			((Map<String,String>)filters.get(CISCOPLUS_FILTER)).putAll(ProductDocumentationUtil.listToMap(dbListCiscoPlus));}
 		}		
 	}
 
@@ -454,17 +462,19 @@ public class ProductDocumentationService{
 		List<Map<String,Object>> dbListLC = productDocumentationDAO.getAllPitstopsWithCountByCards(contentTab,cardIds, hcaasStatus);
 		((Map<String,String>)filters.get(LIFECYCLE_FILTER)).putAll(ProductDocumentationUtil.listToMap(dbListLC));		
 
+		if(!TOPPICKS.equals(contentTab)) {
 		if(search && filteredCardsMap.containsKey(FOR_YOU_FILTER)) {cardIds = searchCardIds;} else {cardIds = cardIdsInp;}
 		Map<String,String> dbMapYou = getForYouCounts(contentTab,cardIds, hcaasStatus);
-		((Map<String,String>)filters.get(FOR_YOU_FILTER)).putAll(dbMapYou);
+		((Map<String,String>)filters.get(FOR_YOU_FILTER)).putAll(dbMapYou); }
 
 		if(search && filteredCardsMap.containsKey(ROLE_FILTER)) {cardIds = searchCardIds;} else {cardIds = cardIdsInp;}
 		List<Map<String,Object>> dbListRole = productDocumentationDAO.getAllRoleWithCountByCards(contentTab, cardIds, hcaasStatus);
 		((Map<String,String>)filters.get(ROLE_FILTER)).putAll(ProductDocumentationUtil.listToMap(dbListRole));
 
+		if(!TOPPICKS.equals(contentTab)) {
 		if(search && filteredCardsMap.containsKey(CISCOPLUS_FILTER)) {cardIds = searchCardIds;} else {cardIds = cardIdsInp;}
 		List<Map<String,Object>> dbListCiscoPlus = productDocumentationDAO.getAllCiscoPlusWithCountByCards(contentTab, cardIds, hcaasStatus);
-		((Map<String,String>)filters.get(CISCOPLUS_FILTER)).putAll(ProductDocumentationUtil.listToMap(dbListCiscoPlus));
+		((Map<String,String>)filters.get(CISCOPLUS_FILTER)).putAll(ProductDocumentationUtil.listToMap(dbListCiscoPlus)); }
 
 	}
 
@@ -551,12 +561,13 @@ public class ProductDocumentationService{
 		return orderFilters(filters, contentTab);
 	}
 
-	private Map<String, Object> orderFilters(final HashMap<String, Object> filters, String contentTab)
+	protected Map<String, Object> orderFilters(final HashMap<String, Object> filters, String contentTab)
 	{
 		Map<String, Object> orderedFilters = new LinkedHashMap<>();
 		String [] orders = FILTER_CATEGORIES;
 		if(contentTab.equals(ROLE_DB_TABLE)) {orders = FILTER_CATEGORIES_ROLE;}
-
+		if(contentTab.equals(TOPPICKS)) {orders = FILTER_CATEGORIES_TOPPICKS;}
+		
 		for(int i=0;i<orders.length;i++)
 		{
 			String key = orders[i];
@@ -565,7 +576,7 @@ public class ProductDocumentationService{
 		return orderedFilters;
 	}
 
-	private void cleanFilters(final HashMap<String, Object> filters)
+	protected void cleanFilters(final HashMap<String, Object> filters)
 	{	
 		LOG.info("All {}",filters);
 		if(filters.keySet().contains(SUCCESS_TRACKS_FILTER))//do 2 more times
@@ -588,7 +599,8 @@ public class ProductDocumentationService{
 		Set<String> removeThese = new HashSet<String>();
 		filters.forEach((k,v)-> {
 			Map<String, Object> subFilters  = (Map<String, Object>)v;
-
+			if(subFilters==null) {removeThese.add(k);}//remove filter itself
+			else {
 			Set<String> nulls = new HashSet<>();
 			Set<String>  all = subFilters.keySet();
 			all.forEach(ak -> {
@@ -597,7 +609,7 @@ public class ProductDocumentationService{
 			});
 			nulls.forEach(n-> subFilters.remove(n));
 			if(subFilters.size()==0) {removeThese.add(k);}//remove filter itself
-
+			}
 		});
 
 		removeThese.forEach(filter->filters.remove(filter));
@@ -688,7 +700,8 @@ public class ProductDocumentationService{
 
 	private static final String TECHNOLOGY_DB_TABLE = "Technology";
 	private static final String ROLE_DB_TABLE = "Skill";
-
+	private static final String TOPPICKS = "Toppicks";
+	
 	/** Preferences **/
 	private static final String TIME_INTERVAL_FILTER = "Time Interval";
 	private static final Map<String,String>PREFERENCE_FILTER_MAPPING = new HashMap<>(); 
@@ -725,8 +738,8 @@ public class ProductDocumentationService{
 
 	/** TOP Picks = my role + my preferences  
 	 * @param limit **/
-	public LearningRecordsAndFiltersModel fetchMyPreferredLearnings(String userId, String search, //NOSONAR
-			HashMap<String, Object> filters, String sortBy, String sortOrder, String puid,			//NOSONAR
+	public LearningRecordsAndFiltersModel fetchMyPreferredLearnings(String userId, //NOSONAR
+			HashMap<String, Object> filters, String puid,			//NOSONAR
 			HashMap<String, Object> preferences, Integer limit, boolean hcaasStatusFlag) {
 		String hcaasStatus = String.valueOf(hcaasStatusFlag);
 		String userRole = getUserRole();
@@ -994,6 +1007,16 @@ public class ProductDocumentationService{
 		LOG.info("all OR dbCards= {}",dbCards.size());
 		learningCards.addAll(mapLearningEntityToCards(dbCards, userBookmarks));		
 		return responseModel;	
+	}	
+
+	/** {"Language":["English","Japanese"], "Toppicks":["CI-100","SWAP-200"]} **/
+	public Map<String, Object> getTopPicksFiltersPost(Map<String, Object> applyFilters, boolean hcaasStatusFlag) {
+		return tpService.getTopPicksFiltersViewMore(applyFilters, hcaasStatusFlag);
+	}
+
+	/** {"Language":["English","Japanese"], "Toppicks":["CI-100","SWAP-200"]} **/
+	public LearningRecordsAndFiltersModel getTopPicksCardsPost(String userId, Map<String, Object> applyFilters, boolean hcaasStatusFlag) {	
+		return tpService.getTopPicksCardsViewMore(userId, applyFilters, hcaasStatusFlag);
 	}
 
 }

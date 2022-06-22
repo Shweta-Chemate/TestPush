@@ -137,4 +137,30 @@ public class LearningBookMarkDaoImplTest {
 		BookmarkResponseSchema bookmarkResponseSchema = learningBookMarkImpl.createOrUpdate(responseSchema, "test");
 		assertNotNull(bookmarkResponseSchema.getId());
 	}
+	
+	@Test
+	void testCreateOrUpdateExisting(){
+		BookmarkResponseSchema responseSchema = new BookmarkResponseSchema();
+		responseSchema.setId("bookMar1");
+		responseSchema.setLearningid("bookMar1");
+		responseSchema.setCcoid("ccoid");
+		responseSchema.setBookmark(true);
+		Map<String,AttributeValue> userBookmarks = new HashMap<String, AttributeValue>();
+		AttributeValue attrValue = AttributeValue.builder().s("bookMar1").build();
+		userBookmarks.put("bookmark", attrValue);
+		userBookmarks.put("timestamp", AttributeValue.builder().n("1621324382149").build());
+		List<Map<String,AttributeValue>> attributeValues = new ArrayList<>(); 
+		attributeValues.add(userBookmarks);
+		QueryResponse queryResponse = QueryResponse.builder().items(attributeValues).build();
+		Mockito.when(dbClient.query(Mockito.any(QueryRequest.class))).thenReturn(queryResponse);
+		SdkHttpResponse httpResponse = SdkHttpResponse.builder().statusCode(200).build();
+		DeleteItemResponse response = Mockito.mock(DeleteItemResponse.class);
+		Mockito.when(response.sdkHttpResponse()).thenReturn(httpResponse);
+		Mockito.when(dbClient.deleteItem(Mockito.any(DeleteItemRequest.class))).thenReturn(response);
+		PutItemResponse putResponse = Mockito.mock(PutItemResponse.class);
+		Mockito.when(putResponse.sdkHttpResponse()).thenReturn(httpResponse);
+		Mockito.when(dbClient.putItem(Mockito.any(PutItemRequest.class))).thenReturn(putResponse);
+		BookmarkResponseSchema bookmarkResponseSchema = learningBookMarkImpl.createOrUpdate(responseSchema, "test");
+		assertNotNull(bookmarkResponseSchema.getId());
+	}
 }

@@ -156,4 +156,5 @@ public interface NewLearningContentRepo
 
 	@Query(value = SQLConstants.GET_MAX_BOOKMARK, nativeQuery = true)
 	Integer getMaxBookmark();
+
 }

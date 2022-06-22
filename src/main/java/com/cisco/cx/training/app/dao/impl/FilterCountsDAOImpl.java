@@ -19,7 +19,7 @@ import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
 import com.cisco.cx.training.app.repo.NewLearningContentRepo;
 import com.cisco.cx.training.constants.Constants;
 
-@SuppressWarnings({"squid:S134","java:S3776","java:S4288"})
+@SuppressWarnings({"squid:S134","java:S3776","java:S4288", "java:S138"})
 @Repository  
 public class FilterCountsDAOImpl implements FilterCountsDAO{
 

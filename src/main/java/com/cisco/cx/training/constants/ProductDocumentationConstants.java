@@ -678,6 +678,29 @@ public static final String GET_PD_DOCUMENTATION_WITH_COUNT_BY_CARD = "select arc
 
 
 	public static final String GET_SPECIALIZED_CARDS = "select learning_item_id from cxpp_db.cxpp_learning_item where specialization in (:specializations) ";
+	
+
+
+	/** for toppicks viewmore **/
+	private static final String TP_IN_CLAUSE = " and learning_item_id in (:cardIds) " ; 
+
+	public static final String GET_TP_CARD_IDS_REGION = GET_PD_CARD_IDS_REGION  + TP_IN_CLAUSE ;			
+
+	public static final String GET_TP_CARD_IDS_LG = GET_PD_CARD_IDS_LG  + TP_IN_CLAUSE ;
+
+	public static final String GET_TP_CARD_IDS_TC = GET_PD_CARD_IDS_TC + TP_IN_CLAUSE ;
+
+	public static final String GET_TP_CARD_IDS_ROLE = GET_PD_CARD_IDS_ROLE  + TP_IN_CLAUSE ;
+
+	public static final String GET_TP_LEARNING_BY_CONTENT_TYPE = GET_PD_LEARNING_BY_CONTENT_TYPE  + TP_IN_CLAUSE ;
+
+	public static final String GET_TP_CARD_IDS_BY_PITSTOP = GET_PD_CARD_IDS_BY_PITSTOP  + TP_IN_CLAUSE ;
+
+	public static final String GET_TP_CARD_IDS_BY_STUC = GET_PD_CARD_IDS_BY_STUC  + TP_IN_CLAUSE ;
+
+	public static final String GET_TP_CARD_IDS_CISCOPLUS = GET_PD_CARD_IDS_CISCOPLUS  + TP_IN_CLAUSE ;
+
+
 
 }
 

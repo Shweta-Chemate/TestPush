@@ -372,9 +372,8 @@ public class TrainingAndEnablementServiceTest {
 		prefMap.put(Constants.SPECIALIZATION_FILTER, Stream.of(Constants.PLS_SPEC_TYPE, Constants.OFFER_SPEC_TYPE).collect(Collectors.toList()));
 		when(partnerProfileService.isPLSActive(xMasheryHeader, "puid")).thenReturn(false);
 		when(userLearningPreferencesDAO.getULPPreferencesDDB(Mockito.anyString())).thenReturn(prefMap);
-		when(productDocumentationService.fetchMyPreferredLearnings("sntccbr5@hotmail.com", "search", null, "sortBy", "sortOrder",
-				"puid", prefMap, 25, true)).thenReturn(getLearnings());
-		Assertions.assertNotNull(trainingAndEnablementService.getMyPreferredLearnings(xMasheryHeader, "search", null, "sortBy", "sortOrder", "puid" , 25, true));
+		when(productDocumentationService.fetchMyPreferredLearnings("sntccbr5@hotmail.com", null, "sortBy", prefMap, 25, true)).thenReturn(getLearnings());
+		Assertions.assertNotNull(trainingAndEnablementService.getMyPreferredLearnings(xMasheryHeader, null, "sortBy", 25, true));
 	}
 
 	@Test
@@ -386,9 +385,8 @@ public class TrainingAndEnablementServiceTest {
 		when(partnerProfileService.isPLSActive(xMasheryHeader, "puid")).thenReturn(true);
 		prefMap.put(Constants.SPECIALIZATION_FILTER, Stream.of(Constants.PLS_SPEC_TYPE).collect(Collectors.toList()));
 		when(userLearningPreferencesDAO.getULPPreferencesDDB(Mockito.anyString())).thenReturn(prefMap);
-		when(productDocumentationService.fetchMyPreferredLearnings("sntccbr5@hotmail.com", "search", null, "sortBy", "sortOrder",
-				"puid", prefMap, 25, true)).thenReturn(getLearnings());
-		Assertions.assertNotNull(trainingAndEnablementService.getMyPreferredLearnings(xMasheryHeader, "search", null, "sortBy", "sortOrder", "puid" , 25, true));
+		when(productDocumentationService.fetchMyPreferredLearnings("sntccbr5@hotmail.com", null, "sortBy", prefMap, 25, true)).thenReturn(getLearnings());
+		Assertions.assertNotNull(trainingAndEnablementService.getMyPreferredLearnings(xMasheryHeader, null, "sortBy", 25, true));
 	}
 	private LearningRecordsAndFiltersModel getLearnings() {
 		LearningRecordsAndFiltersModel resp = new LearningRecordsAndFiltersModel();

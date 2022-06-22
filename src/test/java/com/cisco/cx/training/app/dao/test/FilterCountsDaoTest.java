@@ -160,6 +160,20 @@ public class FilterCountsDaoTest {
 		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(cardIds);
 		Assertions.assertDoesNotThrow(()->filterCountsDao.setFilterCounts(cardIds, filterCountsMap, filteredCardsMap, userId, hcaasStatus));
 	}
+	
+	@Test
+	void testSetFilterCountsWithFilteredMapEmpty() {
+		HashMap<String, Object> filterCountsMap = new HashMap<>();
+		Map testValues = new HashMap<>();
+		testValues.put("testValueKey", "testValue");
+		filterCountsMap.put("testKey", testValues);
+		Set<String> cardIds = new HashSet<>();
+		cardIds.add("testString");
+		String userId = "testUserId";
+		String hcaasStatus = String.valueOf(true);
+		Map<String, Set<String>> filteredCardsMap = new HashMap<>();
+		Assertions.assertDoesNotThrow(()->filterCountsDao.setFilterCounts(cardIds, filterCountsMap, filteredCardsMap, userId, hcaasStatus));
+	}
 
 	@Test
 	void testFilterCards() {
@@ -243,6 +257,19 @@ public class FilterCountsDaoTest {
 		when(learningBookmarkDAO.getBookmarks(Mockito.anyString())).thenReturn(learningItemIdsList);
 		filterCountsDao.initializeFiltersWithCounts(filterGroups, filters, countFilters, learningItemIdsList, userId, hcaasStatus);
 		Assertions.assertFalse(countFilters.isEmpty());
+	}
+	
+	@Test
+	void testInitializeFiltersWithCountsEmpty() {
+		List<String> filterGroups = new ArrayList<>();
+		HashMap<String, Object> filters = new HashMap<>();
+		HashMap<String, Object> countFilters = new HashMap<>();
+		Set<String> learningItemIdsList = new HashSet<>();
+		String hcaasStatus = String.valueOf(true);
+		String userId = "testUserId";
+		learningItemIdsList.add("testId");
+		filterCountsDao.initializeFiltersWithCounts(filterGroups, filters, countFilters, learningItemIdsList, userId, hcaasStatus);
+		Assertions.assertTrue(countFilters.isEmpty());
 	}
 	
 	@Test

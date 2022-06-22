@@ -132,10 +132,18 @@ public class ProductDocumentationServiceTest {
 		learningItemEntity.setSortByDate("2016-02-03 00:00:00.0");
 		learningItemEntity.setLearning_type("product_documentation");
 		dbCards.add(learningItemEntity);
+		LearningItemEntity learningItemEntitySuccesstips = new LearningItemEntity();
+		learningItemEntitySuccesstips.setSortByDate("2016-02-03 00:00:00.0");
+		learningItemEntitySuccesstips.setLearning_type("success_tips");
+		learningItemEntitySuccesstips.setAsset_types("Video,test2");
+		learningItemEntitySuccesstips.setAsset_links("testVideo,test2");
+		learningItemEntitySuccesstips.setAsset_description("testVideo:test2");
+		learningItemEntitySuccesstips.setAsset_titles("testVideo:test2");
+		dbCards.add(learningItemEntitySuccesstips);
 		when(productDocumentationDAO.getAllLearningCardsByFilter(Mockito.anyString(),Mockito.anySet(),Mockito.any(Sort.class), Mockito.anyString())).thenReturn(dbCards);
 		when(splitService.getSplitValue(Mockito.anyString())).thenReturn(true);
 		LearningRecordsAndFiltersModel a6 = productDocumentationService.getAllLearningInfo(this.XMasheryHeader,null,aMock,"sortBy","sortOrder",learningTab,true);
-		assertEquals(1, a6.getLearningData().size());
+		assertEquals(2, a6.getLearningData().size());
 	}
 	
 	@Test
@@ -287,7 +295,7 @@ public class ProductDocumentationServiceTest {
 		when(servletContext.getAttribute(Constants.ROLE_ID)).thenReturn("101");
 		
 		Assertions.assertNotNull(productDocumentationService.fetchMyPreferredLearnings(
-				"userId", null, null, "sortBy", "sortOrder", "puid", preferences, 25, true).getLearningData());
+				"userId", null, null, preferences, 25, true).getLearningData());
 	}
 	
 	@Test
@@ -319,7 +327,7 @@ public class ProductDocumentationServiceTest {
 		ti.add(new ObjectMapper().writeValueAsString(time));
 		
 		Assertions.assertNotNull(productDocumentationService.fetchMyPreferredLearnings(
-				"userId", null, null, "sortBy", "sortOrder", "puid", preferences, 25, true));
+				"userId", null, null, preferences, 25, true));
 	}
 	
 	@Test
@@ -350,7 +358,7 @@ public class ProductDocumentationServiceTest {
 		when(productDocumentationDAO.getAllLearningCardsByFilter(Mockito.anyString(), Mockito.anySet(), Mockito.any(Sort.class), Mockito.anyString()))
 		.thenReturn(v);
 		Assertions.assertNotNull(productDocumentationService.fetchMyPreferredLearnings(
-				"userId", null, null, "sortBy", "sortOrder", "puid", null, 5, true));
+				"userId", null, null, null, 5, true));
 
 	}
 	
@@ -426,7 +434,7 @@ public class ProductDocumentationServiceTest {
 		when(servletContext.getAttribute(Constants.ROLE_ID)).thenReturn("101");
 		
 		Assertions.assertNotNull(productDocumentationService.fetchMyPreferredLearnings(
-				"userId", null, null, "sortBy", "sortOrder", "puid", preferences, 25, true));
+				"userId", null, null, preferences, 25, true));
 	}
 }
 

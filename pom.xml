@@ -31,23 +31,26 @@
 		+ -->
 	<properties>
 		<maven-release.plugin.version>2.5.3</maven-release.plugin.version>
-		<sonar.exclusions>
-			**/resources/**,
-			**/models/**,
-			**/util/**,
-			**/exception/**,
-			**/constants/**,
-			**/entities/*,
-			**/filters/**,
-			**/config/**,
-			src/main/java/com/cisco/cx/training/app/dao/impl/SmartsheetDAOImpl.java,
-			src/main/java/com/cisco/cx/training/app/config/PropertyConfiguration.java
-		</sonar.exclusions>
+	<sonar.exclusions>
+		**/util/**,
+		**/exception/**,
+		**/constants/**,
+		**/models/**,
+		**/entities/**,
+		**/filters/**,
+		**/config/**,
+		src/main/java/com/cisco/cx/training/app/config/FilterConfig.java,
+		src/main/java/com/cisco/cx/training/app/service/SplitClientService.java,
+		src/main/java/com/cisco/cx/training/app/TrainingAndEnablementApplication.java,
+		src/main/java/com/cisco/cx/training/app/builders/SpecificationBuilder.java,
+		src/main/java/com/cisco/cx/training/app/RequestInterceptor.java
+	</sonar.exclusions>
 		<sonar.cpd.exclusions>
 			**/FilterCountsDAOImpl.java,
 			**/NewLearningContentDAOImpl.java,
 			**/SpecificationBuilderPIW.java,
 			**/LearningContentServiceImpl.java
+			**/ProductDocumentationService.java
 		</sonar.cpd.exclusions>
 	</properties>
 
@@ -116,10 +119,24 @@
 		<dependency>
 			<groupId>software.amazon.awssdk</groupId>
 			<artifactId>dynamodb</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>software.amazon.awssdk</groupId>
+					<artifactId>netty-nio-client</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>software.amazon.awssdk</groupId>
+					<artifactId>apache-client</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>software.amazon.awssdk</groupId>
-			<artifactId>apache-client</artifactId>
+			<artifactId>url-connection-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>sts</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.jayway.jsonpath</groupId>
@@ -237,7 +254,7 @@
 			<dependency>
 				<groupId>software.amazon.awssdk</groupId>
 				<artifactId>bom</artifactId>
-				<version>2.11.14</version>
+				<version>2.17.201</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>

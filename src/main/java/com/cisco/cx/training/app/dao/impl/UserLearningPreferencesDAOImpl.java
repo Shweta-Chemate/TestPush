@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import software.amazon.awssdk.http.SdkHttpClient;
-import software.amazon.awssdk.http.apache.ApacheHttpClient;
+import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClientBuilder;
@@ -50,18 +50,18 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
 
 	private HttpServletRequest request;
 
-	ProductDocumentationDAO productDocumentationDAO;	
+	ProductDocumentationDAO productDocumentationDAO;
+
+	private PartnerProfileService partnerProfileService;
 	
 	@Autowired
 	public UserLearningPreferencesDAOImpl(PropertyConfiguration propertyConfig,
-			ProductDocumentationDAO productDocumentationDAO, HttpServletRequest request)	{
+			ProductDocumentationDAO productDocumentationDAO, HttpServletRequest request, PartnerProfileService partnerProfileService)	{
 		this.propertyConfig = propertyConfig;
 		this.productDocumentationDAO =  productDocumentationDAO;
 		this.request =  request;
+		this.partnerProfileService = partnerProfileService;
 	}
-
-	@Autowired
-	private PartnerProfileService partnerProfileService;
 
 	private static final String USERID_SUFFIX = "";//_ulp
 	private static final String USERID_KEY="userid";	
@@ -82,13 +82,14 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
 	public void init() //throws URISyntaxException
 	{
 		LOG.info("Initializing ULP for table :: {}", propertyConfig.getUlPreferencesTableName());
-		SdkHttpClient httpClient = ApacheHttpClient.builder().
-                connectionTimeout(Duration.ofSeconds(CONN_TIMEOUT))
-                .socketTimeout(Duration.ofSeconds(SOCKET_TIMEOUT))
-                .build();
+		final SdkHttpClient httpClient = UrlConnectionHttpClient.builder()
+				.connectionTimeout(Duration.ofSeconds(CONN_TIMEOUT)).socketTimeout(Duration.ofSeconds(SOCKET_TIMEOUT))
+				.build();
 		
 		Region region = Region.of(propertyConfig.getAwsRegion());
-		DynamoDbClientBuilder dDbClientBuilder = DynamoDbClient.builder().httpClient(httpClient);
+		DynamoDbClientBuilder dDbClientBuilder = DynamoDbClient.builder()
+		        .credentialsProvider(PropertyConfiguration.credentialProvider)
+				.httpClient(httpClient);
 				//.endpointOverride(new URI("http://localhost:8000")); //NOSONAR
 		dDbClientBuilder.region(region);
 		dbClient = dDbClientBuilder.build();

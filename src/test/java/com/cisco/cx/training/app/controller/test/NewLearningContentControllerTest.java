@@ -104,6 +104,27 @@ public class NewLearningContentControllerTest {
 					.characterEncoding("utf-8"));
 		});
 	}
+	
+	@Test
+	void testGetAllPIWsWithSort() throws Exception {
+		this.mockMvc
+		.perform(get("/v1/partner/learning/piws").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.header("X-Mashery-Handshake", this.XMasheryHeader)
+				.header("puid", this.puid)
+				.param("filter", "region:APJC")
+				.param("sortField", "title")
+				.param("sortType", "asc")
+				.characterEncoding("utf-8"))
+		.andDo(print()).andExpect(status().isOk());
+
+		assertThrows(Exception.class, () -> {
+			this.mockMvc
+			.perform(get("/v1/partner/learning/piws").contentType(MediaType.APPLICATION_JSON_VALUE)
+					.header("puid", this.puid)
+					.param("filter", "region:APJC")
+					.characterEncoding("utf-8"));
+		});
+	}
 
 	@Test
 	void testGetUserSuccessTalks() throws Exception {
@@ -112,6 +133,27 @@ public class NewLearningContentControllerTest {
 				.header("X-Mashery-Handshake", this.XMasheryHeader)
 				.header("puid", this.puid)
 				.param("filter", "test:test")
+				.characterEncoding("utf-8"))
+		.andDo(print()).andExpect(status().isOk());
+
+		assertThrows(Exception.class, () -> {
+			this.mockMvc
+			.perform(get("/v1/partner/learning/successTalks").contentType(MediaType.APPLICATION_JSON_VALUE)
+					.header("puid", this.puid)
+					.param("filter", "test:test")
+					.characterEncoding("utf-8"));
+		});
+	}
+	
+	@Test
+	void testGetUserSuccessTalksWithSort() throws Exception {
+		this.mockMvc
+		.perform(get("/v1/partner/learning/successTalks").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.header("X-Mashery-Handshake", this.XMasheryHeader)
+				.header("puid", this.puid)
+				.param("filter", "test:test")
+				.param("sortField", "title")
+				.param("sortType", "asc")
 				.characterEncoding("utf-8"))
 		.andDo(print()).andExpect(status().isOk());
 
@@ -348,6 +390,54 @@ public class NewLearningContentControllerTest {
 					}).header("puid", this.puid).characterEncoding("utf-8"));
 		});
 	}
+	
+	@Test
+	void testGetCXInsightsContentWithSort() throws Exception {
+		this.mockMvc.perform(post("/v1/partner/learning/cxinsights").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.with(new RequestPostProcessor() {
+					public MockHttpServletRequest postProcessRequest(MockHttpServletRequest request) {
+						request.getServletContext().setAttribute(Constants.HCAAS_FLAG, true);
+						return request;
+					}
+				}).header("X-Mashery-Handshake", this.XMasheryHeader).header("puid", this.puid)
+				.param("sorttype", "asc")
+				.param("sortfield", "title")
+				.param("search", "test")
+				.characterEncoding("utf-8")).andDo(print()).andExpect(status().isOk());
+
+		assertThrows(Exception.class, () -> {
+			this.mockMvc.perform(post("/v1/partner/learning/cxinsights").contentType(MediaType.APPLICATION_JSON_VALUE)
+					.with(new RequestPostProcessor() {
+						public MockHttpServletRequest postProcessRequest(MockHttpServletRequest request) {
+							request.getServletContext().setAttribute(Constants.HCAAS_FLAG, true);
+							return request;
+						}
+					}).header("puid", this.puid).characterEncoding("utf-8"));
+		});
+	}
+	
+	@Test
+	void testGetFiltersForCXInsightsWithSearch() throws Exception {
+		this.mockMvc.perform(post("/v1/partner/learning/cxinsights/filters")
+				.contentType(MediaType.APPLICATION_JSON_VALUE).with(new RequestPostProcessor() {
+					public MockHttpServletRequest postProcessRequest(MockHttpServletRequest request) {
+						request.getServletContext().setAttribute(Constants.HCAAS_FLAG, true);
+						return request;
+					}
+				}).header("X-Mashery-Handshake", this.XMasheryHeader).header("puid", this.puid)
+				.param("search", "test")
+				.characterEncoding("utf-8")).andDo(print()).andExpect(status().isOk());
+
+		assertThrows(Exception.class, () -> {
+			this.mockMvc.perform(post("/v1/partner/learning/cxinsights/filters")
+					.contentType(MediaType.APPLICATION_JSON_VALUE).with(new RequestPostProcessor() {
+						public MockHttpServletRequest postProcessRequest(MockHttpServletRequest request) {
+							request.getServletContext().setAttribute(Constants.HCAAS_FLAG, true);
+							return request;
+						}
+					}).header("puid", this.puid).characterEncoding("utf-8"));
+		});
+	}
 
 	@Test
 	void testGetFiltersForCXInsights() throws Exception {
@@ -413,6 +503,21 @@ public class NewLearningContentControllerTest {
 					}).header("puid", this.puid).characterEncoding("utf-8"));
 		});
 	}
+	
+	@Test
+	void testGetPopularAtPartnerNotFound() throws Exception
+	{
+
+		assertThrows(Exception.class, () -> {
+			this.mockMvc.perform(post("/v1/partner/learning/popular/popularAtPartnerNot Found")
+					.contentType(MediaType.APPLICATION_JSON_VALUE).with(new RequestPostProcessor() {
+						public MockHttpServletRequest postProcessRequest(MockHttpServletRequest request) {
+							request.getServletContext().setAttribute(Constants.HCAAS_FLAG, true);
+							return request;
+						}
+					}).header("puid", this.puid).characterEncoding("utf-8"));
+		});
+	}
 
 	@Test
 	void testGetPopularAcrossPartnersFilters() throws Exception {
@@ -433,6 +538,34 @@ public class NewLearningContentControllerTest {
 					}
 				}).header("X-Mashery-Handshake", this.XMasheryHeader).header("puid", this.puid)
 				.characterEncoding("utf-8"));
+	}
+	
+	@Test
+	void testGetPopularAcrossPartnersFiltersNotFound() throws Exception {
+		assertThrows(Exception.class, () -> {
+		this.mockMvc.perform(post("/v1/partner/learning/viewmore/popular/popularAtPartnerNotFound/filters")
+				.contentType(MediaType.APPLICATION_JSON_VALUE).with(new RequestPostProcessor() {
+					public MockHttpServletRequest postProcessRequest(MockHttpServletRequest request) {
+						request.getServletContext().setAttribute(Constants.HCAAS_FLAG, true);
+						return request;
+					}
+				}).header("X-Mashery-Handshake", this.XMasheryHeader).header("puid", this.puid)
+				.characterEncoding("utf-8"));
+		});
+	}
+
+	@Test
+	void testGetPopularAcrossPartnersFilterMasheryEmpty() throws Exception {
+		assertThrows(Exception.class, () -> {
+		this.mockMvc.perform(post("/v1/partner/learning/viewmore/popular/popularAtPartner/filters")
+				.contentType(MediaType.APPLICATION_JSON_VALUE).with(new RequestPostProcessor() {
+					public MockHttpServletRequest postProcessRequest(MockHttpServletRequest request) {
+						request.getServletContext().setAttribute(Constants.HCAAS_FLAG, true);
+						return request;
+					}
+				}).header("puid", this.puid)
+				.characterEncoding("utf-8"));
+		});
 	}
 
 	@Test
