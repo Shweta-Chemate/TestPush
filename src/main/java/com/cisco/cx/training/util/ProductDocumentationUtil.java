@@ -24,6 +24,7 @@ import org.springframework.util.CollectionUtils;
 
 import com.cisco.cx.training.app.entities.LearningItemEntity;
 import com.cisco.cx.training.app.service.ProductDocumentationService;
+import com.cisco.cx.training.constants.Constants;
 import com.cisco.cx.training.models.GenericLearningModel;
 import com.cisco.cx.training.models.UserLearningPreference;
 
@@ -244,9 +245,9 @@ public class ProductDocumentationUtil {
 	public static Map<String, Object> orderFilters(final HashMap<String, Object> filters, String contentTab)
 	{
 		Map<String, Object> orderedFilters = new LinkedHashMap<>();
-		String [] orders = ProductDocumentationService.FILTER_CATEGORIES;
-		if(contentTab.equals(ProductDocumentationService.ROLE_DB_TABLE)) {orders = ProductDocumentationService.FILTER_CATEGORIES_ROLE;}
-		if(contentTab.equals(ProductDocumentationService.TOPPICKS)) {orders = ProductDocumentationService.FILTER_CATEGORIES_TOPPICKS;}
+		String [] orders = Constants.FILTER_CATEGORIES;
+		if(contentTab.equals(Constants.ROLE_DB_TABLE)) {orders = Constants.FILTER_CATEGORIES_ROLE;}
+		if(contentTab.equals(Constants.TOPPICKS)) {orders = Constants.FILTER_CATEGORIES_TOPPICKS;}
 		
 		for(int i=0;i<orders.length;i++)
 		{
@@ -259,9 +260,9 @@ public class ProductDocumentationUtil {
 	public static void cleanFilters(final HashMap<String, Object> filters)
 	{	
 		logger.info("All {}",filters);
-		if(filters.keySet().contains(ProductDocumentationService.SUCCESS_TRACKS_FILTER))//do 2 more times
+		if(filters.keySet().contains(Constants.SUCCESS_TRACKS_FILTER))//do 2 more times
 		{
-			HashMap<String, Object> stFilters = (HashMap<String, Object>)filters.get(ProductDocumentationService.SUCCESS_TRACKS_FILTER);//ST
+			HashMap<String, Object> stFilters = (HashMap<String, Object>)filters.get(Constants.SUCCESS_TRACKS_FILTER);//ST
 			/*
 			 * stFilters.forEach((k,v) -> { HashMap<String, Object> ucFilters =
 			 * (HashMap<String, Object>)v;//UC removeNulls(ucFilters); //this will remove
@@ -301,9 +302,9 @@ public class ProductDocumentationUtil {
 	{
 		long requestStartTime = System.currentTimeMillis();	
 		List<String> rangeCardsIds = new ArrayList<>();
-		String startTime = ddbTI.get(ProductDocumentationService.TI_START_TIME).trim();
-		String endTime = ddbTI.get(ProductDocumentationService.TI_END_TIME).trim();
-		String timeZone = ddbTI.get(ProductDocumentationService.TI_TIME_ZONE).trim();
+		String startTime = ddbTI.get(Constants.TI_START_TIME).trim();
+		String endTime = ddbTI.get(Constants.TI_END_TIME).trim();
+		String timeZone = ddbTI.get(Constants.TI_TIME_ZONE).trim();
 		//LOG.info("TI:{},{},{}",startTime,endTime, timeZone);
 
 		int hrs1 = Integer.parseInt(startTime.substring(0, startTime.indexOf(":")));

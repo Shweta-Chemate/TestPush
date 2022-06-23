@@ -127,7 +127,7 @@ public class TPService extends ProductDocumentationService{
 
 		/** common start **/
 		String hcaasStatus = String.valueOf(hcaasStatusFlag);LOG.info("tpf hcaas{}",hcaasStatus);
-		String contentTab =  TOPPICKS;
+		String contentTab =  Constants.TOPPICKS;
 		HashMap<String, Object> filters = new HashMap<>();	
 		HashMap<String, Object> countFilters = new HashMap<>();			
 		Set<String> cardIds = new HashSet();		
@@ -168,7 +168,7 @@ public class TPService extends ProductDocumentationService{
 
 		/** common start **/
 		String hcaasStatus = String.valueOf(hcaasStatusFlag);LOG.info("tpc hcaas{}",hcaasStatus);
-		String contentTab =  TOPPICKS;
+		String contentTab =  Constants.TOPPICKS;
 		Set<String> filteredTPCards = new HashSet();
 		if(!CollectionUtils.isEmpty(applyFilters))
 		{

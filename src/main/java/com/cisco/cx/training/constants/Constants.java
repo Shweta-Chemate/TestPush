@@ -1,5 +1,11 @@
 package com.cisco.cx.training.constants;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+
 /**
  *
  * Constants for the project. Have the constants only if they are used in
@@ -91,5 +97,57 @@ public final class Constants {
 	public static final String CISCO_PLUS_DB_FILED = "ciscoplus";
 	
 	public static final String DEPLOY = "deploy";
+	
+	public static final String DEFAULT_SORT_FIELD = "sort_by_date";
+	public static final Direction DEFAULT_SORT_ORDER = Sort.Direction.DESC;
+	public static final String CONTENT_TYPE_FILTER = "Content Type";
+	public static final String LANGUAGE_FILTER = "Language";
+	public static final String LIVE_EVENTS_FILTER = "Live Events";
+	public static final String SUCCESS_TRACKS_FILTER = "Success Tracks";  
+	public static final String LIFECYCLE_FILTER="Lifecycle";
+	public static final String TECHNOLOGY_FILTER = "Technology";
+	public static final String ROLE_FILTER = "Role";
+	public static final String CISCOPLUS_FILTER = "Cisco+";
+	public static final String[] FILTER_CATEGORIES = new String[]{
+			CISCOPLUS_FILTER, SUCCESS_TRACKS_FILTER, LIFECYCLE_FILTER, TECHNOLOGY_FILTER, //DOCUMENTATION_FILTER,
+			ROLE_FILTER, 
+			LIVE_EVENTS_FILTER, FOR_YOU_FILTER, CONTENT_TYPE_FILTER, LANGUAGE_FILTER};
+
+	public static final String[] FILTER_CATEGORIES_ROLE = new String[]{ 
+			ROLE_FILTER, CISCOPLUS_FILTER, SUCCESS_TRACKS_FILTER, LIFECYCLE_FILTER, TECHNOLOGY_FILTER,
+			LIVE_EVENTS_FILTER, FOR_YOU_FILTER, CONTENT_TYPE_FILTER, LANGUAGE_FILTER, CISCOPLUS_FILTER};
+
+	public static final String[] FILTER_CATEGORIES_TOPPICKS = new String[]{ ROLE_FILTER, //CISCOPLUS_FILTER, 
+			SUCCESS_TRACKS_FILTER, LIFECYCLE_FILTER, TECHNOLOGY_FILTER,
+			LIVE_EVENTS_FILTER, CONTENT_TYPE_FILTER, LANGUAGE_FILTER};
+	
+	public static final String[] FOR_YOU_KEYS = new String[]{"New","Top Picks","Based on Your Customers",
+			"Bookmarked","Popular with Partners"};
+
+	/** lmap **/
+	public static final String LEARNING_MAP_TYPE = "learningmap";
+	
+	public static final String REG_CHARS= "[\\Q!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~\\E]";
+	public static final String TECHNOLOGY_DB_TABLE = "Technology";
+	public static final String ROLE_DB_TABLE = "Skill";
+	public static final String TOPPICKS = "Toppicks";
+	
+	/** Preferences **/
+	public static final String TIME_INTERVAL_FILTER = "Time Interval";
+	public static final Map<String,String>PREFERENCE_FILTER_MAPPING = new HashMap<>(); 
+	static {
+		PREFERENCE_FILTER_MAPPING.put("role", ROLE_FILTER);
+		PREFERENCE_FILTER_MAPPING.put("technology", TECHNOLOGY_FILTER);
+		PREFERENCE_FILTER_MAPPING.put("language", LANGUAGE_FILTER);
+		PREFERENCE_FILTER_MAPPING.put("region", LIVE_EVENTS_FILTER);
+		PREFERENCE_FILTER_MAPPING.put("timeinterval", TIME_INTERVAL_FILTER);
+		PREFERENCE_FILTER_MAPPING.put("specialization", Constants.SPECIALIZATION_FILTER);
+
+	}
+	public static final Integer TOP_PICKS_LIMIT = 25;
+	public static final String TI_START_TIME = "startTime";
+	public static final String TI_END_TIME = "endTime";
+	public static final String TI_TIME_ZONE = "timeZone";
+	public static final int TWO = 2;	
 
 }
