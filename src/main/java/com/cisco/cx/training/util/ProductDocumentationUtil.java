@@ -1,12 +1,16 @@
 package com.cisco.cx.training.util;
 
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,15 +19,27 @@ import java.util.TimeZone;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.util.CollectionUtils;
 
-import com.cisco.cx.training.app.exception.BadRequestException;
+import com.cisco.cx.training.app.entities.LearningItemEntity;
+import com.cisco.cx.training.app.service.ProductDocumentationService;
+import com.cisco.cx.training.models.GenericLearningModel;
 import com.cisco.cx.training.models.UserLearningPreference;
 
 public class ProductDocumentationUtil {
 	private static final Logger logger = LoggerFactory.getLogger(ProductDocumentationUtil.class);
 	private static final int THREE = 3;
 	private static String[] FIXED_TIMEZONES = {"MIT (UTC-11)","HST (UTC-10)","AST (UTC-9)","PST (UTC-8)","PNT (UTC-7)","MST (UTC-7)","CST (UTC-6)","EST (UTC-5)","IET (UTC-5)","PRT (UTC-4)","CNT (UTC-3:30)","AGT (UTC-3)","BET (UTC-3)","CAT (UTC-1)","GMT (UTC)","ECT (UTC+1)","EET (UTC+2)","ART (UTC+2)","EAT (UTC+3)","MET (UTC+3:30)","NET (UTC+4)","PLT (UTC+5)","IST (UTC+5:30)","BST (UTC+6)","VST (UTC+7)","CTT (UTC+8)","JST (UTC+9)","ACT (UTC+9:30)","AET (UTC+10)","SST (UTC+11)","NST (UTC+12)"};
+
+	/** nulls **/
+	private static final String NULL_TEXT = "null";		
+
+	private static final int TWENTY_FOUR = 24;
+	private static final int TWELVE = 12;	
+	private static final int SIXTY= 60;
+	private static final String PM = "PM";
+	private static final String UTC_MINUS = "UTC-";
 
 	public static String getNowDateUTCStr()
 	{
@@ -201,12 +217,7 @@ public class ProductDocumentationUtil {
 					try {
 						Date stDate = target.parse(st);
 						Date etDate = target.parse(et);
-						logger.info("dates:{} {} ", stDate , etDate);	
-						if(stDate.compareTo(etDate) == 0 )
-						{
-							logger.error("Invalid time range: st={} , et={}" , st ,  et);
-							isValidPrefTime = false;
-						}
+						logger.info("dates:{}={}  {}={}", st,stDate , et,etDate);					
 					} catch (ParseException e) {
 						logger.error("Validation Failed for parsing time:" , e);
 						isValidPrefTime = false;
@@ -229,5 +240,107 @@ public class ProductDocumentationUtil {
 
 		return isValidPrefTime;		
 	}	
+	
+	public static Map<String, Object> orderFilters(final HashMap<String, Object> filters, String contentTab)
+	{
+		Map<String, Object> orderedFilters = new LinkedHashMap<>();
+		String [] orders = ProductDocumentationService.FILTER_CATEGORIES;
+		if(contentTab.equals(ProductDocumentationService.ROLE_DB_TABLE)) {orders = ProductDocumentationService.FILTER_CATEGORIES_ROLE;}
+		if(contentTab.equals(ProductDocumentationService.TOPPICKS)) {orders = ProductDocumentationService.FILTER_CATEGORIES_TOPPICKS;}
+		
+		for(int i=0;i<orders.length;i++)
+		{
+			String key = orders[i];
+			if(filters.containsKey(key)) {orderedFilters.put(key, filters.get(key));}
+		}
+		return orderedFilters;
+	}
+
+	public static void cleanFilters(final HashMap<String, Object> filters)
+	{	
+		logger.info("All {}",filters);
+		if(filters.keySet().contains(ProductDocumentationService.SUCCESS_TRACKS_FILTER))//do 2 more times
+		{
+			HashMap<String, Object> stFilters = (HashMap<String, Object>)filters.get(ProductDocumentationService.SUCCESS_TRACKS_FILTER);//ST
+			/*
+			 * stFilters.forEach((k,v) -> { HashMap<String, Object> ucFilters =
+			 * (HashMap<String, Object>)v;//UC removeNulls(ucFilters); //this will remove
+			 * null pts and parent uc if has only one null pt });
+			 */			
+			removeNulls(stFilters);  //this will remove null ucs and parent st if has only one null uc
+		}
+		Set<String> removeThese = removeNulls(filters);  //all top level
+		logger.info("Removed {} final {}",removeThese, filters);
+	}
+
+	/* e.g. Tech null 498 */
+	private static Set<String> removeNulls(final HashMap<String, Object> filters)
+	{
+		Set<String> removeThese = new HashSet<String>();
+		filters.forEach((k,v)-> {
+			Map<String, Object> subFilters  = (Map<String, Object>)v;
+			if(subFilters==null) {removeThese.add(k);}//remove filter itself
+			else {
+			Set<String> nulls = new HashSet<>();
+			Set<String>  all = subFilters.keySet();
+			all.forEach(ak -> {
+				if(ak==null || ak.trim().isEmpty() || ak.trim().equalsIgnoreCase(NULL_TEXT)) {
+					nulls.add(ak);}
+			});
+			nulls.forEach(n-> subFilters.remove(n));
+			if(subFilters.size()==0) {removeThese.add(k);}//remove filter itself
+			}
+		});
+
+		removeThese.forEach(filter->filters.remove(filter));
+		return removeThese;
+	}
+	
+
+	public static List<String> getRangeLW(List<LearningItemEntity> onlyFutureLWIds, Map<String, String> ddbTI)
+	{
+		long requestStartTime = System.currentTimeMillis();	
+		List<String> rangeCardsIds = new ArrayList<>();
+		String startTime = ddbTI.get(ProductDocumentationService.TI_START_TIME).trim();
+		String endTime = ddbTI.get(ProductDocumentationService.TI_END_TIME).trim();
+		String timeZone = ddbTI.get(ProductDocumentationService.TI_TIME_ZONE).trim();
+		//LOG.info("TI:{},{},{}",startTime,endTime, timeZone);
+
+		int hrs1 = Integer.parseInt(startTime.substring(0, startTime.indexOf(":")));
+		int min1 = Integer.parseInt(startTime.substring(startTime.indexOf(":")+1, startTime.indexOf(" ")));
+		if(startTime.contains(PM)) {hrs1=hrs1+TWELVE;}
+		else if (hrs1 == TWELVE) {hrs1=0;}
+
+		int hrs2 = Integer.parseInt(endTime.substring(0, endTime.indexOf(":")));
+		int min2 = Integer.parseInt(endTime.substring(endTime.indexOf(":")+1, endTime.indexOf(" ")));
+		if(endTime.contains(PM)) {hrs2=hrs2+TWELVE;}
+		else if (hrs2 == TWELVE) {hrs2=0;}
+		//LOG.info("{} {} {} {}",hrs1,min1,hrs2,min2);
+
+		Integer hrMin[] = ProductDocumentationUtil.getHrsMins(timeZone);
+		int hrs3 = hrMin[0];
+		int min3 = hrMin[1];
+		if(timeZone.contains(UTC_MINUS)) {min3 = min3 * -1;}		
+
+		for(LearningItemEntity futureCard : onlyFutureLWIds)
+		{			
+			Date date4 = Timestamp.valueOf(futureCard.getSortByDate());	
+			int finalHrs = date4.getHours() + hrs3; 
+			if(finalHrs<0) {finalHrs = finalHrs*-1 -1;} 
+			if(finalHrs>=TWENTY_FOUR) {finalHrs-=TWENTY_FOUR;}
+			int finalMin = date4.getMinutes() + min3; 
+			if(finalMin<0) {finalMin += SIXTY; finalHrs-=1; } 
+			if(finalMin>=SIXTY) { finalMin-=SIXTY;finalHrs+=1;}
+			logger.info("finalHrs {} {} {} {} {} {} {} {} {} {}",futureCard.getLearning_item_id(),hrs1,min1,hrs2,min2, hrs3, min3, date4 , finalHrs, finalMin);
+
+			boolean hrsCondition = (finalHrs>hrs1 && finalHrs<hrs2);
+			boolean hrMinCondition1 = (finalHrs==hrs1 && finalMin>=min1 );
+			boolean hrMinCondition2 = (finalHrs==hrs2 && finalMin <= min2 ) ;
+			if( hrsCondition ||	hrMinCondition1 ||	hrMinCondition2	)
+			{ rangeCardsIds.add(futureCard.getLearning_item_id());} 
+		}		
+		logger.info("PD-range processed in {} ", (System.currentTimeMillis() - requestStartTime));
+		return rangeCardsIds; //rangeCards
+	}
 	
 }

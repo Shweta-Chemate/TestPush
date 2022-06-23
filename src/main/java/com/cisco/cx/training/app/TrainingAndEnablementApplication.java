@@ -50,4 +50,6 @@ public class TrainingAndEnablementApplication {
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
 	 }
+
 }
+

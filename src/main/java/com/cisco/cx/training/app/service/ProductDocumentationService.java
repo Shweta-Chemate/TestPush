@@ -219,28 +219,30 @@ public class ProductDocumentationService{
 	private static final String CONTENT_TYPE_FILTER = "Content Type";
 	private static final String LANGUAGE_FILTER = "Language";
 	private static final String LIVE_EVENTS_FILTER = "Live Events";
-	private static final String SUCCESS_TRACKS_FILTER = "Success Tracks";  
+	//private static final String DOCUMENTATION_FILTER = "Documentation";
+	public static final String SUCCESS_TRACKS_FILTER = "Success Tracks";  
 	private static final String LIFECYCLE_FILTER="Lifecycle";
 	private static final String TECHNOLOGY_FILTER = "Technology";
 	private static final String FOR_YOU_FILTER = "For You";
 	private static final String ROLE_FILTER = "Role";
 	private static final String CISCOPLUS_FILTER = "Cisco+";
-	private static final String[] FILTER_CATEGORIES = new String[]{
+	public static final String[] FILTER_CATEGORIES = new String[]{
 			CISCOPLUS_FILTER, SUCCESS_TRACKS_FILTER, LIFECYCLE_FILTER, TECHNOLOGY_FILTER, //DOCUMENTATION_FILTER,
 			ROLE_FILTER, 
 			LIVE_EVENTS_FILTER, FOR_YOU_FILTER, CONTENT_TYPE_FILTER, LANGUAGE_FILTER};
 
-	private static final String[] FILTER_CATEGORIES_ROLE = new String[]{ 
+	public static final String[] FILTER_CATEGORIES_ROLE = new String[]{ 
 			ROLE_FILTER, CISCOPLUS_FILTER, SUCCESS_TRACKS_FILTER, LIFECYCLE_FILTER, TECHNOLOGY_FILTER,
 			LIVE_EVENTS_FILTER, FOR_YOU_FILTER, CONTENT_TYPE_FILTER, LANGUAGE_FILTER, CISCOPLUS_FILTER};
 
-	private static final String[] FILTER_CATEGORIES_TOPPICKS = new String[]{ ROLE_FILTER, //CISCOPLUS_FILTER, 
+	public static final String[] FILTER_CATEGORIES_TOPPICKS = new String[]{ ROLE_FILTER, //CISCOPLUS_FILTER, 
 			SUCCESS_TRACKS_FILTER, LIFECYCLE_FILTER, TECHNOLOGY_FILTER,
 			LIVE_EVENTS_FILTER, CONTENT_TYPE_FILTER, LANGUAGE_FILTER};
 	
 	private static final String[] FOR_YOU_KEYS = new String[]{"New","Top Picks","Based on Your Customers",
 			"Bookmarked","Popular with Partners"};
-	private static final String NULL_TEXT = "null";
+
+	/** lmap **/
 	private static final String LEARNING_MAP_TYPE = "learningmap";
 
 	private void initializeFilters(final HashMap<String, Object> filters, final HashMap<String, Object> countFilters, String contentTab, String hcaasStatus)
@@ -495,8 +497,8 @@ public class ProductDocumentationService{
 		}
 		else 
 		{
-			cleanFilters(countFilters);
-			return orderFilters(countFilters, contentTab);
+			ProductDocumentationUtil.cleanFilters(countFilters);
+			return ProductDocumentationUtil.orderFilters(countFilters, contentTab);
 		}
 
 		if(applyFilters!=null && !applyFilters.isEmpty() && applyFilters.size()==1 && !search)
@@ -504,57 +506,11 @@ public class ProductDocumentationService{
 			applyFilters.keySet().forEach(k -> filters.put(k, countFilters.get(k)));
 		}
 		setFilterCounts(cardIds,filters,filteredCardsMap,search,contentTab, searchCardIds, hcaasStatus);
-		cleanFilters(filters);
-		return orderFilters(filters, contentTab);
-	}
+		ProductDocumentationUtil.cleanFilters(filters);
 
-	protected Map<String, Object> orderFilters(final HashMap<String, Object> filters, String contentTab)
-	{
-		Map<String, Object> orderedFilters = new LinkedHashMap<>();
-		String [] orders = FILTER_CATEGORIES;
-		if(contentTab.equals(ROLE_DB_TABLE)) {orders = FILTER_CATEGORIES_ROLE;}
-		if(contentTab.equals(TOPPICKS)) {orders = FILTER_CATEGORIES_TOPPICKS;}
-		for(int i=0;i<orders.length;i++)
-		{
-			String key = orders[i];
-			if(filters.containsKey(key)) {orderedFilters.put(key, filters.get(key));}
-		}
-		return orderedFilters;
+		return ProductDocumentationUtil.orderFilters(filters, contentTab);
 	}
-
-	protected void cleanFilters(final HashMap<String, Object> filters)
-	{	
-		LOG.info("All {}",filters);
-		if(filters.keySet().contains(SUCCESS_TRACKS_FILTER))//do 2 more times
-		{
-			HashMap<String, Object> stFilters = (HashMap<String, Object>)filters.get(SUCCESS_TRACKS_FILTER);//ST
-			removeNulls(stFilters);  //this will remove null ucs and parent st if has only one null uc
-		}
-		Set<String> removeThese = removeNulls(filters);  //all top level
-		LOG.info("Removed {} final {}",removeThese, filters);
-	}
-
-	private Set<String> removeNulls(final HashMap<String, Object> filters)
-	{
-		Set<String> removeThese = new HashSet<String>();
-		filters.forEach((k,v)-> {
-			Map<String, Object> subFilters  = (Map<String, Object>)v;
-			if(subFilters==null) {removeThese.add(k);}//remove filter itself
-			else {
-			Set<String> nulls = new HashSet<>();
-			Set<String>  all = subFilters.keySet();
-			all.forEach(ak -> {
-				if(ak==null || ak.trim().isEmpty() || ak.trim().equalsIgnoreCase(NULL_TEXT)) {
-					nulls.add(ak);}
-			});
-			nulls.forEach(n-> subFilters.remove(n));
-			if(subFilters.size()==0) {removeThese.add(k);}//remove filter itself
-			}
-		});
-
-		removeThese.forEach(filter->filters.remove(filter));
-		return removeThese;
-	}
+  
 
 	public LearningRecordsAndFiltersModel getAllLearningInfo(String xMasheryHandshake, String searchToken,
 			HashMap<String, Object> applyFilters, String sortBy, String sortOrder, String contentTabInp, boolean hcaasStatusFlag) {
@@ -629,8 +585,10 @@ public class ProductDocumentationService{
 	}
 	private static final String REG_CHARS= "[\\Q!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~\\E]";
 	private static final String TECHNOLOGY_DB_TABLE = "Technology";
-	private static final String ROLE_DB_TABLE = "Skill";
-	private static final String TOPPICKS = "Toppicks";
+	public static final String ROLE_DB_TABLE = "Skill";
+	public static final String TOPPICKS = "Toppicks";
+	
+	/** Preferences **/
 	private static final String TIME_INTERVAL_FILTER = "Time Interval";
 	private static final Map<String,String>PREFERENCE_FILTER_MAPPING = new HashMap<>(); 
 	static {
@@ -643,16 +601,11 @@ public class ProductDocumentationService{
 
 	}
 	private static final Integer TOP_PICKS_LIMIT = 25;
-	private static final String TI_START_TIME = "startTime";
-	private static final String TI_END_TIME = "endTime";
-	private static final String TI_TIME_ZONE = "timeZone";
-
-	private static final int TWENTY_FOUR = 24;
-	private static final int TWELVE = 12;
+	public static final String TI_START_TIME = "startTime";
+	public static final String TI_END_TIME = "endTime";
+	public static final String TI_TIME_ZONE = "timeZone";
 	private static final int TWO = 2;	
-	private static final int SIXTY= 60;
-	private static final String PM = "PM";
-	private static final String UTC_MINUS = "UTC-";
+
 
 	private String getUserRole()
 	{
@@ -758,51 +711,6 @@ public class ProductDocumentationService{
 		}	
 	}
 
-	private List<String> getRangeLW(List<LearningItemEntity> onlyFutureLWIds, Map<String, String> ddbTI)
-	{
-		long requestStartTime = System.currentTimeMillis();	
-		List<String> rangeCardsIds = new ArrayList<>();
-		String startTime = ddbTI.get(TI_START_TIME).trim();
-		String endTime = ddbTI.get(TI_END_TIME).trim();
-		String timeZone = ddbTI.get(TI_TIME_ZONE).trim();
-		//LOG.info("TI:{},{},{}",startTime,endTime, timeZone);
-
-		int hrs1 = Integer.parseInt(startTime.substring(0, startTime.indexOf(":")));
-		int min1 = Integer.parseInt(startTime.substring(startTime.indexOf(":")+1, startTime.indexOf(" ")));
-		if(startTime.contains(PM)) {hrs1=hrs1+TWELVE;}
-		else if (hrs1 == TWELVE) {hrs1=0;}
-
-		int hrs2 = Integer.parseInt(endTime.substring(0, endTime.indexOf(":")));
-		int min2 = Integer.parseInt(endTime.substring(endTime.indexOf(":")+1, endTime.indexOf(" ")));
-		if(endTime.contains(PM)) {hrs2=hrs2+TWELVE;}
-		else if (hrs2 == TWELVE) {hrs2=0;}
-		//LOG.info("{} {} {} {}",hrs1,min1,hrs2,min2);
-
-		Integer hrMin[] = ProductDocumentationUtil.getHrsMins(timeZone);
-		int hrs3 = hrMin[0];
-		int min3 = hrMin[1];
-		if(timeZone.contains(UTC_MINUS)) {min3 = min3 * -1;}		
-
-		for(LearningItemEntity futureCard : onlyFutureLWIds)
-		{			
-			Date date4 = Timestamp.valueOf(futureCard.getSortByDate());	
-			int finalHrs = date4.getHours() + hrs3; 
-			if(finalHrs<0) {finalHrs = finalHrs*-1 -1;} 
-			if(finalHrs>=TWENTY_FOUR) {finalHrs-=TWENTY_FOUR;}
-			int finalMin = date4.getMinutes() + min3; 
-			if(finalMin<0) {finalMin += SIXTY; finalHrs-=1; } 
-			if(finalMin>=SIXTY) { finalMin-=SIXTY;finalHrs+=1;}
-			LOG.info("finalHrs {} {} {} {} {} {} {} {} {} {}",futureCard.getLearning_item_id(),hrs1,min1,hrs2,min2, hrs3, min3, date4 , finalHrs, finalMin);
-
-			boolean hrsCondition = (finalHrs>hrs1 && finalHrs<hrs2);
-			boolean hrMinCondition1 = (finalHrs==hrs1 && finalMin>=min1 );
-			boolean hrMinCondition2 = (finalHrs==hrs2 && finalMin <= min2 ) ;
-			if( hrsCondition ||	hrMinCondition1 ||	hrMinCondition2	)
-			{ rangeCardsIds.add(futureCard.getLearning_item_id());} 
-		}		
-		LOG.info("PD-range processed in {} ", (System.currentTimeMillis() - requestStartTime));
-		return rangeCardsIds; //rangeCards
-	}
 
 	/** ["{\"endTime\":\"4:00 PM\",\"startTime\":\"9:00 AM\",\"timeZone\":\"PDT(UTC-7)\"}"] 
 	 * @param limit **/
@@ -832,7 +740,7 @@ public class ProductDocumentationService{
 					LOG.info("PD-UWeb fetch in {} ", (System.currentTimeMillis() - requestStartTime));
 					onlyFutureLWs.forEach(card->onlyFutureLWIds.add(card.getLearning_item_id()));
 					LOG.info("onlyFutureLWIds: {} " , onlyFutureLWIds );
-					onlyFutureLWInRange.addAll(getRangeLW(onlyFutureLWs,ddbTI));					
+					onlyFutureLWInRange.addAll(ProductDocumentationUtil.getRangeLW(onlyFutureLWs,ddbTI));					
 					LOG.info("onlyFutureLWInRange {}",onlyFutureLWInRange);									
 				}
 			}

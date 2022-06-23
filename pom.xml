@@ -49,8 +49,9 @@
 			**/FilterCountsDAOImpl.java,
 			**/NewLearningContentDAOImpl.java,
 			**/SpecificationBuilderPIW.java,
-			**/LearningContentServiceImpl.java
-			**/ProductDocumentationService.java
+			**/LearningContentServiceImpl.java,
+			**/ProductDocumentationService.java,
+			**/TPService.java
 		</sonar.cpd.exclusions>
 	</properties>
 

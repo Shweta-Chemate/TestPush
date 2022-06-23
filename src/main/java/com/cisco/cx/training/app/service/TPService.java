@@ -62,68 +62,65 @@ public class TPService extends ProductDocumentationService{
 	private static final Direction DEFAULT_SORT_ORDER = Sort.Direction.DESC;
 
 	/** filters **/
-	private static final String CONTENT_TYPE_FILTER = "Content Type";
-	private static final String LANGUAGE_FILTER = "Language";
-	private static final String LIVE_EVENTS_FILTER = "Live Events";
-	private static final String SUCCESS_TRACKS_FILTER = "Success Tracks";  
-	private static final String LIFECYCLE_FILTER="Lifecycle";
-	private static final String TECHNOLOGY_FILTER = "Technology";	
-	private static final String ROLE_FILTER = "Role";
+	private static final String CONTENT_TYPE_FILTER_TP = "Content Type";
+	private static final String LANGUAGE_FILTER_TP = "Language";
+	private static final String LIVE_EVENTS_FILTER_TP = "Live Events";
+	private static final String SUCCESS_TRACKS_FILTER_TP = "Success Tracks";  
+	private static final String LIFECYCLE_FILTER_TP="Lifecycle";
+	private static final String TECHNOLOGY_FILTER_TP = "Technology";	
+	private static final String ROLE_FILTER_TP = "Role";
 	
 
 	private void initializeTPFiltersByCards(final HashMap<String, Object> filters, final HashMap<String, Object> countFilters, 
 			String contentTab, String hcaasStatus, Set<String> cardIds)
 	{	
 		HashMap<String, String> contentTypeFilter = new HashMap<>();
-		filters.put(CONTENT_TYPE_FILTER, contentTypeFilter);		
+		filters.put(CONTENT_TYPE_FILTER_TP, contentTypeFilter);		
 		List<Map<String,Object>> dbListCT = productDocumentationDAO.getAllContentTypeWithCountByCards(contentTab,cardIds, hcaasStatus);
-		Map<String,String> allContentsCT = ProductDocumentationUtil.listToMap(dbListCT);countFilters.put(CONTENT_TYPE_FILTER, allContentsCT);
+		Map<String,String> allContentsCT = ProductDocumentationUtil.listToMap(dbListCT);countFilters.put(CONTENT_TYPE_FILTER_TP, allContentsCT);
 		allContentsCT.keySet().forEach(k -> contentTypeFilter.put(k, "0"));
 
 		HashMap<String, String> technologyFilter = new HashMap<>();
-		filters.put(TECHNOLOGY_FILTER, technologyFilter);		
+		filters.put(TECHNOLOGY_FILTER_TP, technologyFilter);		
 		List<Map<String,Object>> dbListTC = productDocumentationDAO.getAllTechnologyWithCountByCards(contentTab, cardIds, hcaasStatus);
-		Map<String,String> allContentsTC = ProductDocumentationUtil.listToMap(dbListTC);countFilters.put(TECHNOLOGY_FILTER, allContentsTC);
+		Map<String,String> allContentsTC = ProductDocumentationUtil.listToMap(dbListTC);countFilters.put(TECHNOLOGY_FILTER_TP, allContentsTC);
 		allContentsTC.keySet().forEach(k -> technologyFilter.put(k, "0"));
 
 		HashMap<String, String> languageFilter = new HashMap<>();
-		filters.put(LANGUAGE_FILTER, languageFilter);		
+		filters.put(LANGUAGE_FILTER_TP, languageFilter);		
 		List<Map<String,Object>> dbListLG= productDocumentationDAO.getAllLanguageWithCountByCards(contentTab, cardIds, hcaasStatus);
-		Map<String,String> allContentsLG = ProductDocumentationUtil.listToMap(dbListLG);countFilters.put(LANGUAGE_FILTER, allContentsLG);
+		Map<String,String> allContentsLG = ProductDocumentationUtil.listToMap(dbListLG);countFilters.put(LANGUAGE_FILTER_TP, allContentsLG);
 		allContentsLG.keySet().forEach(k -> languageFilter.put(k, "0"));
 
 		HashMap<String, String> regionFilter = new HashMap<>();
-		filters.put(LIVE_EVENTS_FILTER, regionFilter);		
+		filters.put(LIVE_EVENTS_FILTER_TP, regionFilter);		
 		List<Map<String,Object>> dbListLE = productDocumentationDAO.getAllLiveEventsWithCountByCards(contentTab,cardIds, hcaasStatus);
-		Map<String,String> allContentsLE = ProductDocumentationUtil.listToMap(dbListLE);countFilters.put(LIVE_EVENTS_FILTER, allContentsLE);
+		Map<String,String> allContentsLE = ProductDocumentationUtil.listToMap(dbListLE);countFilters.put(LIVE_EVENTS_FILTER_TP, allContentsLE);
 		allContentsLE.keySet().forEach(k -> regionFilter.put(k, "0"));
 
 		//no documentation filter
 
 		HashMap<String, Object> stFilter = new HashMap<>();
-		filters.put(SUCCESS_TRACKS_FILTER, stFilter);
+		filters.put(SUCCESS_TRACKS_FILTER_TP, stFilter);
 		List<Map<String,Object>> dbListST = productDocumentationDAO.getAllStUcWithCountByCards(contentTab, cardIds, hcaasStatus);//productDocumentationDAO.getAllStUcPsWithCount(contentTab);
-		Map<String,Object> allContentsST = ProductDocumentationUtil.listToSTMap(dbListST,stFilter);countFilters.put(SUCCESS_TRACKS_FILTER, allContentsST);
+		Map<String,Object> allContentsST = ProductDocumentationUtil.listToSTMap(dbListST,stFilter);countFilters.put(SUCCESS_TRACKS_FILTER_TP, allContentsST);
 
 		HashMap<String, Object> lcFilter = new HashMap<>();
-		filters.put(LIFECYCLE_FILTER, lcFilter);
+		filters.put(LIFECYCLE_FILTER_TP, lcFilter);
 		List<Map<String,Object>> dbListLC = productDocumentationDAO.getAllPitstopsWithCountByCards(contentTab,cardIds, hcaasStatus);
-		Map<String,String> allContentsLC = ProductDocumentationUtil.listToMap(dbListLC);countFilters.put(LIFECYCLE_FILTER, allContentsLC);
+		Map<String,String> allContentsLC = ProductDocumentationUtil.listToMap(dbListLC);countFilters.put(LIFECYCLE_FILTER_TP, allContentsLC);
 		allContentsLC.keySet().forEach(k -> lcFilter.put(k, "0"));
 
 		//no for you filter 	
 
 		HashMap<String, String> roleFilter = new HashMap<>();
-		filters.put(ROLE_FILTER, roleFilter);		
+		filters.put(ROLE_FILTER_TP, roleFilter);		
 		List<Map<String,Object>> dbListRole = productDocumentationDAO.getAllRoleWithCountByCards(contentTab, cardIds, hcaasStatus);
-		Map<String,String> allContentsRole = ProductDocumentationUtil.listToMap(dbListRole);countFilters.put(ROLE_FILTER, allContentsRole);
+		Map<String,String> allContentsRole = ProductDocumentationUtil.listToMap(dbListRole);countFilters.put(ROLE_FILTER_TP, allContentsRole);
 		allContentsRole.keySet().forEach(k -> roleFilter.put(k, "0"));
 
 		//no for cisco+ filter 
 	}
-
-
-	private static final String TOPPICKS = "Toppicks";
 	
 	/** {"Language":["English","Japanese"], "Toppicks":["CI-100","SWAP-200"]} **/
 	public Map<String, Object> getTopPicksFiltersViewMore(Map<String, Object> applyFilters, boolean hcaasStatusFlag) {	
@@ -161,9 +158,9 @@ public class TPService extends ProductDocumentationService{
 			applyFilters.keySet().forEach(k -> filters.put(k, countFilters.get(k)));
 		}	
 		setFilterCounts(cardIds,filters,filteredCardsMap,search,contentTab, searchCardIds, hcaasStatus);	
-		cleanFilters(filters);
+		ProductDocumentationUtil.cleanFilters(filters);
 
-		return orderFilters(filters, contentTab);
+		return ProductDocumentationUtil.orderFilters(filters, contentTab);
 	}
 
 	/** {"Language":["English","Japanese"], "Toppicks":["CI-100","SWAP-200"]} **/
@@ -224,24 +221,24 @@ public class TPService extends ProductDocumentationService{
 			if(v instanceof List) {
 				list= (List<String>)v;				
 				switch(k) {
-				case TECHNOLOGY_FILTER : filteredCards.put(k, productDocumentationDAO.getTpCardIdsByTC(contentTab,new HashSet<>(list),hcaasStatus, tpCardIds));break;
-				case LIVE_EVENTS_FILTER : filteredCards.put(k, productDocumentationDAO.getTpCardIdsByRegion(contentTab,new HashSet<>(list), hcaasStatus,tpCardIds));break;
-				case CONTENT_TYPE_FILTER : filteredCards.put(k, productDocumentationDAO.getTpLearningsByContentType(contentTab,new HashSet<>(list),hcaasStatus, tpCardIds));break;
-				case LANGUAGE_FILTER : filteredCards.put(k, productDocumentationDAO.getTpCardIdsByLanguage(contentTab,new HashSet<>(list),hcaasStatus, tpCardIds));break;
-				case ROLE_FILTER : filteredCards.put(k, productDocumentationDAO.getTpCardIdsByRole(contentTab,new HashSet<>(list),hcaasStatus, tpCardIds));break;
-				case LIFECYCLE_FILTER : filteredCards.put(k, productDocumentationDAO.getTpCardIdsByPs(contentTab,new HashSet<>(list),hcaasStatus, tpCardIds));break;
-				//case Constants.CISCO_PLUS_FILTER : filteredCards.put(k, productDocumentationDAO.getTpCardIdsByCiscoPlus(contentTab,new HashSet<>(list),hcaasStatus, tpCardIds));break;
+				case TECHNOLOGY_FILTER_TP : filteredCards.put(k, productDocumentationDAO.getTpCardIdsByTC(contentTab,new HashSet<>(list),hcaasStatus, tpCardIds));break;
+				case LIVE_EVENTS_FILTER_TP : filteredCards.put(k, productDocumentationDAO.getTpCardIdsByRegion(contentTab,new HashSet<>(list), hcaasStatus,tpCardIds));break;
+				case CONTENT_TYPE_FILTER_TP : filteredCards.put(k, productDocumentationDAO.getTpLearningsByContentType(contentTab,new HashSet<>(list),hcaasStatus, tpCardIds));break;
+				case LANGUAGE_FILTER_TP : filteredCards.put(k, productDocumentationDAO.getTpCardIdsByLanguage(contentTab,new HashSet<>(list),hcaasStatus, tpCardIds));break;
+				case ROLE_FILTER_TP : filteredCards.put(k, productDocumentationDAO.getTpCardIdsByRole(contentTab,new HashSet<>(list),hcaasStatus, tpCardIds));break;
+				case LIFECYCLE_FILTER_TP : filteredCards.put(k, productDocumentationDAO.getTpCardIdsByPs(contentTab,new HashSet<>(list),hcaasStatus, tpCardIds));break;
+				//c+ productDocumentationDAO.getTpCardIdsByCiscoPlus(contentTab,new HashSet<>(list),hcaasStatus, tpCardIds));break;
 				default : LOG.info("TP other {}={}",k,list);
 				};
 			}
 			else if ( v instanceof Map) {	
 				Set<String> cardIdsStUcPs = new HashSet<>();
-				((Map) v).keySet().forEach(ik->{
-					Object iv = ((Map)v).get(ik);
-					List<String> ilist;
-					if(iv instanceof Map) {
-						Set<String> usecaseS= ((Map) iv).keySet(); String successtrack = ik.toString();
-						cardIdsStUcPs.addAll(productDocumentationDAO.getTpCardIdsByPsUcSt(contentTab,successtrack,usecaseS,hcaasStatus, tpCardIds));
+				((Map) v).keySet().forEach(ikTp->{
+					Object ivTp = ((Map)v).get(ikTp);
+					List<String> ilistTP;
+					if(ivTp instanceof Map) {
+						Set<String> usecasesTp= ((Map) ivTp).keySet(); String successtrackTP = ikTp.toString();
+						cardIdsStUcPs.addAll(productDocumentationDAO.getTpCardIdsByPsUcSt(contentTab,successtrackTP,usecasesTp,hcaasStatus, tpCardIds));
 					}
 				});
 				filteredCards.put(k,cardIdsStUcPs);
