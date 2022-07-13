@@ -1,64 +1,70 @@
 package com.cisco.cx.training.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MasheryUser {
-	@SuppressWarnings("unused")
-	private static final Logger LOG = LoggerFactory.getLogger(MasheryUser.class);
-	private final static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  @SuppressWarnings("unused")
+  private static final Logger LOG = LoggerFactory.getLogger(MasheryUser.class);
 
-	// {"client_cco_id":"krsubbu","party_id":"52428","access_token_uid":"karbala2","access_token_accesslevel":"4"}
-	@JsonProperty("party_id")
-	private String partyId;
+  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-	@JsonProperty("access_token_uid")
-	private String ccoId;
+  // {"client_cco_id":"krsubbu","party_id":"52428","access_token_uid":"karbala2","access_token_accesslevel":"4"}
+  @JsonProperty("party_id")
+  private String partyId;
 
-	@JsonProperty("access_token_accesslevel")
-	private String accessLevel;
+  @JsonProperty("access_token_uid")
+  private String ccoId;
 
-	public String getPartyId() {
-		return this.partyId;
-	}
+  @JsonProperty("access_token_accesslevel")
+  private String accessLevel;
 
-	public String getCcoId() {
-		return this.ccoId;
-	}
+  public String getPartyId() {
+    return this.partyId;
+  }
 
-	public String getAccessLevel() {
-		return this.accessLevel;
-	}
+  public String getCcoId() {
+    return this.ccoId;
+  }
 
-	private MasheryUser() {
-	}
+  public String getAccessLevel() {
+    return this.accessLevel;
+  }
 
-	public static MasheryUser getInstance(String requestHeader) {
-		MasheryUser masheryUser = null;
+  private MasheryUser() {}
 
-		if (StringUtils.isNotBlank(requestHeader)) {
-			String decodeRequestHeader = new String(Base64.decodeBase64(requestHeader));
-			try {
-				masheryUser = OBJECT_MAPPER.readValue(decodeRequestHeader, MasheryUser.class);
-			} catch (Exception e) {
-				throw new IllegalArgumentException("Could not decode Mashery header, User unknown");
-			}
-		} else {
-			throw new IllegalArgumentException("Missing Mashery header, User unknown");
-		}
+  public static MasheryUser getInstance(String requestHeader) {
+    MasheryUser masheryUser = null;
 
-		return masheryUser;
-	}
+    if (StringUtils.isNotBlank(requestHeader)) {
+      String decodeRequestHeader = new String(Base64.decodeBase64(requestHeader));
+      try {
+        masheryUser = OBJECT_MAPPER.readValue(decodeRequestHeader, MasheryUser.class);
+      } catch (Exception e) {
+        throw new IllegalArgumentException("Could not decode Mashery header, User unknown");
+      }
+    } else {
+      throw new IllegalArgumentException("Missing Mashery header, User unknown");
+    }
 
-	@Override
-	public String toString() {
-		return "MasheryUser {" + "partyId=" + partyId + ", ccoId=" + ccoId + ", accessLevel=" + accessLevel + '}';
-	}
+    return masheryUser;
+  }
+
+  @Override
+  public String toString() {
+    return "MasheryUser {"
+        + "partyId="
+        + partyId
+        + ", ccoId="
+        + ccoId
+        + ", accessLevel="
+        + accessLevel
+        + '}';
+  }
 }

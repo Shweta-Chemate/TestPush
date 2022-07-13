@@ -5,28 +5,27 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PLSResponse {
 
-	private boolean gracePeriod;
-	private boolean status;
+  private boolean gracePeriod;
+  private boolean status;
 
-	public boolean getGracePeriod() {
-		return gracePeriod;
-	}
+  public boolean getGracePeriod() {
+    return gracePeriod;
+  }
 
-	public void setGracePeriod(boolean gracePeriod) {
-		this.gracePeriod = gracePeriod;
-	}
+  public void setGracePeriod(boolean gracePeriod) {
+    this.gracePeriod = gracePeriod;
+  }
 
-	public boolean getStatus() {
-		return status;
-	}
+  public boolean getStatus() {
+    return status;
+  }
 
-	public void setStatus(boolean status) {
-		this.status = status;
-	}
+  public void setStatus(boolean status) {
+    this.status = status;
+  }
 
-	@Override
-	public String toString() {
-		return "PLSResponse [gracePeriod=" + gracePeriod + ", status=" + status + "]";
-	}
-
+  @Override
+  public String toString() {
+    return "PLSResponse [gracePeriod=" + gracePeriod + ", status=" + status + "]";
+  }
 }

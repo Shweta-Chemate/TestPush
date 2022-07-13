@@ -1,121 +1,116 @@
 package com.cisco.cx.training.models;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.cisco.cx.training.util.HasId;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class SuccessAcademyLearning{
-	
-	@JsonProperty("rowId")
-    private String rowId;
+public class SuccessAcademyLearning {
 
-	@JsonProperty("title")
-    private String title;
-	
-	@JsonProperty("assetModel")
-	private String assetModel;
-	
-	@JsonProperty("assetFacet")
-	private String assetFacet;
-	
-	@JsonProperty("assetGroup")
-	private String assetGroup;
-	
-	@JsonProperty("supportedFormats")
-	private String supportedFormats;
-	
-	@JsonProperty("postDate")
-	private String postDate;
-	
-	@JsonProperty("description")
-	private String description;
-	
-	@JsonProperty("link")
-	private String link;
-	
-	@JsonProperty("isBookMarked")
-	private Boolean isBookMarked = false;
+  @JsonProperty("rowId")
+  private String rowId;
 
-	public String getTitle() {
-		return title;
-	}
+  @JsonProperty("title")
+  private String title;
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+  @JsonProperty("assetModel")
+  private String assetModel;
 
-	public String getAssetModel() {
-		return assetModel;
-	}
+  @JsonProperty("assetFacet")
+  private String assetFacet;
 
-	public void setAssetModel(String assetModel) {
-		this.assetModel = assetModel;
-	}
+  @JsonProperty("assetGroup")
+  private String assetGroup;
 
-	public String getAssetFacet() {
-		return assetFacet;
-	}
+  @JsonProperty("supportedFormats")
+  private String supportedFormats;
 
-	public void setAssetFacet(String assetFacet) {
-		this.assetFacet = assetFacet;
-	}
+  @JsonProperty("postDate")
+  private String postDate;
 
-	public String getAssetGroup() {
-		return assetGroup;
-	}
+  @JsonProperty("description")
+  private String description;
 
-	public void setAssetGroup(String assetGroup) {
-		this.assetGroup = assetGroup;
-	}
+  @JsonProperty("link")
+  private String link;
 
-	public String getSupportedFormats() {
-		return supportedFormats;
-	}
+  @JsonProperty("isBookMarked")
+  private Boolean isBookMarked = false;
 
-	public void setSupportedFormats(String supportedFormats) {
-		this.supportedFormats = supportedFormats;
-	}
+  public String getTitle() {
+    return title;
+  }
 
-	public String getPostDate() {
-		return postDate;
-	}
+  public void setTitle(String title) {
+    this.title = title;
+  }
 
-	public void setPostDate(String postDate) {
-		this.postDate = postDate;
-	}
+  public String getAssetModel() {
+    return assetModel;
+  }
 
-	public String getDescription() {
-		return description;
-	}
+  public void setAssetModel(String assetModel) {
+    this.assetModel = assetModel;
+  }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+  public String getAssetFacet() {
+    return assetFacet;
+  }
 
-	public String getLink() {
-		return link;
-	}
+  public void setAssetFacet(String assetFacet) {
+    this.assetFacet = assetFacet;
+  }
 
-	public void setLink(String link) {
-		this.link = link;
-	}
+  public String getAssetGroup() {
+    return assetGroup;
+  }
 
-	public Boolean getIsBookMarked() {
-		return isBookMarked;
-	}
+  public void setAssetGroup(String assetGroup) {
+    this.assetGroup = assetGroup;
+  }
 
-	public void setIsBookMarked(Boolean isBookMarked) {
-		this.isBookMarked = isBookMarked;
-	}
+  public String getSupportedFormats() {
+    return supportedFormats;
+  }
 
-	public String getRowId() {
-		return rowId;
-	}
+  public void setSupportedFormats(String supportedFormats) {
+    this.supportedFormats = supportedFormats;
+  }
 
-	public void setRowId(String rowId) {
-		this.rowId = rowId;
-	}	
-	
+  public String getPostDate() {
+    return postDate;
+  }
+
+  public void setPostDate(String postDate) {
+    this.postDate = postDate;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public String getLink() {
+    return link;
+  }
+
+  public void setLink(String link) {
+    this.link = link;
+  }
+
+  public Boolean getIsBookMarked() {
+    return isBookMarked;
+  }
+
+  public void setIsBookMarked(Boolean isBookMarked) {
+    this.isBookMarked = isBookMarked;
+  }
+
+  public String getRowId() {
+    return rowId;
+  }
+
+  public void setRowId(String rowId) {
+    this.rowId = rowId;
+  }
 }

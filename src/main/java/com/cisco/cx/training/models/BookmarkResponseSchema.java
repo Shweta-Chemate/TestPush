@@ -1,81 +1,82 @@
 package com.cisco.cx.training.models;
+
 import com.cisco.cx.training.util.HasId;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
-
-import javax.annotation.Generated;
-
 import java.util.Objects;
 import java.util.UUID;
+import javax.annotation.Generated;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BookmarkResponseSchema extends BookmarkRequestSchema implements HasId {
 
-    @Generated("javax.util.UUID.randomUUID")
-    @ApiModelProperty(notes = "Unique Identifier for bookmark request", example = "00000000-0000-0000-0000-000000000000")
-    private String bookmarkRequestId = UUID.randomUUID().toString();
+  @Generated("javax.util.UUID.randomUUID")
+  @ApiModelProperty(
+      notes = "Unique Identifier for bookmark request",
+      example = "00000000-0000-0000-0000-000000000000")
+  private String bookmarkRequestId = UUID.randomUUID().toString();
 
-    @ApiModelProperty(notes = "Created Timestamp Epoch", example = "1500000000000")
-    private Long created;
+  @ApiModelProperty(notes = "Created Timestamp Epoch", example = "1500000000000")
+  private Long created;
 
-    @ApiModelProperty(notes = "Updated Timestamp Epoch", example = "1500000000000")
-    private Long updated = System.currentTimeMillis();
-    
-    private String ccoid;
+  @ApiModelProperty(notes = "Updated Timestamp Epoch", example = "1500000000000")
+  private Long updated = System.currentTimeMillis();
 
-    public String getBookmarkRequestId() {
-        return bookmarkRequestId;
-    }
+  private String ccoid;
 
-    public void setBookmarkRequestId(String bookmarkRequestId) {
-        this.bookmarkRequestId = bookmarkRequestId;
-    }
+  public String getBookmarkRequestId() {
+    return bookmarkRequestId;
+  }
 
-    public Long getCreated() {
-        return created;
-    }
+  public void setBookmarkRequestId(String bookmarkRequestId) {
+    this.bookmarkRequestId = bookmarkRequestId;
+  }
 
-    public void setCreated(Long created) {
-        this.created = created;
-    }
+  public Long getCreated() {
+    return created;
+  }
 
-    public Long getUpdated() {
-        return updated;
-    }
+  public void setCreated(Long created) {
+    this.created = created;
+  }
 
-    public void setUpdated(Long updated) {
-        this.updated = updated;
-    }
+  public Long getUpdated() {
+    return updated;
+  }
 
-	public String getCcoid() {
-		return ccoid;
-	}
+  public void setUpdated(Long updated) {
+    this.updated = updated;
+  }
 
-	public void setCcoid(String ccoid) {
-		this.ccoid = ccoid;
-	}
-	
-	@Override
-    public int hashCode() {
-        return Objects.hash(getTitle(), getCcoid());
-    }
-	
-    @Override
-    public boolean equals(Object obj) {
-    	return super.equals(obj);
-    }
+  public String getCcoid() {
+    return ccoid;
+  }
 
-	@Override
-    @JsonIgnore
-    public String getDocId() {
-        return String.valueOf(this.hashCode());
-    }
+  public void setCcoid(String ccoid) {
+    this.ccoid = ccoid;
+  }
 
-    @Override
-    public void setDocId(String id) {
-        this.bookmarkRequestId = id;
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(getTitle(), getCcoid());
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    return super.equals(obj);
+  }
+
+  @Override
+  @JsonIgnore
+  public String getDocId() {
+    return String.valueOf(this.hashCode());
+  }
+
+  @Override
+  public void setDocId(String id) {
+    this.bookmarkRequestId = id;
+  }
 }

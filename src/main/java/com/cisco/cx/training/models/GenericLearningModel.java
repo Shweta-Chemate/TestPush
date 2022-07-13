@@ -1,259 +1,254 @@
 package com.cisco.cx.training.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class GenericLearningModel {
-	
-	@JsonProperty("id")
-    private String id; //for TP UI
-	
-	@JsonProperty("rowId")
-    private String rowId;
 
-	@JsonProperty("title")
-    private String title;
-	
-	@JsonProperty("duration")
-    private String duration;
+  @JsonProperty("id")
+  private String id; // for TP UI
 
-	@JsonProperty("type")
-    private String type;
-	
-	@JsonProperty("description")
-	private String description;
-	
-	@JsonProperty("link")
-	private String link;
-	
-	@JsonProperty("createdTimeStamp")
-	private String createdTimeStamp;
-	
-	@JsonProperty("isBookMarked")
-	private Boolean isBookMarked = false;
-	
-	@JsonProperty("presenterName")
-	private String presenterName;
-	
-	@JsonProperty("status")
-	private String status;
-	
-	@JsonProperty("rating")
-	private Integer rating;
+  @JsonProperty("rowId")
+  private String rowId;
 
-	@JsonProperty("specialization")
-	private String specialization;
-	
-	private String registrationUrl;
-	private String recordingUrl;
-	private String contentType;
-	private String urlDescrption;
-	
-	private String modulecount;
-	private String learning_map;
+  @JsonProperty("title")
+  private String title;
 
-	private Integer avgRatingPercentage;
-	private Integer votesPercentage;
-	private Integer totalCompletions;
-	
-	private List<SuccessTipsAttachment> successTipsVideos;
-	
-	private List<SuccessTipsAttachment> successTipsFiles;
+  @JsonProperty("duration")
+  private String duration;
 
-	public Integer getAvgRatingPercentage() {
-		return avgRatingPercentage;
-	}
+  @JsonProperty("type")
+  private String type;
 
-	public void setAvgRatingPercentage(Integer avgRatingPercentage) {
-		this.avgRatingPercentage = avgRatingPercentage;
-	}
+  @JsonProperty("description")
+  private String description;
 
-	public Integer getVotesPercentage() {
-		return votesPercentage;
-	}
+  @JsonProperty("link")
+  private String link;
 
-	public void setVotesPercentage(Integer votesPercentage) {
-		this.votesPercentage = votesPercentage;
-	}
+  @JsonProperty("createdTimeStamp")
+  private String createdTimeStamp;
 
-	public Integer getTotalCompletions() {
-		return totalCompletions;
-	}
+  @JsonProperty("isBookMarked")
+  private Boolean isBookMarked = false;
 
-	public void setTotalCompletions(Integer totalCompletions) {
-		this.totalCompletions = totalCompletions;
-	}
+  @JsonProperty("presenterName")
+  private String presenterName;
 
-	public String getRowId() {
-		return rowId;
-	}
+  @JsonProperty("status")
+  private String status;
 
-	public void setRowId(String rowId) {
-		this.rowId = rowId;
-	}
+  @JsonProperty("rating")
+  private Integer rating;
 
-	public String getTitle() {
-		return title;
-	}
+  @JsonProperty("specialization")
+  private String specialization;
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+  private String registrationUrl;
+  private String recordingUrl;
+  private String contentType;
+  private String urlDescrption;
 
-	public String getDuration() {
-		return duration;
-	}
+  private String modulecount;
+  private String learning_map;
 
-	public void setDuration(String duration) {
-		this.duration = duration;
-	}
+  private Integer avgRatingPercentage;
+  private Integer votesPercentage;
+  private Integer totalCompletions;
 
-	public String getType() {
-		return type;
-	}
+  private List<SuccessTipsAttachment> successTipsVideos;
 
-	public void setType(String type) {
-		this.type = type;
-	}
+  private List<SuccessTipsAttachment> successTipsFiles;
 
-	public String getDescription() {
-		return description;
-	}
+  public Integer getAvgRatingPercentage() {
+    return avgRatingPercentage;
+  }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+  public void setAvgRatingPercentage(Integer avgRatingPercentage) {
+    this.avgRatingPercentage = avgRatingPercentage;
+  }
 
-	public String getLink() {
-		return link;
-	}
+  public Integer getVotesPercentage() {
+    return votesPercentage;
+  }
 
-	public void setLink(String link) {
-		this.link = link;
-	}
+  public void setVotesPercentage(Integer votesPercentage) {
+    this.votesPercentage = votesPercentage;
+  }
 
-	public String getCreatedTimeStamp() {
-		return createdTimeStamp;
-	}
+  public Integer getTotalCompletions() {
+    return totalCompletions;
+  }
 
-	public void setCreatedTimeStamp(String createdTimeStamp) {
-		this.createdTimeStamp = createdTimeStamp;
+  public void setTotalCompletions(Integer totalCompletions) {
+    this.totalCompletions = totalCompletions;
+  }
 
-	}
+  public String getRowId() {
+    return rowId;
+  }
 
-	public Boolean getIsBookMarked() {
-		return isBookMarked;
-	}
+  public void setRowId(String rowId) {
+    this.rowId = rowId;
+  }
 
-	public void setIsBookMarked(Boolean isBookMarked) {
-		this.isBookMarked = isBookMarked;
-	}
+  public String getTitle() {
+    return title;
+  }
 
-	public String getPresenterName() {
-		return presenterName;
-	}
+  public void setTitle(String title) {
+    this.title = title;
+  }
 
-	public void setPresenterName(String presenterName) {
-		this.presenterName = presenterName;
-	}
+  public String getDuration() {
+    return duration;
+  }
 
-	public String getStatus() {
-		return status;
-	}
+  public void setDuration(String duration) {
+    this.duration = duration;
+  }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+  public String getType() {
+    return type;
+  }
 
-	public Integer getRating() {
-		return rating;
-	}
+  public void setType(String type) {
+    this.type = type;
+  }
 
-	public void setRating(Integer rating) {
-		this.rating = rating;
-	}
+  public String getDescription() {
+    return description;
+  }
 
-	public String getRegistrationUrl() {
-		return registrationUrl;
-	}
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-	public void setRegistrationUrl(String registrationUrl) {
-		this.registrationUrl = registrationUrl;
-	}
+  public String getLink() {
+    return link;
+  }
 
-	public String getRecordingUrl() {
-		return recordingUrl;
-	}
+  public void setLink(String link) {
+    this.link = link;
+  }
 
-	public void setRecordingUrl(String recordingUrl) {
-		this.recordingUrl = recordingUrl;
-	}
+  public String getCreatedTimeStamp() {
+    return createdTimeStamp;
+  }
 
-	public String getContentType() {
-		return contentType;
-	}
+  public void setCreatedTimeStamp(String createdTimeStamp) {
+    this.createdTimeStamp = createdTimeStamp;
+  }
 
-	public void setContentType(String contentType) {
-		this.contentType = contentType;
-	}
+  public Boolean getIsBookMarked() {
+    return isBookMarked;
+  }
 
-	public String getModulecount() {
-		return modulecount;
-	}
+  public void setIsBookMarked(Boolean isBookMarked) {
+    this.isBookMarked = isBookMarked;
+  }
 
-	public void setModulecount(String modulecount) {
-		this.modulecount = modulecount;
-	}
+  public String getPresenterName() {
+    return presenterName;
+  }
 
-	public String getLearning_map() {
-		return learning_map;
-	}
+  public void setPresenterName(String presenterName) {
+    this.presenterName = presenterName;
+  }
 
-	public void setLearning_map(String learning_map) {
-		this.learning_map = learning_map;
-	}
+  public String getStatus() {
+    return status;
+  }
 
-	public String getId() {
-		return id;
-	}
+  public void setStatus(String status) {
+    this.status = status;
+  }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+  public Integer getRating() {
+    return rating;
+  }
 
-	public String getSpecialization() {
-		return specialization;
-	}
+  public void setRating(Integer rating) {
+    this.rating = rating;
+  }
 
-	public void setSpecialization(String specialization) {
-		this.specialization = specialization;
-	}
+  public String getRegistrationUrl() {
+    return registrationUrl;
+  }
 
-	public List<SuccessTipsAttachment> getSuccessTipsVideos() {
-		return successTipsVideos;
-	}
+  public void setRegistrationUrl(String registrationUrl) {
+    this.registrationUrl = registrationUrl;
+  }
 
-	public void setSuccessTipsVideos(List<SuccessTipsAttachment> successTipsVideos) {
-		this.successTipsVideos = successTipsVideos;
-	}
+  public String getRecordingUrl() {
+    return recordingUrl;
+  }
 
-	public List<SuccessTipsAttachment> getSuccessTipsFiles() {
-		return successTipsFiles;
-	}
+  public void setRecordingUrl(String recordingUrl) {
+    this.recordingUrl = recordingUrl;
+  }
 
-	public void setSuccessTipsFiles(List<SuccessTipsAttachment> successTipsFiles) {
-		this.successTipsFiles = successTipsFiles;
-	}
+  public String getContentType() {
+    return contentType;
+  }
 
-	public String getUrlDescrption() {
-		return urlDescrption;
-	}
+  public void setContentType(String contentType) {
+    this.contentType = contentType;
+  }
 
-	public void setUrlDescrption(String urlDescrption) {
-		this.urlDescrption = urlDescrption;
-	}
+  public String getModulecount() {
+    return modulecount;
+  }
 
+  public void setModulecount(String modulecount) {
+    this.modulecount = modulecount;
+  }
+
+  public String getLearning_map() {
+    return learning_map;
+  }
+
+  public void setLearning_map(String learning_map) {
+    this.learning_map = learning_map;
+  }
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public String getSpecialization() {
+    return specialization;
+  }
+
+  public void setSpecialization(String specialization) {
+    this.specialization = specialization;
+  }
+
+  public List<SuccessTipsAttachment> getSuccessTipsVideos() {
+    return successTipsVideos;
+  }
+
+  public void setSuccessTipsVideos(List<SuccessTipsAttachment> successTipsVideos) {
+    this.successTipsVideos = successTipsVideos;
+  }
+
+  public List<SuccessTipsAttachment> getSuccessTipsFiles() {
+    return successTipsFiles;
+  }
+
+  public void setSuccessTipsFiles(List<SuccessTipsAttachment> successTipsFiles) {
+    this.successTipsFiles = successTipsFiles;
+  }
+
+  public String getUrlDescrption() {
+    return urlDescrption;
+  }
+
+  public void setUrlDescrption(String urlDescrption) {
+    this.urlDescrption = urlDescrption;
+  }
 }
-
-

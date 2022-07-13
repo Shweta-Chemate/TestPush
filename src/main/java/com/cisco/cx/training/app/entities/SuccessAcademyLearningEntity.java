@@ -1,135 +1,129 @@
 package com.cisco.cx.training.app.entities;
 
 import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="cxpp_success_academy_learnings")
-public class SuccessAcademyLearningEntity implements Serializable{
+@Table(name = "cxpp_success_academy_learnings")
+public class SuccessAcademyLearningEntity implements Serializable {
 
-	private static final long serialVersionUID = -3852054556671714530L;
-	
-	@Id
-	@Column(name="row_id")
-	private String rowId;
-	
-	@Column(name="title")
-	private String title;
-	
-	@Column(name="asset_model")
-	private String assetModel;
-	
-	@Column(name="asset_facet")
-	private String assetFacet;
-	
-	@Column(name="asset_group")
-	private String assetGroup;
-	
-	@Column(name="supported_formats")
-	private String supportedFormats;
-	
-	@Column(name="post_date")
-	private String postedDt;
-	
-	@Column(name="description")
-	private String description;
-	
-	@Column(name="learning_link")
-	private String learningLink;
-	
-	@Column(name="last_modified_dt_time")
-	private String lastModifiedDtTime;
+  private static final long serialVersionUID = -3852054556671714530L;
 
-	public String getRowId() {
-		return rowId;
-	}
+  @Id
+  @Column(name = "row_id")
+  private String rowId;
 
-	public void setRowId(String rowId) {
-		this.rowId = rowId;
-	}
+  @Column(name = "title")
+  private String title;
 
-	public String getTitle() {
-		return title;
-	}
+  @Column(name = "asset_model")
+  private String assetModel;
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+  @Column(name = "asset_facet")
+  private String assetFacet;
 
-	public String getAssetModel() {
-		return assetModel;
-	}
+  @Column(name = "asset_group")
+  private String assetGroup;
 
-	public void setAssetModel(String assetModel) {
-		this.assetModel = assetModel;
-	}
+  @Column(name = "supported_formats")
+  private String supportedFormats;
 
-	public String getAssetFacet() {
-		return assetFacet;
-	}
+  @Column(name = "post_date")
+  private String postedDt;
 
-	public void setAssetFacet(String assetFacet) {
-		this.assetFacet = assetFacet;
-	}
+  @Column(name = "description")
+  private String description;
 
-	public String getAssetGroup() {
-		return assetGroup;
-	}
+  @Column(name = "learning_link")
+  private String learningLink;
 
-	public void setAssetGroup(String assetGroup) {
-		this.assetGroup = assetGroup;
-	}
+  @Column(name = "last_modified_dt_time")
+  private String lastModifiedDtTime;
 
-	public String getSupportedFormats() {
-		return supportedFormats;
-	}
+  public String getRowId() {
+    return rowId;
+  }
 
-	public void setSupportedFormats(String supportedFormats) {
-		this.supportedFormats = supportedFormats;
-	}
+  public void setRowId(String rowId) {
+    this.rowId = rowId;
+  }
 
-	public String getPostedDt() {
-		return postedDt;
-	}
+  public String getTitle() {
+    return title;
+  }
 
-	public void setPostedDt(String postedDt) {
-		this.postedDt = postedDt;
-	}
+  public void setTitle(String title) {
+    this.title = title;
+  }
 
-	public String getDescription() {
-		return description;
-	}
+  public String getAssetModel() {
+    return assetModel;
+  }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+  public void setAssetModel(String assetModel) {
+    this.assetModel = assetModel;
+  }
 
-	public String getLearningLink() {
-		return learningLink;
-	}
+  public String getAssetFacet() {
+    return assetFacet;
+  }
 
-	public void setLearningLink(String learningLink) {
-		this.learningLink = learningLink;
-	}
+  public void setAssetFacet(String assetFacet) {
+    this.assetFacet = assetFacet;
+  }
 
-	public String getLastModifiedDtTime() {
-		return lastModifiedDtTime;
-	}
+  public String getAssetGroup() {
+    return assetGroup;
+  }
 
-	public void setLastModifiedDtTime(String lastModifiedDtTime) {
-		this.lastModifiedDtTime = lastModifiedDtTime;
-	}
+  public void setAssetGroup(String assetGroup) {
+    this.assetGroup = assetGroup;
+  }
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
-	
-	
-	
+  public String getSupportedFormats() {
+    return supportedFormats;
+  }
 
-	
+  public void setSupportedFormats(String supportedFormats) {
+    this.supportedFormats = supportedFormats;
+  }
+
+  public String getPostedDt() {
+    return postedDt;
+  }
+
+  public void setPostedDt(String postedDt) {
+    this.postedDt = postedDt;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public String getLearningLink() {
+    return learningLink;
+  }
+
+  public void setLearningLink(String learningLink) {
+    this.learningLink = learningLink;
+  }
+
+  public String getLastModifiedDtTime() {
+    return lastModifiedDtTime;
+  }
+
+  public void setLastModifiedDtTime(String lastModifiedDtTime) {
+    this.lastModifiedDtTime = lastModifiedDtTime;
+  }
+
+  public static long getSerialversionuid() {
+    return serialVersionUID;
+  }
 }
