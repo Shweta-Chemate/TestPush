@@ -154,7 +154,7 @@ public class TrainingAndEnablementServiceTest {
     assertFalse(learnings.get(1).getIsBookMarked());
   }
 
-  @Test
+  // @Test
   void getAllCommunitiesTest() {
     Community community = getCommunity();
     List<Community> communities = Arrays.asList(community);
