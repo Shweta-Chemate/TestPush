@@ -4,36 +4,35 @@ import java.io.Serializable;
 
 public class LearningStatusEntityPK implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	private String userId;
-	
-	private String puid;
+  private String userId;
 
-	private String learningItemId;
+  private String puid;
 
-	public String getUserId() {
-		return userId;
-	}
+  private String learningItemId;
 
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
+  public String getUserId() {
+    return userId;
+  }
 
-	public String getPuid() {
-		return puid;
-	}
+  public void setUserId(String userId) {
+    this.userId = userId;
+  }
 
-	public void setPuid(String puid) {
-		this.puid = puid;
-	}
+  public String getPuid() {
+    return puid;
+  }
 
-	public String getLearningItemId() {
-		return learningItemId;
-	}
+  public void setPuid(String puid) {
+    this.puid = puid;
+  }
 
-	public void setLearningItemId(String learningItemId) {
-		this.learningItemId = learningItemId;
-	}
-	
+  public String getLearningItemId() {
+    return learningItemId;
+  }
+
+  public void setLearningItemId(String learningItemId) {
+    this.learningItemId = learningItemId;
+  }
 }

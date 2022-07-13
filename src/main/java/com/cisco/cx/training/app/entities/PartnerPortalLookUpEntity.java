@@ -2,115 +2,108 @@ package com.cisco.cx.training.app.entities;
 
 import java.io.Serializable;
 import java.sql.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="cxpp_lookup")
-public class PartnerPortalLookUpEntity implements Serializable{
+@Table(name = "cxpp_lookup")
+public class PartnerPortalLookUpEntity implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -7610906142767752144L;
+  /** */
+  private static final long serialVersionUID = -7610906142767752144L;
 
-	@Id
-	@Column(name="id")
-	private String rowId;
-	
-	@Column(name="cxpp_key")
-	private String partnerPortalKey;
-	
-	@Column(name="cxpp_value")
-	private String partnerPortalKeyValue;
-	
-	@Column(name="description")
-	private String description;
-	
-	@Column(name="created_dt_time")
-	private Date createdDtTime;
-	
-	@Column(name="updated_dt_time")
-	private Date updatedDtTime;
-	
-	@Column(name="created_by")
-	private String createdBy;
-	
-	@Column(name="updated_by")
-	private String updatedBy;
+  @Id
+  @Column(name = "id")
+  private String rowId;
 
-	public String getRowId() {
-		return rowId;
-	}
+  @Column(name = "cxpp_key")
+  private String partnerPortalKey;
 
-	public void setRowId(String rowId) {
-		this.rowId = rowId;
-	}
+  @Column(name = "cxpp_value")
+  private String partnerPortalKeyValue;
 
-	public String getPartnerPortalKey() {
-		return partnerPortalKey;
-	}
+  @Column(name = "description")
+  private String description;
 
-	public void setPartnerPortalKey(String partnerPortalKey) {
-		this.partnerPortalKey = partnerPortalKey;
-	}
+  @Column(name = "created_dt_time")
+  private Date createdDtTime;
 
-	public String getPartnerPortalKeyValue() {
-		return partnerPortalKeyValue;
-	}
+  @Column(name = "updated_dt_time")
+  private Date updatedDtTime;
 
-	public void setPartnerPortalKeyValue(String partnerPortalKeyValue) {
-		this.partnerPortalKeyValue = partnerPortalKeyValue;
-	}
+  @Column(name = "created_by")
+  private String createdBy;
 
-	public String getDescription() {
-		return description;
-	}
+  @Column(name = "updated_by")
+  private String updatedBy;
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+  public String getRowId() {
+    return rowId;
+  }
 
-	public Date getCreatedDtTime() {
-		return createdDtTime; //NOSONAR
-	}
+  public void setRowId(String rowId) {
+    this.rowId = rowId;
+  }
 
-	public void setCreatedDtTime(Date createdDtTime) {
-		this.createdDtTime = createdDtTime; //NOSONAR
-	}
+  public String getPartnerPortalKey() {
+    return partnerPortalKey;
+  }
 
-	public Date getUpdatedDtTime() {
-		return updatedDtTime; //NOSONAR
-	}
+  public void setPartnerPortalKey(String partnerPortalKey) {
+    this.partnerPortalKey = partnerPortalKey;
+  }
 
-	public void setUpdatedDtTime(Date updatedDtTime) {
-		this.updatedDtTime = updatedDtTime; //NOSONAR
-	}
+  public String getPartnerPortalKeyValue() {
+    return partnerPortalKeyValue;
+  }
 
-	public String getCreatedBy() {
-		return createdBy;
-	}
+  public void setPartnerPortalKeyValue(String partnerPortalKeyValue) {
+    this.partnerPortalKeyValue = partnerPortalKeyValue;
+  }
 
-	public void setCreatedBy(String createdBy) {
-		this.createdBy = createdBy;
-	}
+  public String getDescription() {
+    return description;
+  }
 
-	public String getUpdatedBy() {
-		return updatedBy;
-	}
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-	public void setUpdatedBy(String updatedBy) {
-		this.updatedBy = updatedBy;
-	}
+  public Date getCreatedDtTime() {
+    return createdDtTime; // NOSONAR
+  }
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
-	
-	
+  public void setCreatedDtTime(Date createdDtTime) {
+    this.createdDtTime = createdDtTime; // NOSONAR
+  }
 
-	
+  public Date getUpdatedDtTime() {
+    return updatedDtTime; // NOSONAR
+  }
+
+  public void setUpdatedDtTime(Date updatedDtTime) {
+    this.updatedDtTime = updatedDtTime; // NOSONAR
+  }
+
+  public String getCreatedBy() {
+    return createdBy;
+  }
+
+  public void setCreatedBy(String createdBy) {
+    this.createdBy = createdBy;
+  }
+
+  public String getUpdatedBy() {
+    return updatedBy;
+  }
+
+  public void setUpdatedBy(String updatedBy) {
+    this.updatedBy = updatedBy;
+  }
+
+  public static long getSerialversionuid() {
+    return serialVersionUID;
+  }
 }
