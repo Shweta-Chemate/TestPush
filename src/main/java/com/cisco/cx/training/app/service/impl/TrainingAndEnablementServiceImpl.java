@@ -1,6 +1,5 @@
 package com.cisco.cx.training.app.service.impl;
 
-import com.cisco.cx.training.app.config.SplitConfig;
 import com.cisco.cx.training.app.dao.CommunityDAO;
 import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
 import com.cisco.cx.training.app.dao.PartnerPortalLookupDAO;
@@ -22,7 +21,6 @@ import com.cisco.cx.training.models.SuccessAcademyFilter;
 import com.cisco.cx.training.models.SuccessAcademyLearning;
 import com.cisco.cx.training.models.UserLearningPreference;
 import com.cisco.cx.training.util.SuccessAcademyMapper;
-import com.cisco.services.common.featureflag.FeatureFlagService;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,10 +51,6 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
   @Autowired private ProductDocumentationService productDocumentationService;
 
   @Autowired UserLearningPreferencesDAO userLearningPreferencesDAO;
-
-  @Autowired FeatureFlagService featureFlagService;
-
-  @Autowired SplitConfig splitConfig;
 
   private static final String CXPP_UI_TAB_PREFIX = "CXPP_UI_TAB_";
 
@@ -89,16 +83,6 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 
   @Override
   public List<Community> getAllCommunities() {
-    System.out.println(
-        "-------------------------------------split value 1 : "
-            + featureFlagService.isOn(Constants.SUCCESS_TIPS_SPLIT_KEY));
-    System.out.println(
-        "-------------------------------------split value 2 : "
-            + featureFlagService.isOn(Constants.BE_SPLIT_IO_FLAG));
-    System.out.println(
-        "-------------------------------------squid proxy host: " + splitConfig.squidProxyHost);
-    System.out.println(
-        "-------------------------------------squid proxy port: " + splitConfig.squidProxyPort);
     return communityDAO.getCommunities();
   }
 

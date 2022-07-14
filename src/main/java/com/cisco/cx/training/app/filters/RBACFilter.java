@@ -5,10 +5,11 @@ import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.exception.ErrorResponse;
 import com.cisco.cx.training.app.exception.NotAllowedException;
 import com.cisco.cx.training.app.exception.RestResponseStatusExceptionResolver;
-import com.cisco.cx.training.app.service.SplitClientService;
 import com.cisco.cx.training.constants.Constants;
 import com.cisco.cx.training.models.MasheryObject;
 import com.cisco.cx.training.util.AuthorizationUtil;
+import com.cisco.services.common.featureflag.FeatureFilter;
+import com.cisco.services.common.featureflag.FeatureFlagService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
@@ -48,7 +49,7 @@ public class RBACFilter implements Filter {
 
   @Autowired private RestTemplate restTemplate;
 
-  @Autowired private SplitClientService splitService;
+  @Autowired private FeatureFlagService featureFlagService;
 
   @Override
   public void init(final FilterConfig filterConfig) throws ServletException {
@@ -90,7 +91,8 @@ public class RBACFilter implements Filter {
 
           long apiStartTime = System.currentTimeMillis();
           String authResult;
-          oktaFeatureEnabled = splitService.useAuthZ();
+          oktaFeatureEnabled =
+              featureFlagService.isOn(FeatureFilter.ALL, Constants.BE_SPLIT_IO_FLAG);
           if (oktaFeatureEnabled) {
             String accessToken = request.getHeader(Constants.AUTHORIZATION);
             if (StringUtils.isBlank(accessToken)) {

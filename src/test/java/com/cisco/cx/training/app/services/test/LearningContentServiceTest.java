@@ -14,7 +14,6 @@ import com.cisco.cx.training.app.repo.LearningStatusRepo;
 import com.cisco.cx.training.app.service.LearningContentService;
 import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.app.service.ProductDocumentationService;
-import com.cisco.cx.training.app.service.SplitClientService;
 import com.cisco.cx.training.app.service.impl.LearningContentServiceImpl;
 import com.cisco.cx.training.constants.Constants;
 import com.cisco.cx.training.models.Company;
@@ -23,6 +22,7 @@ import com.cisco.cx.training.models.LearningStatusSchema;
 import com.cisco.cx.training.models.LearningStatusSchema.Registration;
 import com.cisco.cx.training.models.UserDetailsWithCompanyList;
 import com.cisco.cx.training.models.UserRole;
+import com.cisco.services.common.featureflag.FeatureFlagService;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.sql.Timestamp;
@@ -64,7 +64,7 @@ public class LearningContentServiceTest {
 
   @Mock private HttpServletRequest request;
 
-  @Mock private SplitClientService splitService;
+  @Mock private FeatureFlagService featureFlagService;
 
   @Autowired ResourceLoader resourceLoader;
 
@@ -118,13 +118,13 @@ public class LearningContentServiceTest {
 
   @Test
   void getIndexCounts() {
-    when(splitService.getSplitValue(Mockito.anyString())).thenReturn(true);
+    when(featureFlagService.isOn(Mockito.anyString())).thenReturn(true);
     assertNotNull(learningContentService.getIndexCounts(true));
   }
 
   @Test
   void getIndexCountForNonHCaaS() {
-    when(splitService.getSplitValue(Mockito.anyString())).thenReturn(true);
+    when(featureFlagService.isOn(Mockito.anyString())).thenReturn(true);
     assertNotNull(learningContentService.getIndexCounts(false));
   }
 

@@ -15,9 +15,9 @@ import com.cisco.cx.training.app.filters.AuthFilter;
 import com.cisco.cx.training.app.filters.RBACFilter;
 import com.cisco.cx.training.app.rest.NewLearningContentController;
 import com.cisco.cx.training.app.service.LearningContentService;
-import com.cisco.cx.training.app.service.SplitClientService;
 import com.cisco.cx.training.constants.Constants;
 import com.cisco.cx.training.models.LearningStatusSchema;
+import com.cisco.services.common.featureflag.FeatureFlagService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -56,8 +56,6 @@ public class NewLearningContentControllerTest {
 
   @Autowired AuthFilter authFilter;
 
-  @MockBean private SplitClientService splitService;
-
   @Autowired private WebApplicationContext context;
 
   @MockBean private CommunityDAO communityDAO;
@@ -65,6 +63,8 @@ public class NewLearningContentControllerTest {
   @Autowired ResourceLoader resourceLoader;
 
   @MockBean private LearningContentService learningContentService;
+
+  @MockBean private FeatureFlagService featureFlagService;
 
   private String XMasheryHeader;
 
