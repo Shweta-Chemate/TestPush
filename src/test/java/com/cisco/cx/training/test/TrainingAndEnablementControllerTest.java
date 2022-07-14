@@ -16,11 +16,11 @@ import com.cisco.cx.training.app.filters.AuthFilter;
 import com.cisco.cx.training.app.filters.RBACFilter;
 import com.cisco.cx.training.app.repo.BookmarkCountsRepo;
 import com.cisco.cx.training.app.rest.TrainingAndEnablementController;
-import com.cisco.cx.training.app.service.SplitClientService;
 import com.cisco.cx.training.app.service.TrainingAndEnablementService;
 import com.cisco.cx.training.constants.Constants;
 import com.cisco.cx.training.models.BookmarkRequestSchema;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
+import com.cisco.services.common.featureflag.FeatureFlagService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -60,8 +60,6 @@ public class TrainingAndEnablementControllerTest {
 
   @Autowired RBACFilter rbacFilter;
 
-  @MockBean private SplitClientService splitService;
-
   @Autowired AuthFilter authFilter;
 
   @Autowired private WebApplicationContext context;
@@ -72,6 +70,8 @@ public class TrainingAndEnablementControllerTest {
   @MockBean private TrainingAndEnablementService trainingAndEnablementService;
 
   @Mock private BookmarkCountsRepo bookmarkCountsRepo;
+
+  @MockBean private FeatureFlagService featureFlagService;
 
   private String XMasheryHeader;
 

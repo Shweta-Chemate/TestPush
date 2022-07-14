@@ -15,9 +15,9 @@ import com.cisco.cx.training.app.repo.NewLearningContentRepo;
 import com.cisco.cx.training.app.repo.PeerViewedRepo;
 import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.app.service.ProductDocumentationService;
-import com.cisco.cx.training.app.service.SplitClientService;
 import com.cisco.cx.training.constants.Constants;
 import com.cisco.cx.training.models.LearningRecordsAndFiltersModel;
+import com.cisco.services.common.featureflag.FeatureFlagService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -64,7 +64,7 @@ public class ProductDocumentationServiceTest {
 
   @Mock private ServletContext servletContext;
 
-  @Mock private SplitClientService splitService;
+  @Mock private FeatureFlagService featureFlagService;
 
   private static final String MASHERY_TEST = "test-mashery";
 
@@ -147,7 +147,7 @@ public class ProductDocumentationServiceTest {
     when(productDocumentationDAO.getAllLearningCardsByFilter(
             Mockito.anyString(), Mockito.anySet(), Mockito.any(Sort.class), Mockito.anyString()))
         .thenReturn(dbCards);
-    when(splitService.getSplitValue(Mockito.anyString())).thenReturn(true);
+    when(featureFlagService.isOn(Mockito.anyString())).thenReturn(true);
     LearningRecordsAndFiltersModel a6 =
         productDocumentationService.getAllLearningInfo(
             this.XMasheryHeader, null, aMock, "sortBy", "sortOrder", learningTab, true);
@@ -300,7 +300,7 @@ public class ProductDocumentationServiceTest {
     when(productDocumentationDAO.getAllLearningCards(
             Mockito.anyString(), Mockito.any(Sort.class), Mockito.anyString()))
         .thenReturn(aL);
-    when(splitService.getSplitValue(Mockito.anyString())).thenReturn(true);
+    when(featureFlagService.isOn(Mockito.anyString())).thenReturn(true);
     LearningRecordsAndFiltersModel a2t =
         productDocumentationService.getAllLearningInfo(
             this.XMasheryHeader, null, null, "title", "asc", learningTab, true);
@@ -393,7 +393,7 @@ public class ProductDocumentationServiceTest {
     }
     when(request.getServletContext()).thenReturn(servletContext);
     when(servletContext.getAttribute(Constants.ROLE_ID)).thenReturn("101");
-    when(splitService.getSplitValue(Mockito.anyString())).thenReturn(true);
+    when(featureFlagService.isOn(Mockito.anyString())).thenReturn(true);
     when(productDocumentationDAO.getUserRole(Mockito.anyString())).thenReturn("role101");
     when(peerViewedRepo.findByRoleName(Mockito.anyString())).thenReturn(a);
     when(partnerProfileService.getHcaasStatusForPartner(MASHERY_TEST)).thenReturn(true);

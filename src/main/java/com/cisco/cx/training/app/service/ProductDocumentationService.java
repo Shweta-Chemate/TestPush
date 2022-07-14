@@ -14,6 +14,7 @@ import com.cisco.cx.training.models.LearningRecordsAndFiltersModel;
 import com.cisco.cx.training.models.MasheryObject;
 import com.cisco.cx.training.models.SuccessTipsAttachment;
 import com.cisco.cx.training.util.ProductDocumentationUtil;
+import com.cisco.services.common.featureflag.FeatureFlagService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -72,7 +73,7 @@ public class ProductDocumentationService {
 
   private Random r = new Random(); // NOSONAR
 
-  @Autowired private SplitClientService splitService;
+  @Autowired private FeatureFlagService featureFlagService;
 
   private Map<String, Set<String>> filterCards(
       Map<String, Object> applyFilters, String contentTab, String hcaasStatus) {
@@ -261,7 +262,7 @@ public class ProductDocumentationService {
             card.setModulecount(lmCounts.get(learning.getLearning_item_id()));
           }
           if (Constants.SUCCESSTIPS.equalsIgnoreCase(learning.getLearning_type())) {
-            if (splitService.getSplitValue(Constants.SUCCESS_TIPS_SPLIT_KEY)) {
+            if (featureFlagService.isOn(Constants.SUCCESS_TIPS_SPLIT_KEY)) {
               cards.add(card);
             }
           } else {

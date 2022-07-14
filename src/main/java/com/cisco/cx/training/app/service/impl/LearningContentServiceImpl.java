@@ -10,7 +10,6 @@ import com.cisco.cx.training.app.repo.LearningStatusRepo;
 import com.cisco.cx.training.app.service.LearningContentService;
 import com.cisco.cx.training.app.service.PartnerProfileService;
 import com.cisco.cx.training.app.service.ProductDocumentationService;
-import com.cisco.cx.training.app.service.SplitClientService;
 import com.cisco.cx.training.constants.Constants;
 import com.cisco.cx.training.models.Company;
 import com.cisco.cx.training.models.CountResponseSchema;
@@ -25,6 +24,7 @@ import com.cisco.cx.training.models.SuccessTalkResponseSchema;
 import com.cisco.cx.training.models.SuccessTalkSession;
 import com.cisco.cx.training.models.UserDetailsWithCompanyList;
 import com.cisco.cx.training.util.LearningContentUtil;
+import com.cisco.services.common.featureflag.FeatureFlagService;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -83,7 +83,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 
   @Autowired ProductDocumentationService productDocumentationService;
 
-  @Autowired private SplitClientService splitService;
+  @Autowired private FeatureFlagService featureFlagService;
 
   @Override
   public SuccessTalkResponseSchema fetchSuccesstalks(
@@ -267,7 +267,7 @@ public class LearningContentServiceImpl implements LearningContentService {
         indexCounts.add(roleCount);
       }
 
-      if (splitService.getSplitValue(Constants.SUCCESS_TIPS_SPLIT_KEY)) {
+      if (featureFlagService.isOn(Constants.SUCCESS_TIPS_SPLIT_KEY)) {
         requestStartTime = System.currentTimeMillis();
         CountSchema successTipsCount = getSuccessTipsCount();
         LOG.info(
@@ -566,7 +566,7 @@ public class LearningContentServiceImpl implements LearningContentService {
               Instant.ofEpochMilli(Long.valueOf((String) userBookmarks.get(entity.getId())))
                   .toString());
           if (Constants.SUCCESSTIPS.equalsIgnoreCase(learningItem.getLearningType())) {
-            if (splitService.getSplitValue(Constants.SUCCESS_TIPS_SPLIT_KEY)) {
+            if (featureFlagService.isOn(Constants.SUCCESS_TIPS_SPLIT_KEY)) {
               result.add(learningItem);
             }
           } else {
@@ -948,7 +948,7 @@ public class LearningContentServiceImpl implements LearningContentService {
                 : null);
       }
       if (Constants.SUCCESSTIPS.equalsIgnoreCase(learningItem.getLearningType())) {
-        if (splitService.getSplitValue(Constants.SUCCESS_TIPS_SPLIT_KEY)) {
+        if (featureFlagService.isOn(Constants.SUCCESS_TIPS_SPLIT_KEY)) {
           result.add(learningItem);
         }
       } else {
