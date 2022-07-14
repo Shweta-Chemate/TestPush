@@ -24,10 +24,10 @@ public class SplitConfig {
   private String apiKey;
 
   @Value("${squid.proxy.host}")
-  private String squidProxyHost;
+  public String squidProxyHost;
 
   @Value("${squid.proxy.port}")
-  private String squidProxyPort;
+  public String squidProxyPort;
 
   @Bean
   public SplitClient splitClient() {
