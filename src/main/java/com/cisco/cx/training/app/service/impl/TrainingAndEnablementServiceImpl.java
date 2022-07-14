@@ -1,5 +1,6 @@
 package com.cisco.cx.training.app.service.impl;
 
+import com.cisco.cx.training.app.config.SplitConfig;
 import com.cisco.cx.training.app.dao.CommunityDAO;
 import com.cisco.cx.training.app.dao.LearningBookmarkDAO;
 import com.cisco.cx.training.app.dao.PartnerPortalLookupDAO;
@@ -55,6 +56,8 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
 
   @Autowired FeatureFlagService featureFlagService;
 
+  @Autowired SplitConfig splitConfig;
+
   private static final String CXPP_UI_TAB_PREFIX = "CXPP_UI_TAB_";
 
   @Override
@@ -87,8 +90,15 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
   @Override
   public List<Community> getAllCommunities() {
     System.out.println(
-        "-------------------------------------split value: "
+        "-------------------------------------split value 1 : "
             + featureFlagService.isOn(Constants.SUCCESS_TIPS_SPLIT_KEY));
+    System.out.println(
+        "-------------------------------------split value 2 : "
+            + featureFlagService.isOn(Constants.BE_SPLIT_IO_FLAG));
+    System.out.println(
+        "-------------------------------------squid proxy host: " + splitConfig.squidProxyHost);
+    System.out.println(
+        "-------------------------------------squid proxy port: " + splitConfig.squidProxyPort);
     return communityDAO.getCommunities();
   }
 
