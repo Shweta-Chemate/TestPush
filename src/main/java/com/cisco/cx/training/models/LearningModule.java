@@ -1,7 +1,9 @@
 package com.cisco.cx.training.models;
 
 import com.cisco.cx.training.app.entities.NewLearningContentEntity;
+import lombok.Data;
 
+@Data
 public class LearningModule {
 
   private String id;
@@ -15,54 +17,6 @@ public class LearningModule {
   private String asset_type;
 
   private int sequence;
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public String getTitle() {
-    return title;
-  }
-
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public String getLink() {
-    return link;
-  }
-
-  public void setLink(String link) {
-    this.link = link;
-  }
-
-  public String getAsset_type() {
-    return asset_type;
-  }
-
-  public void setAsset_type(String asset_type) {
-    this.asset_type = asset_type;
-  }
-
-  public int getSequence() {
-    return sequence;
-  }
-
-  public void setSequence(int sequence) {
-    this.sequence = sequence;
-  }
 
   public LearningModule getLearningModuleFromEntity(NewLearningContentEntity learningModuleEntity) {
     LearningModule learningModule = new LearningModule();
