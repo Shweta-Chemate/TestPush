@@ -342,7 +342,7 @@ public class ProductDocumentationServiceTest {
     productDocumentationService.addLearningsViewedForRole("userId", "cardId", "puid");
     PeerViewedEntity en = new PeerViewedEntity();
     en.setCardId("cardId");
-    en.setRole_name("role");
+    en.setRoleName("role");
     en.setUpdatedTime(Timestamp.valueOf("2019-10-24 18:30:00"));
     Optional<PeerViewedEntity> enOp = Optional.of(en);
     when(peerViewedRepo.findById(Mockito.any(PeerViewedEntityPK.class))).thenReturn(enOp);
@@ -380,7 +380,7 @@ public class ProductDocumentationServiceTest {
     for (int i = 0; i <= 55; i++) {
       PeerViewedEntity en = new PeerViewedEntity();
       en.setCardId(100 + i + "");
-      en.setRole_name("role101");
+      en.setRoleName("role101");
       en.setUpdatedTime(Timestamp.valueOf("2019-10-24 18:30:00"));
       a.add(en);
     }

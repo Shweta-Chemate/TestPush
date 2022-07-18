@@ -5,9 +5,11 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import lombok.Data;
 
 @Entity
 @Table(name = "cxpp_success_academy_learnings")
+@Data
 public class SuccessAcademyLearningEntity implements Serializable {
 
   private static final long serialVersionUID = -3852054556671714530L;
@@ -42,86 +44,6 @@ public class SuccessAcademyLearningEntity implements Serializable {
 
   @Column(name = "last_modified_dt_time")
   private String lastModifiedDtTime;
-
-  public String getRowId() {
-    return rowId;
-  }
-
-  public void setRowId(String rowId) {
-    this.rowId = rowId;
-  }
-
-  public String getTitle() {
-    return title;
-  }
-
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
-  public String getAssetModel() {
-    return assetModel;
-  }
-
-  public void setAssetModel(String assetModel) {
-    this.assetModel = assetModel;
-  }
-
-  public String getAssetFacet() {
-    return assetFacet;
-  }
-
-  public void setAssetFacet(String assetFacet) {
-    this.assetFacet = assetFacet;
-  }
-
-  public String getAssetGroup() {
-    return assetGroup;
-  }
-
-  public void setAssetGroup(String assetGroup) {
-    this.assetGroup = assetGroup;
-  }
-
-  public String getSupportedFormats() {
-    return supportedFormats;
-  }
-
-  public void setSupportedFormats(String supportedFormats) {
-    this.supportedFormats = supportedFormats;
-  }
-
-  public String getPostedDt() {
-    return postedDt;
-  }
-
-  public void setPostedDt(String postedDt) {
-    this.postedDt = postedDt;
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public String getLearningLink() {
-    return learningLink;
-  }
-
-  public void setLearningLink(String learningLink) {
-    this.learningLink = learningLink;
-  }
-
-  public String getLastModifiedDtTime() {
-    return lastModifiedDtTime;
-  }
-
-  public void setLastModifiedDtTime(String lastModifiedDtTime) {
-    this.lastModifiedDtTime = lastModifiedDtTime;
-  }
 
   public static long getSerialversionuid() {
     return serialVersionUID;
