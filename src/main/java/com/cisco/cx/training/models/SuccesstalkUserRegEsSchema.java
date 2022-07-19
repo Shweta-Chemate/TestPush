@@ -10,12 +10,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
+import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Data
 public class SuccesstalkUserRegEsSchema implements HasId {
   private static final Logger LOG = LoggerFactory.getLogger(SuccesstalkUserRegEsSchema.class);
   private static final String SMARTSHEET_DATE_FORMAT = "MM-dd-yy";
@@ -56,50 +58,6 @@ public class SuccesstalkUserRegEsSchema implements HasId {
     this.eventStartDate = eventStartDate;
     this.title = title;
     this.registrationStatus = registrationStatus;
-  }
-
-  public AttendedStatusEnum getAttendedStatus() {
-    return attendedStatus;
-  }
-
-  public void setAttendedStatus(AttendedStatusEnum attendedStatus) {
-    this.attendedStatus = attendedStatus;
-  }
-
-  public String getCcoid() {
-    return ccoid;
-  }
-
-  public void setCcoid(String ccoid) {
-    this.ccoid = ccoid;
-  }
-
-  public String getTitle() {
-    return title;
-  }
-
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
-  public RegistrationStatusEnum getRegistrationStatus() {
-    return registrationStatus;
-  }
-
-  public void setRegistrationStatus(RegistrationStatusEnum registrationStatus) {
-    this.registrationStatus = registrationStatus;
-  }
-
-  public Long getCreated() {
-    return created;
-  }
-
-  public Long getUpdated() {
-    return updated;
-  }
-
-  public void setUpdated(Long updated) {
-    this.updated = updated;
   }
 
   @Override

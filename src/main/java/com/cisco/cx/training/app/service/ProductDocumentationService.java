@@ -861,7 +861,7 @@ public class ProductDocumentationService {
       } else {
         PeerViewedEntity newEntry = new PeerViewedEntity();
         newEntry.setCardId(cardId);
-        newEntry.setRole_name(userRole);
+        newEntry.setRoleName(userRole);
         newEntry.setUpdatedTime(Timestamp.valueOf(ProductDocumentationUtil.getNowDateUTCStr()));
         peerViewedRepo.save(newEntry);
       }

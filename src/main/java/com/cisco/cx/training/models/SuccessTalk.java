@@ -5,7 +5,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
+import lombok.Data;
 
+@Data
 public class SuccessTalk implements HasId, Comparable<SuccessTalk> {
 
   @ApiModelProperty(notes = "Unique Id of the SuccessTalk", example = "STK-01")
@@ -88,14 +90,6 @@ public class SuccessTalk implements HasId, Comparable<SuccessTalk> {
     }
   }
 
-  public String getSuccessTalkId() {
-    return successTalkId;
-  }
-
-  public void setSuccessTalkId(String successTalkId) {
-    this.successTalkId = successTalkId;
-  }
-
   @Override
   public String getDocId() {
     return successTalkId;
@@ -106,96 +100,8 @@ public class SuccessTalk implements HasId, Comparable<SuccessTalk> {
     this.successTalkId = id;
   }
 
-  public String getTitle() {
-    return title;
-  }
-
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public String getStatus() {
-    return status;
-  }
-
-  public void setStatus(String status) {
-    this.status = status;
-  }
-
-  public String getDuration() {
-    return duration;
-  }
-
-  public void setDuration(String duration) {
-    this.duration = duration;
-  }
-
-  public boolean isBookmark() {
-    return bookmark;
-  }
-
-  public void setBookmark(boolean bookmark) {
-    this.bookmark = bookmark;
-  }
-
-  public List<SuccessTalkSession> getSessions() {
-    return sessions; // NOSONAR
-  }
-
-  public void setSessions(List<SuccessTalkSession> sessions) {
-    this.sessions = sessions; // NOSONAR
-  }
-
-  public String getQuarter() {
-    return quarter;
-  }
-
-  public void setQuarter(String quarter) {
-    this.quarter = quarter;
-  }
-
-  public String getImageUrl() {
-    return imageUrl;
-  }
-
-  public void setImageUrl(String imageUrl) {
-    this.imageUrl = imageUrl;
-  }
-
-  public String getRecordingUrl() {
-    return recordingUrl;
-  }
-
-  public void setRecordingUrl(String recordingUrl) {
-    this.recordingUrl = recordingUrl;
-  }
-
   @Override
   public int compareTo(SuccessTalk successTalk) {
     return this.getSuccessTalkId().compareTo(((SuccessTalk) successTalk).getSuccessTalkId());
-  }
-
-  public Boolean getTechnicalSession() {
-    return technicalSession;
-  }
-
-  public void setTechnicalSession(Boolean technicalSession) {
-    this.technicalSession = technicalSession;
-  }
-
-  public String getRegTimestamp() {
-    return regTimestamp;
-  }
-
-  public void setRegTimestamp(String regTimestamp) {
-    this.regTimestamp = regTimestamp;
   }
 }

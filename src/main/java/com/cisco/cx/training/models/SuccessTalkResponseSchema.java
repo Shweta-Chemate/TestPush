@@ -2,7 +2,9 @@ package com.cisco.cx.training.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
+import lombok.Data;
 
+@Data
 public class SuccessTalkResponseSchema {
 
   @JsonProperty("solution")
@@ -13,28 +15,4 @@ public class SuccessTalkResponseSchema {
 
   @JsonProperty("sessionDetails")
   private List<SuccessTalk> items;
-
-  public List<SuccessTalk> getItems() {
-    return items; // NOSONAR
-  }
-
-  public void setItems(List<SuccessTalk> items) {
-    this.items = items; // NOSONAR
-  }
-
-  public String getSolution() {
-    return solution;
-  }
-
-  public void setSolution(String solution) {
-    this.solution = solution;
-  }
-
-  public String getUsecase() {
-    return usecase;
-  }
-
-  public void setUsecase(String usecase) {
-    this.usecase = usecase;
-  }
 }

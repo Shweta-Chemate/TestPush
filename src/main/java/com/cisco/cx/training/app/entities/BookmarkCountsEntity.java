@@ -6,10 +6,12 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
+import lombok.Data;
 
 @Entity
 @Table(name = "cxpp_learning_bookmark_count")
 @IdClass(BookmarkCountsEntityPK.class)
+@Data
 public class BookmarkCountsEntity implements Serializable {
 
   private static final long serialVersionUID = 1L;
@@ -24,28 +26,4 @@ public class BookmarkCountsEntity implements Serializable {
 
   @Column(name = "count")
   private Integer count;
-
-  public String getPuid() {
-    return puid;
-  }
-
-  public void setPuid(String puid) {
-    this.puid = puid;
-  }
-
-  public String getLearningItemId() {
-    return learningItemId;
-  }
-
-  public void setLearningItemId(String learningItemId) {
-    this.learningItemId = learningItemId;
-  }
-
-  public Integer getCount() {
-    return count;
-  }
-
-  public void setCount(Integer count) {
-    this.count = count;
-  }
 }

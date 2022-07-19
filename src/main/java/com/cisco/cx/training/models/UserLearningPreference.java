@@ -2,7 +2,9 @@ package com.cisco.cx.training.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Map;
+import lombok.Data;
 
+@Data
 public class UserLearningPreference {
 
   @JsonProperty("name")
@@ -13,30 +15,6 @@ public class UserLearningPreference {
 
   @JsonProperty("timeMap")
   private Map<String, String> timeMap;
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public boolean isSelected() {
-    return selected;
-  }
-
-  public void setSelected(boolean selected) {
-    this.selected = selected;
-  }
-
-  public Map<String, String> getTimeMap() {
-    return timeMap;
-  }
-
-  public void setTimeMap(Map<String, String> timeMap) {
-    this.timeMap = timeMap;
-  }
 
   @Override
   public String toString() {

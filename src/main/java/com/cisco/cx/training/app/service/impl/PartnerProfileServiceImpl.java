@@ -138,8 +138,8 @@ public class PartnerProfileServiceImpl implements PartnerProfileService {
       mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
       plsResponse = mapper.readValue(result.getBody(), PLSResponse.class);
       LOGGER.info(
-          "PLS status: {} ,gracePeriod: {}", plsResponse.getStatus(), plsResponse.getGracePeriod());
-      if (plsResponse.getStatus() || plsResponse.getGracePeriod()) {
+          "PLS status: {} ,gracePeriod: {}", plsResponse.isStatus(), plsResponse.isGracePeriod());
+      if (plsResponse.isStatus() || plsResponse.isGracePeriod()) {
         return true;
       } else {
         return false;

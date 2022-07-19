@@ -27,30 +27,6 @@ public class BookmarkResponseSchema extends BookmarkRequestSchema implements Has
 
   private String ccoid;
 
-  public String getBookmarkRequestId() {
-    return bookmarkRequestId;
-  }
-
-  public void setBookmarkRequestId(String bookmarkRequestId) {
-    this.bookmarkRequestId = bookmarkRequestId;
-  }
-
-  public Long getCreated() {
-    return created;
-  }
-
-  public void setCreated(Long created) {
-    this.created = created;
-  }
-
-  public Long getUpdated() {
-    return updated;
-  }
-
-  public void setUpdated(Long updated) {
-    this.updated = updated;
-  }
-
   public String getCcoid() {
     return ccoid;
   }

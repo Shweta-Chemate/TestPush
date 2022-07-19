@@ -7,10 +7,12 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
+import lombok.Data;
 
 @Entity
 @Table(name = "cxpp_learning_status")
 @IdClass(LearningStatusEntityPK.class)
+@Data
 public class LearningStatusEntity implements Serializable {
 
   private static final long serialVersionUID = 1L;
@@ -35,52 +37,4 @@ public class LearningStatusEntity implements Serializable {
 
   @Column(name = "viewed_timestamp")
   private Timestamp viewedTimestamp;
-
-  public String getUserId() {
-    return userId;
-  }
-
-  public void setUserId(String userId) {
-    this.userId = userId;
-  }
-
-  public String getPuid() {
-    return puid;
-  }
-
-  public void setPuid(String puid) {
-    this.puid = puid;
-  }
-
-  public String getLearningItemId() {
-    return learningItemId;
-  }
-
-  public void setLearningItemId(String learningItemId) {
-    this.learningItemId = learningItemId;
-  }
-
-  public String getRegStatus() {
-    return regStatus;
-  }
-
-  public void setRegStatus(String regStatus) {
-    this.regStatus = regStatus;
-  }
-
-  public Timestamp getRegUpdatedTimestamp() {
-    return regUpdatedTimestamp;
-  }
-
-  public void setRegUpdatedTimestamp(Timestamp regUpdatedTimestamp) {
-    this.regUpdatedTimestamp = regUpdatedTimestamp;
-  }
-
-  public Timestamp getViewedTimestamp() {
-    return viewedTimestamp;
-  }
-
-  public void setViewedTimestamp(Timestamp viewedTimestamp) {
-    this.viewedTimestamp = viewedTimestamp;
-  }
 }
