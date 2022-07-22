@@ -167,4 +167,6 @@ public final class Constants {
   public static final String TI_END_TIME = "endTime";
   public static final String TI_TIME_ZONE = "timeZone";
   public static final int TWO = 2;
+  public static final String REF_ID = "refId";
+  public static final String X_REQUEST_ID = "x-request-id";
 }

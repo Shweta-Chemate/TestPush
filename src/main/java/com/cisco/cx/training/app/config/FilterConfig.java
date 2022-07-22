@@ -4,10 +4,14 @@ import com.cisco.cx.training.app.filters.AuthFilter;
 import com.cisco.cx.training.app.filters.LogFilter;
 import com.cisco.cx.training.app.filters.RBACFilter;
 import com.cisco.cx.training.constants.Constants;
+import com.cisco.services.common.restclient.DefaultHeadersSupplier;
+import com.cisco.services.common.restclient.RestClient;
+import com.cisco.services.common.restclient.RestTemplateClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 
 @Configuration
 public class FilterConfig {
@@ -38,5 +42,11 @@ public class FilterConfig {
     registrationBean.setFilter(authFilter);
     registrationBean.addUrlPatterns("/v1/*");
     return registrationBean;
+  }
+
+  @Bean
+  public RestClient restClient(
+      RestTemplate restTemplate, DefaultHeadersSupplier defaultHeadersSupplier) {
+    return new RestTemplateClient(restTemplate, defaultHeadersSupplier);
   }
 }
