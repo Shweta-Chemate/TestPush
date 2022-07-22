@@ -19,7 +19,6 @@ import com.cisco.cx.training.models.LearningRecordsAndFiltersModel;
 import com.cisco.cx.training.models.MasheryObject;
 import com.cisco.cx.training.models.SuccessAcademyFilter;
 import com.cisco.cx.training.models.SuccessAcademyLearning;
-import com.cisco.cx.training.models.UserDetails;
 import com.cisco.cx.training.models.UserLearningPreference;
 import com.cisco.cx.training.util.SuccessAcademyMapper;
 import java.util.ArrayList;
@@ -83,9 +82,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
   }
 
   @Override
-  public List<Community> getAllCommunities(String xMasheryHandshake) {
-    UserDetails user = partnerProfileService.fetchUserDetailsWithRestStarter(xMasheryHandshake);
-    System.out.println("----------User from rest starter" + user.getCecId());
+  public List<Community> getAllCommunities() {
     return communityDAO.getCommunities();
   }
 

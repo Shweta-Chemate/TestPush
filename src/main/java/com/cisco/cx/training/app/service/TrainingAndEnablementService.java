@@ -16,7 +16,7 @@ public interface TrainingAndEnablementService {
 
   List<SuccessAcademyLearning> getAllSuccessAcademyLearnings(String xMasheryHandshake);
 
-  List<Community> getAllCommunities(String xMasheryHandshake);
+  List<Community> getAllCommunities();
 
   CountSchema getCommunityCount();
 

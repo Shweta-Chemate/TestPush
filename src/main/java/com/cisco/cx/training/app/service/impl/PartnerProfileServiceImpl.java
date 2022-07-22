@@ -14,8 +14,6 @@ import com.cisco.services.common.restclient.RestClient;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.net.URI;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -30,7 +28,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 public class PartnerProfileServiceImpl implements PartnerProfileService {
@@ -68,31 +65,6 @@ public class PartnerProfileServiceImpl implements PartnerProfileService {
             entitlementUrl + "/" + userId, HttpMethod.GET, requestEntity, String.class);
     LOGGER.info(
         "Entitlement url response = {}",
-        result.getStatusCode().value() != HttpStatus.OK.value()
-            ? result.getBody()
-            : "call completed.");
-    UserDetails userDetails = null;
-    try {
-      mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-      userDetails = mapper.readValue(result.getBody(), UserDetails.class);
-    } catch (IOException | HttpClientErrorException e) {
-      LOGGER.error("Error while invoking the entitlement API", e);
-    }
-    return userDetails;
-  }
-
-  @Override
-  public UserDetails fetchUserDetailsWithRestStarter(String xMasheryHandshake) {
-    String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
-    URI uri =
-        UriComponentsBuilder.fromUriString(entitlementUrl + "/" + userId)
-            .buildAndExpand(Map.of())
-            .toUri();
-    ResponseEntity<String> result =
-        request(xMasheryHandshake).method(HttpMethod.GET).uri(uri).send();
-
-    LOGGER.info(
-        "Entitlement url response from starter= {}",
         result.getStatusCode().value() != HttpStatus.OK.value()
             ? result.getBody()
             : "call completed.");

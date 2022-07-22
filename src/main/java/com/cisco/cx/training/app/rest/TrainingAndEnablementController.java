@@ -92,8 +92,7 @@ public class TrainingAndEnablementController {
           @RequestHeader(value = "X-Mashery-Handshake", required = false)
           String xMasheryHandshake)
       throws Exception {
-    List<Community> communityList =
-        trainingAndEnablementService.getAllCommunities(xMasheryHandshake);
+    List<Community> communityList = trainingAndEnablementService.getAllCommunities();
     return new ResponseEntity<List<Community>>(communityList, HttpStatus.OK);
   }
 

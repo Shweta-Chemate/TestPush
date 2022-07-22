@@ -154,12 +154,12 @@ public class TrainingAndEnablementServiceTest {
     assertFalse(learnings.get(1).getIsBookMarked());
   }
 
-  // @Test
+  @Test
   void getAllCommunitiesTest() {
     Community community = getCommunity();
     List<Community> communities = Arrays.asList(community);
     when(communityDAO.getCommunities()).thenReturn(communities);
-    Assertions.assertNotNull(trainingAndEnablementService.getAllCommunities("test"));
+    Assertions.assertNotNull(trainingAndEnablementService.getAllCommunities());
   }
 
   private UserDetailsWithCompanyList getUserDetailsWithCompanyList() {

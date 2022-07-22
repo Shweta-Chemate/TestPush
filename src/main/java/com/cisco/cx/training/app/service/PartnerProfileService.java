@@ -16,6 +16,4 @@ public interface PartnerProfileService {
   boolean isPLSActive(String xMasheryHandshake, String partnerId) throws Exception; // NOSONAR
 
   public boolean getHcaasStatusForPartner(String xMasheryHandshake);
-
-  UserDetails fetchUserDetailsWithRestStarter(String xMasheryHandshake);
 }
