@@ -81,7 +81,7 @@ public class AuthorizationUtil {
               .uri(uri)
               .accept(MediaType.APPLICATION_JSON)
               .header(Constants.X_REQUEST_ID, MDC.get(Constants.REF_ID))
-              .bearerAuth(accessToken);
+              .header(Constants.AUTHORIZATION, accessToken);
       ResponseEntity<String> result = requestBuilder.send();
       if (result.getStatusCode() == HttpStatus.OK) {
         response = result.getBody();
@@ -105,13 +105,5 @@ public class AuthorizationUtil {
       return true;
     }
     return false;
-  }
-
-  private RequestBuilder<String> request(RestClient restClient, String accessToken) {
-    return restClient
-        .request(String.class)
-        .accept(MediaType.APPLICATION_JSON)
-        .header(Constants.X_REQUEST_ID, MDC.get(Constants.REF_ID))
-        .bearerAuth(accessToken);
   }
 }
