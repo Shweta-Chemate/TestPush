@@ -2,6 +2,7 @@ package com.cisco.cx.training.test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import com.cisco.cx.training.app.config.PropertyConfiguration;
@@ -13,10 +14,13 @@ import com.cisco.cx.training.models.PLSResponse;
 import com.cisco.cx.training.models.UserDetails;
 import com.cisco.cx.training.models.UserDetailsWithCompanyList;
 import com.cisco.cx.training.models.UserProfile;
+import com.cisco.services.common.restclient.RequestBuilder;
+import com.cisco.services.common.restclient.RestClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.util.Arrays;
 import org.apache.commons.codec.binary.Base64;
@@ -25,15 +29,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
 @ExtendWith(SpringExtension.class)
@@ -44,27 +46,47 @@ public class PartnerProfileServiceTest {
 
   @Mock RestTemplate restTemplate;
 
+  @Mock private RestClient restClient;
+
+  @Mock private RequestBuilder<String> builder;
+
   @InjectMocks
-  private PartnerProfileService partnerProfileService =
-      new PartnerProfileServiceImpl(restTemplate, config);
+  private PartnerProfileService partnerProfileService = new PartnerProfileServiceImpl(config);
 
   private static final String X_MASHERY_HANSHAKE = "X-Mashery-Handshake";
 
   @Test
-  void fetchUserDetails() throws IOException {
+  void fetchUserDetailsTest() throws IOException {
     partnerProfileService.setEntitlementUrl("");
-    when(config.createCxpBasicAuthToken()).thenReturn("");
     HttpHeaders headers = new HttpHeaders();
     String xMasheryHandshake =
         new String(Base64.encodeBase64(loadFromFile("mock/auth-mashery-user1.json").getBytes()));
     headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
-    // headers.set("Authorization", "Basic " + "");
-    HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
-
     ResponseEntity<String> result = new ResponseEntity<>(getUserDetails(), HttpStatus.OK);
-    when(restTemplate.exchange(
-            "/sntccbr5@hotmail.com", HttpMethod.GET, requestEntity, String.class))
-        .thenReturn(result);
+    when(restClient.request(eq(String.class))).thenReturn(builder);
+    when(builder.accept(Mockito.any())).thenReturn(builder);
+    when(builder.header(Mockito.anyString(), Mockito.anyString())).thenReturn(builder);
+    when(builder.method(Mockito.any())).thenReturn(builder);
+    when(builder.uri(Mockito.any(URI.class))).thenReturn(builder);
+    when(builder.send()).thenReturn(result);
+    assertNotNull(partnerProfileService.fetchUserDetails(xMasheryHandshake));
+    assertNotNull(partnerProfileService.getEntitlementUrl());
+  }
+
+  @Test
+  void fetchUserDetails() throws IOException {
+    partnerProfileService.setEntitlementUrl("");
+    HttpHeaders headers = new HttpHeaders();
+    String xMasheryHandshake =
+        new String(Base64.encodeBase64(loadFromFile("mock/auth-mashery-user1.json").getBytes()));
+    headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
+    ResponseEntity<String> result = new ResponseEntity<>(getUserDetails(), HttpStatus.OK);
+    when(restClient.request(eq(String.class))).thenReturn(builder);
+    when(builder.accept(Mockito.any())).thenReturn(builder);
+    when(builder.header(Mockito.anyString(), Mockito.anyString())).thenReturn(builder);
+    when(builder.method(Mockito.any())).thenReturn(builder);
+    when(builder.uri(Mockito.any(URI.class))).thenReturn(builder);
+    when(builder.send()).thenReturn(result);
     assertNotNull(partnerProfileService.fetchUserDetails(xMasheryHandshake));
     assertNotNull(partnerProfileService.getEntitlementUrl());
   }
@@ -72,17 +94,19 @@ public class PartnerProfileServiceTest {
   @Test
   void fetchUserDetailsWithCompanyList() throws IOException {
     partnerProfileService.setEntitlementUrl("");
-    when(config.createCxpBasicAuthToken()).thenReturn("");
-    HttpHeaders headers = new HttpHeaders();
     String xMasheryHandshake =
         new String(Base64.encodeBase64(loadFromFile("mock/auth-mashery-user1.json").getBytes()));
+    when(config.getPartnerUserDetails()).thenReturn("http://localhost");
+    HttpHeaders headers = new HttpHeaders();
     headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
-    HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
     ResponseEntity<String> result =
         new ResponseEntity<>(getUserDetailsWithCompanyList(), HttpStatus.OK);
-    when(restTemplate.exchange(
-            config.getPartnerUserDetails(), HttpMethod.GET, requestEntity, String.class))
-        .thenReturn(result);
+    when(restClient.request(eq(String.class))).thenReturn(builder);
+    when(builder.accept(Mockito.any())).thenReturn(builder);
+    when(builder.header(Mockito.anyString(), Mockito.anyString())).thenReturn(builder);
+    when(builder.method(Mockito.any())).thenReturn(builder);
+    when(builder.uri(Mockito.any(URI.class))).thenReturn(builder);
+    when(builder.send()).thenReturn(result);
     assertNotNull(partnerProfileService.fetchUserDetailsWithCompanyList(xMasheryHandshake));
     assertNotNull(partnerProfileService.getEntitlementUrl());
   }
@@ -90,34 +114,35 @@ public class PartnerProfileServiceTest {
   @Test
   void fetchUserDetailsWithCompanyListMappingError() throws IOException {
     partnerProfileService.setEntitlementUrl("");
-    when(config.createCxpBasicAuthToken()).thenReturn("");
+    when(config.getPartnerUserDetails()).thenReturn("http://localhost");
     HttpHeaders headers = new HttpHeaders();
     String xMasheryHandshake =
         new String(Base64.encodeBase64(loadFromFile("mock/auth-mashery-user1.json").getBytes()));
     headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
-    HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
     ResponseEntity<String> result = new ResponseEntity<>("test", HttpStatus.OK);
-    when(restTemplate.exchange(
-            config.getPartnerUserDetails(), HttpMethod.GET, requestEntity, String.class))
-        .thenReturn(result);
+    when(restClient.request(eq(String.class))).thenReturn(builder);
+    when(builder.accept(Mockito.any())).thenReturn(builder);
+    when(builder.header(Mockito.anyString(), Mockito.anyString())).thenReturn(builder);
+    when(builder.method(Mockito.any())).thenReturn(builder);
+    when(builder.uri(Mockito.any(URI.class))).thenReturn(builder);
+    when(builder.send()).thenReturn(result);
     assertNull(partnerProfileService.fetchUserDetailsWithCompanyList(xMasheryHandshake));
   }
 
   @Test
   void fetchUserDetailsJsonMappingError() throws IOException {
     partnerProfileService.setEntitlementUrl("");
-    when(config.createCxpBasicAuthToken()).thenReturn("");
     HttpHeaders headers = new HttpHeaders();
     String xMasheryHandshake =
         new String(Base64.encodeBase64(loadFromFile("mock/auth-mashery-user1.json").getBytes()));
     headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
-    // headers.set("Authorization", "Basic " + "");
-    HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
-
     ResponseEntity<String> result = new ResponseEntity<>("", HttpStatus.OK);
-    when(restTemplate.exchange(
-            "/sntccbr5@hotmail.com", HttpMethod.GET, requestEntity, String.class))
-        .thenReturn(result);
+    when(restClient.request(eq(String.class))).thenReturn(builder);
+    when(builder.accept(Mockito.any())).thenReturn(builder);
+    when(builder.header(Mockito.anyString(), Mockito.anyString())).thenReturn(builder);
+    when(builder.method(Mockito.any())).thenReturn(builder);
+    when(builder.uri(Mockito.any(URI.class))).thenReturn(builder);
+    when(builder.send()).thenReturn(result);
     UserDetails response = partnerProfileService.fetchUserDetails(xMasheryHandshake);
     assertNull(response);
   }
@@ -125,18 +150,17 @@ public class PartnerProfileServiceTest {
   @Test
   void fetchUserDetailsJsonParseError() throws IOException {
     partnerProfileService.setEntitlementUrl("");
-    when(config.createCxpBasicAuthToken()).thenReturn("");
     HttpHeaders headers = new HttpHeaders();
     String xMasheryHandshake =
         new String(Base64.encodeBase64(loadFromFile("mock/auth-mashery-user1.json").getBytes()));
     headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
-    // headers.set("Authorization", "Basic " + "");
-    HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
-
     ResponseEntity<String> result = new ResponseEntity<>("some @ data", HttpStatus.OK);
-    when(restTemplate.exchange(
-            "/sntccbr5@hotmail.com", HttpMethod.GET, requestEntity, String.class))
-        .thenReturn(result);
+    when(restClient.request(eq(String.class))).thenReturn(builder);
+    when(builder.accept(Mockito.any())).thenReturn(builder);
+    when(builder.header(Mockito.anyString(), Mockito.anyString())).thenReturn(builder);
+    when(builder.method(Mockito.any())).thenReturn(builder);
+    when(builder.uri(Mockito.any(URI.class))).thenReturn(builder);
+    when(builder.send()).thenReturn(result);
     UserDetails response = partnerProfileService.fetchUserDetails(xMasheryHandshake);
     assertNull(response);
   }
@@ -147,26 +171,24 @@ public class PartnerProfileServiceTest {
     String xMasheryHandshake =
         new String(Base64.encodeBase64(loadFromFile("mock/auth-mashery-user1.json").getBytes()));
     headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
-    HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
-    when(config.getPlsURL()).thenReturn("http:/test.com/{puid}");
+    when(config.getPlsURL()).thenReturn("http://test.com/{puid}");
     ResponseEntity<String> result = new ResponseEntity<>(getplsresponse(), HttpStatus.OK);
-    when(restTemplate.exchange(
-            config.getPlsURL().replace("{puid}", "101"),
-            HttpMethod.GET,
-            requestEntity,
-            String.class))
-        .thenReturn(result);
+    when(restClient.request(eq(String.class))).thenReturn(builder);
+    when(builder.accept(Mockito.any())).thenReturn(builder);
+    when(builder.header(Mockito.anyString(), Mockito.anyString())).thenReturn(builder);
+    when(builder.method(Mockito.any())).thenReturn(builder);
+    when(builder.uri(Mockito.any(URI.class))).thenReturn(builder);
+    when(builder.send()).thenReturn(result);
     Assertions.assertTrue(partnerProfileService.isPLSActive(xMasheryHandshake, "101"));
-    Assert.isTrue(partnerProfileService.isPLSActive(xMasheryHandshake, "101"));
 
     ResponseEntity<String> result1 =
         new ResponseEntity<>(getplsresponseforinactive(), HttpStatus.OK);
-    when(restTemplate.exchange(
-            config.getPlsURL().replace("{puid}", "101"),
-            HttpMethod.GET,
-            requestEntity,
-            String.class))
-        .thenReturn(result1);
+    when(restClient.request(eq(String.class))).thenReturn(builder);
+    when(builder.accept(Mockito.any())).thenReturn(builder);
+    when(builder.header(Mockito.anyString(), Mockito.anyString())).thenReturn(builder);
+    when(builder.method(Mockito.any())).thenReturn(builder);
+    when(builder.uri(Mockito.any(URI.class))).thenReturn(builder);
+    when(builder.send()).thenReturn(result1);
     Assertions.assertFalse(partnerProfileService.isPLSActive(xMasheryHandshake, "101"));
   }
 
@@ -176,15 +198,14 @@ public class PartnerProfileServiceTest {
     String xMasheryHandshake =
         new String(Base64.encodeBase64(loadFromFile("mock/auth-mashery-user1.json").getBytes()));
     headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
-    HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
-    when(config.getPlsURL()).thenReturn("http:/test.com/{puid}");
+    when(config.getPlsURL()).thenReturn("http://test.com/101");
     ResponseEntity<String> result = new ResponseEntity<>("test", HttpStatus.OK);
-    when(restTemplate.exchange(
-            config.getPlsURL().replace("{puid}", "101"),
-            HttpMethod.GET,
-            requestEntity,
-            String.class))
-        .thenReturn(result);
+    when(restClient.request(eq(String.class))).thenReturn(builder);
+    when(builder.accept(Mockito.any())).thenReturn(builder);
+    when(builder.header(Mockito.anyString(), Mockito.anyString())).thenReturn(builder);
+    when(builder.method(Mockito.any())).thenReturn(builder);
+    when(builder.uri(Mockito.any(URI.class))).thenReturn(builder);
+    when(builder.send()).thenReturn(result);
     Assertions.assertThrows(
         BadRequestException.class,
         () -> partnerProfileService.isPLSActive(xMasheryHandshake, "101"));
@@ -193,17 +214,19 @@ public class PartnerProfileServiceTest {
   @Test
   void testGetHcaasStatusForPartner() throws Exception {
     partnerProfileService.setEntitlementUrl("");
-    when(config.createCxpBasicAuthToken()).thenReturn("");
+    when(config.getPartnerUserDetails()).thenReturn("http://localhost");
     HttpHeaders headers = new HttpHeaders();
     String xMasheryHandshake =
         new String(Base64.encodeBase64(loadFromFile("mock/auth-mashery-user1.json").getBytes()));
     headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
-    HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
     ResponseEntity<String> result =
         new ResponseEntity<>(getUserDetailsWithCompanyList(), HttpStatus.OK);
-    when(restTemplate.exchange(
-            config.getPartnerUserDetails(), HttpMethod.GET, requestEntity, String.class))
-        .thenReturn(result);
+    when(restClient.request(eq(String.class))).thenReturn(builder);
+    when(builder.accept(Mockito.any())).thenReturn(builder);
+    when(builder.header(Mockito.anyString(), Mockito.anyString())).thenReturn(builder);
+    when(builder.method(Mockito.any())).thenReturn(builder);
+    when(builder.uri(Mockito.any(URI.class))).thenReturn(builder);
+    when(builder.send()).thenReturn(result);
     boolean hcaasStatus = partnerProfileService.getHcaasStatusForPartner(xMasheryHandshake);
     Assertions.assertTrue(hcaasStatus);
   }

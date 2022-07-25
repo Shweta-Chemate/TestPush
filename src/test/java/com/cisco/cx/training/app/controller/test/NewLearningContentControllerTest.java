@@ -18,6 +18,7 @@ import com.cisco.cx.training.app.service.LearningContentService;
 import com.cisco.cx.training.constants.Constants;
 import com.cisco.cx.training.models.LearningStatusSchema;
 import com.cisco.services.common.featureflag.FeatureFlagService;
+import com.cisco.services.common.restclient.RestClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -69,6 +70,8 @@ public class NewLearningContentControllerTest {
   private String XMasheryHeader;
 
   private String puid = "101";
+
+  @MockBean private RestClient restClient;
 
   @SuppressWarnings("deprecation")
   @BeforeEach

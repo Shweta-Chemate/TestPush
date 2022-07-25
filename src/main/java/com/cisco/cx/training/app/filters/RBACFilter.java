@@ -10,6 +10,7 @@ import com.cisco.cx.training.models.MasheryObject;
 import com.cisco.cx.training.util.AuthorizationUtil;
 import com.cisco.services.common.featureflag.FeatureFilter;
 import com.cisco.services.common.featureflag.FeatureFlagService;
+import com.cisco.services.common.restclient.RestClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
@@ -29,7 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 @SuppressWarnings({"squid:S134"})
 @Component
@@ -47,7 +47,7 @@ public class RBACFilter implements Filter {
           .jsonProvider(new JacksonJsonProvider())
           .build();
 
-  @Autowired private RestTemplate restTemplate;
+  @Autowired private RestClient restClient;
 
   @Autowired private FeatureFlagService featureFlagService;
 
@@ -101,12 +101,12 @@ public class RBACFilter implements Filter {
             logger.info("Split IO is on. Invoking AuthZ API to authorize the user");
             authResult =
                 AuthorizationUtil.invokeAuthzAPI(
-                    puId, accessToken, propertyConfiguration, restTemplate);
+                    puId, accessToken, propertyConfiguration, restClient);
           } else {
             logger.info("Split IO is off. Invoking Old Auth API to authorize the user");
             authResult =
                 AuthorizationUtil.invokeAuthAPI(
-                    userId, puId, xMasheryToken, propertyConfiguration, restTemplate);
+                    userId, puId, xMasheryToken, propertyConfiguration, restClient);
           }
 
           logger.info(

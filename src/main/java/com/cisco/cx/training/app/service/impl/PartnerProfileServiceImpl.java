@@ -3,7 +3,6 @@ package com.cisco.cx.training.app.service.impl;
 import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.service.PartnerProfileService;
-import com.cisco.cx.training.constants.Constants;
 import com.cisco.cx.training.constants.LoggerConstants;
 import com.cisco.cx.training.models.MasheryObject;
 import com.cisco.cx.training.models.PLSResponse;
@@ -14,12 +13,13 @@ import com.cisco.services.common.restclient.RestClient;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.net.URI;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -27,21 +27,18 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 public class PartnerProfileServiceImpl implements PartnerProfileService {
   private static final Logger LOGGER = LoggerFactory.getLogger(PartnerProfileServiceImpl.class);
-
-  RestTemplate restTemplate;
 
   PropertyConfiguration config;
 
   @Autowired private RestClient restClient;
 
   @Autowired
-  public PartnerProfileServiceImpl(RestTemplate restTemplate, PropertyConfiguration config) {
-    this.restTemplate = restTemplate;
+  public PartnerProfileServiceImpl(PropertyConfiguration config) {
     this.config = config;
   }
 
@@ -54,15 +51,14 @@ public class PartnerProfileServiceImpl implements PartnerProfileService {
 
   @Override
   public UserDetails fetchUserDetails(String xMasheryHandshake) {
-    HttpHeaders headers = new HttpHeaders();
     String userId = MasheryObject.getInstance(xMasheryHandshake).getCcoId();
-    headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
-    // headers.set("Authorization", "Basic " + config.createCxpBasicAuthToken()); //NOSONAR
-    addHeaders(headers);
-    HttpEntity<String> requestEntity = new HttpEntity<>(null, headers);
+    URI uri =
+        UriComponentsBuilder.fromUriString(entitlementUrl + "/" + userId)
+            .buildAndExpand(Map.of())
+            .toUri();
     ResponseEntity<String> result =
-        restTemplate.exchange(
-            entitlementUrl + "/" + userId, HttpMethod.GET, requestEntity, String.class);
+        request(xMasheryHandshake).method(HttpMethod.GET).uri(uri).send();
+
     LOGGER.info(
         "Entitlement url response = {}",
         result.getStatusCode().value() != HttpStatus.OK.value()
@@ -80,15 +76,13 @@ public class PartnerProfileServiceImpl implements PartnerProfileService {
 
   @Override
   public UserDetailsWithCompanyList fetchUserDetailsWithCompanyList(String xMasheryHandshake) {
-
     UserDetailsWithCompanyList userDetails = null;
-    HttpHeaders requestHeaders = new HttpHeaders();
-    requestHeaders.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
-    addHeaders(requestHeaders);
-    HttpEntity<String> requestEntity = new HttpEntity<>(null, requestHeaders);
+    URI uri =
+        UriComponentsBuilder.fromUriString(config.getPartnerUserDetails())
+            .buildAndExpand(Map.of())
+            .toUri();
     ResponseEntity<String> result =
-        restTemplate.exchange(
-            config.getPartnerUserDetails(), HttpMethod.GET, requestEntity, String.class);
+        request(xMasheryHandshake).method(HttpMethod.GET).uri(uri).send();
     LOGGER.info("Prtner user details URL response body = {}", result.getBody());
     LOGGER.info(
         "Prtner user details URL response = {}",
@@ -125,15 +119,12 @@ public class PartnerProfileServiceImpl implements PartnerProfileService {
 
   @Override
   public boolean isPLSActive(String xMasheryHandshake, String partnerId) throws Exception {
-    HttpHeaders headers = new HttpHeaders();
-    headers.set(X_MASHERY_HANSHAKE, xMasheryHandshake);
-    HttpEntity<String> requestEntity = new HttpEntity<>(null, headers);
+    URI uri =
+        UriComponentsBuilder.fromUriString(config.getPlsURL().replace("{puid}", partnerId))
+            .buildAndExpand(Map.of())
+            .toUri();
     ResponseEntity<String> result =
-        restTemplate.exchange(
-            config.getPlsURL().replace("{puid}", partnerId),
-            HttpMethod.GET,
-            requestEntity,
-            String.class);
+        request(xMasheryHandshake).method(HttpMethod.GET).uri(uri).send();
     LOGGER.info(
         "PLS url response = {}",
         result.getStatusCode().value() == HttpStatus.OK.value()
@@ -169,7 +160,6 @@ public class PartnerProfileServiceImpl implements PartnerProfileService {
     return restClient
         .request(String.class)
         .accept(MediaType.APPLICATION_JSON)
-        .header(Constants.X_REQUEST_ID, MDC.get(Constants.REF_ID))
         .header(X_MASHERY_HANSHAKE, xMasheryHandshake);
   }
 }

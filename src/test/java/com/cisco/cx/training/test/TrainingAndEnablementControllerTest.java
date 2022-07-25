@@ -21,6 +21,7 @@ import com.cisco.cx.training.constants.Constants;
 import com.cisco.cx.training.models.BookmarkRequestSchema;
 import com.cisco.cx.training.models.BookmarkResponseSchema;
 import com.cisco.services.common.featureflag.FeatureFlagService;
+import com.cisco.services.common.restclient.RestClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -76,6 +77,8 @@ public class TrainingAndEnablementControllerTest {
   private String XMasheryHeader;
 
   private String puid = "101";
+
+  @MockBean private RestClient restClient;
 
   @BeforeEach
   public void init() throws IOException {

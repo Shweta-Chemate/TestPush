@@ -7,6 +7,7 @@ import com.cisco.cx.training.app.config.PropertyConfiguration;
 import com.cisco.cx.training.app.exception.BadRequestException;
 import com.cisco.cx.training.app.filters.RBACFilter;
 import com.cisco.cx.training.util.AuthorizationUtil;
+import com.cisco.services.common.restclient.RestClient;
 import java.io.IOException;
 import java.nio.file.Files;
 import javax.servlet.FilterChain;
@@ -24,7 +25,6 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.web.client.RestTemplate;
 
 @ExtendWith(SpringExtension.class)
 public class TestRBACFilter {
@@ -43,7 +43,7 @@ public class TestRBACFilter {
 
   @Mock private AuthorizationUtil authUtil;
 
-  @Mock private RestTemplate restTemplate;
+  @Mock private RestClient restClient;
 
   @Autowired private ResourceLoader resourceLoader;
 
@@ -112,7 +112,7 @@ public class TestRBACFilter {
     when(req.getHeader(MASHERY_HANDSHAKE_HEADER_NAME)).thenReturn(this.XMasheryHeader);
     when(req.getHeader(PUID)).thenReturn(this.puid);
     when(AuthorizationUtil.invokeAuthAPI(
-            "sntccbr5@hotmail.com", this.puid, this.XMasheryHeader, propertyConfig, restTemplate))
+            "sntccbr5@hotmail.com", this.puid, this.XMasheryHeader, propertyConfig, restClient))
         .thenReturn(this.authResult);
     assertThrows(
         Exception.class,
