@@ -71,9 +71,17 @@ public class ProductDocumentationUtil {
 			int utcTimeHrsEnd = timeZone.indexOf(":",utcTimeHrsStart);
 			int utcTimeMinuteStart=-1,utcTimeMinuteEnd=-1;
 			if(utcTimeHrsEnd == -1) {utcTimeHrsEnd = timeZone.length()-1;}
-			else { utcTimeMinuteStart = utcTimeHrsEnd+1; utcTimeMinuteEnd = timeZone.length()-1;}			
-			int hrs3 = Integer.parseInt(timeZone.substring(utcTimeHrsStart, utcTimeHrsEnd));			
-			int min3 = utcTimeMinuteStart==-1?0:Integer.parseInt(timeZone.substring(utcTimeMinuteStart, utcTimeMinuteEnd));		
+			else { utcTimeMinuteStart = utcTimeHrsEnd+1; utcTimeMinuteEnd = timeZone.length()-1;}	
+			String hrs=timeZone.substring(utcTimeHrsStart, utcTimeHrsEnd); 
+			int hrs3 = 0;
+			if(StringUtils.isNotBlank(hrs)) {
+				hrs3 = Integer.parseInt(timeZone.substring(utcTimeHrsStart, utcTimeHrsEnd));
+			}
+			String min=timeZone.substring(utcTimeMinuteStart, utcTimeMinuteEnd);
+			int min3=0;
+			if(StringUtils.isNotBlank(min)) {
+				min3 = utcTimeMinuteStart==-1?0:Integer.parseInt(timeZone.substring(utcTimeMinuteStart, utcTimeMinuteEnd));	
+			}
 			hrMin[0]=hrs3; hrMin[1]=min3;			
 		}
 		return hrMin;
