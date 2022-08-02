@@ -78,7 +78,7 @@ public class ProductDocumentationUtil {
 				hrs3 = Integer.parseInt(timeZone.substring(utcTimeHrsStart, utcTimeHrsEnd));
 			}
 			String min=timeZone.substring(utcTimeMinuteStart, utcTimeMinuteEnd);
-			int min3=0;
+			int min3 = 0;
 			if(StringUtils.isNotBlank(min)) {
 				min3 = utcTimeMinuteStart==-1?0:Integer.parseInt(timeZone.substring(utcTimeMinuteStart, utcTimeMinuteEnd));	
 			}
@@ -353,3 +353,5 @@ public class ProductDocumentationUtil {
 	}
 	
 }
+
+
