@@ -456,12 +456,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO {
                       key -> {
                         Object value = ((Map) filter).get(key);
                         if (value instanceof Map) {
-                          ((Map) value)
-                              .keySet()
-                              .forEach(
-                                  keyUc -> {
-                                    ((Map) value).put(keyUc, "0");
-                                  });
+                          ((Map) value).keySet().forEach(keyUc -> ((Map) value).put(keyUc, "0"));
                         } else {
                           ((Map) filter).put(key, "0");
                         }
@@ -631,8 +626,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO {
     if (!hcaasStatus) {
       specification = specification.and(CustomSpecifications.isNull(Constants.CISCO_PLUS_DB_FILED));
     }
-    List<NewLearningContentEntity> filteredList = learningContentRepo.findAll(specification);
-    return filteredList;
+    return learningContentRepo.findAll(specification);
   }
 
   @Override
@@ -696,14 +690,14 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO {
       List<String> values = filterParam.getValue();
       if (key.equals(Constants.ROLE)) {
         List<String> learningItemIdsListRolesFiltered =
-            new ArrayList<>(learningContentRepo.getCardIdsByRole(new HashSet<String>(values)));
+            new ArrayList<>(learningContentRepo.getCardIdsByRole(new HashSet<>(values)));
         specification =
             specification.and(
                 CustomSpecifications.hasValueIn(Constants.ID, learningItemIdsListRolesFiltered));
       }
       if (key.equals(Constants.TECHNOLOGY)) {
         List<String> learningItemIdsListTechFiltered =
-            new ArrayList<>(learningContentRepo.getCardIdsByTech(new HashSet<String>(values)));
+            new ArrayList<>(learningContentRepo.getCardIdsByTech(new HashSet<>(values)));
         specification =
             specification.and(
                 CustomSpecifications.hasValueIn(Constants.ID, learningItemIdsListTechFiltered));
@@ -711,7 +705,7 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO {
       if (key.equals(Constants.LIFECYCLE)) {
         List<String> learningItemIdsListLFCFiltered =
             new ArrayList<>(
-                learningContentRepo.getPitstopTaggedContentFilter(new HashSet<String>(values)));
+                learningContentRepo.getPitstopTaggedContentFilter(new HashSet<>(values)));
         specification =
             specification.and(
                 CustomSpecifications.hasValueIn(Constants.ID, learningItemIdsListLFCFiltered));
@@ -754,7 +748,6 @@ public class NewLearningContentDAOImpl implements NewLearningContentDAO {
         .forEach(
             ik -> {
               Object iv = ((Map) stMap).get(ik);
-              List<String> ilist;
               if (iv instanceof Map) {
                 // LOG.info("UC="+((Map) iv).keySet()); //NOSONAR
                 Set<String> usecases = ((Map) iv).keySet();

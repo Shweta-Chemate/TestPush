@@ -567,9 +567,7 @@ public class FilterCountsDAOImpl implements FilterCountsDAO {
       }
       if (!((Map) stMap.get(st)).keySet().contains(uc)) {
         ((Map) stMap.get(st)).put(uc, dbValue);
-      } // .put(uc, new HashMap<String,String>()); //NOSONAR
-      // if(!((Map)((Map)stMap.get(st)).get(uc)).keySet().contains(ps))
-      // ((Map)((Map)stMap.get(st)).get(uc)).put(ps, dbValue); //NOSONAR
+      }
 
       if (stFilter != null) {
         if (!stAllKeysMap.keySet().contains(st)) {
@@ -577,9 +575,7 @@ public class FilterCountsDAOImpl implements FilterCountsDAO {
         }
         if (!((Map) stAllKeysMap.get(st)).keySet().contains(uc)) {
           ((Map) stAllKeysMap.get(st)).put(uc, "0");
-        } // .put(uc, new HashMap<String,String>());//NOSONAR
-        // if(!((Map)((Map)stAllKeysMap.get(st)).get(uc)).keySet().contains(ps))
-        // ((Map)((Map)stAllKeysMap.get(st)).get(uc)).put(ps, "0"); //NOSONAR
+        }
       }
     }
     stCountMap.putAll(stMap);

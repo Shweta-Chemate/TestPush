@@ -227,7 +227,7 @@ public class LearningBookmarkDAOImpl implements LearningBookmarkDAO {
     LOG.info("response received in {} ", (System.currentTimeMillis() - requestStartTime));
     requestStartTime = System.currentTimeMillis();
     List<Map<String, AttributeValue>> attributeValues = queryResult.items();
-    if (attributeValues.size() > 0) {
+    if (!attributeValues.isEmpty()) {
       attributeValues.forEach(
           bkRecord -> {
             String bookmark = bkRecord.get(BOOKMARK_KEY).s();

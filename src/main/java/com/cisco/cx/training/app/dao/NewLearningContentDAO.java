@@ -20,7 +20,7 @@ public interface NewLearningContentDAO {
       String region,
       String sortField,
       String sortType, // NOSONAR
-      Map<String, String> query_map,
+      Map<String, String> queryMap,
       String search);
 
   Integer getSuccessTalkCount();

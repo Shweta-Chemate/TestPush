@@ -775,11 +775,8 @@ public class ProductDocumentationService {
   }
 
   public LearningRecordsAndFiltersModel fetchMyPreferredLearnings(
-      String userId, // NOSONAR
-      HashMap<String, Object> filters,
-      String puid, // NOSONAR
+      String userId, // NOSONAR,
       HashMap<String, Object> preferences,
-      Integer limit,
       boolean hcaasStatusFlag) {
     String hcaasStatus = String.valueOf(hcaasStatusFlag);
     String userRole = getUserRole();

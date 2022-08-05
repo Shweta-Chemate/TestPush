@@ -201,8 +201,7 @@ public class TrainingAndEnablementServiceImpl implements TrainingAndEnablementSe
     List<String> specializations = getSpecialization(xMasheryHandshake, puid);
     HashMap<String, Object> preferences = userLearningPreferencesDAO.getULPPreferencesDDB(ccoId);
     preferences.put(Constants.SPECIALIZATION_FILTER, specializations);
-    return productDocumentationService.fetchMyPreferredLearnings(
-        ccoId, filters, puid, preferences, limit, hcaasStatus);
+    return productDocumentationService.fetchMyPreferredLearnings(ccoId, preferences, hcaasStatus);
   }
 
   List<String> getSpecialization(String xMasheryHandshake, String puid) {

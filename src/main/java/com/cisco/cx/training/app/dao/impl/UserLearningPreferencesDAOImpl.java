@@ -66,11 +66,11 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
   private static final String USERID_KEY = "userid";
 
   private static enum PREFERENCES_KEYS {
-    role,
-    technology,
-    language,
-    region,
-    timeinterval
+    ROLE,
+    TECHNOLOGY,
+    LANGUAGE,
+    REGION,
+    TIMEINTERVAL
   }; // NOSONAR
 
   private static final String PREFERENCE_SUFFIX = ""; // "_ulp"
@@ -127,7 +127,7 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
                   if (ulpList != null && !ulpList.isEmpty()) {
                     ulpList.forEach(
                         up -> {
-                          if (preferenceKey.equals(PREFERENCES_KEYS.timeinterval)) {
+                          if (preferenceKey.equals(PREFERENCES_KEYS.TIMEINTERVAL)) {
                             try {
                               String oneTI = mapper.writeValueAsString(up.getTimeMap());
                               preferenceNames.add(oneTI);
@@ -233,7 +233,7 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
                 if (preferenceSet != null) {
                   Set<String> ulps = new HashSet<>(preferenceSet.ss());
                   // LOG.info(" preferenceKey {} ulps {}",preferenceKey, ulps);  //NOSONAR
-                  if (preferenceKey.equals(PREFERENCES_KEYS.timeinterval)) {
+                  if (preferenceKey.equals(PREFERENCES_KEYS.TIMEINTERVAL)) {
                     List<UserLearningPreference> listTI = new ArrayList<>();
                     ulps.forEach(
                         timeInterval -> {
@@ -249,7 +249,7 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
                                 e.getMessage());
                           }
                         });
-                    ulpMap.put(PREFERENCES_KEYS.timeinterval.name(), listTI);
+                    ulpMap.put(PREFERENCES_KEYS.TIMEINTERVAL.name(), listTI);
                   } else {
                     List<UserLearningPreference> preDBList = ulpMap.get(preferenceKey.name());
                     if (preDBList != null && !preDBList.isEmpty()) {
@@ -272,13 +272,13 @@ public class UserLearningPreferencesDAOImpl implements UserLearningPreferencesDA
       getAllLatestPreferencesCategories(String hcaasStatus) {
     Map<String, List<UserLearningPreference>> dbMap = new HashMap<>();
     List<String> roles = productDocumentationDAO.getAllRolesForPreferences(hcaasStatus);
-    dbMap.put(PREFERENCES_KEYS.role.name(), setULP(roles));
+    dbMap.put(PREFERENCES_KEYS.ROLE.name(), setULP(roles));
     List<String> technologies = productDocumentationDAO.getAllTechnologyForPreferences(hcaasStatus);
-    dbMap.put(PREFERENCES_KEYS.technology.name(), setULP(technologies));
+    dbMap.put(PREFERENCES_KEYS.TECHNOLOGY.name(), setULP(technologies));
     List<String> regions = productDocumentationDAO.getAllRegionForPreferences(hcaasStatus);
-    dbMap.put(PREFERENCES_KEYS.region.name(), setULP(regions));
+    dbMap.put(PREFERENCES_KEYS.REGION.name(), setULP(regions));
     List<String> languages = productDocumentationDAO.getAllLanguagesForPreferences(hcaasStatus);
-    dbMap.put(PREFERENCES_KEYS.language.name(), setULP(languages));
+    dbMap.put(PREFERENCES_KEYS.LANGUAGE.name(), setULP(languages));
     return dbMap;
   }
 

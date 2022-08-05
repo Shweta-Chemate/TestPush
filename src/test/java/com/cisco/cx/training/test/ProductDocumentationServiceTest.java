@@ -331,7 +331,7 @@ public class ProductDocumentationServiceTest {
 
     Assertions.assertNotNull(
         productDocumentationService
-            .fetchMyPreferredLearnings("userId", null, null, preferences, 25, true)
+            .fetchMyPreferredLearnings("userId", preferences, true)
             .getLearningData());
   }
 
@@ -369,8 +369,7 @@ public class ProductDocumentationServiceTest {
     ti.add(new ObjectMapper().writeValueAsString(time));
 
     Assertions.assertNotNull(
-        productDocumentationService.fetchMyPreferredLearnings(
-            "userId", null, null, preferences, 25, true));
+        productDocumentationService.fetchMyPreferredLearnings("userId", preferences, true));
   }
 
   @Test
@@ -401,7 +400,7 @@ public class ProductDocumentationServiceTest {
             Mockito.anyString(), Mockito.anySet(), Mockito.any(Sort.class), Mockito.anyString()))
         .thenReturn(v);
     Assertions.assertNotNull(
-        productDocumentationService.fetchMyPreferredLearnings("userId", null, null, null, 5, true));
+        productDocumentationService.fetchMyPreferredLearnings("userId", null, true));
   }
 
   private List mockDbSTUCOnly() {
@@ -493,7 +492,6 @@ public class ProductDocumentationServiceTest {
     when(servletContext.getAttribute(Constants.ROLE_ID)).thenReturn("101");
 
     Assertions.assertNotNull(
-        productDocumentationService.fetchMyPreferredLearnings(
-            "userId", null, null, preferences, 25, true));
+        productDocumentationService.fetchMyPreferredLearnings("userId", preferences, true));
   }
 }

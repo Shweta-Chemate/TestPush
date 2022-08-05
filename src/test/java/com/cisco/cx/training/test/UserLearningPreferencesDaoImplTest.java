@@ -78,14 +78,14 @@ public class UserLearningPreferencesDaoImplTest {
     Set<String> role = new HashSet<String>();
     role.add("Customer Success manager");
     AttributeValue attrValue = AttributeValue.builder().ss(role).build();
-    ulp.put("role", attrValue);
+    ulp.put("ROLE", attrValue);
     List<Map<String, AttributeValue>> attributeValues =
         new ArrayList<Map<String, AttributeValue>>();
     attributeValues.add(ulp);
     Set<String> ti = new HashSet<String>();
     ti.add("{\"startTime\":\"09:00\"}");
     AttributeValue attrValueTI = AttributeValue.builder().ss(ti).build();
-    ulp.put("timeinterval", attrValueTI);
+    ulp.put("TIMEINTERVAL", attrValueTI);
     QueryResponse response = QueryResponse.builder().items(attributeValues).build();
     Mockito.when(dbClient.query(Mockito.any(QueryRequest.class))).thenReturn(response);
     when(partnerProfileService.getHcaasStatusForPartner(MASHERY_TEST)).thenReturn(true);
@@ -99,8 +99,8 @@ public class UserLearningPreferencesDaoImplTest {
         ulpDAOImpl.fetchUserLearningPreferences("user123");
     // System.out.println("ulps:"+ulps.get("technology").get(0).isSelected()+ ulps);
     assertEquals(5, ulps.size());
-    assertTrue(ulps.get("role").get(0).isSelected());
-    assertFalse(ulps.get("technology").get(0).isSelected());
+    assertTrue(ulps.get("ROLE").get(0).isSelected());
+    assertFalse(ulps.get("TECHNOLOGY").get(0).isSelected());
   }
 
   @Test
@@ -150,14 +150,14 @@ public class UserLearningPreferencesDaoImplTest {
     Set<String> role = new HashSet<String>();
     role.add("Customer Success manager");
     AttributeValue attrValue = AttributeValue.builder().ss(role).build();
-    ulp.put("role", attrValue);
+    ulp.put("ROLE", attrValue);
     List<Map<String, AttributeValue>> attributeValues =
         new ArrayList<Map<String, AttributeValue>>();
     attributeValues.add(ulp);
     Set<String> ti = new HashSet<String>();
     ti.add("{\"startTime\":\"09:00\"}");
     AttributeValue attrValueTI = AttributeValue.builder().ss(ti).build();
-    ulp.put("timeinterval", attrValueTI);
+    ulp.put("TIMEINTERVAL", attrValueTI);
     QueryResponse response = QueryResponse.builder().items(attributeValues).build();
     Mockito.when(dbClient.query(Mockito.any(QueryRequest.class))).thenReturn(response);
 

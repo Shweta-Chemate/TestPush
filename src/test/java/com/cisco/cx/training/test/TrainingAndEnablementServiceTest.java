@@ -371,7 +371,7 @@ public class TrainingAndEnablementServiceTest {
     when(partnerProfileService.isPLSActive(xMasheryHeader, "puid")).thenReturn(false);
     when(userLearningPreferencesDAO.getULPPreferencesDDB(Mockito.anyString())).thenReturn(prefMap);
     when(productDocumentationService.fetchMyPreferredLearnings(
-            "sntccbr5@hotmail.com", null, "sortBy", prefMap, 25, true))
+            "sntccbr5@hotmail.com", prefMap, true))
         .thenReturn(getLearnings());
     Assertions.assertNotNull(
         trainingAndEnablementService.getMyPreferredLearnings(
@@ -390,7 +390,7 @@ public class TrainingAndEnablementServiceTest {
         Stream.of(Constants.PLS_SPEC_TYPE).collect(Collectors.toList()));
     when(userLearningPreferencesDAO.getULPPreferencesDDB(Mockito.anyString())).thenReturn(prefMap);
     when(productDocumentationService.fetchMyPreferredLearnings(
-            "sntccbr5@hotmail.com", null, "sortBy", prefMap, 25, true))
+            "sntccbr5@hotmail.com", prefMap, true))
         .thenReturn(getLearnings());
     Assertions.assertNotNull(
         trainingAndEnablementService.getMyPreferredLearnings(
