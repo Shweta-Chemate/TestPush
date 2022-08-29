@@ -1,54 +1,19 @@
 package com.cisco.cx.training.models;
 
 import java.io.Serializable;
+import lombok.Data;
 
-public class SuccessTipsAttachment implements Serializable{
-	
-	
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -5038905336450032758L;
+@Data
+public class SuccessTipsAttachment implements Serializable {
 
-	private String url;
-	
-	private String urlDescription;
-	
-	private String urlTitle;
-	
-	private String attachmentType;
+  /** */
+  private static final long serialVersionUID = -5038905336450032758L;
 
-	public String getUrl() {
-		return url;
-	}
+  private String url;
 
-	public void setUrl(String url) {
-		this.url = url;
-	}
+  private String urlDescription;
 
-	public String getUrlDescription() {
-		return urlDescription;
-	}
+  private String urlTitle;
 
-	public void setUrlDescription(String urlDescription) {
-		this.urlDescription = urlDescription;
-	}
-
-	public String getAttachmentType() {
-		return attachmentType;
-	}
-
-	public void setAttachmentType(String attachmentType) {
-		this.attachmentType = attachmentType;
-	}
-
-	public String getUrlTitle() {
-		return urlTitle;
-	}
-
-	public void setUrlTitle(String urlTitle) {
-		this.urlTitle = urlTitle;
-	}
-
+  private String attachmentType;
 }

@@ -4,11 +4,13 @@ import java.util.Map;
 
 @SuppressWarnings("serial")
 public class HealthCheckException extends Exception {
-    private final Map<String, String> healthStatus;
+  private final Map<String, String> healthStatus;
 
-    public HealthCheckException(Map<String, String> healthStatus) {
-        this.healthStatus = healthStatus;
-    }
+  public HealthCheckException(Map<String, String> healthStatus) {
+    this.healthStatus = healthStatus;
+  }
 
-    public Map<String, String> getHealthStatus() { return healthStatus; }
+  public Map<String, String> getHealthStatus() {
+    return healthStatus;
+  }
 }

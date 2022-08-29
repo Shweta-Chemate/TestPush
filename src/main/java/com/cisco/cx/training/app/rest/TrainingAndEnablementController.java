@@ -1,13 +1,27 @@
-
 package com.cisco.cx.training.app.rest;
 
+import com.cisco.cx.training.app.exception.BadRequestException;
+import com.cisco.cx.training.app.exception.ErrorResponse;
+import com.cisco.cx.training.app.exception.HealthCheckException;
+import com.cisco.cx.training.app.service.TrainingAndEnablementService;
+import com.cisco.cx.training.constants.Constants;
+import com.cisco.cx.training.models.BookmarkRequestSchema;
+import com.cisco.cx.training.models.BookmarkResponseSchema;
+import com.cisco.cx.training.models.Community;
+import com.cisco.cx.training.models.LearningRecordsAndFiltersModel;
+import com.cisco.cx.training.models.UserLearningPreference;
+import com.cisco.cx.training.util.ProductDocumentationUtil;
+import com.cisco.cx.training.util.XSSUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,231 +39,335 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cisco.cx.training.app.exception.BadRequestException;
-import com.cisco.cx.training.app.exception.ErrorResponse;
-import com.cisco.cx.training.app.exception.HealthCheckException;
-import com.cisco.cx.training.app.service.TrainingAndEnablementService;
-import com.cisco.cx.training.constants.Constants;
-import com.cisco.cx.training.models.BookmarkRequestSchema;
-import com.cisco.cx.training.models.BookmarkResponseSchema;
-import com.cisco.cx.training.models.Community;
-import com.cisco.cx.training.models.LearningRecordsAndFiltersModel;
-import com.cisco.cx.training.models.UserLearningPreference;
-import com.cisco.cx.training.util.ProductDocumentationUtil;
-import com.cisco.cx.training.util.XSSUtil;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-
 @SuppressWarnings({"squid:S00112"})
 @RestController
 @Validated
 @RequestMapping("/v1/partner/training")
-@Api(value = "Trainining and Enablement APIs", description = "REST APIs for Training And Enablement")
+@Api(
+    value = "Trainining and Enablement APIs",
+    description = "REST APIs for Training And Enablement")
 public class TrainingAndEnablementController {
-	private static final String LIMIT_MSG = "Invalid limit.";
-	
-	private static final Logger LOG = LoggerFactory.getLogger(TrainingAndEnablementController.class);
+  private static final String LIMIT_MSG = "Invalid limit.";
 
-	@SuppressWarnings("unused")
-	private final Map<String, Callable<Boolean>> mandatoryDependencies = new HashMap<>();
-	@SuppressWarnings("unused")
-	private final Map<String, Callable<Boolean>> optionalDependencies = new HashMap<>();
+  private static final Logger LOG = LoggerFactory.getLogger(TrainingAndEnablementController.class);
 
-	@Autowired
-	private TrainingAndEnablementService trainingAndEnablementService;
+  @SuppressWarnings("unused")
+  private final Map<String, Callable<Boolean>> mandatoryDependencies = new HashMap<>();
 
-	@GetMapping(path = "/ready", produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiOperation(value = "Template API Readiness probe", hidden = true)
-	public Map<String, String> checkReady() throws HealthCheckException {
-		return new HashMap<>();
-	}
-	
-	@GetMapping(path="/live")
-	@ApiOperation(value = "Training And Enablement API Liveness Probe", hidden = true)
-	public String checkAlive() {
-		return "Yes I am alive.";
-	}
+  @SuppressWarnings("unused")
+  private final Map<String, Callable<Boolean>> optionalDependencies = new HashMap<>();
 
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/communities")
-	@ApiOperation(value = "Fetch Communities", response = Community.class, responseContainer = "List", nickname = "fetchCommunities")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
-			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
-			@ApiResponse(code = 404, message = "Entity Not Found"),
-			@ApiResponse(code = 500, message = "Error during retrieve", response = ErrorResponse.class) })
-	public ResponseEntity<List<Community>> getAllCommunities(
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake" , required=false) String xMasheryHandshake)
-			throws Exception {
-		List<Community> communityList = trainingAndEnablementService.getAllCommunities();
-		return new ResponseEntity<List<Community>>(communityList, HttpStatus.OK);
-	}
- 
-	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, path = "/learning/bookmark")
-    @ApiOperation(value = "Create or remove bookmark for one of the learnings", response = BookmarkResponseSchema.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully updated", response = BookmarkResponseSchema.class),
-            @ApiResponse(code = 400, message = "Bad Request", response = ErrorResponse.class),
-            @ApiResponse(code = 403, message = "Operation forbidden due to business policies", response = ErrorResponse.class),
-            @ApiResponse(code = 500, message = "Internal server error occured", response = ErrorResponse.class)})
-    public ResponseEntity addOrRemoveLearningBookmarks(  //NOSONAR
-    		@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = false) String xMasheryHandshake,
-            @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
-            @ApiParam(value = "JSON Body to Bookmark", required = true) @RequestBody BookmarkRequestSchema bookmarkRequestSchema) {
-		if(null != bookmarkRequestSchema && StringUtils.isNotBlank(bookmarkRequestSchema.getLearningid())){
-			BookmarkResponseSchema learningBookmarkResponse = trainingAndEnablementService.bookmarkLearningForUser(bookmarkRequestSchema, xMasheryHandshake, puid);
-			if(null != learningBookmarkResponse){
-				return new ResponseEntity<>(HttpStatus.OK);
-			}else{
-				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-			}
-		}else{
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-    }	
-	
-	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/getAllLearningInfo/{learningTab}")
-	@ApiOperation(value = "Fetch All Learnings Information", nickname = "fetchalllearningsInfo")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
-			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
-			@ApiResponse(code = 404, message = "Entity Not Found"),
-			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
-	public ResponseEntity<LearningRecordsAndFiltersModel> getAllLearningsInfoPost(
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = true) String xMasheryHandshake,
-			@ApiParam(value = "Search - tiltle, description, author") @RequestParam(value = "searchToken", required = false) String search,
-			@ApiParam(value = "Filters") @RequestBody(required = false) HashMap<String, Object> filters,
-			@ApiParam(value = "sortBy - date, title ") @RequestParam(value = "sortBy", required = false) String sortBy,
-			@ApiParam(value = "sortOrder - asc, desc") @RequestParam(value = "sortOrder", required = false) String sortOrder,
-			@ApiParam(value = "learningTab - Technology, Skill") @PathVariable(value = "learningTab", required = true) String learningTab,
-			HttpServletRequest request)
-			throws Exception {
-		boolean hcaasStatus = getHcaasStatus(request);
-		LearningRecordsAndFiltersModel learningCardsAndFilters = trainingAndEnablementService.
-				getAllLearningInfoPost(xMasheryHandshake,search,filters,sortBy,sortOrder,learningTab,hcaasStatus);
-		return new ResponseEntity<LearningRecordsAndFiltersModel>(learningCardsAndFilters, HttpStatus.OK);
-	}
-	
-	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/getAllLearningFilters/{learningTab}")
-	@ApiOperation(value = "Fetch All Learnings Filters", nickname = "fetchalllearningsFilters")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
-			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
-			@ApiResponse(code = 404, message = "Entity Not Found"),
-			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
-	public ResponseEntity<Map<String, Object>> getAllLearningsFiltersPost(
-			@ApiParam(value = "Search - tiltle, description, author") @RequestParam(value = "searchToken", required = false) String searchToken,
-			@ApiParam(value = "learningTab - Technology, Skill") @PathVariable(value = "learningTab", required = true) String learningTab,
-			@ApiParam(value = "Filters") @RequestBody(required = false) Map<String, Object> filters,
-			HttpServletRequest request)
-			throws Exception {
-		boolean hcaasStatus = getHcaasStatus(request);
-		Map<String, Object> learningFilters = trainingAndEnablementService.getAllLearningFiltersPost(searchToken,filters,learningTab,hcaasStatus);
-		return new ResponseEntity<Map<String, Object>>(learningFilters, HttpStatus.OK);
-	}
-	
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/myLearningPreferences")
-	@ApiOperation(value = "Fetch All Learnings Preferences", nickname = "fetchMyLearningPreferences")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
-			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
-			@ApiResponse(code = 404, message = "Entity Not Found"),
-			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
-	public ResponseEntity<Map<String, List<UserLearningPreference>>> getMyLearningPreferences(
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake" , required=false) String xMasheryHandshake
-			)
-			throws Exception {
-		Map<String,List<UserLearningPreference>> userPreferences = trainingAndEnablementService.getUserLearningPreferences(xMasheryHandshake);
-		return new ResponseEntity<Map<String, List<UserLearningPreference>>>(userPreferences, HttpStatus.OK);		
-	}
-	
-	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/myLearningPreferences")
-	@ApiOperation(value = "Set User Learnings Preferences", nickname = "setMyLearningPreferences")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Preferences updated successfully."),
-			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
-			@ApiResponse(code = 404, message = "Entity Not Found"),
-			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
-	public ResponseEntity<String> updateMyLearningPreferences(
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake" , required=true) String xMasheryHandshake,
-			@ApiParam(value = "preferences") @RequestBody(required = true) Map<String, List<UserLearningPreference>> userPreferences
-			)
-			throws Exception { 
-		if(null == userPreferences) {
-			throw new BadRequestException("Bad input in parameters : " + userPreferences);
-		}
-		String userPreferenceInput = userPreferences.toString();
-		if (userPreferenceInput != null && !userPreferenceInput.equalsIgnoreCase(XSSUtil.checkXSS("",userPreferenceInput))){
-			LOG.info("User Preference---{}", userPreferenceInput);
-    		throw new BadRequestException("Bad input in parameters : " + userPreferenceInput);
-    	}
-		if(! ProductDocumentationUtil.isValidPrefTime(userPreferences)) {
-			throw new BadRequestException("Invalid Preference Time : " + userPreferences);			
-		}
-		Map<String, List<UserLearningPreference>> userPreferencesDb = trainingAndEnablementService.postUserLearningPreferences(xMasheryHandshake,userPreferences);//NOSONAR
-		return new ResponseEntity<String>("Preferences updated successfully.", HttpStatus.OK);
-	}
-		
-	
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/myPreferredLearnings")
-	@ApiOperation(value = "Fetch Preferred Learnings Information", nickname = "fetchPreferredLearningsInfo")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
-			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
-			@ApiResponse(code = 404, message = "Entity Not Found"),
-			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
-	public ResponseEntity<LearningRecordsAndFiltersModel> getTopPicks(
-			@ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = true) String xMasheryHandshake,
-			@ApiParam(value = "Search - tiltle, description, author") @RequestParam(value = "searchToken", required = false) String search,
-			@ApiParam(value = "sortBy - date, title ") @RequestParam(value = "sortBy", required = false) String sortBy,
-			@ApiParam(value = "sortOrder - asc, desc") @RequestParam(value = "sortOrder", required = false) String sortOrder,
-			@ApiParam(value = "limit - Number of cards") @RequestParam(value = "limit", required = false) Integer limit,
-			HttpServletRequest request)
-			throws Exception {
-		boolean hcaasStatus = getHcaasStatus(request);
-		HashMap<String, Object> filters = new HashMap<String, Object>();
-		LearningRecordsAndFiltersModel learningCards = trainingAndEnablementService.
-				getMyPreferredLearnings(xMasheryHandshake,filters,puid, limit, hcaasStatus);
-		if(limit!=null && limit < 0) {throw new BadRequestException(LIMIT_MSG);}
-		return new ResponseEntity<LearningRecordsAndFiltersModel>(learningCards, HttpStatus.OK);
-	}
+  @Autowired private TrainingAndEnablementService trainingAndEnablementService;
 
-	public boolean getHcaasStatus(HttpServletRequest request) {
-		return (boolean) request.getServletContext().getAttribute(Constants.HCAAS_FLAG);
-	}
+  @GetMapping(path = "/ready", produces = MediaType.APPLICATION_JSON_VALUE)
+  @ApiOperation(value = "Template API Readiness probe", hidden = true)
+  public Map<String, String> checkReady() throws HealthCheckException {
+    return new HashMap<>();
+  }
 
-	/** all toppicks cards in payload **/
-	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/viewmore/toppicks/filters")
-	@ApiOperation(value = "Fetch TopPicks view more Filters", nickname = "fetchToppicksViewmoreFilters")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
-			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
-			@ApiResponse(code = 404, message = "Entity Not Found"),
-			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
-	public ResponseEntity<Map<String, Object>> getTopPicksFiltersPost(
-			@ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = true) String xMasheryHandshake,
-			@ApiParam(value = "Filters") @RequestBody(required = false) Map<String, Object> filters,
-			HttpServletRequest request)
-			throws Exception {
-		boolean hcaasStatus = getHcaasStatus(request);
-		Map<String, Object> learningFilters = trainingAndEnablementService.getTopPicksFiltersPost(filters,hcaasStatus);
-		return new ResponseEntity<Map<String, Object>>(learningFilters, HttpStatus.OK);
-	}
+  @GetMapping(path = "/live")
+  @ApiOperation(value = "Training And Enablement API Liveness Probe", hidden = true)
+  public String checkAlive() {
+    return "Yes I am alive.";
+  }
 
-	/** all toppicks cards in payload **/
-	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/viewmore/toppicks/cards")
-	@ApiOperation(value = "Fetch TopPicks view more cards", nickname = "fetchToppicksViewmoreCards")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved results"),
-			@ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
-			@ApiResponse(code = 404, message = "Entity Not Found"),
-			@ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class) })
-	public ResponseEntity<LearningRecordsAndFiltersModel> getTopPicksCardsPost(
-			@ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
-			@ApiParam(value = "Mashery user credential header") @RequestHeader(value = "X-Mashery-Handshake", required = true) String xMasheryHandshake,
-			@ApiParam(value = "Filters") @RequestBody(required = false) Map<String, Object> filters,
-			HttpServletRequest request)
-			throws Exception {
-		boolean hcaasStatus = getHcaasStatus(request);
-		LearningRecordsAndFiltersModel learningCards = trainingAndEnablementService.getTopPicksCardsPost(xMasheryHandshake, filters,hcaasStatus);
-		return new ResponseEntity<LearningRecordsAndFiltersModel>(learningCards, HttpStatus.OK);
-	}
-	
+  @RequestMapping(
+      method = RequestMethod.GET,
+      produces = MediaType.APPLICATION_JSON_VALUE,
+      path = "/communities")
+  @ApiOperation(
+      value = "Fetch Communities",
+      response = Community.class,
+      responseContainer = "List",
+      nickname = "fetchCommunities")
+  @ApiResponses(
+      value = {
+        @ApiResponse(code = 200, message = "Successfully retrieved results"),
+        @ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
+        @ApiResponse(code = 404, message = "Entity Not Found"),
+        @ApiResponse(code = 500, message = "Error during retrieve", response = ErrorResponse.class)
+      })
+  public ResponseEntity<List<Community>> getAllCommunities(
+      @ApiParam(value = "Mashery user credential header")
+          @RequestHeader(value = "X-Mashery-Handshake", required = false)
+          String xMasheryHandshake)
+      throws Exception {
+    List<Community> communityList = trainingAndEnablementService.getAllCommunities();
+    return new ResponseEntity<List<Community>>(communityList, HttpStatus.OK);
+  }
+
+  @RequestMapping(
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE,
+      path = "/learning/bookmark")
+  @ApiOperation(
+      value = "Create or remove bookmark for one of the learnings",
+      response = BookmarkResponseSchema.class)
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            code = 200,
+            message = "Successfully updated",
+            response = BookmarkResponseSchema.class),
+        @ApiResponse(code = 400, message = "Bad Request", response = ErrorResponse.class),
+        @ApiResponse(
+            code = 403,
+            message = "Operation forbidden due to business policies",
+            response = ErrorResponse.class),
+        @ApiResponse(
+            code = 500,
+            message = "Internal server error occured",
+            response = ErrorResponse.class)
+      })
+  public ResponseEntity addOrRemoveLearningBookmarks( // NOSONAR
+      @ApiParam(value = "Mashery user credential header")
+          @RequestHeader(value = "X-Mashery-Handshake", required = false)
+          String xMasheryHandshake,
+      @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
+      @ApiParam(value = "JSON Body to Bookmark", required = true) @RequestBody
+          BookmarkRequestSchema bookmarkRequestSchema) {
+    if (null != bookmarkRequestSchema
+        && StringUtils.isNotBlank(bookmarkRequestSchema.getLearningid())) {
+      BookmarkResponseSchema learningBookmarkResponse =
+          trainingAndEnablementService.bookmarkLearningForUser(
+              bookmarkRequestSchema, xMasheryHandshake, puid);
+      if (null != learningBookmarkResponse) {
+        return new ResponseEntity<>(HttpStatus.OK);
+      } else {
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    } else {
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @RequestMapping(
+      method = RequestMethod.POST,
+      produces = MediaType.APPLICATION_JSON_VALUE,
+      path = "/getAllLearningInfo/{learningTab}")
+  @ApiOperation(value = "Fetch All Learnings Information", nickname = "fetchalllearningsInfo")
+  @ApiResponses(
+      value = {
+        @ApiResponse(code = 200, message = "Successfully retrieved results"),
+        @ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
+        @ApiResponse(code = 404, message = "Entity Not Found"),
+        @ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class)
+      })
+  public ResponseEntity<LearningRecordsAndFiltersModel> getAllLearningsInfoPost(
+      @ApiParam(value = "Mashery user credential header")
+          @RequestHeader(value = "X-Mashery-Handshake", required = true)
+          String xMasheryHandshake,
+      @ApiParam(value = "Search - tiltle, description, author")
+          @RequestParam(value = "searchToken", required = false)
+          String search,
+      @ApiParam(value = "Filters") @RequestBody(required = false) HashMap<String, Object> filters,
+      @ApiParam(value = "sortBy - date, title ") @RequestParam(value = "sortBy", required = false)
+          String sortBy,
+      @ApiParam(value = "sortOrder - asc, desc")
+          @RequestParam(value = "sortOrder", required = false)
+          String sortOrder,
+      @ApiParam(value = "learningTab - Technology, Skill")
+          @PathVariable(value = "learningTab", required = true)
+          String learningTab,
+      HttpServletRequest request)
+      throws Exception {
+    boolean hcaasStatus = getHcaasStatus(request);
+    LearningRecordsAndFiltersModel learningCardsAndFilters =
+        trainingAndEnablementService.getAllLearningInfoPost(
+            xMasheryHandshake, search, filters, sortBy, sortOrder, learningTab, hcaasStatus);
+    return new ResponseEntity<LearningRecordsAndFiltersModel>(
+        learningCardsAndFilters, HttpStatus.OK);
+  }
+
+  @RequestMapping(
+      method = RequestMethod.POST,
+      produces = MediaType.APPLICATION_JSON_VALUE,
+      path = "/getAllLearningFilters/{learningTab}")
+  @ApiOperation(value = "Fetch All Learnings Filters", nickname = "fetchalllearningsFilters")
+  @ApiResponses(
+      value = {
+        @ApiResponse(code = 200, message = "Successfully retrieved results"),
+        @ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
+        @ApiResponse(code = 404, message = "Entity Not Found"),
+        @ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class)
+      })
+  public ResponseEntity<Map<String, Object>> getAllLearningsFiltersPost(
+      @ApiParam(value = "Search - tiltle, description, author")
+          @RequestParam(value = "searchToken", required = false)
+          String searchToken,
+      @ApiParam(value = "learningTab - Technology, Skill")
+          @PathVariable(value = "learningTab", required = true)
+          String learningTab,
+      @ApiParam(value = "Filters") @RequestBody(required = false) Map<String, Object> filters,
+      HttpServletRequest request)
+      throws Exception {
+    boolean hcaasStatus = getHcaasStatus(request);
+    Map<String, Object> learningFilters =
+        trainingAndEnablementService.getAllLearningFiltersPost(
+            searchToken, filters, learningTab, hcaasStatus);
+    return new ResponseEntity<Map<String, Object>>(learningFilters, HttpStatus.OK);
+  }
+
+  @RequestMapping(
+      method = RequestMethod.GET,
+      produces = MediaType.APPLICATION_JSON_VALUE,
+      path = "/myLearningPreferences")
+  @ApiOperation(value = "Fetch All Learnings Preferences", nickname = "fetchMyLearningPreferences")
+  @ApiResponses(
+      value = {
+        @ApiResponse(code = 200, message = "Successfully retrieved results"),
+        @ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
+        @ApiResponse(code = 404, message = "Entity Not Found"),
+        @ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class)
+      })
+  public ResponseEntity<Map<String, List<UserLearningPreference>>> getMyLearningPreferences(
+      @ApiParam(value = "Mashery user credential header")
+          @RequestHeader(value = "X-Mashery-Handshake", required = false)
+          String xMasheryHandshake)
+      throws Exception {
+    Map<String, List<UserLearningPreference>> userPreferences =
+        trainingAndEnablementService.getUserLearningPreferences(xMasheryHandshake);
+    return new ResponseEntity<Map<String, List<UserLearningPreference>>>(
+        userPreferences, HttpStatus.OK);
+  }
+
+  @RequestMapping(
+      method = RequestMethod.POST,
+      produces = MediaType.APPLICATION_JSON_VALUE,
+      path = "/myLearningPreferences")
+  @ApiOperation(value = "Set User Learnings Preferences", nickname = "setMyLearningPreferences")
+  @ApiResponses(
+      value = {
+        @ApiResponse(code = 200, message = "Preferences updated successfully."),
+        @ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
+        @ApiResponse(code = 404, message = "Entity Not Found"),
+        @ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class)
+      })
+  public ResponseEntity<String> updateMyLearningPreferences(
+      @ApiParam(value = "Mashery user credential header")
+          @RequestHeader(value = "X-Mashery-Handshake", required = true)
+          String xMasheryHandshake,
+      @ApiParam(value = "preferences") @RequestBody(required = true)
+          Map<String, List<UserLearningPreference>> userPreferences)
+      throws Exception {
+    if (null == userPreferences) {
+      throw new BadRequestException("Bad input in parameters : " + userPreferences);
+    }
+    String userPreferenceInput = userPreferences.toString();
+    if (userPreferenceInput != null
+        && !userPreferenceInput.equalsIgnoreCase(XSSUtil.checkXSS("", userPreferenceInput))) {
+      LOG.info("User Preference---{}", userPreferenceInput);
+      throw new BadRequestException("Bad input in parameters : " + userPreferenceInput);
+    }
+    if (!ProductDocumentationUtil.isValidPrefTime(userPreferences)) {
+      throw new BadRequestException("Invalid Preference Time : " + userPreferences);
+    }
+    Map<String, List<UserLearningPreference>> userPreferencesDb =
+        trainingAndEnablementService.postUserLearningPreferences(
+            xMasheryHandshake, userPreferences); // NOSONAR
+    return new ResponseEntity<String>("Preferences updated successfully.", HttpStatus.OK);
+  }
+
+  @RequestMapping(
+      method = RequestMethod.GET,
+      produces = MediaType.APPLICATION_JSON_VALUE,
+      path = "/myPreferredLearnings")
+  @ApiOperation(
+      value = "Fetch Preferred Learnings Information",
+      nickname = "fetchPreferredLearningsInfo")
+  @ApiResponses(
+      value = {
+        @ApiResponse(code = 200, message = "Successfully retrieved results"),
+        @ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
+        @ApiResponse(code = 404, message = "Entity Not Found"),
+        @ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class)
+      })
+  public ResponseEntity<LearningRecordsAndFiltersModel> getTopPicks(
+      @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
+      @ApiParam(value = "Mashery user credential header")
+          @RequestHeader(value = "X-Mashery-Handshake", required = true)
+          String xMasheryHandshake,
+      @ApiParam(value = "Search - tiltle, description, author")
+          @RequestParam(value = "searchToken", required = false)
+          String search,
+      @ApiParam(value = "sortBy - date, title ") @RequestParam(value = "sortBy", required = false)
+          String sortBy,
+      @ApiParam(value = "sortOrder - asc, desc")
+          @RequestParam(value = "sortOrder", required = false)
+          String sortOrder,
+      @ApiParam(value = "limit - Number of cards") @RequestParam(value = "limit", required = false)
+          Integer limit,
+      HttpServletRequest request)
+      throws Exception {
+    boolean hcaasStatus = getHcaasStatus(request);
+    HashMap<String, Object> filters = new HashMap<String, Object>();
+    LearningRecordsAndFiltersModel learningCards =
+        trainingAndEnablementService.getMyPreferredLearnings(
+            xMasheryHandshake, filters, puid, limit, hcaasStatus);
+    if (limit != null && limit < 0) {
+      throw new BadRequestException(LIMIT_MSG);
+    }
+    return new ResponseEntity<LearningRecordsAndFiltersModel>(learningCards, HttpStatus.OK);
+  }
+
+  public boolean getHcaasStatus(HttpServletRequest request) {
+    return (boolean) request.getServletContext().getAttribute(Constants.HCAAS_FLAG);
+  }
+
+  /** all toppicks cards in payload * */
+  @RequestMapping(
+      method = RequestMethod.POST,
+      produces = MediaType.APPLICATION_JSON_VALUE,
+      path = "/viewmore/toppicks/filters")
+  @ApiOperation(
+      value = "Fetch TopPicks view more Filters",
+      nickname = "fetchToppicksViewmoreFilters")
+  @ApiResponses(
+      value = {
+        @ApiResponse(code = 200, message = "Successfully retrieved results"),
+        @ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
+        @ApiResponse(code = 404, message = "Entity Not Found"),
+        @ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class)
+      })
+  public ResponseEntity<Map<String, Object>> getTopPicksFiltersPost(
+      @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
+      @ApiParam(value = "Mashery user credential header")
+          @RequestHeader(value = "X-Mashery-Handshake", required = true)
+          String xMasheryHandshake,
+      @ApiParam(value = "Filters") @RequestBody(required = false) Map<String, Object> filters,
+      HttpServletRequest request)
+      throws Exception {
+    boolean hcaasStatus = getHcaasStatus(request);
+    Map<String, Object> learningFilters =
+        trainingAndEnablementService.getTopPicksFiltersPost(filters, hcaasStatus);
+    return new ResponseEntity<Map<String, Object>>(learningFilters, HttpStatus.OK);
+  }
+
+  /** all toppicks cards in payload * */
+  @RequestMapping(
+      method = RequestMethod.POST,
+      produces = MediaType.APPLICATION_JSON_VALUE,
+      path = "/viewmore/toppicks/cards")
+  @ApiOperation(value = "Fetch TopPicks view more cards", nickname = "fetchToppicksViewmoreCards")
+  @ApiResponses(
+      value = {
+        @ApiResponse(code = 200, message = "Successfully retrieved results"),
+        @ApiResponse(code = 400, message = "Bad Input", response = ErrorResponse.class),
+        @ApiResponse(code = 404, message = "Entity Not Found"),
+        @ApiResponse(code = 500, message = "Error during delete", response = ErrorResponse.class)
+      })
+  public ResponseEntity<LearningRecordsAndFiltersModel> getTopPicksCardsPost(
+      @ApiParam(value = "puid") @RequestHeader(value = "puid", required = true) String puid,
+      @ApiParam(value = "Mashery user credential header")
+          @RequestHeader(value = "X-Mashery-Handshake", required = true)
+          String xMasheryHandshake,
+      @ApiParam(value = "Filters") @RequestBody(required = false) Map<String, Object> filters,
+      HttpServletRequest request)
+      throws Exception {
+    boolean hcaasStatus = getHcaasStatus(request);
+    LearningRecordsAndFiltersModel learningCards =
+        trainingAndEnablementService.getTopPicksCardsPost(xMasheryHandshake, filters, hcaasStatus);
+    return new ResponseEntity<LearningRecordsAndFiltersModel>(learningCards, HttpStatus.OK);
+  }
 }
