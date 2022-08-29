@@ -424,5 +424,3 @@ public class ProductDocumentationUtil {
     return rangeCardsIds; // rangeCards
   }
 }
-
-
