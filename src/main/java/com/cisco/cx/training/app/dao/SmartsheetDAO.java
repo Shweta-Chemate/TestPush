@@ -5,10 +5,12 @@ import com.smartsheet.api.SmartsheetException;
 
 public interface SmartsheetDAO {
 
-	boolean checkRegistrationExists(SuccesstalkUserRegEsSchema registration) throws SmartsheetException;
+  boolean checkRegistrationExists(SuccesstalkUserRegEsSchema registration)
+      throws SmartsheetException;
 
-	void saveSuccessTalkRegistration(SuccesstalkUserRegEsSchema registration) throws SmartsheetException;
+  void saveSuccessTalkRegistration(SuccesstalkUserRegEsSchema registration)
+      throws SmartsheetException;
 
-	void cancelUserSuccessTalkRegistration(SuccesstalkUserRegEsSchema cancelledRegistration) throws SmartsheetException;
-
+  void cancelUserSuccessTalkRegistration(SuccesstalkUserRegEsSchema cancelledRegistration)
+      throws SmartsheetException;
 }

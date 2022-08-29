@@ -5,15 +5,15 @@ import com.cisco.cx.training.models.UserDetailsWithCompanyList;
 
 public interface PartnerProfileService {
 
-	UserDetails fetchUserDetails(String xMasheryHandshake);
-	
-	UserDetailsWithCompanyList fetchUserDetailsWithCompanyList(String xMasheryHandshake);
+  UserDetails fetchUserDetails(String xMasheryHandshake);
 
-	void setEntitlementUrl(String entitlementUrl);
-	
-	String getEntitlementUrl();
+  UserDetailsWithCompanyList fetchUserDetailsWithCompanyList(String xMasheryHandshake);
 
-	boolean isPLSActive(String xMasheryHandshake, String partnerId) throws Exception; //NOSONAR
+  void setEntitlementUrl(String entitlementUrl);
 
-	public boolean getHcaasStatusForPartner(String xMasheryHandshake);
+  String getEntitlementUrl();
+
+  boolean isPLSActive(String xMasheryHandshake, String partnerId) throws Exception; // NOSONAR
+
+  public boolean getHcaasStatusForPartner(String xMasheryHandshake);
 }

@@ -2,90 +2,39 @@ package com.cisco.cx.training.app.entities;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.Data;
 
 @Entity
 @Table(name = "cxpp_learning_status")
 @IdClass(LearningStatusEntityPK.class)
+@Data
 public class LearningStatusEntity implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-	
-	@Id
-	@Column(name = "user_id")
-	private String userId;
-	
-	@Id
-	@Column(name = "puid")
-	private String puid;
+  private static final long serialVersionUID = 1L;
 
-	@Id
-	@Column(name = "learning_item_id")
-	private String learningItemId;
+  @Id
+  @Column(name = "user_id")
+  private String userId;
 
-	@Column(name = "reg_status")
-	private String regStatus;
+  @Id
+  @Column(name = "puid")
+  private String puid;
 
-	@Column(name = "reg_updated_timestamp")
-	private Timestamp regUpdatedTimestamp;
-	
-	@Column(name = "viewed_timestamp")
-	private Timestamp viewedTimestamp;
-	
-	public String getUserId() {
-		return userId;
-	}
+  @Id
+  @Column(name = "learning_item_id")
+  private String learningItemId;
 
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
+  @Column(name = "reg_status")
+  private String regStatus;
 
-	public String getPuid() {
-		return puid;
-	}
+  @Column(name = "reg_updated_timestamp")
+  private Timestamp regUpdatedTimestamp;
 
-	public void setPuid(String puid) {
-		this.puid = puid;
-	}
-
-	public String getLearningItemId() {
-		return learningItemId;
-	}
-
-	public void setLearningItemId(String learningItemId) {
-		this.learningItemId = learningItemId;
-	}
-	
-	public String getRegStatus() {
-		return regStatus;
-	}
-
-	public void setRegStatus(String regStatus) {
-		this.regStatus = regStatus;
-	}
-
-	public Timestamp getRegUpdatedTimestamp() {
-		return regUpdatedTimestamp;
-	}
-
-	public void setRegUpdatedTimestamp(Timestamp regUpdatedTimestamp) {
-		this.regUpdatedTimestamp = regUpdatedTimestamp;
-	}
-
-	public Timestamp getViewedTimestamp() {
-		return viewedTimestamp;
-	}
-
-	public void setViewedTimestamp(Timestamp viewedTimestamp) {
-		this.viewedTimestamp = viewedTimestamp;
-	}
-
+  @Column(name = "viewed_timestamp")
+  private Timestamp viewedTimestamp;
 }
